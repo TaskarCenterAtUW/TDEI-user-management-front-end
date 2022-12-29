@@ -1,0 +1,12 @@
+.container {
+    height: 60px;
+    background-color: #000000;
+    color: #ffffff;
+    display: flex;
+    padding: 15px;
+    align-items: center;
+}
+
+.container h3 {
+    margin-bottom: 0;
+}
