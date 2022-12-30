@@ -2,15 +2,20 @@ import React from 'react';
 import style from './AssignPoc.module.css';
 import { Button, Form } from 'react-bootstrap'
 import useAssignPoc from '../../hooks/poc/useAssignPoc';
+import { show} from '../../store/notification.slice';
+import { useDispatch } from 'react-redux';
 
 
 const AssignPoc = () => {
+    const dispatch = useDispatch();
     const [pocData, setPocData] = React.useState({ "org_id": '', "poc_user_name": '' });
     const onSuccess = (data) => {
         console.log("Assigned POC", data);
+        dispatch(show({message: 'Assigned POC successfully', type: 'success'}));
     }
 
     const onError = (err) => {
+        dispatch(show({message: 'Error in assigning POC', type: 'danger'}));
         console.error(err);
     }
 

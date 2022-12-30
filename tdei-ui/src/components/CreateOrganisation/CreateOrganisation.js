@@ -1,15 +1,21 @@
 import React, { useState } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import useCreateOrganisation from '../../hooks/organisation/useCreateOrganisation';
+import { useDispatch } from 'react-redux';
+import { show} from '../../store/notification.slice';
 
 const CreateOrganisation = (props) => {
+    const dispatch = useDispatch();
     const [orgData, setOrgData] = useState({ name: '', phone: '', url: '', address: '' });
     const onSuccess = (data) => {
         console.log("suucessfully created", data);
         props.onHide();
+        dispatch(show({message: 'Organisation created successfully', type: 'success'}));
     }
     const onError = (err) => {
-        console.error("error message", err)
+        console.error("error message", err);
+        dispatch(show({message: 'Error in creating organisation', type: 'danger'}));
+        
     }
     const { isLoading, mutate } = useCreateOrganisation({ onSuccess, onError });
 

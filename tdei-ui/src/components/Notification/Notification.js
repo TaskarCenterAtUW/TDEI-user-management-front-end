@@ -1,15 +1,26 @@
 import React from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNotification } from '../../selectors';
+import { hide } from '../../store/notification.slice';
 
 const Notification = () => {
+    const dispatch = useDispatch();
+    const notification = useSelector(getNotification);
+    React.useEffect(() => {
+        let timeout = setTimeout(() => {
+            dispatch(hide());
+        }, 5000)
+        return () => {
+            clearTimeout(timeout)
+        }
+    }, [notification.type])
     return (
         <ToastContainer position='top-center'>
-            <Toast show={true} delay={3000} autohide bg='danger'>
+            <Toast onClose={() => dispatch(hide())} show={!!notification?.type} bg={notification?.type}>
                 <Toast.Header>
-                    <strong className="me-auto">Bootstrap</strong>
-                    <small>11 mins ago</small>
+                    <strong className="me-auto">{notification?.message}</strong>
                 </Toast.Header>
-                {/* <Toast.Body>Woohoo, you're reading this text in a Toast!</Toast.Body> */}
             </Toast>
         </ToastContainer>
 
