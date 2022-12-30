@@ -3,17 +3,20 @@ import { Container, Row , Col} from 'react-bootstrap';
 import Navigation from '../../components/Navigation/Navigation';
 import UserHeader from '../../components/UserHeader/UserHeader';
 import Creation from '../../components/Creation/Creation';
+import style from './style.module.css'
 
 const Root = () => {
     return (
-        <Container fluid>
-            <Row>
-                <Col sm="2"><Navigation /></Col>
-                <Col sm="10">
+        <Container fluid className='p-0'>
+            <div className='d-flex'>
+                <div className={style.navigationBlock}>
+                    <Navigation />
+                </div>
+                <div className={style.contentBlock}>
                     <UserHeader />
                     <Creation />
-                </Col>
-            </Row>
+                </div>
+            </div>
         </Container>
     )
 };

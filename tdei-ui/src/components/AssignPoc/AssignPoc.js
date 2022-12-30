@@ -32,7 +32,7 @@ const AssignPoc = () => {
     }
     return (
         <div className={style.card}>
-            <h3 className='mb-3'>ASSIGN POC</h3>
+            <h5 className='mb-4'>ASSIGN POC</h5>
             <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Username</Form.Label>
                 <Form.Control type="email" placeholder="Enter Username" name='poc_user_name' onChange={handlePocData}/>

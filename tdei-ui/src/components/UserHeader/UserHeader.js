@@ -3,7 +3,10 @@ import style from './UserHeader.module.css';
 
 const UserHeader = () => {
   return (
-    <div>UserHeader</div>
+    <div className={style.userHeader}>
+        <div className=''>Welcome back, Jhon Doe !</div>
+        <div className={style.roleText}>TDEI Admin</div>
+    </div>
   )
 }
 
