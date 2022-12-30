@@ -8,6 +8,7 @@ import Router from '../routes'
 import AuthProvider from './AuthProvider';
 import Header from './Header';
 import style from './App.module.css';
+import Notification from './Notification/Notification';
 
 const App = () => {
   const queryClient = new QueryClient({
@@ -27,6 +28,7 @@ const App = () => {
           <AuthProvider>
             <>
               <Header />
+              <Notification />
               <div className={style.container}>
                 <Router />
               </div>

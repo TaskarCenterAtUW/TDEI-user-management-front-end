@@ -1,0 +1,13 @@
+.container {
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.buttonWrapper {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #000;
+}
+
+.buttonWrapper > button {
+    margin-right: 2rem;
+}
