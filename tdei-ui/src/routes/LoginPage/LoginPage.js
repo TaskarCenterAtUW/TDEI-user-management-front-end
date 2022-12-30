@@ -2,6 +2,8 @@ import React from 'react';
 import { Container, Row, Form, Button, Card, Col } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import style from './style.module.css';
+import tempLogo from './../../assets/img/tdei-temp-logo.png'
 
 const LoginPage = () => {
     const [username, setUsername] = React.useState('');
@@ -25,12 +27,13 @@ const LoginPage = () => {
     }
 
     return (
-        <Container>
+        <div className={style.loginContainer}>
             <Row className="justify-content-center align-items-center">
-                <Col lg="5" className='justify-content-center '>
+                <div className={style.loginCard}>
                     <Card>
                         <Card.Body>
                             <>
+                                <img src={tempLogo} className={style.loginLogo} />
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <Form.Label>Username</Form.Label>
                                     <Form.Control type="email" placeholder="Enter Username" onChange={(e) => setUsername(e.target.value)}/>
@@ -47,15 +50,15 @@ const LoginPage = () => {
                                     {loading ? 'Loading...' : 'Sign In'}
                                 </Button>
                                 <Form.Text>Error in sign in</Form.Text>
-                                <div className='mt-4'>
+                                <div className='mt-5'>
                                     New to TDEI? <Link to={'/register'}>Register Now</Link>
                                 </div>
                             </>
                         </Card.Body>
                     </Card>
-                </Col>
+                </div>
             </Row>
-        </Container>
+        </div>
     )
 };
 

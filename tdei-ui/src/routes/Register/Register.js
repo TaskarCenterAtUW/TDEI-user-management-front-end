@@ -3,6 +3,8 @@ import { Container, Row, Form, Button, Card, Col } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
+import style from './style.module.css';
+import tempLogo from './../../assets/img/tdei-temp-logo.png'
 
 
 const Register = () => {
@@ -37,12 +39,13 @@ const Register = () => {
     }
 
     return (
-        <Container>
+        <div className={style.registerContainer}>
             <Row className="justify-content-center align-items-center">
-                <Col lg="5" className='justify-content-center '>
+                <div className={style.registerCard}>
                     <Card>
                         <Card.Body>
                             <>
+                                <img src={tempLogo} className={style.loginLogo} />
                                 <Row>
                                     <Col lg="6">
                                         <Form.Group className="mb-3" controlId="firstName">
@@ -72,15 +75,15 @@ const Register = () => {
                                 <Button variant="primary col-12 mx-auto" type="submit" disabled={!password || !emailId || loading} onClick={handleCreateAccount}>
                                     {loading ? 'Loading...' : 'Create Account'}
                                 </Button>
-                                <div className='mt-4'>
+                                <div className='mt-5'>
                                     Already have an account? <Link to={'/login'}>Sign in</Link>
                                 </div>
                             </>
                         </Card.Body>
                     </Card>
-                </Col>
+                </div>
             </Row>
-        </Container>
+        </div>
     )
 };
 

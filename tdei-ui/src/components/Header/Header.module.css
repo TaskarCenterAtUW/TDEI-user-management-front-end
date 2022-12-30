@@ -1,12 +1,11 @@
 .container {
     height: 60px;
-    background-color: #000000;
+    background-color: #343A40;
     color: #ffffff;
     display: flex;
     padding: 15px;
     align-items: center;
 }
-
-.container h3 {
-    margin-bottom: 0;
+.logoImage {
+    width: 80px;
 }
