@@ -12,11 +12,11 @@ const Creation = () => {
     const [showCreateStation, setShowCreateStation] = React.useState(false);
     return (
         <div className={`${style.container} p-3`}>
-            <h3 className='mb-4'>CREATION</h3>
+            <h5 className='mb-4'>CREATION</h5>
             <div className={style.buttonWrapper}>
-                <Button onClick={() => setShowCreateOrganisation(true)}>ORGANISATION</Button>
-                <Button onClick={() => setShowCreateService(true)}>SERVICE</Button>
-                <Button onClick={() => setShowCreateStation(true)}>STATION</Button>
+                <Button onClick={() => setShowCreateOrganisation(true)}>Organisation</Button>
+                <Button onClick={() => setShowCreateService(true)}>Service</Button>
+                <Button onClick={() => setShowCreateStation(true)}>Station</Button>
             </div>
             <AssignPoc />
             <CreateOrganisation show={showCreateOrganisation} onHide={() => setShowCreateOrganisation(false)} />
