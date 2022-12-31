@@ -10,7 +10,11 @@
 .logoImage {
     width: 80px;
 }
-
+.userIcon {
+    width: 28px;
+    cursor: pointer;
+    margin-right: 10px;
+}
 .profileImage {
     background-color: #ffffff;
     border-radius: 100%;

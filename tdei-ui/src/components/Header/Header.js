@@ -3,6 +3,7 @@ import style from './Header.module.css';
 import tempLogo from './../../assets/img/tdei-temp-logo.png';
 import { useAuth } from '../../hooks/useAuth';
 import { Dropdown } from 'react-bootstrap';
+import userIcon from './../../assets/img/user.png';
 
 const Header = () => {
   const { user } = useAuth();
@@ -29,7 +30,10 @@ const Header = () => {
 }
 
 const ProfileImage = React.forwardRef(({ children, onClick }, ref) => (
-  <div className={style.profileImage} onClick={onClick} ref={ref}>{children}</div>
+  <div onClick={onClick} ref={ref}>
+    <img src={userIcon} className={style.userIcon}/>
+    {children}
+    </div>
 ));
 
 export default Header

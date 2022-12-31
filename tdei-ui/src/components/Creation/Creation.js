@@ -23,8 +23,8 @@ const Creation = () => {
                     <Button onClick={() => setShowCreateStation(true)}>Station</Button>
                 </div>
                 <AssignPoc />
-                <div className={style.hr}></div>
-                <AssignRoles />
+                {/* <div className={style.hr}></div>
+                <AssignRoles /> */}
                 <CreateOrganisation show={showCreateOrganisation} onHide={() => setShowCreateOrganisation(false)} />
                 <CreateService show={showCreateService} onHide={() => setShowCreateService(false)} />
                 <CreateStation show={showCreateStation} onHide={() => setShowCreateStation(false)} />
