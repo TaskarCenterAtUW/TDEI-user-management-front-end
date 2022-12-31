@@ -11,3 +11,8 @@
 .buttonWrapper > button {
     margin-right: 1.2rem;
 }
+
+.hr {
+    border-top: 1px dashed #ddd;
+    margin: 2rem 0;
+}

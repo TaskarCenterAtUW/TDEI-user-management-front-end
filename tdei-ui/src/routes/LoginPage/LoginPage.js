@@ -4,12 +4,15 @@ import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import style from './style.module.css';
 import tempLogo from './../../assets/img/tdei-temp-logo.png'
+import { useDispatch } from 'react-redux';
+import {show} from '../../store/notification.slice';
 
 const LoginPage = () => {
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const auth = useAuth();
+    const dispatch = useDispatch();
 
     const handleSignIn = async(e) => {
         setLoading(true);
@@ -19,6 +22,7 @@ const LoginPage = () => {
         }, (err) => {
             console.error(err)
             setLoading(false);
+            dispatch(show({message: 'Error in signing in', type: 'danger'}));
         });
     }
 
@@ -49,7 +53,6 @@ const LoginPage = () => {
                                 <Button variant="primary col-12 mx-auto" type="submit" disabled={!username || !password || loading} onClick={handleSignIn}>
                                     {loading ? 'Loading...' : 'Sign In'}
                                 </Button>
-                                <Form.Text>Error in sign in</Form.Text>
                                 <div className='mt-5'>
                                     New to TDEI? <Link to={'/register'}>Register Now</Link>
                                 </div>

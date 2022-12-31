@@ -14,8 +14,9 @@ const AuthProvider = ({ children }) => {
         const decodedToken = JSON.parse(window.atob(accessToken.split('.')[1]));
         console.log(decodedToken);
         const userObj = {
-            name: decodedToken.name,
-            roles: decodedToken.realm_access.roles
+            name: decodedToken.name || decodedToken.email,
+            roles: decodedToken.realm_access.roles,
+            isAdmin: decodedToken.realm_access.roles?.includes('tdei-admin')
         }
         setUser(userObj);
     }

@@ -20,12 +20,12 @@ axios.interceptors.response.use(
         return res;
     },
     async (err) => {
-        if(err.response?.status === 401) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            window.location.reload();
-            return Promise.reject(err.response);
-        }
+        // if(err.response?.status === 401) {
+        //     localStorage.removeItem('accessToken');
+        //     localStorage.removeItem('refreshToken');
+        //     window.location.reload();
+        //     return Promise.reject(err.response);
+        // }
         return Promise.reject(err.response)
     }
 )
