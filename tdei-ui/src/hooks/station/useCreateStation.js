@@ -1,9 +1,9 @@
 import { useMutation } from 'react-query';
 import { CREATE_STATION } from '../../utils';
-import { postCreateService } from '../../services';
+import { postCreateStation } from '../../services';
 
 function useCreateStation(mutationOptions) {
-    return useMutation([CREATE_STATION], postCreateService, {
+    return useMutation([CREATE_STATION], postCreateStation, {
         ...mutationOptions,
         onSuccess: (data) => {
             mutationOptions.onSuccess(data)
