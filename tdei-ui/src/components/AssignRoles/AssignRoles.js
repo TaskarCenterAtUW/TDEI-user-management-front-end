@@ -1,15 +1,13 @@
 import React from 'react'
 import { Form, Button, Table } from 'react-bootstrap'
 import useAssignRoles from '../../hooks/roles/useAssignRoles';
-import useGetRoles from '../../hooks/roles/useGetRoles';
 import style from './AssignRoles.module.css';
 import { useDispatch } from 'react-redux';
 import { show} from '../../store/notification.slice';
 
-const AssignRoles = () => {
+const AssignRoles = ({rolesData: data, isError}) => {
     const [rolesData, setRolesData] = React.useState({ user_name: '', org_id: '' });
     const [selectedRole, setSelectedRole] = React.useState([])
-    const { data, error } = useGetRoles();
     const dispatch = useDispatch()
 
     const onSuccess = () => {
@@ -55,12 +53,12 @@ const AssignRoles = () => {
                 <Form.Control type="email" placeholder="Enter Username" value={rolesData.user_name} name='user_name' onChange={handleRolesData} />
             </Form.Group>
             <Form.Group className="mb-3" controlId="organisationId">
-                <Form.Label>Organisation ID</Form.Label>
-                <Form.Control type="text" placeholder="Enter Organisation ID" value={rolesData.org_id} name='org_id' onChange={handleRolesData} />
+                <Form.Label>Organization ID</Form.Label>
+                <Form.Control type="text" placeholder="Enter Organization ID" value={rolesData.org_id} name='org_id' onChange={handleRolesData} />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="organisationId">
+            <Form.Group className="mb-3" controlId="rolesData">
                 <Form.Label>Select Roles</Form.Label>
-                {error && <div className={style.danger}>Error in loading roles</div>}
+                {isError && <div className={style.danger}>Error in loading roles</div>}
                 <Table bordered>
                     <tbody>
                         {data?.data?.map(val => (<tr key={val.name}><td title={val.description}>{val.name}</td><td><Form.Check type="checkbox" id={val.name} checked={selectedRole.includes(val.name)} onChange={handleSelectRoles} /></td></tr>))}

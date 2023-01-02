@@ -11,7 +11,7 @@ function Navigation() {
         </div>
         <div className={style.menuItem}>
           <img src={menuIcon} className={style.menuIcon} />
-          <span>Organisation</span>
+          <span>Organization</span>
         </div>
         <div className={style.menuItem}>
           <img src={menuIcon} className={style.menuIcon} />

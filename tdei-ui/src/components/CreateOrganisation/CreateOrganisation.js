@@ -10,11 +10,11 @@ const CreateOrganisation = (props) => {
     const onSuccess = (data) => {
         console.log("suucessfully created", data);
         props.onHide();
-        dispatch(show({message: 'Organisation created successfully', type: 'success'}));
+        dispatch(show({message: 'Organization created successfully', type: 'success'}));
     }
     const onError = (err) => {
         console.error("error message", err);
-        dispatch(show({message: 'Error in creating organisation', type: 'danger'}));
+        dispatch(show({message: 'Error in creating organization', type: 'danger'}));
         
     }
     const { isLoading, mutate } = useCreateOrganisation({ onSuccess, onError });
@@ -37,12 +37,12 @@ const CreateOrganisation = (props) => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    CREATE ORGANISATION
+                    CREATE ORGANIZATION
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form.Group className="mb-3" controlId="organisationName ">
-                    <Form.Label>Organisation Name</Form.Label>
+                    <Form.Label>Organization Name</Form.Label>
                     <Form.Control type="text" placeholder="Enter Name" name='name' onChange={handleOrgData} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="phoneNumber">

@@ -43,8 +43,8 @@ const CreateService = (props) => {
             </Modal.Header>
             <Modal.Body>
                 <Form.Group className="mb-3" controlId="organisationId ">
-                    <Form.Label>Organisation ID</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Organisation ID" name='org_id' onChange={handleServiceData}/>
+                    <Form.Label>Organization ID</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' onChange={handleServiceData}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="serviceName">
                     <Form.Label>Service Name</Form.Label>
