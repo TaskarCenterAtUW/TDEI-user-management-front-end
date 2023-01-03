@@ -1,6 +1,6 @@
 import React from 'react';
 import style from './Header.module.css';
-import tempLogo from './../../assets/img/tdei-temp-logo.png';
+import tempLogo from './../../assets/img/tdei_logo.svg';
 import { useAuth } from '../../hooks/useAuth';
 import { Dropdown } from 'react-bootstrap';
 import userIcon from './../../assets/img/user.png';

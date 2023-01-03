@@ -8,7 +8,10 @@
     justify-content: space-between;
 }
 .logoImage {
-    width: 80px;
+    width: 70px;
+    background-color: #fff;
+    padding: 5px 5px;
+    border-radius: 4px;
 }
 .userIcon {
     width: 28px;
