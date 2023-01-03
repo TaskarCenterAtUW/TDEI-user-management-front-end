@@ -3,7 +3,7 @@ import { Container, Row, Form, Button, Card, Col } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import style from './style.module.css';
-import tempLogo from './../../assets/img/tdei-temp-logo.png'
+import tempLogo from './../../assets/img/tdei_logo.svg'
 import { useDispatch } from 'react-redux';
 import {show} from '../../store/notification.slice';
 
