@@ -1,6 +1,6 @@
 on:
   pull_request:
-    branches: [dev]
+    branches: [develop]
     types:
       - closed
   workflow_dispatch:
