@@ -4,6 +4,7 @@ import { Button, Form } from 'react-bootstrap'
 import useAssignPoc from '../../hooks/poc/useAssignPoc';
 import { show} from '../../store/notification.slice';
 import { useDispatch } from 'react-redux';
+import OrganisationList from '../OrganisationList';
 
 
 const AssignPoc = () => {
@@ -41,7 +42,8 @@ const AssignPoc = () => {
             </Form.Group>
             <Form.Group className="mb-3" controlId="organisationId">
                 <Form.Label>Organization Id</Form.Label>
-                <Form.Control type="text" placeholder="Enter Organization Id" value={pocData.org_id} name='org_id' onChange={handlePocData}/>
+                {/* <Form.Control type="text" placeholder="Enter Organization Id" value={pocData.org_id} name='org_id' onChange={handlePocData}/> */}
+                <OrganisationList />
             </Form.Group>
             <Button variant="primary" type="submit" onClick={handleAssignPoc}>
                 {isLoading ? 'loading...' : 'Submit'}

@@ -6,6 +6,7 @@ import LoginPage from './LoginPage';
 import RequireAuth from '../components/RequireAuth/RequireAuth';
 
 const Router = () => {
+  
   return (
     <Routes>
       <>

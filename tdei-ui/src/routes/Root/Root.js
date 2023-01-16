@@ -1,25 +1,37 @@
 import React from 'react';
-import { Container, Row, Col, Spinner } from 'react-bootstrap';
+import { Container, Spinner } from 'react-bootstrap';
 import Navigation from '../../components/Navigation/Navigation';
 import UserHeader from '../../components/UserHeader/UserHeader';
 import Creation from '../../components/Creation/Creation';
-import useGetRoles from '../../hooks/roles/useGetRoles';
 import style from './style.module.css'
+import useGetOrgRoles from '../../hooks/roles/useOrgRoles';
+import { getSelectedOrg } from '../../selectors';
+import { useDispatch, useSelector } from 'react-redux';
+import { set } from '../../store';
 
 const Root = () => {
-    const { data, error, isLoading, isError } = useGetRoles();
-    const authorizedUser = error?.status !== 401
+    const { data: orgData, isLoading: isOrgLoading, isError } = useGetOrgRoles();
+    const dispatch = useDispatch()
+    const selectedOrg = useSelector(getSelectedOrg);
+    React.useEffect(() => {
+        if (orgData?.length) {
+            dispatch(set(orgData[0]));
+        }
+    }, [orgData])
+    const roles = selectedOrg?.roles;
     return (
         <Container fluid className='p-0'>
-            <div className='d-flex'>
+            {isError ? <div>Error in getting roles</div> : null}
+            {(isOrgLoading && !roles) ? <div className='d-flex justify-content-center'><Spinner size='lg' /></div> : <div className='d-flex'>
                 <div className={style.navigationBlock}>
                     <Navigation />
                 </div>
                 <div className={style.contentBlock}>
-                    {isLoading ? <div className='d-flex justify-content-center'><Spinner size='lg' /></div> : <><UserHeader authorizedUser={authorizedUser} />
-                        {authorizedUser ? <Creation rolesData={data} error={isError}/> : null}</>}
+                    <UserHeader roles={roles} />
+                    <Creation roles={roles}/>
                 </div>
-            </div>
+            </div>}
+
         </Container>
     )
 };

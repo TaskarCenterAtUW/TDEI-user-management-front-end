@@ -8,11 +8,14 @@ import CreateStation from '../CreateStation/CreateStation'
 import AssignRoles from '../AssignRoles/AssignRoles'
 import { useAuth } from '../../hooks/useAuth'
 
-const Creation = ({rolesData, isError}) => {
+const Creation = ({roles}) => {
     const [showCreateOrganisation, setShowCreateOrganisation] = React.useState(false);
     const [showCreateService, setShowCreateService] = React.useState(false);
     const [showCreateStation, setShowCreateStation] = React.useState(false);
     const { user } = useAuth();
+    if(!roles?.includes('poc') && !user.isAdmin) {
+        return null;
+    }
     return (
         <div className={`${style.container} p-3`}>
             {user.isAdmin ? <>
@@ -32,7 +35,7 @@ const Creation = ({rolesData, isError}) => {
                 <div className={style.buttonWrapper}>
                     <Button onClick={() => setShowCreateService(true)}>Service</Button>
                     <Button onClick={() => setShowCreateStation(true)}>Station</Button>
-                </div><AssignRoles rolesData={rolesData} isError={isError}/><CreateService show={showCreateService} onHide={() => setShowCreateService(false)} />
+                </div><AssignRoles /><CreateService show={showCreateService} onHide={() => setShowCreateService(false)} />
                 <CreateStation show={showCreateStation} onHide={() => setShowCreateStation(false)} /></>}
         </div>
     )

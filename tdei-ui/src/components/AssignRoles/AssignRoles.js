@@ -1,11 +1,14 @@
 import React from 'react'
-import { Form, Button, Table } from 'react-bootstrap'
+import { Form, Button, Table, Spinner } from 'react-bootstrap'
 import useAssignRoles from '../../hooks/roles/useAssignRoles';
 import style from './AssignRoles.module.css';
 import { useDispatch } from 'react-redux';
-import { show} from '../../store/notification.slice';
+import { show } from '../../store/notification.slice';
+import useGetRoles from '../../hooks/roles/useGetRoles';
 
-const AssignRoles = ({rolesData: data, isError}) => {
+const AssignRoles = () => {
+    const { data, isLoading: isRolesLoading, isError } = useGetRoles();
+
     const [rolesData, setRolesData] = React.useState({ user_name: '', org_id: '' });
     const [selectedRole, setSelectedRole] = React.useState([])
     const dispatch = useDispatch()
@@ -59,6 +62,7 @@ const AssignRoles = ({rolesData: data, isError}) => {
             <Form.Group className="mb-3" controlId="rolesData">
                 <Form.Label>Select Roles</Form.Label>
                 {isError && <div className={style.danger}>Error in loading roles</div>}
+                {isRolesLoading ? <div className='d-flex justify-content-center'><Spinner size='lg' /></div> : null}
                 <Table bordered>
                     <tbody>
                         {data?.data?.map(val => (<tr key={val.name}><td title={val.description}>{val.name}</td><td><Form.Check type="checkbox" id={val.name} checked={selectedRole.includes(val.name)} onChange={handleSelectRoles} /></td></tr>))}
