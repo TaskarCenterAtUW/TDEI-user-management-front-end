@@ -1,21 +1,22 @@
 import axios from 'axios';
 import { url } from './apiServices';
 
-let refreshTokenRequest = null;
-
 async function refreshRequest() {
     try {
         const token = localStorage.getItem('refreshToken');
-        const data = await axios.post(`${url}/refresh-token`, {
-            refresh_token: token
-        });
-        console.log(data);
+        const data = await axios({
+            url: `${url}/refresh-token`,
+            method: 'POST',
+            headers: {
+                refresh_token: token
+            }
+        });        
         localStorage.setItem('accessToken', data?.data?.access_token);
         localStorage.setItem('refreshToken', data?.data?.refresh_token);
     } catch (e) {
-        // localStorage.removeItem('accessToken');
-        // localStorage.removeItem('refreshToken');
-        // window.location.reload();
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.reload();
     }
 }
 
@@ -42,10 +43,7 @@ axios.interceptors.response.use(
         if (err.response?.status === 401 && !err.config?._retry) {
             err.config._retry = true;
             try {
-                if (!refreshTokenRequest) {
-                    refreshTokenRequest = refreshRequest()
-                }
-                await refreshTokenRequest;
+                await refreshRequest();
                 return await axios(err.config);
             } catch (e) {
                 return Promise.reject(e);
