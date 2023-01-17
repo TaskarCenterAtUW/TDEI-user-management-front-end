@@ -1,9 +1,12 @@
 import React from 'react'
 import style from './UserHeader.module.css';
 import { useAuth } from '../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { getSelectedOrg } from '../../selectors';
 
 const UserHeader = ({roles}) => {
   const { user } = useAuth();
+  const selectedOrg = useSelector(getSelectedOrg);
   const getRoles = () => {
     if(user.isAdmin) {
       return 'TDEI Admin';
@@ -15,8 +18,9 @@ const UserHeader = ({roles}) => {
   
   return (
     <div className={style.userHeader}>
-      {authorizedUser ? <> <div>{`Welcome back, ${user.name} !`}</div>
-        <div className={style.roleText}>{role}</div></> : <div>Welcome to TDEI,  contact tdei admin or your organization POC to get roles assigned.</div>}
+      {authorizedUser ? <> <div className='mb-2'>{`Welcome back, ${user.name} !`}</div>
+        {user.isAdmin ? null : <div className={style.roleText}>Organization : {selectedOrg.orgName}</div>}
+        <div className={style.roleText}>Role : {role}</div></> : <div>Welcome to TDEI,  contact tdei admin or your organization POC to get roles assigned.</div>}
     </div>
   )
 }

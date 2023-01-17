@@ -74,7 +74,7 @@ const OrganisationList = ({ pocData, setPocData }) => {
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
                 {pocData.org_id ? orgList.find(val => val.id === pocData.org_id)?.name : 'Select Organization'}
             </Dropdown.Toggle>
-            <Dropdown.Menu as={CustomMenu}>
+            <Dropdown.Menu as={CustomMenu} className={styles.dropdownBox}>
                 {orgList.map((val, index) => {
                     if (orgList.length === index + 1) {
                         return <Dropdown.Item id={val.id} onClick={handleClick} ref={lastOrgListRef} key={val.id} active={pocData.org_id === val.id}>{val.name}</Dropdown.Item>
