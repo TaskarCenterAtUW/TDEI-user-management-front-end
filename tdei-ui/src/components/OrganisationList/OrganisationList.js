@@ -3,14 +3,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import useGetOrganisation from '../../hooks/organisation/useGetOrganisation';
 import styles from './OrganisationList.module.css';
-import { useInView } from 'react-intersection-observer';
-import {debounce} from 'lodash'
+import { Spinner } from 'react-bootstrap';
 
-const OrganisationList = () => {
-    const [searchText, setSearchText] = React.useState('');
-    const [pageNo, setPageNo] = React.useState(1);
+const OrganisationList = ({ pocData, setPocData }) => {
+    const [searchText, setSearchText] = useState('');
+    const [pageNo, setPageNo] = useState(1);
     const {
-        loading, error, orgList, hasMore
+        loading, orgList, hasMore
     } = useGetOrganisation(searchText, pageNo);
 
     const observer = useRef()
@@ -26,13 +25,13 @@ const OrganisationList = () => {
     }, [loading, hasMore])
 
     const handleClick = (e) => {
-        console.log(e.target.id)
+        setPocData({ ...pocData, 'org_id': e.target.id })
     }
 
     const handleSearch = (e) => {
         setSearchText(e.target.value)
         setPageNo(1)
-      }
+    }
 
     const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
         <div ref={ref}
@@ -40,13 +39,11 @@ const OrganisationList = () => {
                 e.preventDefault();
                 onClick(e);
             }} className={styles.dropdownMenu}>
-            Some Text
+            {children}
         </div>
 
     ));
 
-    // forwardRef again here!
-    // Dropdown needs access to the DOM of the Menu to measure it
     const CustomMenu = React.forwardRef(
         ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
 
@@ -75,15 +72,17 @@ const OrganisationList = () => {
     return (
         <Dropdown>
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
+                {pocData.org_id ? orgList.find(val => val.id === pocData.org_id)?.name : 'Select Organization'}
             </Dropdown.Toggle>
             <Dropdown.Menu as={CustomMenu}>
                 {orgList.map((val, index) => {
                     if (orgList.length === index + 1) {
-                        return <Dropdown.Item id={val.id} onClick={handleClick} ref={lastOrgListRef} key={val.id}>{val.name}</Dropdown.Item>
+                        return <Dropdown.Item id={val.id} onClick={handleClick} ref={lastOrgListRef} key={val.id} active={pocData.org_id === val.id}>{val.name}</Dropdown.Item>
                     } else {
-                        return <Dropdown.Item id={val.id} onClick={handleClick} key={val.id}>{val.name}</Dropdown.Item>
+                        return <Dropdown.Item id={val.id} onClick={handleClick} key={val.id} active={pocData.org_id === val.id}>{val.name}</Dropdown.Item>
                     }
                 })}
+                {loading && <div className='d-flex justify-content-center'><Spinner size='sm' /></div>}
             </Dropdown.Menu>
         </Dropdown>
     );

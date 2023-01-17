@@ -17,7 +17,7 @@ const Root = () => {
         if (orgData?.length) {
             dispatch(set(orgData[0]));
         }
-    }, [orgData])
+    }, [orgData, dispatch])
     const roles = selectedOrg?.roles;
     return (
         <Container fluid className='p-0'>

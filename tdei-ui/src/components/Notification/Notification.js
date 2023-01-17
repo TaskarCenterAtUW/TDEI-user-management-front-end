@@ -15,7 +15,7 @@ const Notification = () => {
         return () => {
             clearTimeout(timeout)
         }
-    }, [notification.type])
+    }, [notification.type, dispatch])
     return (
         <ToastContainer position='top-center' className={style.container}>
             <Toast onClose={() => dispatch(hide())} show={!!notification?.type} bg={notification?.type}>

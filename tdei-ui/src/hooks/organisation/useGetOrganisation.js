@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getOrgList, url } from "../../services";
+import { url } from "../../services";
 import axios from 'axios'
 
 function useGetOrganisation(query, pageNumber) {

@@ -41,9 +41,9 @@ const AssignPoc = () => {
                 <Form.Control type="email" placeholder="Enter Username" value={pocData.poc_user_name} name='poc_user_name' onChange={handlePocData}/>
             </Form.Group>
             <Form.Group className="mb-3" controlId="organisationId">
-                <Form.Label>Organization Id</Form.Label>
+                <Form.Label>Organization Name</Form.Label>
                 {/* <Form.Control type="text" placeholder="Enter Organization Id" value={pocData.org_id} name='org_id' onChange={handlePocData}/> */}
-                <OrganisationList />
+                <OrganisationList setPocData={setPocData} pocData={pocData}/>
             </Form.Group>
             <Button variant="primary" type="submit" onClick={handleAssignPoc}>
                 {isLoading ? 'loading...' : 'Submit'}
