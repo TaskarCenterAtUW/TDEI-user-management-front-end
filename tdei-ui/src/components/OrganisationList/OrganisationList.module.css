@@ -6,11 +6,11 @@
 }
 
 .dropdownList {
-    height: 180px;
+    max-height: 100px;
     overflow-y: scroll;
 }
 
 .dropdownBox {
     width: 100%;
-    height: 250px;
+    height: 200px;
 }

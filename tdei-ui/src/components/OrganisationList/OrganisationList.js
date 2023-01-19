@@ -45,8 +45,8 @@ const OrganisationList = ({ pocData, setPocData }) => {
     ));
 
     const CustomMenu = React.forwardRef(
-        ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
-
+        ({ children, style, className, 'aria-labelledby': labeledBy, handleSearch, searchText, test }, ref) => {
+            console.log(test);
             return (
                 <div
                     ref={ref}
@@ -74,7 +74,7 @@ const OrganisationList = ({ pocData, setPocData }) => {
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
                 {pocData.org_id ? orgList.find(val => val.id === pocData.org_id)?.name : 'Select Organization'}
             </Dropdown.Toggle>
-            <Dropdown.Menu as={CustomMenu} className={styles.dropdownBox}>
+            <Dropdown.Menu as={CustomMenu} className={styles.dropdownBox} handleSearch={handleSearch} searchText={searchText} test="1234">
                 {orgList.map((val, index) => {
                     if (orgList.length === index + 1) {
                         return <Dropdown.Item id={val.id} onClick={handleClick} ref={lastOrgListRef} key={val.id} active={pocData.org_id === val.id}>{val.name}</Dropdown.Item>

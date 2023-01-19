@@ -1,7 +1,9 @@
 import React from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useCreateStation from '../../hooks/station/useCreateStation';
+import { useAuth } from '../../hooks/useAuth';
+import { getSelectedOrg } from '../../selectors';
 import { show } from '../../store/notification.slice';
 
 function CreateStation(props) {
@@ -13,6 +15,17 @@ function CreateStation(props) {
         "stop_lat": 0,
         "stop_lon": 0
     });
+
+    const { user } = useAuth();
+    const selectedOrg = useSelector(getSelectedOrg);
+
+    React.useEffect(() => {
+        if (!user.isAdmin) {
+            if (selectedOrg?.orgId) {
+                setStationData({ ...stationData, org_id: selectedOrg.orgId })
+            }
+        }
+    }, [selectedOrg, user.isAdmin]);
     const onSuccess = (data) => {
         console.log("suucessfully created", data);
         props.onHide();
@@ -46,9 +59,10 @@ function CreateStation(props) {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form.Group className="mb-3" controlId="organisationId">
-                    <Form.Label>Organization ID</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' onChange={handleStationData} />
+                <Form.Group className="mb-3" controlId="organisationId ">
+                    {user.isAdmin ? <><Form.Label>Organization ID</Form.Label>
+                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' onChange={handleStationData} /></> : <><Form.Label>Organization Name</Form.Label>
+                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' value={selectedOrg.orgName} onChange={handleStationData} disabled/></>}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="stopName">
                     <Form.Label>Stop Name</Form.Label>

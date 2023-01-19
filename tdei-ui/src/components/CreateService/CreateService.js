@@ -1,22 +1,34 @@
 import React from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useCreateService from '../../hooks/service/useCreateService';
-import { show} from '../../store/notification.slice';
+import { useAuth } from '../../hooks/useAuth';
+import { getSelectedOrg } from '../../selectors';
+import { show } from '../../store/notification.slice';
 
 
 const CreateService = (props) => {
     const dispatch = useDispatch();
-    const [serviceData, setServiceData] = React.useState({ name: '', org_id: '', description: ''});
+    const [serviceData, setServiceData] = React.useState({ name: '', org_id: '', description: '' });
+    const { user } = useAuth();
+    const selectedOrg = useSelector(getSelectedOrg);
+
+    React.useEffect(() => {
+        if (!user.isAdmin) {
+            if (selectedOrg?.orgId) {
+                setServiceData({ ...serviceData, org_id: selectedOrg.orgId })
+            }
+        }
+    }, [selectedOrg, user.isAdmin]);
     const onSuccess = (data) => {
         console.log("suucessfully created", data);
         props.onHide();
-        dispatch(show({message: 'Service created successfully', type: 'success'}));
+        dispatch(show({ message: 'Service created successfully', type: 'success' }));
     }
     const onError = (err) => {
         console.error("error message", err);
-        dispatch(show({message: 'Error in creating service', type: 'danger'}));
-        
+        dispatch(show({ message: 'Error in creating service', type: 'danger' }));
+
     }
     const { isLoading, mutate } = useCreateService({ onSuccess, onError });
 
@@ -43,8 +55,9 @@ const CreateService = (props) => {
             </Modal.Header>
             <Modal.Body>
                 <Form.Group className="mb-3" controlId="organisationId ">
-                    <Form.Label>Organization ID</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' onChange={handleServiceData}/>
+                    {user.isAdmin ? <><Form.Label>Organization ID</Form.Label>
+                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' onChange={handleServiceData} /></> : <><Form.Label>Organization Name</Form.Label>
+                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' value={selectedOrg.orgName} onChange={handleServiceData} disabled/></>}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="serviceName">
                     <Form.Label>Service Name</Form.Label>
@@ -52,7 +65,7 @@ const CreateService = (props) => {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="serviceDescription">
                     <Form.Label>Service Description</Form.Label>
-                    <Form.Control as="textarea" rows={3} name='description' onChange={handleServiceData}/>
+                    <Form.Control as="textarea" rows={3} name='description' onChange={handleServiceData} />
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
