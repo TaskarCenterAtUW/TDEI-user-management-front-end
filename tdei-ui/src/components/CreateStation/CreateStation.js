@@ -5,6 +5,7 @@ import useCreateStation from '../../hooks/station/useCreateStation';
 import { useAuth } from '../../hooks/useAuth';
 import { getSelectedOrg } from '../../selectors';
 import { show } from '../../store/notification.slice';
+import OrgList from '../OrganisationList/OrgList';
 
 function CreateStation(props) {
     const dispatch = useDispatch();
@@ -25,6 +26,7 @@ function CreateStation(props) {
                 setStationData({ ...stationData, org_id: selectedOrg.orgId })
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedOrg, user.isAdmin]);
     const onSuccess = (data) => {
         console.log("suucessfully created", data);
@@ -46,6 +48,10 @@ function CreateStation(props) {
     const handleCreateStation = () => {
         mutate(stationData);
     }
+
+    const setOrgId = (orgList) => {
+        setStationData({ ...stationData, "org_id": orgList?.id })
+    }
     return (
         <Modal
             {...props}
@@ -60,21 +66,22 @@ function CreateStation(props) {
             </Modal.Header>
             <Modal.Body>
                 <Form.Group className="mb-3" controlId="organisationId ">
-                    {user.isAdmin ? <><Form.Label>Organization ID</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' onChange={handleStationData} /></> : <><Form.Label>Organization Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' value={selectedOrg.orgName} onChange={handleStationData} disabled/></>}
+                    <Form.Label>Organization Name</Form.Label>
+                    {user.isAdmin ?
+                        <OrgList setOrgId={setOrgId}/> :
+                        <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' value={selectedOrg.orgName} onChange={handleStationData} disabled />}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="stopName">
                     <Form.Label>Stop Name</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Stop Name" name='stop_name' onChange={handleStationData}/>
+                    <Form.Control type="text" placeholder="Enter Stop Name" name='stop_name' onChange={handleStationData} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="stopCode">
                     <Form.Label>Stop Code</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Stop Code" name='stop_code' onChange={handleStationData}/>
+                    <Form.Control type="text" placeholder="Enter Stop Code" name='stop_code' onChange={handleStationData} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="stopLatitude">
                     <Form.Label>Stop Latitude</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Stop Latitude" name='stop_lat' onChange={handleStationData}/>
+                    <Form.Control type="text" placeholder="Enter Stop Latitude" name='stop_lat' onChange={handleStationData} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="stopLongitude">
                     <Form.Label>Stop Longitude</Form.Label>

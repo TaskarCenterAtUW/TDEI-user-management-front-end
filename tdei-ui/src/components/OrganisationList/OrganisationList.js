@@ -46,7 +46,6 @@ const OrganisationList = ({ pocData, setPocData }) => {
 
     const CustomMenu = React.forwardRef(
         ({ children, style, className, 'aria-labelledby': labeledBy, handleSearch, searchText, test }, ref) => {
-            console.log(test);
             return (
                 <div
                     ref={ref}
