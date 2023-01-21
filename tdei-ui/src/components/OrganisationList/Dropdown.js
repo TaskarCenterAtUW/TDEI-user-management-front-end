@@ -92,7 +92,7 @@ const Dropdown = ({
                 <div className={style.dropdownMenu}>
                     {isSearchable && (
                         <div className={style.searchBox}>
-                            <input onChange={onSearch} value={searchText} ref={searchRef} placeholder="Search Organization" />
+                            <input className={style.searchInput} onChange={onSearch} value={searchText} ref={searchRef} placeholder="Search Organization" />
                         </div>
                     )}
                     <div className={style.listContainer}>
