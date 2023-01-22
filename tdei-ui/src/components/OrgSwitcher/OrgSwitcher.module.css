@@ -1,0 +1,19 @@
+.customDropdown {
+    margin-right: 2rem;
+}
+
+.customElement {
+    cursor: pointer;
+}
+
+.customElement [data-arrow="upArrow"] {
+    display: none;
+}
+
+:global(.show) .customElement [data-arrow="upArrow"] {
+    display: inline-block;
+}
+
+:global(.show) .customElement [data-arrow="downArrow"] {
+    display: none;
+}

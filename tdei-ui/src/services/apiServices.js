@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let url = 'https://tdei-usermanagement-ts-dev.azurewebsites.net/api/v1';
+export const url = 'https://tdei-usermanagement-ts-dev.azurewebsites.net/api/v1';
 
 export async function postOrganisationCreation(data) {
     const res = await axios.post(`${url}/organization`, data);
@@ -14,6 +14,25 @@ export async function postAssignPoc(data) {
 
 export async function getRoles() {
     const res = await axios.get(`${url}/roles`);
+    return res.data;
+}
+
+export async function getOrgRoles({ queryKey }) {
+    const [, userId] = queryKey;
+    const res = await axios.get(`${url}/org-roles/${userId}`);
+    return res.data;
+}
+
+export async function getOrgList(searchText, page_no) {
+    const res = await axios({
+        url: `${url}/organization`,
+        params: {
+            searchText,
+            page_no,
+            page_size: 10
+        },
+        method: 'GET'
+    });
     return res.data;
 }
 

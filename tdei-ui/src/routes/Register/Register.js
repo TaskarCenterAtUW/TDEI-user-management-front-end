@@ -1,6 +1,6 @@
 import React from 'react';
-import { Container, Row, Form, Button, Card, Col } from 'react-bootstrap';
-import { Link, Navigate } from 'react-router-dom';
+import { Row, Form, Button, Card, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
 import style from './style.module.css';
@@ -49,7 +49,7 @@ const Register = () => {
                     <Card>
                         <Card.Body>
                             <>
-                                <img src={tempLogo} className={style.loginLogo} />
+                                <img src={tempLogo} className={style.loginLogo} alt="logo" />
                                 <Row>
                                     <Col lg="6">
                                         <Form.Group className="mb-3" controlId="firstName">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Form, Button, Card, Col } from 'react-bootstrap';
+import { Row, Form, Button, Card } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import style from './style.module.css';
@@ -37,7 +37,7 @@ const LoginPage = () => {
                     <Card>
                         <Card.Body>
                             <>
-                                <img src={tempLogo} className={style.loginLogo} />
+                                <img src={tempLogo} className={style.loginLogo} alt="logo"/>
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <Form.Label>Username</Form.Label>
                                     <Form.Control type="email" placeholder="Enter Username" onChange={(e) => setUsername(e.target.value)}/>

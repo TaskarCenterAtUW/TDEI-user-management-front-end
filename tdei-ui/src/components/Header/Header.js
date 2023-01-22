@@ -4,6 +4,7 @@ import tempLogo from './../../assets/img/tdei_logo.svg';
 import { useAuth } from '../../hooks/useAuth';
 import { Dropdown } from 'react-bootstrap';
 import userIcon from './../../assets/img/user.png';
+import OrgSwitcher from '../OrgSwitcher';
 
 const Header = () => {
   const { user } = useAuth();
@@ -15,8 +16,8 @@ const Header = () => {
   }
   return (
     <div className={style.container}>
-      <img src={tempLogo} className={style.logoImage} />
-      {authenticated ? <div>
+      <img src={tempLogo} className={style.logoImage} alt="logo" />
+      {authenticated ? <div className={style.rightContainer}>{!user?.isAdmin ? <div><OrgSwitcher /></div> : null}<div>
         <Dropdown align='end'>
           <Dropdown.Toggle as={ProfileImage}>
           </Dropdown.Toggle>
@@ -24,16 +25,16 @@ const Header = () => {
             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-      </div> : null}
+      </div></div> : null}
     </div>
   )
 }
 
 const ProfileImage = React.forwardRef(({ children, onClick }, ref) => (
   <div onClick={onClick} ref={ref}>
-    <img src={userIcon} className={style.userIcon}/>
+    <img src={userIcon} className={style.userIcon} alt="user-icon" />
     {children}
-    </div>
+  </div>
 ));
 
 export default Header

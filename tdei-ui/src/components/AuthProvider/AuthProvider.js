@@ -16,7 +16,8 @@ const AuthProvider = ({ children }) => {
         const userObj = {
             name: decodedToken.name || decodedToken.email,
             roles: decodedToken.realm_access.roles,
-            isAdmin: decodedToken.realm_access.roles?.includes('tdei-admin')
+            isAdmin: decodedToken.realm_access.roles?.includes('tdei-admin'),
+            userId: decodedToken.sub
         }
         setUser(userObj);
     }
