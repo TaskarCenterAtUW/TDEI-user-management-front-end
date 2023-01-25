@@ -10,3 +10,13 @@
 .danger {
     color: red;
 }
+
+.info {
+    cursor: pointer;
+    margin-left: 8px;    
+}
+
+.info img {
+    width: 20px;
+    height: 20px;
+}

@@ -6,7 +6,19 @@ import { show} from '../../store/notification.slice';
 
 const CreateOrganisation = (props) => {
     const dispatch = useDispatch();
-    const [orgData, setOrgData] = useState({ name: '', phone: '', url: '', address: '' });
+    const [orgData, setOrgData] = useState({ name: '', phone: '', url: '', address: '',coordinates: [{
+        "longitude": 0,
+        "latitude": 0
+      },{
+        "longitude": 0,
+        "latitude": 0
+      },{
+        "longitude": 0,
+        "latitude": 0
+      },{
+        "longitude": 0,
+        "latitude": 0
+      }] });
     const onSuccess = (data) => {
         console.log("suucessfully created", data);
         props.onHide();
@@ -60,7 +72,7 @@ const CreateOrganisation = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-primary" onClick={props.onHide}>Cancel</Button>
-                <Button onClick={handleCreate} disabled={isLoading}>{`${isLoading ? 'loading...' : 'Create'}`}</Button>
+                <Button onClick={handleCreate} disabled={isLoading}>{`${isLoading ? 'Creating...' : 'Create'}`}</Button>
             </Modal.Footer>
         </Modal>
     )

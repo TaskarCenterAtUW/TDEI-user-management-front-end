@@ -35,7 +35,7 @@ const AssignPoc = () => {
     }
 
     const setOrgId = (orgList) => {
-        setPocData({ ...pocData, "org_id": orgList?.id })
+        setPocData({ ...pocData, "org_id": orgList?.org_id })
     }
     return (
         <div className={style.card}>
@@ -49,7 +49,7 @@ const AssignPoc = () => {
                 <OrgList setOrgId={setOrgId}/>
             </Form.Group>
             <Button variant="primary" type="submit" onClick={handleAssignPoc}>
-                {isLoading ? 'loading...' : 'Submit'}
+                {isLoading ? 'Assigning...' : 'Submit'}
             </Button>
         </div>
     )

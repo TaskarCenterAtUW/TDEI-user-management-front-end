@@ -1,11 +1,12 @@
 import React from 'react'
-import { Form, Button, Table, Spinner } from 'react-bootstrap'
+import { Form, Button, Table, Spinner, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import useAssignRoles from '../../hooks/roles/useAssignRoles';
 import style from './AssignRoles.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { show } from '../../store/notification.slice';
 import useGetRoles from '../../hooks/roles/useGetRoles';
 import { getSelectedOrg } from '../../selectors';
+import infoIcon from '../../assets/img/information.png';
 
 const AssignRoles = () => {
     const { data, isLoading: isRolesLoading, isError } = useGetRoles();
@@ -73,12 +74,12 @@ const AssignRoles = () => {
                 {isRolesLoading ? <div className='d-flex justify-content-center'><Spinner size='lg' /></div> : null}
                 <Table bordered>
                     <tbody>
-                        {data?.data?.map(val => (<tr key={val.name}><td title={val.description}>{val.name}</td><td><Form.Check type="checkbox" id={val.name} checked={selectedRole.includes(val.name)} onChange={handleSelectRoles} /></td></tr>))}
+                        {data?.data?.map(val => (<tr key={val.name}><td><Form.Check type="checkbox" id={val.name} checked={selectedRole.includes(val.name)} onChange={handleSelectRoles} /></td><td >{val.name}<OverlayTrigger placement="top" overlay={<Tooltip id="tooltip">{val.description}</Tooltip>}><span className={style.info}><img src={infoIcon} alt="information-tooltip"/></span></OverlayTrigger></td></tr>))}
                     </tbody>
                 </Table>
             </Form.Group>
             <Button variant="primary" type="submit" onClick={handleAssignRoles}>
-                {isLoading ? 'loading...' : 'Submit'}
+                {isLoading ? 'Assigning...' : 'Submit'}
             </Button>
         </div>
     )

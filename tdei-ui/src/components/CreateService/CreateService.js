@@ -10,7 +10,19 @@ import OrgList from '../OrganisationList/OrgList';
 
 const CreateService = (props) => {
     const dispatch = useDispatch();
-    const [serviceData, setServiceData] = React.useState({ name: '', org_id: '', description: '' });
+    const [serviceData, setServiceData] = React.useState({ name: '', org_id: '', description: '', coordinates: [{
+        "longitude": 0,
+        "latitude": 0
+      },{
+        "longitude": 0,
+        "latitude": 0
+      },{
+        "longitude": 0,
+        "latitude": 0
+      },{
+        "longitude": 0,
+        "latitude": 0
+      }] });
     const { user } = useAuth();
     const selectedOrg = useSelector(getSelectedOrg);
 
@@ -44,7 +56,7 @@ const CreateService = (props) => {
     }
 
     const setOrgId = (orgList) => {
-        setServiceData({ ...serviceData, "org_id": orgList?.id })
+        setServiceData({ ...serviceData, "org_id": orgList?.org_id })
     }
 
     return (
@@ -70,14 +82,14 @@ const CreateService = (props) => {
                     <Form.Label>Service Name</Form.Label>
                     <Form.Control type="text" placeholder="Enter Service Name" name='name' onChange={handleServiceData} />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="serviceDescription">
+                {/* <Form.Group className="mb-3" controlId="serviceDescription">
                     <Form.Label>Service Description</Form.Label>
                     <Form.Control as="textarea" rows={3} name='description' onChange={handleServiceData} />
-                </Form.Group>
+                </Form.Group> */}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-primary" onClick={props.onHide}>Cancel</Button>
-                <Button onClick={handleCreateService}>{isLoading ? 'loading...' : 'Create'}</Button>
+                <Button onClick={handleCreateService}>{isLoading ? 'Creating...' : 'Create'}</Button>
             </Modal.Footer>
         </Modal>
     )
