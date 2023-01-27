@@ -82,8 +82,8 @@ function CreateStation(props) {
                         <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' value={selectedOrg.orgName} onChange={handleStationData} disabled />}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="name">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Name" name='name' onChange={handleStationData} />
+                    <Form.Label>Station Name</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Station Name" name='name' onChange={handleStationData} />
                 </Form.Group>
                 {/* <Form.Group className="mb-3" controlId="stopCode">
                     <Form.Label>Stop Code</Form.Label>

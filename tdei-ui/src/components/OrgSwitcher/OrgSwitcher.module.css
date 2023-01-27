@@ -17,3 +17,8 @@
 :global(.show) .customElement [data-arrow="downArrow"] {
     display: none;
 }
+
+.orgLabel {
+    margin-right: 10px;
+    color: #FFFFFF99;
+}
