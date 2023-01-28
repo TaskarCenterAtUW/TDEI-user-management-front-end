@@ -18,9 +18,13 @@ const UserHeader = ({roles}) => {
   
   return (
     <div className={style.userHeader}>
-      {authorizedUser ? <> <div className='mb-2'>{`Welcome back, ${user.name} !`}</div>
-        {user.isAdmin ? null : <div className={style.roleText}>Organization : {selectedOrg.orgName}</div>}
-        <div className={style.roleText}>Role : {role}</div></> : <div>Welcome to TDEI,  contact tdei admin or your organization POC to get roles assigned.</div>}
+      {authorizedUser ? 
+        <>
+          <div className='mb-2'>{`Welcome back, ${user.name} !`}</div>
+            {user.isAdmin ? null : <div className={style.roleText}>Organization : {selectedOrg.orgName}</div>}
+            <div className={style.roleText}>Roles : {role}</div>
+        </> : <div>Welcome to TDEI,  contact tdei admin or your organization POC to get roles assigned.</div>
+        }
     </div>
   )
 }

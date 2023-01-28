@@ -22,15 +22,19 @@ const OrgSwitcher = () => {
 
     return (
         <>
-            {data?.length ? <Dropdown className={style.customDropdown} align="end">
-                <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-                    {selected?.orgName}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                    <Dropdown.Header>Switch Organization</Dropdown.Header>
-                    {data?.map((val, index) => <Dropdown.Item key={val.orgName} onClick={() => handleOrgSelection(index)} active={val.orgName === selected?.orgName}>{val.orgName}</Dropdown.Item>)}
-                </Dropdown.Menu>
-            </Dropdown> : null}
+            {data?.length ? 
+            <div className='d-flex'>
+                <div className={style.orgLabel}>Organization :</div>
+                <Dropdown className={style.customDropdown} align="end">
+                    <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
+                        {selected?.orgName}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Header>Switch Organization</Dropdown.Header>
+                        {data?.map((val, index) => <Dropdown.Item key={val.orgName} onClick={() => handleOrgSelection(index)} active={val.orgName === selected?.orgName}>{val.orgName}</Dropdown.Item>)}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div> : null}
         </>
 
     )

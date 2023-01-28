@@ -11,10 +11,20 @@ function CreateStation(props) {
     const dispatch = useDispatch();
     const [stationData, setStationData] = React.useState({
         "org_id": "",
-        "stop_name": "",
-        "stop_code": "",
-        "stop_lat": 0,
-        "stop_lon": 0
+        "name": "",
+        coordinates: [{
+            "longitude": 0,
+            "latitude": 0
+          },{
+            "longitude": 0,
+            "latitude": 0
+          },{
+            "longitude": 0,
+            "latitude": 0
+          },{
+            "longitude": 0,
+            "latitude": 0
+          }]
     });
 
     const { user } = useAuth();
@@ -50,7 +60,7 @@ function CreateStation(props) {
     }
 
     const setOrgId = (orgList) => {
-        setStationData({ ...stationData, "org_id": orgList?.id })
+        setStationData({ ...stationData, "org_id": orgList?.org_id })
     }
     return (
         <Modal
@@ -71,11 +81,11 @@ function CreateStation(props) {
                         <OrgList setOrgId={setOrgId}/> :
                         <Form.Control type="text" placeholder="Enter Organization ID" name='org_id' value={selectedOrg.orgName} onChange={handleStationData} disabled />}
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="stopName">
-                    <Form.Label>Stop Name</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Stop Name" name='stop_name' onChange={handleStationData} />
+                <Form.Group className="mb-3" controlId="name">
+                    <Form.Label>Station Name</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Station Name" name='name' onChange={handleStationData} />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="stopCode">
+                {/* <Form.Group className="mb-3" controlId="stopCode">
                     <Form.Label>Stop Code</Form.Label>
                     <Form.Control type="text" placeholder="Enter Stop Code" name='stop_code' onChange={handleStationData} />
                 </Form.Group>
@@ -86,11 +96,11 @@ function CreateStation(props) {
                 <Form.Group className="mb-3" controlId="stopLongitude">
                     <Form.Label>Stop Longitude</Form.Label>
                     <Form.Control type="text" placeholder="Enter Stop Longitude" name='stop_lon' onChange={handleStationData} />
-                </Form.Group>
+                </Form.Group> */}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-primary" onClick={props.onHide}>Cancel</Button>
-                <Button onClick={handleCreateStation}>{isLoading ? 'loading...' : 'Create'}</Button>
+                <Button onClick={handleCreateStation}>{isLoading ? 'Creating...' : 'Create'}</Button>
             </Modal.Footer>
         </Modal>
     )

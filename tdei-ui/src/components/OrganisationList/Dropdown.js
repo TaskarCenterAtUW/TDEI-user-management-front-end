@@ -100,7 +100,7 @@ const Dropdown = ({
                             if (options.length === index + 1) {
                                 return <div
                                     onClick={() => onItemClick(option)}
-                                    key={option.id}
+                                    key={option.org_id}
                                     className={clsx(style.dropdownItem, [isSelected(option) && style.selected])}
                                     ref={lastOrgListRef}
                                 >
@@ -109,7 +109,7 @@ const Dropdown = ({
                             } else {
                                 return <div
                                     onClick={() => onItemClick(option)}
-                                    key={option.id}
+                                    key={option.org_id}
                                     className={clsx(style.dropdownItem, [isSelected(option) && style.selected])}
                                 >
                                     {option.name}

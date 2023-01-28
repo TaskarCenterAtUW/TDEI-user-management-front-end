@@ -22,7 +22,9 @@ const Root = () => {
     return (
         <Container fluid className='p-0'>
             {isError ? <div>Error in getting roles</div> : null}
-            {(isOrgLoading && !roles) ? <div className='d-flex justify-content-center'><Spinner size='lg' /></div> : <div className='d-flex'>
+            {(isOrgLoading && !roles) ? 
+                <div className={`${style.loaderCenter} d-flex justify-content-center`}><Spinner size='lg' style={{ width: "3rem", height: "3rem" }} variant="secondary" /></div> 
+            : <div className='d-flex'>
                 <div className={style.navigationBlock}>
                     <Navigation />
                 </div>
