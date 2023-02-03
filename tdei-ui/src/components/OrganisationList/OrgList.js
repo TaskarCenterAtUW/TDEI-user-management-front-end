@@ -2,7 +2,8 @@ import React, { useState, useRef, useCallback } from 'react'
 import useGetOrganisation from '../../hooks/organisation/useGetOrganisation';
 import Dropdown from './Dropdown'
 
-const OrgList = ({setOrgId}) => {
+const OrgList = ({field, form}) => {
+    console.log(field, form)
     const [searchText, setSearchText] = useState('');
     const [pageNo, setPageNo] = useState(1);
     const {
@@ -25,17 +26,23 @@ const OrgList = ({setOrgId}) => {
         setSearchText(value)
         setPageNo(1)
     }
+
+    const handleChange = (orgList) => {
+        form.setFieldValue(field.name,orgList?.org_id)
+    }
     return (
         <Dropdown
             isSearchable
             placeHolder="Select Organization"
             options={orgList}
-            onChange={setOrgId}
+            onChange={handleChange}
             onSearchText={handleSearch}
             searchText={searchText}
             setSearchText={setSearchText}
             lastOrgListRef={lastOrgListRef}
             loading={loading}
+            field={field}
+            form={form}
         />
     )
 }
