@@ -6,31 +6,42 @@ import { useAuth } from '../../hooks/useAuth';
 import style from './style.module.css';
 import tempLogo from './../../assets/img/tdei_logo.svg'
 import { useDispatch } from 'react-redux';
-import {show} from '../../store/notification.slice';
+import { show } from '../../store/notification.slice';
+import { PHONE_REGEX } from '../../utils';
+import { Formik } from 'formik';
+import * as yup from "yup";
 
 
 const Register = () => {
-    const [firstName, setFirstName] = React.useState('');
-    const [lastName, setLastName] = React.useState('');
-    const [emailId, setEmailId] = React.useState('');
-    const [phoneNumber, setPhoneNumber] = React.useState('');
-    const [password, setPassword] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const auth = useAuth();
     const dispatch = useDispatch();
 
-    const handleCreateAccount = async (e) => {
-        e.preventDefault();
+    const initialValues = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        password: ''
+    }
+
+    const validationSchema = yup.object().shape({
+        email: yup.string().required('Email is required'),
+        password: yup.string().required('Password is required'),
+        phone: yup.string().matches(PHONE_REGEX, 'Phone number is not valid')
+    })
+
+    const handleCreateAccount = async ({ firstName, lastName, email, phone, password }) => {
         setLoading(true);
         try {
             await axios.post('https://tdei-usermanagement-ts-dev.azurewebsites.net/api/v1/register', {
                 firstName,
                 lastName,
-                email: emailId,
-                phone: phoneNumber,
+                email,
+                phone,
                 password
             });
-            auth.signin({username:emailId, password}, (data) => {
+            auth.signin({ username: email, password }, (data) => {
                 setLoading(false);
             }, (err) => {
                 console.error(err)
@@ -38,7 +49,7 @@ const Register = () => {
             });
         } catch (err) {
             setLoading(false);
-            dispatch(show({message: 'Error in registering', type: 'danger'}));
+            dispatch(show({ message: 'Error in registering', type: 'danger' }));
         }
     }
 
@@ -50,38 +61,59 @@ const Register = () => {
                         <Card.Body>
                             <>
                                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
-                                <Row>
-                                    <Col lg="6">
-                                        <Form.Group className="mb-3" controlId="firstName">
-                                            <Form.Label>First Name</Form.Label>
-                                            <Form.Control type="text" placeholder="Enter First Name" onChange={(e) => setFirstName(e.target.value)} />
+                                <Formik initialValues={initialValues} onSubmit={handleCreateAccount} validationSchema={validationSchema}>{({ values,
+                                    errors,
+                                    touched,
+                                    handleChange,
+                                    handleBlur,
+                                    handleSubmit }) => <Form noValidate onSubmit={handleSubmit} autoComplete="off">
+                                        <Row>
+                                            <Col lg="6">
+                                                <Form.Group className="mb-3" controlId="firstName">
+                                                    <Form.Label>First Name</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter First Name" value={values.firstName} name='firstName' onChange={handleChange}
+                                                        onBlur={handleBlur} />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col lg="6">
+                                                <Form.Group className="mb-3" controlId="lastName">
+                                                    <Form.Label>Last Name</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter Last Name" value={values.lastName} name='lastName' onChange={handleChange}
+                                                        onBlur={handleBlur} />
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+                                        <Form.Group className="mb-3" controlId="emailId">
+                                            <Form.Label>Email Id</Form.Label>
+                                            <Form.Control placeholder="Enter Email Id" value={values.email} name='email' isInvalid={touched.email && !!errors.email} onChange={handleChange}
+                                                onBlur={handleBlur} />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.email}
+                                            </Form.Control.Feedback>
                                         </Form.Group>
-                                    </Col>
-                                    <Col lg="6">
-                                        <Form.Group className="mb-3" controlId="lastName">
-                                            <Form.Label>Last Name</Form.Label>
-                                            <Form.Control type="text" placeholder="Enter Last Name" onChange={(e) => setLastName(e.target.value)} />
+                                        <Form.Group className="mb-3" controlId="phoneNumber">
+                                            <Form.Label>Phone Number</Form.Label>
+                                            <Form.Control type="number" placeholder="Enter Phone Number" name='phone' onChange={handleChange} onBlur={handleBlur} value={values.phone} isInvalid={touched.phone && !!errors.phone} />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.phone}
+                                            </Form.Control.Feedback>
                                         </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Form.Group className="mb-3" controlId="emailId">
-                                    <Form.Label>Email Id</Form.Label>
-                                    <Form.Control type="email" placeholder="Enter Email Id" onChange={(e) => setEmailId(e.target.value)} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="phoneNumber">
-                                    <Form.Label>Phone Number</Form.Label>
-                                    <Form.Control type="number" placeholder="Enter Phone Number" onChange={(e) => setPhoneNumber(e.target.value)} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="password">
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control type="password" placeholder="Enter Password" onChange={(e) => setPassword(e.target.value)} />
-                                </Form.Group>
-                                <Button variant="primary col-12 mx-auto" type="submit" disabled={!password || !emailId || loading} onClick={handleCreateAccount}>
-                                    {loading ? 'Loading...' : 'Create Account'}
-                                </Button>
-                                <div className='mt-5'>
-                                    Already have an account? <Link to={'/login'}>Sign in</Link>
-                                </div>
+                                        <Form.Group className="mb-3" controlId="registerPassword">
+                                            <Form.Label>Password</Form.Label>
+                                            <Form.Control placeholder="Enter Password" value={values.password} name='password' isInvalid={touched.password && !!errors.password} onChange={handleChange}
+                                                onBlur={handleBlur} />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.password}
+                                            </Form.Control.Feedback>
+                                        </Form.Group>
+                                        <Button variant="primary col-12 mx-auto" type="submit" disabled={loading}>
+                                            {loading ? 'Creating Account...' : 'Create Account'}
+                                        </Button>
+                                        <div className='mt-5'>
+                                            Already have an account? <Link to={'/login'}>Sign in</Link>
+                                        </div>
+                                    </Form>}
+                                </Formik>
                             </>
                         </Card.Body>
                     </Card>

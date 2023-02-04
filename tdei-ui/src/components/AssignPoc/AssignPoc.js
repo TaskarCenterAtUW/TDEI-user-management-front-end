@@ -54,7 +54,6 @@ const AssignPoc = () => {
                     <Form.Group className="mb-3" controlId="organisationId">
                         <Form.Label>Organization Name</Form.Label>
                         <Field component={OrgList} name="org_id" />
-                        {/* <OrgList setOrgId={setOrgId} /> */}
                     </Form.Group>
                     <Button variant="primary" type="submit" disabled={isLoading}>
                         {isLoading ? 'Assigning...' : 'Submit'}

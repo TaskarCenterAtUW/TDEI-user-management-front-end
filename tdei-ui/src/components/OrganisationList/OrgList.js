@@ -3,7 +3,6 @@ import useGetOrganisation from '../../hooks/organisation/useGetOrganisation';
 import Dropdown from './Dropdown'
 
 const OrgList = ({field, form}) => {
-    console.log(field, form)
     const [searchText, setSearchText] = useState('');
     const [pageNo, setPageNo] = useState(1);
     const {

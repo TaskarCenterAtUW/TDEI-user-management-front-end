@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import useCreateOrganisation from '../../hooks/organisation/useCreateOrganisation';
 import { useDispatch } from 'react-redux';
 import { show } from '../../store/notification.slice';
-import { Formik, Field } from 'formik';
+import { Formik } from 'formik';
 import * as yup from "yup";
+import { PHONE_REGEX } from '../../utils';
 
 
 const CreateOrganisation = (props) => {
@@ -24,12 +25,11 @@ const CreateOrganisation = (props) => {
             "latitude": 0
         }]
     }
-    const phoneRegExp = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
 
     const validationSchema = yup.object().shape({
         name: yup.string().required('Organization Name is required'),
         address: yup.string().required('Address is required'),
-        phone: yup.string().matches(phoneRegExp, 'Phone number is not valid')
+        phone: yup.string().matches(PHONE_REGEX, 'Phone number is not valid')
     })
 
     const onSuccess = (data) => {
@@ -45,7 +45,6 @@ const CreateOrganisation = (props) => {
     const { isLoading, mutate } = useCreateOrganisation({ onSuccess, onError });
 
     const handleCreate = (value) => {
-        console.log(value)
         mutate(value);
     }
 

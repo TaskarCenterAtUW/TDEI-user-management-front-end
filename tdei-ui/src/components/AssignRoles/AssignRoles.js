@@ -22,6 +22,7 @@ const AssignRoles = () => {
         if (selectedOrg?.orgId) {
             setRolesData({ ...rolesData, org_id: selectedOrg.orgId })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedOrg])
 
     const validationSchema = yup.object().shape({
