@@ -21,7 +21,9 @@ const Dropdown = ({
     searchText,
     setSearchText,
     lastOrgListRef,
-    loading
+    loading,
+    field,
+    form
 }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [selectedValue, setSelectedValue] = useState(null);
@@ -39,6 +41,10 @@ const Dropdown = ({
     useEffect(() => {
         const handler = (e) => {
             if (inputRef.current && !inputRef.current.contains(e.target)) {
+                if (showMenu) {
+                    form.setFieldTouched(field.name)
+
+                }
                 setShowMenu(false);
             }
         };
@@ -49,7 +55,12 @@ const Dropdown = ({
         };
     });
     const handleInputClick = (e) => {
+        if (showMenu) {
+            form.setFieldTouched(field.name)
+
+        }
         setShowMenu(!showMenu);
+
     };
 
     const getDisplay = () => {
@@ -79,50 +90,54 @@ const Dropdown = ({
     };
 
     return (
-        <div className={style.dropdownContainer}>
-            <div ref={inputRef} onClick={handleInputClick} className={style.dropdownInput}>
-                <div className={style.dropdownSelectedValue}>{getDisplay()}</div>
-                <div className={style.dropdownTools}>
-                    <div className={style.dropdownTool}>
-                        <Icon />
-                    </div>
-                </div>
-            </div>
-            {showMenu && (
-                <div className={style.dropdownMenu}>
-                    {isSearchable && (
-                        <div className={style.searchBox}>
-                            <input className={style.searchInput} onChange={onSearch} value={searchText} ref={searchRef} placeholder="Search Organization" />
+        <>
+            <div className={clsx(style.dropdownContainer, { 'is-invalid': form.touched[field.name] && !!form.errors[field.name] })}>
+                <div ref={inputRef} onClick={handleInputClick} className={style.dropdownInput}>
+                    <div className={style.dropdownSelectedValue}>{getDisplay()}</div>
+                    <div className={style.dropdownTools}>
+                        <div className={style.dropdownTool}>
+                            <Icon />
                         </div>
-                    )}
-                    <div className={style.listContainer}>
-                        {options.map((option, index) => {
-                            if (options.length === index + 1) {
-                                return <div
-                                    onClick={() => onItemClick(option)}
-                                    key={option.org_id}
-                                    className={clsx(style.dropdownItem, [isSelected(option) && style.selected])}
-                                    ref={lastOrgListRef}
-                                >
-                                    {option.name}
-                                </div>
-                            } else {
-                                return <div
-                                    onClick={() => onItemClick(option)}
-                                    key={option.org_id}
-                                    className={clsx(style.dropdownItem, [isSelected(option) && style.selected])}
-                                >
-                                    {option.name}
-                                </div>
-                            }
-                        })}
-                        {loading ? <div className='d-flex justify-content-center'><Spinner size='sm' /></div> : null}
-                        {options.length === 0 && !loading ? <div> No data present </div> : null}
                     </div>
-
                 </div>
-            )}
-        </div>
+                {showMenu && (
+                    <div className={style.dropdownMenu}>
+                        {isSearchable && (
+                            <div className={style.searchBox}>
+                                <input className={style.searchInput} onChange={onSearch} value={searchText} ref={searchRef} placeholder="Search Organization" />
+                            </div>
+                        )}
+                        <div className={style.listContainer}>
+                            {options.map((option, index) => {
+                                if (options.length === index + 1) {
+                                    return <div
+                                        onClick={() => onItemClick(option)}
+                                        key={option.org_id}
+                                        className={clsx(style.dropdownItem, [isSelected(option) && style.selected])}
+                                        ref={lastOrgListRef}
+                                    >
+                                        {option.name}
+                                    </div>
+                                } else {
+                                    return <div
+                                        onClick={() => onItemClick(option)}
+                                        key={option.org_id}
+                                        className={clsx(style.dropdownItem, [isSelected(option) && style.selected])}
+                                    >
+                                        {option.name}
+                                    </div>
+                                }
+                            })}
+                            {loading ? <div className='d-flex justify-content-center'><Spinner size='sm' /></div> : null}
+                            {options.length === 0 && !loading ? <div> No data present </div> : null}
+                        </div>
+
+                    </div>
+                )}
+            </div>
+            {form.touched[field.name] && !!form.errors[field.name] ? <div className="invalid-feedback">{form.errors[field.name]}</div> : null}
+        </>
+
     );
 };
 

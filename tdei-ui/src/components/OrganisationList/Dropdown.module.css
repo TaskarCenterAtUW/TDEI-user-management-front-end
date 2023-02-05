@@ -4,6 +4,10 @@
     position: relative;
     border-radius: 5px;
   }
+
+  .dropdownContainer:global(.is-invalid) {
+    border-color: #dc3545;
+  }
   
   .dropdownInput {
     padding: 5px;
