@@ -1,1 +1,1 @@
-export {default} from './OrgSwitcher'
+export { default } from "./OrgSwitcher";

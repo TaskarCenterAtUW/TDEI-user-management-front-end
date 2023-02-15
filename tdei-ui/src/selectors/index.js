@@ -1,7 +1,7 @@
 export const getNotification = (state) => {
-    return state.notification;
-}
+  return state.notification;
+};
 
 export const getSelectedOrg = (state) => {
-    return state.selectedOrg
-}
+  return state.selectedOrg;
+};

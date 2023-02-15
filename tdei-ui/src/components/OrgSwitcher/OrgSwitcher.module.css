@@ -1,24 +1,24 @@
 .customDropdown {
-    margin-right: 2rem;
+  margin-right: 2rem;
 }
 
 .customElement {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .customElement [data-arrow="upArrow"] {
-    display: none;
+  display: none;
 }
 
 :global(.show) .customElement [data-arrow="upArrow"] {
-    display: inline-block;
+  display: inline-block;
 }
 
 :global(.show) .customElement [data-arrow="downArrow"] {
-    display: none;
+  display: none;
 }
 
 .orgLabel {
-    margin-right: 10px;
-    color: #FFFFFF99;
+  margin-right: 10px;
+  color: #ffffff99;
 }
