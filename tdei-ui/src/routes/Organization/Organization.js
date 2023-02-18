@@ -38,7 +38,7 @@ const Organization = () => {
     setSelectedData(dataToEdit);
     setShowManagePoc(true);
   };
-  const handleDelete = () => {};
+  const handleDelete = () => { };
 
   const handleCreate = () => {
     setSelectedData({});
@@ -48,8 +48,8 @@ const Organization = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <h1>ORGANIZATION</h1>
-          <div>Lorep empsum text</div>
+          <div className="page-header-title">ORGANIZATION</div>
+          <div className="page-header-subtitle">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since</div>
         </div>
         <div>
           <Button onClick={handleCreate} className="tdei-primary-button">
@@ -76,10 +76,11 @@ const Organization = () => {
           </div>
           {data?.map((list) => (
             <div className={style.gridContainer} key={list.org_id}>
-              <div>{list.name}</div>
-              <div>{list.url}</div>
-              <div>{list.phone}</div>
-              <div>Unaasigned</div>
+              <div className={style.details}><div className={style.icon}></div>
+                <div><div className={style.name}>{list.name}</div><div className={style.address}>{list.address}</div></div></div>
+              <div className={style.content}>{list.url}</div>
+              <div className={style.content}>{list.phone}</div>
+              <div>-</div>
               <div className={style.actionItem}>
                 <Dropdown align="end">
                   <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
