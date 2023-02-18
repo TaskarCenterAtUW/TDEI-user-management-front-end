@@ -1,0 +1,49 @@
+.orgDetails {
+  padding: 15px;
+  border-bottom: var(--bs-modal-header-border-width) solid
+    var(--bs-modal-header-border-color);
+}
+
+.name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #162848;
+}
+
+.address {
+  color: #83879b;
+  font-size: 16px;
+}
+
+.modalBody {
+  padding: 0px;
+}
+
+.pocDetails {
+  padding: 15px;
+}
+
+.addNew {
+  font-size: 16px;
+  color: #4ba4a8;
+  cursor: pointer;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 15px;
+}
+
+.pocCardDetails {
+  padding-bottom: 30px;
+}
+
+.pocCard {
+  background-color: #f7f8fa;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 15px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}

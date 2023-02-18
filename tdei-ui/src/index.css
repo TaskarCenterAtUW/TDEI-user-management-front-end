@@ -12,3 +12,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.tdei-primary-button,
+.tdei-primary-button:hover,
+.tdei-primary-button:active {
+  background-color: #4da9ad !important;
+  border-color: #4da9ad !important;
+  color: #fff !important;
+}
+
+.tdei-secondary-button {
+  border-color: #83879b;
+}
+.tdei-secondary-button:hover {
+  background-color: #83879b;
+  color: #fff;
+  border-color: #83879b;
+}

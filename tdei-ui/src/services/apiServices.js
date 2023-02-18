@@ -37,6 +37,20 @@ export async function getOrgList(searchText, page_no) {
   return res.data;
 }
 
+export async function getOrgLists({ queryKey }) {
+  const [, { searchText, page_no }] = queryKey;
+  const res = await axios({
+    url: `${url}/organization`,
+    params: {
+      searchText,
+      page_no,
+      page_size: 10,
+    },
+    method: "GET",
+  });
+  return res.data;
+}
+
 export async function postAssignRoles(data) {
   const res = await axios.post(`${url}/permission`, data);
   return res.data;

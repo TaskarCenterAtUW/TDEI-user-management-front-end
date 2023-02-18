@@ -5,6 +5,7 @@ import Register from "./Register";
 import LoginPage from "./LoginPage";
 import RequireAuth from "../components/RequireAuth/RequireAuth";
 import Dashboard from "./Dashboards/Dashboard";
+import Organization from "./Organization";
 
 const Router = () => {
   return (
@@ -15,7 +16,7 @@ const Router = () => {
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/organization" element={<div>organization</div>} />
+            <Route path="/organization" element={<Organization />} />
             <Route path="/services" element={<div>services</div>} />
             <Route path="/stations" element={<div>stations</div>} />
           </Route>
