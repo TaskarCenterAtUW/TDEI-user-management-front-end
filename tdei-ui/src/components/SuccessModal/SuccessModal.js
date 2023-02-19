@@ -7,9 +7,9 @@ const SuccessModal = (props) => {
   return (
     <Modal
       {...props}
+      size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      dialogClassName="modal-500px"
     >
       <Modal.Body>
         <div className={style.successModal}>

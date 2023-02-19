@@ -8,6 +8,7 @@ import * as yup from "yup";
 import { GET_ORG_LIST, PHONE_REGEX } from "../../utils";
 import { useQueryClient } from "react-query";
 import SuccessModal from "../SuccessModal";
+import useUpdateOrganization from "../../hooks/organisation/useUpdateOrganization";
 
 const CreateOrganisation = (props) => {
   const [showModal, setShowModal] = React.useState(false);
@@ -47,7 +48,7 @@ const CreateOrganisation = (props) => {
   });
 
   const onSuccess = (data) => {
-    console.log("suucessfully created", data);
+    console.log("suucessfull", data);
     setShowModal(true);
     props.onHide();
     queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
@@ -55,13 +56,24 @@ const CreateOrganisation = (props) => {
   const onError = (err) => {
     console.error("error message", err);
     dispatch(
-      show({ message: "Error in creating organization", type: "danger" })
+      show({
+        message: `Error in ${isEdit ? "updating" : "creating"} organization`,
+        type: "danger",
+      })
     );
   };
   const { isLoading, mutate } = useCreateOrganisation({ onSuccess, onError });
 
+  const { isLoading: isUpdateOrgLoading, mutate: updateOrg } =
+    useUpdateOrganization({ onSuccess, onError });
+
   const handleCreate = (value) => {
     mutate(value);
+  };
+
+  const handleUpdate = (value) => {
+    const updateValue = { org_id, ...value };
+    updateOrg(updateValue);
   };
 
   return (
@@ -79,7 +91,7 @@ const CreateOrganisation = (props) => {
         </Modal.Header>
         <Formik
           initialValues={initialValues}
-          onSubmit={handleCreate}
+          onSubmit={isEdit ? handleUpdate : handleCreate}
           validationSchema={validationSchema}
         >
           {({
@@ -89,6 +101,7 @@ const CreateOrganisation = (props) => {
             handleChange,
             handleBlur,
             handleSubmit,
+            dirty,
           }) => (
             <Form noValidate onSubmit={handleSubmit}>
               <Modal.Body>
@@ -161,8 +174,8 @@ const CreateOrganisation = (props) => {
                   <Button
                     className="tdei-primary-button"
                     type="submit"
-                    disabled={isLoading}
-                  >{`${isLoading ? "Editing..." : "Edit"}`}</Button>
+                    disabled={isUpdateOrgLoading || !dirty}
+                  >{`${isUpdateOrgLoading ? "Editing..." : "Edit"}`}</Button>
                 ) : (
                   <Button
                     type="submit"
@@ -178,7 +191,7 @@ const CreateOrganisation = (props) => {
       <SuccessModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        message="Organization created successfully."
+        message={`Organization ${isEdit ? "updated" : "created"} successfully.`}
       />
     </>
   );

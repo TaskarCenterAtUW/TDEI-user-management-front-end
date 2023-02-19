@@ -6,3 +6,5 @@ export const CREATE_SERVICE = "CREATE_SERVICE";
 export const CREATE_STATION = "CREATE_STATION";
 export const GET_ORG_ROLES = "GET_ORG_ROLES";
 export const GET_ORG_LIST = "GET_ORG_LIST";
+export const EDIT_ORG = "EDIT_ORG";
+export const DELETE_ORG = "DELETE_ORG";

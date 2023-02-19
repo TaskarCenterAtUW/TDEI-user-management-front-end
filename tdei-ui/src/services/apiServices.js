@@ -8,6 +8,19 @@ export async function postOrganisationCreation(data) {
   return res.data;
 }
 
+export async function postOrganisationUpdate(data) {
+  const res = await axios.put(`${url}/organization`, data);
+  return res.data;
+}
+
+export async function postOrganisationDelete(data) {
+  const { org_id, status } = data;
+  const res = await axios.delete(
+    `${url}/organization/${org_id}/active/${status}`
+  );
+  return res.data;
+}
+
 export async function postAssignPoc(data) {
   const res = await axios.post(`${url}/poc`, data);
   return res.data;
@@ -37,18 +50,21 @@ export async function getOrgList(searchText, page_no) {
   return res.data;
 }
 
-export async function getOrgLists({ queryKey }) {
-  const [, { searchText, page_no }] = queryKey;
+export async function getOrgLists(searchText, pageParam = 1, queryKey) {
+  console.log(queryKey);
   const res = await axios({
     url: `${url}/organization`,
     params: {
       searchText,
-      page_no,
+      page_no: pageParam,
       page_size: 10,
     },
     method: "GET",
   });
-  return res.data;
+  return {
+    data: res.data,
+    pageParam,
+  };
 }
 
 export async function postAssignRoles(data) {

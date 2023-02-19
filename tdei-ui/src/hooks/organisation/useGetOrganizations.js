@@ -1,35 +1,19 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { getOrgLists } from "../../services";
 import { GET_ORG_LIST } from "../../utils";
 
-function useGetOrganizations(query = "", pageNumber) {
-  const [list, setList] = useState([]);
-  const {
-    data = [],
-    isLoading,
-    isFetching,
-    ...rest
-  } = useQuery(
-    [GET_ORG_LIST, { searchText: query, page_no: pageNumber }],
-    getOrgLists
-  );
-
-  useEffect(() => {
-    setList([]);
-  }, [query]);
-
-  useEffect(() => {
-    if (!isLoading) {
-      setList((prev) => [...prev, ...data]);
+function useGetOrganizations(query = "") {
+  return useInfiniteQuery(
+    [GET_ORG_LIST, query],
+    ({ queryKey, pageParam, signal }) =>
+      getOrgLists(queryKey[1], pageParam, signal),
+    {
+      getNextPageParam: (lastPage) => {
+        return lastPage.data.length > 0 ? lastPage.pageParam + 1 : undefined;
+      },
     }
-  }, [data]);
-  return {
-    data: list,
-    isLoading,
-    hasMore: data?.length > 0,
-    ...rest,
-  };
+  );
 }
 
 export default useGetOrganizations;
