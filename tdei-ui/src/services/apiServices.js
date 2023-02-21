@@ -51,7 +51,6 @@ export async function getOrgList(searchText, page_no) {
 }
 
 export async function getOrgLists(searchText, pageParam = 1, queryKey) {
-  console.log(queryKey);
   const res = await axios({
     url: `${url}/organization`,
     params: {

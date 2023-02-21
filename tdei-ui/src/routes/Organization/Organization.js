@@ -10,14 +10,16 @@ import style from "./Organization.module.css";
 import ManagePoc from "../../components/ManagePoc";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
-import useCreateOrganisation from "../../hooks/organisation/useCreateOrganisation";
 import useDeleteOrganization from "../../hooks/organisation/useDeleteOrganization";
 import { GET_ORG_LIST } from "../../utils";
 import { useQueryClient } from "react-query";
 import DeleteModal from "../../components/DeleteModal";
+import sitemapSolid from "../../assets/img/sitemap-solid.svg"
+import { debounce } from "lodash";
 
 const Organization = () => {
   const [query, setQuery] = React.useState("");
+  const [debounceQuery, setDebounceQuery] = React.useState("");
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [selectedData, setSelectedData] = React.useState({});
@@ -32,7 +34,13 @@ const Organization = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetOrganizations(query);
+  } = useGetOrganizations(debounceQuery);
+
+  const handleSearch = (e) => {
+    setDebounceQuery(e.target.value);
+  };
+
+  const debouncedHandleSearch = React.useMemo(() => debounce(handleSearch, 300), []);
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
@@ -106,7 +114,7 @@ const Organization = () => {
             <Form.Control
               type="text"
               placeholder="Search Organization"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => { setQuery(e.target.value); debouncedHandleSearch(e) }}
             />
             <div>Sort by</div>
           </div>
@@ -122,7 +130,7 @@ const Organization = () => {
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.org_id}>
                   <div className={style.details}>
-                    <div className={style.icon}></div>
+                    <div className={style.icon}><img src={sitemapSolid} alt="sitemap-solid" /></div>
                     <div>
                       <div className={style.name}>{list.name}</div>
                       <div className={style.address}>{list.address}</div>

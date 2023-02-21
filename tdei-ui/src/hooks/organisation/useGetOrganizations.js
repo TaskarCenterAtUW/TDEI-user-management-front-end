@@ -10,7 +10,7 @@ function useGetOrganizations(query = "") {
       getOrgLists(queryKey[1], pageParam, signal),
     {
       getNextPageParam: (lastPage) => {
-        return lastPage.data.length > 0 ? lastPage.pageParam + 1 : undefined;
+        return (lastPage.data.length > 0 && lastPage.data.length === 10) ? lastPage.pageParam + 1 : undefined;
       },
     }
   );

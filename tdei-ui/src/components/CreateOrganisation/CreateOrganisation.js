@@ -20,25 +20,7 @@ const CreateOrganisation = (props) => {
     name,
     phone,
     url,
-    address,
-    coordinates: [
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-    ],
+    address
   };
 
   const validationSchema = yup.object().shape({

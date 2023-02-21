@@ -1,55 +1,49 @@
 import React from "react";
 import style from "./Navigation.module.css";
-import menuIcon from "./../../assets/img/layout.svg";
+import dashboardIcon from "./../../assets/img/dashboard-icon.svg";
+import servicesIcon from "./../../assets/img/services-icon.svg";
+import stationsIcon from "./../../assets/img/stations-icon.svg";
+import organizationIcon from "./../../assets/img/organization-icon.svg";
 import { NavLink } from "react-router-dom";
+
+const SIDE_NAV = [
+  {
+    linkName: 'Dashboard',
+    to: '/',
+    icon: dashboardIcon
+  },
+  {
+    linkName: 'Organization',
+    to: '/organization',
+    icon: organizationIcon
+  },
+  {
+    linkName: 'Services',
+    to: '/services',
+    icon: servicesIcon
+  },
+  {
+    linkName: 'Stations',
+    to: '/stations',
+    icon: stationsIcon
+  }
+]
 
 function Navigation() {
   return (
     <div className={style.container}>
-      <NavLink
+      {SIDE_NAV.map(({ to, linkName, icon }) => <div key={linkName} className={style.menuItems}><NavLink
         className={({ isActive }) =>
           [style.menuItem, isActive ? style.active : null]
             .filter(Boolean)
             .join(" ")
         }
-        to="/"
+        to={to}
+        
       >
-        <img src={menuIcon} className={style.menuIcon} alt="menu-icon" />
-        <span>Dashboard</span>
-      </NavLink>
-      <NavLink
-        className={({ isActive }) =>
-          [style.menuItem, isActive ? style.active : null]
-            .filter(Boolean)
-            .join(" ")
-        }
-        to="/organization"
-      >
-        <img src={menuIcon} className={style.menuIcon} alt="menu-icon" />
-        <span>Organization</span>
-      </NavLink>
-      <NavLink
-        className={({ isActive }) =>
-          [style.menuItem, isActive ? style.active : null]
-            .filter(Boolean)
-            .join(" ")
-        }
-        to="/stations"
-      >
-        <img src={menuIcon} className={style.menuIcon} alt="menu-icon" />
-        <span>Stations</span>
-      </NavLink>
-      <NavLink
-        className={({ isActive }) =>
-          [style.menuItem, isActive ? style.active : null]
-            .filter(Boolean)
-            .join(" ")
-        }
-        to="/services"
-      >
-        <img src={menuIcon} className={style.menuIcon} alt="menu-icon" />
-        <span>Services</span>
-      </NavLink>
+        <img src={icon} className={style.menuIcon} alt="menu-icon" />
+        <span>{linkName}</span>
+      </NavLink></div>)}
     </div>
   );
 }
