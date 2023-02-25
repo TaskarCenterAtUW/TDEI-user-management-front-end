@@ -6,7 +6,8 @@ import style from "./DeleteModal.module.css";
 const DeleteModal = (props) => {
   return (
     <Modal
-      {...props}
+      onHide={props.onHide}
+      show={props.show}
       size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered

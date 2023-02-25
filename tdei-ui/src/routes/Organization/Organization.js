@@ -1,6 +1,13 @@
 import clsx from "clsx";
 import React from "react";
-import { Button, Form, Dropdown, Spinner } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Dropdown,
+  Spinner,
+  OverlayTrigger,
+  Popover,
+} from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import useGetOrganizations from "../../hooks/organisation/useGetOrganizations";
@@ -11,11 +18,13 @@ import ManagePoc from "../../components/ManagePoc";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import useDeleteOrganization from "../../hooks/organisation/useDeleteOrganization";
-import { GET_ORG_LIST } from "../../utils";
+import { getUserName, GET_ORG_LIST } from "../../utils";
 import { useQueryClient } from "react-query";
 import DeleteModal from "../../components/DeleteModal";
-import sitemapSolid from "../../assets/img/sitemap-solid.svg"
+import sitemapSolid from "../../assets/img/sitemap-solid.svg";
 import { debounce } from "lodash";
+import SuccessModal from "../../components/SuccessModal";
+import userIcon from "../../assets/img/account-icon.png";
 
 const Organization = () => {
   const [query, setQuery] = React.useState("");
@@ -24,6 +33,7 @@ const Organization = () => {
   const queryClient = useQueryClient();
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
   const [showCreateOrganisation, setShowCreateOrganisation] =
     React.useState(false);
   const [showManagePoc, setShowManagePoc] = React.useState(false);
@@ -40,21 +50,28 @@ const Organization = () => {
     setDebounceQuery(e.target.value);
   };
 
-  const debouncedHandleSearch = React.useMemo(() => debounce(handleSearch, 300), []);
+  const debouncedHandleSearch = React.useMemo(
+    () => debounce(handleSearch, 300),
+    []
+  );
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
-    //setShowModal(true);
+    setShowModal(true);
     queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
   };
   const onError = (err) => {
+    setShowDeleteModal(false);
     console.error("error message", err);
     dispatch(
       show({ message: `Error in deleteing organization`, type: "danger" })
     );
   };
 
-  const { mutate } = useDeleteOrganization({ onSuccess, onError });
+  const { mutate } = useDeleteOrganization({
+    onSuccess,
+    onError,
+  });
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
@@ -82,8 +99,8 @@ const Organization = () => {
 
   const confirmDelete = () => {
     const { org_id } = selectedData;
-    setShowDeleteModal(false);
     mutate({ org_id, status: false });
+    setShowDeleteModal(false);
   };
 
   const handleCreate = () => {
@@ -114,7 +131,10 @@ const Organization = () => {
             <Form.Control
               type="text"
               placeholder="Search Organization"
-              onChange={(e) => { setQuery(e.target.value); debouncedHandleSearch(e) }}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                debouncedHandleSearch(e);
+              }}
             />
             <div>Sort by</div>
           </div>
@@ -130,7 +150,9 @@ const Organization = () => {
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.org_id}>
                   <div className={style.details}>
-                    <div className={style.icon}><img src={sitemapSolid} alt="sitemap-solid" /></div>
+                    <div className={style.icon}>
+                      <img src={sitemapSolid} alt="sitemap-solid" />
+                    </div>
                     <div>
                       <div className={style.name}>{list.name}</div>
                       <div className={style.address}>{list.address}</div>
@@ -138,7 +160,9 @@ const Organization = () => {
                   </div>
                   <div className={style.content}>{list.url}</div>
                   <div className={style.content}>{list.phone}</div>
-                  <div>-</div>
+                  <div>
+                    <DisplayList list={list} handlePoc={handlePoc} />
+                  </div>
                   <div className={style.actionItem}>
                     <Dropdown align="end">
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
@@ -195,6 +219,11 @@ const Organization = () => {
         }}
         handler={confirmDelete}
       />
+      <SuccessModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        message={`Organization deleted successfully.`}
+      />
     </Layout>
   );
 };
@@ -205,5 +234,52 @@ const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
     {children}
   </div>
 ));
+
+const DisplayList = ({ list, handlePoc }) => {
+  const { poc } = list;
+  return (
+    <>
+      {poc.length ? (
+        <div className={style.pocList}>
+          <div className={style.pocIcon}>
+            <img src={userIcon} alt="user-icon" />
+          </div>
+          <div>{getUserName(poc[0])}</div>
+          {poc.length > 1 ? (
+            <OverlayTrigger
+              trigger={["hover", "focus"]}
+              placement="bottom"
+              overlay={
+                <Popover id="popover-basic">
+                  <Popover.Body>
+                    {poc.map((val, i) => {
+                      if (i !== 0) {
+                        return (
+                          <div className={style.pocList} key={i}>
+                            <div className={style.pocIcon}>
+                              <img src={userIcon} alt="user-icon" />
+                            </div>
+                            <div>{getUserName(val)}</div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </Popover.Body>
+                </Popover>
+              }
+            >
+              <div className={style.overlayList}>{`,+${poc.length - 1}`}</div>
+            </OverlayTrigger>
+          ) : null}
+        </div>
+      ) : (
+        <div className={style.notAssigned} id={list.org_id} onClick={handlePoc}>
+          Not Assigned
+        </div>
+      )}
+    </>
+  );
+};
 
 export default Organization;

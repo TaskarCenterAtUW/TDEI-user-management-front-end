@@ -20,7 +20,7 @@ const CreateOrganisation = (props) => {
     name,
     phone,
     url,
-    address
+    address,
   };
 
   const validationSchema = yup.object().shape({

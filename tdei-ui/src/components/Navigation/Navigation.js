@@ -8,42 +8,45 @@ import { NavLink } from "react-router-dom";
 
 const SIDE_NAV = [
   {
-    linkName: 'Dashboard',
-    to: '/',
-    icon: dashboardIcon
+    linkName: "Dashboard",
+    to: "/",
+    icon: dashboardIcon,
   },
   {
-    linkName: 'Organization',
-    to: '/organization',
-    icon: organizationIcon
+    linkName: "Organization",
+    to: "/organization",
+    icon: organizationIcon,
   },
   {
-    linkName: 'Services',
-    to: '/services',
-    icon: servicesIcon
+    linkName: "Services",
+    to: "/services",
+    icon: servicesIcon,
   },
   {
-    linkName: 'Stations',
-    to: '/stations',
-    icon: stationsIcon
-  }
-]
+    linkName: "Stations",
+    to: "/stations",
+    icon: stationsIcon,
+  },
+];
 
 function Navigation() {
   return (
     <div className={style.container}>
-      {SIDE_NAV.map(({ to, linkName, icon }) => <div key={linkName} className={style.menuItems}><NavLink
-        className={({ isActive }) =>
-          [style.menuItem, isActive ? style.active : null]
-            .filter(Boolean)
-            .join(" ")
-        }
-        to={to}
-        
-      >
-        <img src={icon} className={style.menuIcon} alt="menu-icon" />
-        <span>{linkName}</span>
-      </NavLink></div>)}
+      {SIDE_NAV.map(({ to, linkName, icon }) => (
+        <div key={linkName} className={style.menuItems}>
+          <NavLink
+            className={({ isActive }) =>
+              [style.menuItem, isActive ? style.active : null]
+                .filter(Boolean)
+                .join(" ")
+            }
+            to={to}
+          >
+            <img src={icon} className={style.menuIcon} alt="menu-icon" />
+            <span>{linkName}</span>
+          </NavLink>
+        </div>
+      ))}
     </div>
   );
 }

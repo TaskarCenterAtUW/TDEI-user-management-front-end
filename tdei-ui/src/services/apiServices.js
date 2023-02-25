@@ -71,6 +71,11 @@ export async function postAssignRoles(data) {
   return res.data;
 }
 
+export async function postRevokePermission(data) {
+  const res = await axios.put(`${url}/permission/revoke`, data);
+  return res.data;
+}
+
 export async function postCreateService(data) {
   const res = await axios.post(`${url}/service`, data);
   return res.data;

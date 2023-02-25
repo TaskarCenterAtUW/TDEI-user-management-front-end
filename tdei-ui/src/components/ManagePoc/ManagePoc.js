@@ -6,11 +6,23 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
 import SuccessModal from "../SuccessModal";
+import { getUserName, GET_ORG_LIST } from "../../utils";
+import trashIcon from "../../assets/img/trash-icon.svg";
+import useRevokePermission from "../../hooks/roles/useRevokePermission";
+import DeleteModal from "../DeleteModal";
+import { useQueryClient } from "react-query";
+import userIcon from "../../assets/img/account-icon.png";
+import { useDispatch } from "react-redux";
+import { show } from "../../store/notification.slice";
 
 const ManagePoc = (props) => {
   const { data } = props;
   const [toggle, setToggle] = React.useState(false);
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
+  const [userId, setUserId] = React.useState("");
   const initialvalues = { org_id: data.org_id, user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
     user_name: yup.string().required("Username is required"),
@@ -18,6 +30,7 @@ const ManagePoc = (props) => {
 
   const onSuccess = (data) => {
     console.log("Assigned POC", data);
+    queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
     setShowModal(true);
     props.onHide();
   };
@@ -25,10 +38,28 @@ const ManagePoc = (props) => {
   const onError = (err) => {
     console.error(err);
   };
+
+  const onRevokeSuccess = (data) => {
+    setShowModal(true);
+    queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
+  };
+
+  const onRevokeError = (err) => {
+    console.error(err);
+    dispatch(
+      show({ message: `Error in deleting poc user`, type: "danger" })
+    );
+  };
   const { isLoading, mutate, isError, error, reset } = useAssignRoles({
     onError,
     onSuccess,
   });
+
+  const { mutate: revokePermission } =
+    useRevokePermission({
+      onError: onRevokeError,
+      onSuccess: onRevokeSuccess,
+    });
 
   const handleAssignPoc = (values) => {
     mutate(values);
@@ -38,6 +69,15 @@ const ManagePoc = (props) => {
     setToggle(false);
     reset();
     props.onHide();
+  };
+
+  const handleRevokePermission = () => {
+    revokePermission({
+      org_id: data.org_id,
+      user_name: userId,
+      roles: ["poc"],
+    });
+    setShowDeleteModal(false);
   };
 
   return (
@@ -69,8 +109,28 @@ const ManagePoc = (props) => {
                   + Add New POC
                 </div>
               </div>
+              {data?.poc?.length === 0 ? <div>No POC present</div> : null}
               <div className={style.pocCardDetails}>
-                <div className={style.pocCard}></div>
+                {data?.poc?.map((user, i) => (
+                  <div className={style.pocCard} key={i}>
+                    <div className={style.userList}>
+                      <div className={style.userImg}>
+                        <img src={userIcon} alt="user-icon" />
+                      </div>
+                      <div className={style.userName}>{getUserName(user)}</div>
+                    </div>
+                    <div
+                      className={style.trashIcon}
+                      onClick={() => {
+                        setUserId(user.username);
+                        setShowDeleteModal(true);
+                        props.onHide();
+                      }}
+                    >
+                      <img src={trashIcon} alt="trash-icon"/>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ) : (
@@ -144,7 +204,16 @@ const ManagePoc = (props) => {
       <SuccessModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        message={"POC assigned successfully."}
+        message={`POC ${toggle ? "assigned" : "deleted"} successfully.`}
+      />
+      <DeleteModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        message={{
+          title: "Remove POC",
+          details: "Are you sure you want to remove POC from the organisation?",
+        }}
+        handler={handleRevokePermission}
       />
     </>
   );

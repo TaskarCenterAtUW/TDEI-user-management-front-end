@@ -8,3 +8,4 @@ export const GET_ORG_ROLES = "GET_ORG_ROLES";
 export const GET_ORG_LIST = "GET_ORG_LIST";
 export const EDIT_ORG = "EDIT_ORG";
 export const DELETE_ORG = "DELETE_ORG";
+export const REVOKE_PERMISSION = "REVOKE_PERMISSION";

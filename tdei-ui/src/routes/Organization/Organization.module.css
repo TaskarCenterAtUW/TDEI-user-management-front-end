@@ -73,3 +73,36 @@
   font-size: 18px;
   color: #162848;
 }
+
+.notAssigned {
+  color: #ffffff;
+  background-color: #6c757d;
+  border-radius: 20px;
+  padding: 5px 15px;
+  width: fit-content;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pocList {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  color: #162848;
+  margin-bottom: 5px;
+}
+
+.pocIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: 0px 3px 6px #00000029;
+  margin-right: 6px;
+  display: flex;
+  padding: 3px;
+}
+
+.overlayList {
+  font-weight: bold;
+  cursor: pointer;
+}

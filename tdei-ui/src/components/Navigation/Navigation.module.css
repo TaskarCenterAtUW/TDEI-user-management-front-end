@@ -4,7 +4,7 @@
   padding: 9px;
 }
 .menuItems {
-  border-bottom: 1px solid #2F366112;
+  border-bottom: 1px solid #2f366112;
   padding: 9px 0;
 }
 .menuItem {
@@ -17,11 +17,11 @@
   text-decoration: none;
 }
 .menuItem:hover {
-  background-color: #2F366112;
+  background-color: #2f366112;
   color: #42526e;
 }
 .menuItem.active {
-  background-color: #2F366112;
+  background-color: #2f366112;
   font-weight: 700;
 }
 .menuIcon {
