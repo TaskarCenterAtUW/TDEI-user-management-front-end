@@ -7,7 +7,7 @@ export default configureStore({
   reducer: {
     notification: notificationSlice,
     selectedOrg: orgRolesSlice,
-    notificationModal: notificationModalSlice
+    notificationModal: notificationModalSlice,
   },
 });
 

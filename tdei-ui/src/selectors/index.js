@@ -7,5 +7,5 @@ export const getSelectedOrg = (state) => {
 };
 
 export const getNotificationModal = (state) => {
-  return state.notificationModal
-}
+  return state.notificationModal;
+};

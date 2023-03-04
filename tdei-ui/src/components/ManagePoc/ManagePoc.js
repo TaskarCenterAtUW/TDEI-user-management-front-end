@@ -46,20 +46,17 @@ const ManagePoc = (props) => {
 
   const onRevokeError = (err) => {
     console.error(err);
-    dispatch(
-      show({ message: `Error in deleting poc user`, type: "danger" })
-    );
+    dispatch(show({ message: `Error in deleting poc user`, type: "danger" }));
   };
   const { isLoading, mutate, isError, error, reset } = useAssignRoles({
     onError,
     onSuccess,
   });
 
-  const { mutate: revokePermission } =
-    useRevokePermission({
-      onError: onRevokeError,
-      onSuccess: onRevokeSuccess,
-    });
+  const { mutate: revokePermission } = useRevokePermission({
+    onError: onRevokeError,
+    onSuccess: onRevokeSuccess,
+  });
 
   const handleAssignPoc = (values) => {
     mutate(values);
@@ -127,7 +124,7 @@ const ManagePoc = (props) => {
                         props.onHide();
                       }}
                     >
-                      <img src={trashIcon} alt="trash-icon"/>
+                      <img src={trashIcon} alt="trash-icon" />
                     </div>
                   </div>
                 ))}

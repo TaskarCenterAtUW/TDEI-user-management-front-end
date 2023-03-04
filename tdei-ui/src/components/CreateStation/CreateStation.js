@@ -37,9 +37,7 @@ function CreateStation(props) {
   const onSuccess = (data) => {
     console.log("suucessfully created", data);
     props.onHide();
-    dispatch(
-      showModal({ message: "Station created successfully." })
-    );
+    dispatch(showModal({ message: "Station created successfully." }));
   };
   const onError = (err) => {
     console.error("error message", err);
@@ -123,10 +121,18 @@ function CreateStation(props) {
                 </Form.Group> */}
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="ouline-secondary" className="tdei-secondary-button" onClick={props.onHide}>
+              <Button
+                variant="ouline-secondary"
+                className="tdei-secondary-button"
+                onClick={props.onHide}
+              >
                 Cancel
               </Button>
-              <Button type="submit" className="tdei-primary-button" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="tdei-primary-button"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating..." : "Create"}
               </Button>
             </Modal.Footer>
