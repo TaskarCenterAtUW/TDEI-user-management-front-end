@@ -9,6 +9,7 @@ import AuthProvider from "./AuthProvider";
 import Header from "./Header";
 import style from "./App.module.css";
 import Notification from "./Notification/Notification";
+import NotificationModal from "./NotificationModal/NotificationModal";
 
 const App = () => {
   const queryClient = new QueryClient({
@@ -29,6 +30,7 @@ const App = () => {
             <>
               <Header />
               <Notification />
+              <NotificationModal />
               <div className={style.container}>
                 <Router />
               </div>

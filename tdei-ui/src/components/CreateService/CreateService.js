@@ -5,6 +5,7 @@ import useCreateService from "../../hooks/service/useCreateService";
 import { useAuth } from "../../hooks/useAuth";
 import { getSelectedOrg } from "../../selectors";
 import { show } from "../../store/notification.slice";
+import { show as modalShow } from "../../store/notificationModal.slice";
 import OrgList from "../OrganisationList/OrgList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
@@ -14,25 +15,7 @@ const CreateService = (props) => {
   const [serviceData, setServiceData] = React.useState({
     name: "",
     org_id: "",
-    description: "",
-    coordinates: [
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-    ],
+    // description: ""
   });
   const { user } = useAuth();
   const selectedOrg = useSelector(getSelectedOrg);
@@ -54,7 +37,7 @@ const CreateService = (props) => {
     console.log("sucessfully created", data);
     props.onHide();
     dispatch(
-      show({ message: "Service created successfully", type: "success" })
+      modalShow({ message: "Service created successfully."})
     );
   };
   const onError = (err) => {
@@ -131,10 +114,10 @@ const CreateService = (props) => {
                 </Form.Group> */}
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="outline-primary" onClick={props.onHide}>
+              <Button  variant="ouline-secondary" className="tdei-secondary-button" onClick={props.onHide}>
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button type="submit" className="tdei-primary-button" disabled={isLoading}>
                 {isLoading ? "Creating..." : "Create"}
               </Button>
             </Modal.Footer>

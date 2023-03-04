@@ -5,6 +5,7 @@ import useCreateStation from "../../hooks/station/useCreateStation";
 import { useAuth } from "../../hooks/useAuth";
 import { getSelectedOrg } from "../../selectors";
 import { show } from "../../store/notification.slice";
+import { show as showModal } from "../../store/notificationModal.slice";
 import OrgList from "../OrganisationList/OrgList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
@@ -14,24 +15,6 @@ function CreateStation(props) {
   const [stationData, setStationData] = React.useState({
     org_id: "",
     name: "",
-    coordinates: [
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-      {
-        longitude: 0,
-        latitude: 0,
-      },
-    ],
   });
 
   const { user } = useAuth();
@@ -55,7 +38,7 @@ function CreateStation(props) {
     console.log("suucessfully created", data);
     props.onHide();
     dispatch(
-      show({ message: "Station created successfully", type: "success" })
+      showModal({ message: "Station created successfully." })
     );
   };
   const onError = (err) => {
@@ -140,10 +123,10 @@ function CreateStation(props) {
                 </Form.Group> */}
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="outline-primary" onClick={props.onHide}>
+              <Button variant="ouline-secondary" className="tdei-secondary-button" onClick={props.onHide}>
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button type="submit" className="tdei-primary-button" disabled={isLoading}>
                 {isLoading ? "Creating..." : "Create"}
               </Button>
             </Modal.Footer>

@@ -5,3 +5,7 @@ export const getNotification = (state) => {
 export const getSelectedOrg = (state) => {
   return state.selectedOrg;
 };
+
+export const getNotificationModal = (state) => {
+  return state.notificationModal
+}
