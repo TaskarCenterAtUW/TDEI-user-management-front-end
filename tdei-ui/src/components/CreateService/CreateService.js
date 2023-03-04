@@ -14,7 +14,7 @@ const CreateService = (props) => {
   const dispatch = useDispatch();
   const [serviceData, setServiceData] = React.useState({
     name: "",
-    org_id: "",
+    owner_org: "",
     // description: ""
   });
   const { user } = useAuth();
@@ -23,14 +23,14 @@ const CreateService = (props) => {
   React.useEffect(() => {
     if (!user.isAdmin) {
       if (selectedOrg?.orgId) {
-        setServiceData({ ...serviceData, org_id: selectedOrg.orgId });
+        setServiceData({ ...serviceData, owner_org: selectedOrg.orgId });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOrg, user.isAdmin]);
 
   const validationSchema = yup.object().shape({
-    org_id: yup.string().required("Organization Name is required"),
+    owner_org: yup.string().required("Organization Name is required"),
     name: yup.string().required("Service Name is required"),
   });
   const onSuccess = (data) => {
@@ -78,12 +78,12 @@ const CreateService = (props) => {
               <Form.Group className="mb-3" controlId="organisationId ">
                 <Form.Label>Organization Name</Form.Label>
                 {user.isAdmin ? (
-                  <Field component={OrgList} name="org_id" />
+                  <Field component={OrgList} name="owner_org" />
                 ) : (
                   <Form.Control
                     type="text"
                     placeholder="Enter Organization ID"
-                    name="org_id"
+                    name="owner_org"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={selectedOrg.orgName}

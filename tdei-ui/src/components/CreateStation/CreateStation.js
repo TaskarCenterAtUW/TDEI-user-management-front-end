@@ -13,7 +13,7 @@ import * as yup from "yup";
 function CreateStation(props) {
   const dispatch = useDispatch();
   const [stationData, setStationData] = React.useState({
-    org_id: "",
+    owner_org: "",
     name: "",
   });
 
@@ -23,14 +23,14 @@ function CreateStation(props) {
   React.useEffect(() => {
     if (!user.isAdmin) {
       if (selectedOrg?.orgId) {
-        setStationData({ ...stationData, org_id: selectedOrg.orgId });
+        setStationData({ ...stationData, owner_org: selectedOrg.orgId });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOrg, user.isAdmin]);
 
   const validationSchema = yup.object().shape({
-    org_id: yup.string().required("Organization Name is required"),
+    owner_org: yup.string().required("Organization Name is required"),
     name: yup.string().required("Station Name is required"),
   });
 
@@ -79,12 +79,12 @@ function CreateStation(props) {
               <Form.Group className="mb-3" controlId="organisationId ">
                 <Form.Label>Organization Name</Form.Label>
                 {user.isAdmin ? (
-                  <Field component={OrgList} name="org_id" />
+                  <Field component={OrgList} name="owner_org" />
                 ) : (
                   <Form.Control
                     type="text"
                     placeholder="Enter Organization ID"
-                    name="org_id"
+                    name="owner_org"
                     value={selectedOrg.orgName}
                     onChange={handleChange}
                     onBlur={handleBlur}
