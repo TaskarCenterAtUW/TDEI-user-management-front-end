@@ -50,9 +50,25 @@ export async function getOrgList(searchText, page_no) {
   return res.data;
 }
 
-export async function getOrgLists(searchText, pageParam = 1, queryKey) {
+export async function getOrgLists(searchText, pageParam = 1) {
   const res = await axios({
     url: `${url}/organization`,
+    params: {
+      searchText,
+      page_no: pageParam,
+      page_size: 10,
+    },
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+
+export async function getOrgUsers(searchText, orgId, pageParam = 1) {
+  const res = await axios({
+    url: `${url}/organization/${orgId}/users`,
     params: {
       searchText,
       page_no: pageParam,

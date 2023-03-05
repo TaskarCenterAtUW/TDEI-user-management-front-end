@@ -8,6 +8,7 @@ import Dashboard from "./Dashboards/Dashboard";
 import Organization from "./Organization";
 import Services from "./Services";
 import Stations from "./Stations";
+import Members from "./Members";
 
 const Router = () => {
   return (
@@ -21,6 +22,7 @@ const Router = () => {
             <Route path="/organization" element={<Organization />} />
             <Route path="/services" element={<Services />} />
             <Route path="/stations" element={<Stations />} />
+            <Route path="/members" element={<Members />} />
           </Route>
         </Route>
       </>

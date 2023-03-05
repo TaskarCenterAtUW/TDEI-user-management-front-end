@@ -1,0 +1,88 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.searchPanel input {
+  width: 300px;
+}
+
+.userHeader {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 30% 25% 35% 10%;
+  grid-column-gap: 10px;
+  min-height: 70px;
+  align-items: center;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.menuVertical {
+  width: 28px;
+  cursor: pointer;
+}
+
+.actionItem {
+  width: 28px;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #162848;
+}
+
+.address {
+  color: #83879b;
+  font-size: 16px;
+}
+
+.details {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #83879b;
+  margin-right: 15px;
+}
+
+.content {
+  font-size: 18px;
+  color: #162848;
+}
+
+.roles {
+  display: flex;
+}
+.roleBlock {
+  background: #f0f1f4;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #162848;
+  padding: 0 19px;
+  margin-right: 10px;
+}

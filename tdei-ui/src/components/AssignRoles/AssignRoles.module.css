@@ -21,3 +21,43 @@
   width: 20px;
   height: 20px;
 }
+
+.roleListBlock {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.active {
+  border-color: #4da9ad;
+  background: #4da9ad14;
+}
+
+.active .successIcon {
+  display: block;
+}
+
+.successIcon {
+  width: 23px;
+  height: 23px;
+  display: none;
+}
+
+.successIcon img {
+  max-width: 100%;
+}
+
+.roleName {
+  font-size: 16px;
+  color: #162848;
+  font-weight: bold;
+}
+.roleDesc {
+  font-size: 14px;
+  color: #83879b;
+}

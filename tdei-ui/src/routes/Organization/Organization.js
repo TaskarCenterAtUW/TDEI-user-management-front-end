@@ -228,7 +228,7 @@ const Organization = () => {
   );
 };
 
-const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
+export const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
   <div onClick={onClick} ref={ref}>
     <img src={menuVertical} className={style.menuVertical} alt="menu-verical" />
     {children}
