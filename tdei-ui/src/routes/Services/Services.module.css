@@ -17,3 +17,66 @@
   padding: 117px 90px;
   margin: 50px auto;
 }
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 30px;
+}
+
+.searchPanel input {
+  width: 300px;
+}
+
+.block {
+  background: #ffffff;
+  box-shadow: 0px 1px 6px #65656529;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  padding: 30px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.imgBlock {
+  background: #f0f1f4;
+  border-radius: 10px;
+  width: 190px;
+  height: 100px;
+  margin-right: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.names {
+  display: flex;
+}
+
+.imgBlock img {
+  width: 40px;
+  height: 38px;
+}
+
+.buttons {
+  display: flex;
+}
+
+.buttons > div {
+  background: #f5f5f5;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.editButton {
+  color: #42526e;
+  font-size: 14px;
+  margin-right: 10px;
+}
+.deleteButton {
+  color: #c65d03;
+  font-size: 14px;
+}

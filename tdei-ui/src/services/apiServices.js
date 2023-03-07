@@ -21,6 +21,14 @@ export async function postOrganisationDelete(data) {
   return res.data;
 }
 
+export async function postServiceDelete(data) {
+  const { service_id, status } = data;
+  const res = await axios.delete(
+    `${url}/service/${service_id}/active/${status}`
+  );
+  return res.data;
+}
+
 export async function postAssignPoc(data) {
   const res = await axios.post(`${url}/poc`, data);
   return res.data;
@@ -82,6 +90,23 @@ export async function getOrgUsers(searchText, orgId, pageParam = 1) {
   };
 }
 
+export async function getServices(searchText, orgId, pageParam = 1) {
+  const res = await axios({
+    url: `${url}/service`,
+    params: {
+      searchText,
+      page_no: pageParam,
+      page_size: 10,
+      owner_org: orgId,
+    },
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+
 export async function postAssignRoles(data) {
   const res = await axios.post(`${url}/permission`, data);
   return res.data;
@@ -94,6 +119,10 @@ export async function postRevokePermission(data) {
 
 export async function postCreateService(data) {
   const res = await axios.post(`${url}/service`, data);
+  return res.data;
+}
+export async function postUpdateService(data) {
+  const res = await axios.put(`${url}/service`, data);
   return res.data;
 }
 

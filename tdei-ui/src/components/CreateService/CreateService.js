@@ -9,8 +9,12 @@ import { show as modalShow } from "../../store/notificationModal.slice";
 import OrgList from "../OrganisationList/OrgList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
+import useUpdateSevice from "../../hooks/service/useUpdateService";
+import { useQueryClient } from "react-query";
+import { GET_SERVICES } from "../../utils";
 
 const CreateService = (props) => {
+  const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [serviceData, setServiceData] = React.useState({
     name: "",
@@ -23,11 +27,15 @@ const CreateService = (props) => {
   React.useEffect(() => {
     if (!user.isAdmin) {
       if (selectedOrg?.orgId) {
-        setServiceData({ ...serviceData, owner_org: selectedOrg.orgId });
+        setServiceData({
+          ...serviceData,
+          owner_org: selectedOrg.orgId,
+          name: props.data?.name || "",
+        });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOrg, user.isAdmin]);
+  }, [selectedOrg, user.isAdmin, props]);
 
   const validationSchema = yup.object().shape({
     owner_org: yup.string().required("Organization Name is required"),
@@ -35,22 +43,61 @@ const CreateService = (props) => {
   });
   const onSuccess = (data) => {
     console.log("sucessfully created", data);
+    queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
     props.onHide();
-    dispatch(modalShow({ message: "Service created successfully." }));
+    dispatch(
+      modalShow({
+        message: `Service ${
+          props.data?.service_id ? "updated" : "created"
+        } successfully.`,
+      })
+    );
   };
   const onError = (err) => {
     console.error("error message", err);
-    dispatch(show({ message: "Error in creating service", type: "danger" }));
+    dispatch(
+      show({
+        message: `Error in ${
+          props.data?.service_id ? "updating" : "creating"
+        } service`,
+        type: "danger",
+      })
+    );
   };
   const { isLoading, mutate } = useCreateService({ onSuccess, onError });
+  const { isLoading: isUpdateLoading, mutate: updateService } = useUpdateSevice(
+    { onSuccess, onError }
+  );
 
   const handleCreateService = (values) => {
-    mutate(values);
+    if (props.data?.service_id) {
+      updateService({
+        name: values.name,
+        service_id: props.data?.service_id,
+      });
+    } else {
+      mutate(values);
+    }
+  };
+
+  const getText = () => {
+    if (props.data?.service_id) {
+      if (isUpdateLoading) {
+        return "Updating";
+      }
+      return "Update";
+    } else {
+      if (isLoading) {
+        return "Creating";
+      }
+      return "Create";
+    }
   };
 
   return (
     <Modal
-      {...props}
+      onHide={props.onHide}
+      show={props.show}
       size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered
@@ -64,6 +111,7 @@ const CreateService = (props) => {
         initialValues={serviceData}
         onSubmit={handleCreateService}
         validationSchema={validationSchema}
+        enableReinitialize
       >
         {({
           values,
@@ -116,15 +164,16 @@ const CreateService = (props) => {
                 variant="ouline-secondary"
                 className="tdei-secondary-button"
                 onClick={props.onHide}
+                disabled={isLoading || isUpdateLoading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="tdei-primary-button"
-                disabled={isLoading}
+                disabled={isLoading || isUpdateLoading}
               >
-                {isLoading ? "Creating..." : "Create"}
+                {getText()}
               </Button>
             </Modal.Footer>
           </Form>

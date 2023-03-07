@@ -26,11 +26,16 @@ const DeleteModal = (props) => {
           onClick={props.onHide}
           variant="outline-secondary"
           className="tdei-secondary-button"
+          disabled={props.isLoading}
         >
           No, Cancel
         </Button>
-        <Button variant="danger" onClick={props.handler}>
-          Delete
+        <Button
+          variant="danger"
+          onClick={props.handler}
+          disabled={props.isLoading}
+        >
+          {props.isLoading ? "Deleting" : "Delete"}
         </Button>
       </Modal.Footer>
     </Modal>

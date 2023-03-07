@@ -38,3 +38,14 @@ code {
   font-size: 16px;
   color: #83879b;
 }
+
+.tdei-bold-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2f3661;
+}
+
+.tdei-name-desc {
+  font-size: 18px;
+  color: #83879b;
+}
