@@ -17,9 +17,10 @@ import sitemapSolid from "../../assets/img/sitemap-solid.svg";
 import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
+import useIsPoc from "../../hooks/useIsPoc";
 
 const Members = () => {
-  const [query, setQuery] = React.useState("");
+  const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
   const [selectedData, setSelectedData] = React.useState({});

@@ -52,3 +52,5 @@ export const POC_SIDE_NAV = [
     icon: membersIcon,
   },
 ];
+
+export const POC = "poc";

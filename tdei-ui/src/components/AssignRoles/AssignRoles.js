@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Form,
-  Button,
-  Table,
-  Spinner,
-  Tooltip,
-  OverlayTrigger,
-  Alert,
-  Modal,
-} from "react-bootstrap";
+import { Form, Button, Spinner, Alert, Modal } from "react-bootstrap";
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
 import style from "./AssignRoles.module.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -72,17 +63,23 @@ const AssignRoles = (props) => {
     isLoading,
     error,
     isError: assignRolesError,
+    reset,
   } = useAssignRoles({ onError, onSuccess });
 
   const handleAssignRoles = (values) => {
     mutate(values);
   };
 
+  const handleExit = () => {
+    reset();
+    props.onHide();
+  };
+
   return (
     <>
       {props.show ? (
         <Modal
-          onHide={props.onHide}
+          onHide={handleExit}
           show={props.show}
           size="md"
           aria-labelledby="contained-modal-title-vcenter"
@@ -111,6 +108,7 @@ const AssignRoles = (props) => {
               handleChange,
               handleBlur,
               handleSubmit,
+              dirty,
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
                 <Modal.Body>
@@ -202,14 +200,15 @@ const AssignRoles = (props) => {
                   <Button
                     variant="ouline-secondary"
                     className="tdei-secondary-button"
-                    onClick={props.onHide}
+                    onClick={handleExit}
+                    disabled={isLoading}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     className="tdei-primary-button"
-                    disabled={isLoading}
+                    disabled={isLoading || !dirty}
                   >
                     {isLoading ? "Assigning..." : "Assign"}
                   </Button>
