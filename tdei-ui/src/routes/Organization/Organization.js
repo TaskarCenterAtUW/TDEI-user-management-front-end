@@ -27,7 +27,7 @@ import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/account-icon.png";
 
 const Organization = () => {
-  const [query, setQuery] = React.useState("");
+  const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const dispatch = useDispatch();
   const queryClient = useQueryClient();

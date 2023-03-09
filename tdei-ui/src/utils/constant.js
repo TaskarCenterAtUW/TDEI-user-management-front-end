@@ -3,8 +3,9 @@ import servicesIcon from "../assets/img/services-icon.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
 import organizationIcon from "../assets/img/organization-icon.svg";
 import membersIcon from "../assets/img/members-icon.svg";
-//eslint-disable-next-line
+
 export const PHONE_REGEX =
+  //eslint-disable-next-line
   /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
 export const ADMIN_SIDE_NAV = [

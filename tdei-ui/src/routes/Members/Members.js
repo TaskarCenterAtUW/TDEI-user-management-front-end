@@ -17,7 +17,6 @@ import sitemapSolid from "../../assets/img/sitemap-solid.svg";
 import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
-import useIsPoc from "../../hooks/useIsPoc";
 
 const Members = () => {
   const [, setQuery] = React.useState("");
