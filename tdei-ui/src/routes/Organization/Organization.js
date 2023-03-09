@@ -57,6 +57,7 @@ const Organization = () => {
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
+    setShowDeleteModal(false);
     setShowModal(true);
     queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
   };
@@ -68,7 +69,7 @@ const Organization = () => {
     );
   };
 
-  const { mutate } = useDeleteOrganization({
+  const { mutate, isLoading: deleteOrgLoading } = useDeleteOrganization({
     onSuccess,
     onError,
   });
@@ -100,7 +101,6 @@ const Organization = () => {
   const confirmDelete = () => {
     const { org_id } = selectedData;
     mutate({ org_id, status: false });
-    setShowDeleteModal(false);
   };
 
   const handleCreate = () => {
@@ -218,6 +218,7 @@ const Organization = () => {
           details: "Are you sure you want to delete organization?",
         }}
         handler={confirmDelete}
+        isLoading={deleteOrgLoading}
       />
       <SuccessModal
         show={showModal}

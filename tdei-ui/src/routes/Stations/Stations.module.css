@@ -17,3 +17,14 @@
   padding: 117px 90px;
   margin: 50px auto;
 }
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 30px;
+}
+
+.searchPanel input {
+  width: 300px;
+}

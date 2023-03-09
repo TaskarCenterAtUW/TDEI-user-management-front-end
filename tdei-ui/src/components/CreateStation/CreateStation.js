@@ -9,6 +9,7 @@ import { show as showModal } from "../../store/notificationModal.slice";
 import OrgList from "../OrganisationList/OrgList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
+import useUpdateStation from "../../hooks/station/useUpdateStation";
 
 function CreateStation(props) {
   const dispatch = useDispatch();
@@ -23,11 +24,15 @@ function CreateStation(props) {
   React.useEffect(() => {
     if (!user.isAdmin) {
       if (selectedOrg?.orgId) {
-        setStationData({ ...stationData, owner_org: selectedOrg.orgId });
+        setStationData({
+          ...stationData,
+          owner_org: selectedOrg.orgId,
+          name: props.data?.name || "",
+        });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOrg, user.isAdmin]);
+  }, [selectedOrg, user.isAdmin, props]);
 
   const validationSchema = yup.object().shape({
     owner_org: yup.string().required("Organization Name is required"),
@@ -37,16 +42,52 @@ function CreateStation(props) {
   const onSuccess = (data) => {
     console.log("suucessfully created", data);
     props.onHide();
-    dispatch(showModal({ message: "Station created successfully." }));
+    dispatch(
+      showModal({
+        message: `Station ${
+          props.data?.station_id ? "updated" : "created"
+        } successfully.`,
+      })
+    );
   };
   const onError = (err) => {
     console.error("error message", err);
-    dispatch(show({ message: "Error in creating station", type: "danger" }));
+    dispatch(
+      show({
+        message: `Error in ${
+          props.data?.station_id ? "updating" : "creating"
+        } station`,
+        type: "danger",
+      })
+    );
   };
   const { isLoading, mutate } = useCreateStation({ onSuccess, onError });
+  const { isLoading: isUpdateLoading, mutate: updateStation } =
+    useUpdateStation({ onSuccess, onError });
 
   const handleCreateStation = (values) => {
-    mutate(values);
+    if (props.data?.station_id) {
+      updateStation({
+        name: values.name,
+        station_id: props.data?.station_id,
+      });
+    } else {
+      mutate(values);
+    }
+  };
+
+  const getText = () => {
+    if (props.data?.station_id) {
+      if (isUpdateLoading) {
+        return "Updating";
+      }
+      return "Update";
+    } else {
+      if (isLoading) {
+        return "Creating";
+      }
+      return "Create";
+    }
   };
 
   return (
@@ -125,15 +166,16 @@ function CreateStation(props) {
                 variant="ouline-secondary"
                 className="tdei-secondary-button"
                 onClick={props.onHide}
+                disabled={isLoading || isUpdateLoading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="tdei-primary-button"
-                disabled={isLoading}
+                disabled={isLoading || isUpdateLoading}
               >
-                {isLoading ? "Creating..." : "Create"}
+                {getText()}
               </Button>
             </Modal.Footer>
           </Form>

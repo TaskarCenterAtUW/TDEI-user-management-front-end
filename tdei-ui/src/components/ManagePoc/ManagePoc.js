@@ -40,11 +40,13 @@ const ManagePoc = (props) => {
   };
 
   const onRevokeSuccess = (data) => {
+    setShowDeleteModal(false);
     setShowModal(true);
     queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
   };
 
   const onRevokeError = (err) => {
+    setShowDeleteModal(false);
     console.error(err);
     dispatch(show({ message: `Error in deleting poc user`, type: "danger" }));
   };
@@ -53,10 +55,11 @@ const ManagePoc = (props) => {
     onSuccess,
   });
 
-  const { mutate: revokePermission } = useRevokePermission({
-    onError: onRevokeError,
-    onSuccess: onRevokeSuccess,
-  });
+  const { mutate: revokePermission, isLoading: revokePermissionLoading } =
+    useRevokePermission({
+      onError: onRevokeError,
+      onSuccess: onRevokeSuccess,
+    });
 
   const handleAssignPoc = (values) => {
     mutate(values);
@@ -74,7 +77,6 @@ const ManagePoc = (props) => {
       user_name: userId,
       roles: ["poc"],
     });
-    setShowDeleteModal(false);
   };
 
   return (
@@ -211,6 +213,7 @@ const ManagePoc = (props) => {
           details: "Are you sure you want to remove POC from the organisation?",
         }}
         handler={handleRevokePermission}
+        isLoading={revokePermissionLoading}
       />
     </>
   );

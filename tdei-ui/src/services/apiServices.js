@@ -29,6 +29,14 @@ export async function postServiceDelete(data) {
   return res.data;
 }
 
+export async function postStationDelete(data) {
+  const { station_id, status } = data;
+  const res = await axios.delete(
+    `${url}/service/${station_id}/active/${status}`
+  );
+  return res.data;
+}
+
 export async function postAssignPoc(data) {
   const res = await axios.post(`${url}/poc`, data);
   return res.data;
@@ -107,6 +115,23 @@ export async function getServices(searchText, orgId, pageParam = 1) {
   };
 }
 
+export async function getStations(searchText, orgId, pageParam = 1) {
+  const res = await axios({
+    url: `${url}/station`,
+    params: {
+      searchText,
+      page_no: pageParam,
+      page_size: 10,
+      owner_org: orgId,
+    },
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+
 export async function postAssignRoles(data) {
   const res = await axios.post(`${url}/permission`, data);
   return res.data;
@@ -123,6 +148,11 @@ export async function postCreateService(data) {
 }
 export async function postUpdateService(data) {
   const res = await axios.put(`${url}/service`, data);
+  return res.data;
+}
+
+export async function postUpdateStation(data) {
+  const res = await axios.put(`${url}/station`, data);
   return res.data;
 }
 

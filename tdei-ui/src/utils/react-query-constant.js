@@ -15,3 +15,4 @@ export const EDIT_ORG = "EDIT_ORG";
 export const DELETE_ORG = "DELETE_ORG";
 export const REVOKE_PERMISSION = "REVOKE_PERMISSION";
 export const GET_SERVICES = "GET_SERVICES";
+export const GET_STATIONS = "GET_STATIONS";
