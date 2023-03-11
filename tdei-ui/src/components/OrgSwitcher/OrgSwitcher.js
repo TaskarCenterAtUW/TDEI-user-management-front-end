@@ -23,11 +23,11 @@ const OrgSwitcher = () => {
   return (
     <>
       {data?.length ? (
-        <div className="d-flex">
-          <div className={style.orgLabel}>Organization :</div>
+        <div style={{ marginRight: "2rem" }}>
+          <div className={style.orgLabel}>Organization</div>
           <Dropdown className={style.customDropdown} align="end">
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-              {selected?.orgName}
+              <div className={style.selectedOrgName}>{selected?.orgName}</div>
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Header>Switch Organization</Dropdown.Header>
@@ -58,8 +58,10 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     className={style.customElement}
   >
     {children}
-    <span data-arrow="downArrow">&#x25bc;</span>
-    <span data-arrow="upArrow">&#x25B2;</span>
+    <div>
+      <span data-arrow="downArrow">&#x25bc;</span>
+      <span data-arrow="upArrow">&#x25B2;</span>
+    </div>
   </div>
 ));
 

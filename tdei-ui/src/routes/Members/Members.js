@@ -1,14 +1,7 @@
 import clsx from "clsx";
 import { debounce } from "lodash";
 import React from "react";
-import {
-  Button,
-  Dropdown,
-  Form,
-  OverlayTrigger,
-  Popover,
-  Spinner,
-} from "react-bootstrap";
+import { Button, Dropdown, Form, Spinner } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import useGetOrgUsers from "../../hooks/organisation/useGerOrgUsers";
@@ -54,6 +47,7 @@ const Members = () => {
     setSelectedData(dataToEdit);
     setShowModal(true);
   };
+
   return (
     <Layout>
       <div className={style.header}>
@@ -92,6 +86,7 @@ const Members = () => {
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
+              {values?.data?.length === 0 ? "No members exist" : null}
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.user_id}>
                   <div className={style.details}>
@@ -105,39 +100,7 @@ const Members = () => {
                   </div>
                   <div className={style.content}>{list.phone}</div>
                   <div className={style.roles}>
-                    <>
-                      {list.roles.slice(0, 2).map((role) => (
-                        <div className={style.roleBlock} key={role}>
-                          {role}
-                        </div>
-                      ))}
-                      <>
-                        {list.roles.length > 2 ? (
-                          <OverlayTrigger
-                            trigger={["hover", "focus"]}
-                            placement="bottom"
-                            overlay={
-                              <Popover id="popover-basic">
-                                <Popover.Body>
-                                  {list.roles.slice(2).map((val, i) => {
-                                    return (
-                                      <div className={style.rolesList} key={i}>
-                                        {val}
-                                      </div>
-                                    );
-                                  })}
-                                </Popover.Body>
-                              </Popover>
-                            }
-                          >
-                            <div
-                              className={style.content}
-                              style={{ cursor: "pointer" }}
-                            >{`+${list.roles.length - 2}`}</div>
-                          </OverlayTrigger>
-                        ) : null}
-                      </>
-                    </>
+                    <DisplayRolesList list={list} />
                   </div>
                   <div className={style.actionItem}>
                     <Dropdown align="end">
@@ -176,6 +139,36 @@ const Members = () => {
         data={selectedData}
       />
     </Layout>
+  );
+};
+
+const DisplayRolesList = ({ list }) => {
+  const [showMore, setShowMore] = React.useState(false);
+  const handleShowMore = (e) => {
+    e.preventDefault();
+    setShowMore(true);
+  };
+
+  return (
+    <>
+      {showMore
+        ? list.roles.map((role) => (
+            <div className={style.roleBlock} key={role}>
+              {role}
+            </div>
+          ))
+        : list.roles.slice(0, 2).map((role) => (
+            <div className={style.roleBlock} key={role}>
+              {role}
+            </div>
+          ))}
+      {list.roles.length > 2 && !showMore && (
+        //eslint-disable-next-line
+        <a className={style.showMore} onClick={handleShowMore}>
+          Show more
+        </a>
+      )}
+    </>
   );
 };
 

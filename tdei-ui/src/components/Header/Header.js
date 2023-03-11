@@ -24,9 +24,12 @@ const Header = () => {
               <OrgSwitcher />
             </div>
           ) : null}
+          <div className={style.horizontalLine}></div>
           <div>
             <Dropdown align="end">
-              <Dropdown.Toggle as={ProfileImage}></Dropdown.Toggle>
+              <Dropdown.Toggle as={ProfileImage}>
+                <div>{user?.name}</div>
+              </Dropdown.Toggle>
               <Dropdown.Menu align="end">
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </Dropdown.Menu>
@@ -39,9 +42,9 @@ const Header = () => {
 };
 
 const ProfileImage = React.forwardRef(({ children, onClick }, ref) => (
-  <div onClick={onClick} ref={ref}>
-    <img src={userIcon} className={style.userIcon} alt="user-icon" />
+  <div onClick={onClick} ref={ref} className={style.userProfile}>
     {children}
+    <img src={userIcon} className={style.userIcon} alt="user-icon" />
   </div>
 ));
 

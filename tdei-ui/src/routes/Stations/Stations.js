@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
 import { show as showModal } from "../../store/notificationModal.slice";
 import DeleteModal from "../../components/DeleteModal";
-import { GET_SERVICES } from "../../utils";
+import { GET_STATIONS } from "../../utils";
 import { show } from "../../store/notification.slice";
 import { ListingBlock } from "../Services/Services";
 
@@ -39,14 +39,14 @@ const Stations = () => {
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
-    queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
+    queryClient.invalidateQueries({ queryKey: [GET_STATIONS] });
     setShowDeleteModal(false);
     dispatch(showModal({ message: "Station deleted successfully" }));
   };
   const onError = (err) => {
     setShowDeleteModal(false);
     console.error("error message", err);
-    dispatch(show({ message: `Error in deleteing service`, type: "danger" }));
+    dispatch(show({ message: `Error in deleteing station`, type: "danger" }));
   };
 
   const { mutate, isLoading: isDeletingStation } = useDeleteStation({
@@ -65,7 +65,7 @@ const Stations = () => {
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
-    return list?.find((service) => service.service_id === id);
+    return list?.find((station) => station.station_id === id);
   };
   const handleDelete = (id) => {
     const dataToEdit = getData(id);
@@ -74,8 +74,8 @@ const Stations = () => {
   };
 
   const confirmDelete = () => {
-    const { service_id } = selectedData;
-    mutate({ service_id, status: false });
+    const { station_id } = selectedData;
+    mutate({ station_id, status: false });
   };
 
   const handleEdit = (id) => {

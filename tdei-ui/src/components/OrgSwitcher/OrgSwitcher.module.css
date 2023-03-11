@@ -1,9 +1,16 @@
 .customDropdown {
-  margin-right: 2rem;
+  width: 162px;
+}
+
+.selectedOrgName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .customElement {
   cursor: pointer;
+  display: flex;
 }
 
 .customElement [data-arrow="upArrow"] {
@@ -19,6 +26,6 @@
 }
 
 .orgLabel {
-  margin-right: 10px;
-  color: #ffffff99;
+  color: #ffffff80;
+  font-size: 14px;
 }

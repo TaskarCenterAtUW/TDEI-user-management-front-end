@@ -32,7 +32,7 @@ export async function postServiceDelete(data) {
 export async function postStationDelete(data) {
   const { station_id, status } = data;
   const res = await axios.delete(
-    `${url}/service/${station_id}/active/${status}`
+    `${url}/station/${station_id}/active/${status}`
   );
   return res.data;
 }

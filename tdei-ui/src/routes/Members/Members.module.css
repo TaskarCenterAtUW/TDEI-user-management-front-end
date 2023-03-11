@@ -76,6 +76,9 @@
 
 .roles {
   display: flex;
+  flex-wrap: wrap;
+  margin-top: -10px;
+  align-items: center;
 }
 .roleBlock {
   background: #f0f1f4;
@@ -85,4 +88,11 @@
   color: #162848;
   padding: 0 19px;
   margin-right: 10px;
+  margin-top: 10px;
+}
+
+.showMore {
+  margin-top: 10px;
+  cursor: pointer;
+  text-decoration: none;
 }

@@ -29,3 +29,17 @@
   display: flex;
   align-items: center;
 }
+
+.horizontalLine {
+  border-right: 1px solid #ffffff80;
+  height: 28px;
+  margin-right: 2rem;
+}
+
+.userProfile {
+  display: flex;
+}
+.userProfile > div {
+  padding-right: 1rem;
+  cursor: pointer;
+}

@@ -74,6 +74,7 @@ const CreateService = (props) => {
       updateService({
         name: values.name,
         service_id: props.data?.service_id,
+        owner_org: values.owner_org,
       });
     } else {
       mutate(values);

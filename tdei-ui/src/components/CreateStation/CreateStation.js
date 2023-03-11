@@ -10,8 +10,11 @@ import OrgList from "../OrganisationList/OrgList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
 import useUpdateStation from "../../hooks/station/useUpdateStation";
+import { GET_STATIONS } from "../../utils";
+import { useQueryClient } from "react-query";
 
 function CreateStation(props) {
+  const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [stationData, setStationData] = React.useState({
     owner_org: "",
@@ -41,6 +44,7 @@ function CreateStation(props) {
 
   const onSuccess = (data) => {
     console.log("suucessfully created", data);
+    queryClient.invalidateQueries({ queryKey: [GET_STATIONS] });
     props.onHide();
     dispatch(
       showModal({
@@ -70,6 +74,7 @@ function CreateStation(props) {
       updateStation({
         name: values.name,
         station_id: props.data?.station_id,
+        owner_org: values.owner_org,
       });
     } else {
       mutate(values);
@@ -106,6 +111,7 @@ function CreateStation(props) {
         initialValues={stationData}
         onSubmit={handleCreateStation}
         validationSchema={validationSchema}
+        enableReinitialize
       >
         {({
           values,
