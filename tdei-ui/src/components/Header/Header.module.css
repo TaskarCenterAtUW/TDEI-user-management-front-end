@@ -1,31 +1,45 @@
 .container {
-    height: 60px;
-    background-color: #343A40;
-    color: #ffffff;
-    display: flex;
-    padding: 15px;
-    align-items: center;
-    justify-content: space-between;
+  height: 60px;
+  background-color: #343a40;
+  color: #ffffff;
+  display: flex;
+  padding: 15px;
+  align-items: center;
+  justify-content: space-between;
 }
 .logoImage {
-    width: 70px;
-    background-color: #fff;
-    padding: 5px 5px;
-    border-radius: 4px;
+  width: 70px;
+  background-color: #fff;
+  padding: 5px 5px;
+  border-radius: 4px;
 }
 .userIcon {
-    width: 28px;
-    cursor: pointer;
-    margin-right: 10px;
+  width: 28px;
+  cursor: pointer;
+  margin-right: 10px;
 }
 .profileImage {
-    background-color: #ffffff;
-    border-radius: 100%;
-    width: 35px;
-    height: 35px;
+  background-color: #ffffff;
+  border-radius: 100%;
+  width: 35px;
+  height: 35px;
 }
 
 .rightContainer {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+}
+
+.horizontalLine {
+  border-right: 1px solid #ffffff80;
+  height: 28px;
+  margin-right: 2rem;
+}
+
+.userProfile {
+  display: flex;
+}
+.userProfile > div {
+  padding-right: 1rem;
+  cursor: pointer;
 }

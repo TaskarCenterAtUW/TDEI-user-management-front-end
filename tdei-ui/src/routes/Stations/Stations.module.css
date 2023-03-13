@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.insideContainer {
+  background-color: #f8f8f8;
+  border-radius: 15px;
+  width: 982px;
+  height: 537px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 117px 90px;
+  margin: 50px auto;
+}
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 30px;
+}
+
+.searchPanel input {
+  width: 300px;
+}

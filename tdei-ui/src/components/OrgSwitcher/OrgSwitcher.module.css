@@ -1,24 +1,31 @@
 .customDropdown {
-    margin-right: 2rem;
+  width: 162px;
+}
+
+.selectedOrgName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .customElement {
-    cursor: pointer;
+  cursor: pointer;
+  display: flex;
 }
 
 .customElement [data-arrow="upArrow"] {
-    display: none;
+  display: none;
 }
 
 :global(.show) .customElement [data-arrow="upArrow"] {
-    display: inline-block;
+  display: inline-block;
 }
 
 :global(.show) .customElement [data-arrow="downArrow"] {
-    display: none;
+  display: none;
 }
 
 .orgLabel {
-    margin-right: 10px;
-    color: #FFFFFF99;
+  color: #ffffff80;
+  font-size: 14px;
 }
