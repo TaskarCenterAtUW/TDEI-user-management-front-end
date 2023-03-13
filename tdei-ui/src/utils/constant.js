@@ -15,7 +15,7 @@ export const ADMIN_SIDE_NAV = [
     icon: dashboardIcon,
   },
   {
-    linkName: "Organizations",
+    linkName: "Organization",
     to: "/organization",
     icon: organizationIcon,
   },
