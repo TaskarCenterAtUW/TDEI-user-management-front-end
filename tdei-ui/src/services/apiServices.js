@@ -14,25 +14,25 @@ export async function postOrganisationUpdate(data) {
 }
 
 export async function postOrganisationDelete(data) {
-  const { org_id, status } = data;
+  const { tdei_org_id, status } = data;
   const res = await axios.delete(
-    `${url}/organization/${org_id}/active/${status}`
+    `${url}/organization/${tdei_org_id}/active/${status}`
   );
   return res.data;
 }
 
 export async function postServiceDelete(data) {
-  const { service_id, status } = data;
+  const { tdei_service_id, status,tdei_org_id } = data;
   const res = await axios.delete(
-    `${url}/service/${service_id}/active/${status}`
+    `${url}/service/${tdei_org_id}/${tdei_service_id}/active/${status}`
   );
   return res.data;
 }
 
 export async function postStationDelete(data) {
-  const { station_id, status } = data;
+  const { tdei_station_id, status, tdei_org_id } = data;
   const res = await axios.delete(
-    `${url}/station/${station_id}/active/${status}`
+    `${url}/station/${tdei_org_id}/${tdei_station_id}/active/${status}`
   );
   return res.data;
 }
@@ -82,9 +82,9 @@ export async function getOrgLists(searchText, pageParam = 1) {
   };
 }
 
-export async function getOrgUsers(searchText, orgId, pageParam = 1) {
+export async function getOrgUsers(searchText, tdei_org_id, pageParam = 1) {
   const res = await axios({
-    url: `${url}/organization/${orgId}/users`,
+    url: `${url}/organization/${tdei_org_id}/users`,
     params: {
       searchText,
       page_no: pageParam,
@@ -98,14 +98,14 @@ export async function getOrgUsers(searchText, orgId, pageParam = 1) {
   };
 }
 
-export async function getServices(searchText, orgId, pageParam = 1) {
+export async function getServices(searchText, tdei_org_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
-      owner_org: orgId,
+      tdei_org_id: tdei_org_id,
     },
     method: "GET",
   });
@@ -115,14 +115,14 @@ export async function getServices(searchText, orgId, pageParam = 1) {
   };
 }
 
-export async function getStations(searchText, orgId, pageParam = 1) {
+export async function getStations(searchText, tdei_org_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
-      owner_org: orgId,
+      tdei_org_id: tdei_org_id,
     },
     method: "GET",
   });
@@ -147,12 +147,12 @@ export async function postCreateService(data) {
   return res.data;
 }
 export async function postUpdateService(data) {
-  const res = await axios.put(`${url}/service`, data);
+  const res = await axios.put(`${url}/service/${data.tdei_org_id}`, data);
   return res.data;
 }
 
 export async function postUpdateStation(data) {
-  const res = await axios.put(`${url}/station`, data);
+  const res = await axios.put(`${url}/station/${data.tdei_org_id}`, data);
   return res.data;
 }
 

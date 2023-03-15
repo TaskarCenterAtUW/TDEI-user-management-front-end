@@ -14,17 +14,17 @@ const CreateOrganisation = (props) => {
   const [showModal, setShowModal] = React.useState(false);
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
-  const { name = "", address = "", url = "", phone = "", org_id } = props.data;
-  const isEdit = !!org_id;
+  const { org_name = "", address = "", url = "", phone = "", tdei_org_id } = props.data;
+  const isEdit = !!tdei_org_id;
   const initialValues = {
-    name,
+    org_name,
     phone,
     url,
     address,
   };
 
   const validationSchema = yup.object().shape({
-    name: yup.string().required("Organization Name is required"),
+    org_name: yup.string().required("Organization Name is required"),
     address: yup.string().required("Address is required"),
     phone: yup.string().matches(PHONE_REGEX, "Phone number is not valid"),
   });
@@ -54,7 +54,7 @@ const CreateOrganisation = (props) => {
   };
 
   const handleUpdate = (value) => {
-    const updateValue = { org_id, ...value };
+    const updateValue = { tdei_org_id, ...value };
     updateOrg(updateValue);
   };
 
@@ -92,14 +92,14 @@ const CreateOrganisation = (props) => {
                   <Form.Control
                     type="text"
                     placeholder="Enter Name"
-                    name="name"
+                    name="org_name"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.name}
-                    isInvalid={touched.name && !!errors.name}
+                    value={values.org_name}
+                    isInvalid={touched.org_name && !!errors.org_name}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.name}
+                    {errors.org_name}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="phoneNumber">

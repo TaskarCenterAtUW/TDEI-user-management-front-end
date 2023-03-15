@@ -17,8 +17,8 @@ const CreateService = (props) => {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [serviceData, setServiceData] = React.useState({
-    name: "",
-    owner_org: "",
+    service_name: "",
+    tdei_org_id: "",
     // description: ""
   });
   const { user } = useAuth();
@@ -26,11 +26,11 @@ const CreateService = (props) => {
 
   React.useEffect(() => {
     if (!user.isAdmin) {
-      if (selectedOrg?.orgId) {
+      if (selectedOrg?.tdei_org_id) {
         setServiceData({
           ...serviceData,
-          owner_org: selectedOrg.orgId,
-          name: props.data?.name || "",
+          tdei_org_id: selectedOrg.tdei_org_id,
+          service_name: props.data?.service_name || "",
         });
       }
     }
@@ -38,8 +38,8 @@ const CreateService = (props) => {
   }, [selectedOrg, user.isAdmin, props]);
 
   const validationSchema = yup.object().shape({
-    owner_org: yup.string().required("Organization Name is required"),
-    name: yup.string().required("Service Name is required"),
+    tdei_org_id: yup.string().required("Organization Name is required"),
+    service_name: yup.string().required("Service Name is required"),
   });
   const onSuccess = (data) => {
     console.log("sucessfully created", data);
@@ -48,7 +48,7 @@ const CreateService = (props) => {
     dispatch(
       modalShow({
         message: `Service ${
-          props.data?.service_id ? "updated" : "created"
+          props.data?.tdei_service_id ? "updated" : "created"
         } successfully.`,
       })
     );
@@ -58,7 +58,7 @@ const CreateService = (props) => {
     dispatch(
       show({
         message: `Error in ${
-          props.data?.service_id ? "updating" : "creating"
+          props.data?.tdei_service_id ? "updating" : "creating"
         } service`,
         type: "danger",
       })
@@ -70,11 +70,11 @@ const CreateService = (props) => {
   );
 
   const handleCreateService = (values) => {
-    if (props.data?.service_id) {
+    if (props.data?.tdei_service_id) {
       updateService({
-        name: values.name,
-        service_id: props.data?.service_id,
-        owner_org: values.owner_org,
+        service_name: values.service_name,
+        tdei_service_id: props.data?.tdei_service_id,
+        tdei_org_id: values.tdei_org_id,
       });
     } else {
       mutate(values);
@@ -82,7 +82,7 @@ const CreateService = (props) => {
   };
 
   const getText = () => {
-    if (props.data?.service_id) {
+    if (props.data?.tdei_service_id) {
       if (isUpdateLoading) {
         return "Updating";
       }
@@ -127,15 +127,15 @@ const CreateService = (props) => {
               <Form.Group className="mb-3" controlId="organisationId ">
                 <Form.Label>Organization Name</Form.Label>
                 {user.isAdmin ? (
-                  <Field component={OrgList} name="owner_org" />
+                  <Field component={OrgList} name="tdei_org_id" />
                 ) : (
                   <Form.Control
                     type="text"
                     placeholder="Enter Organization ID"
-                    name="owner_org"
+                    name="tdei_org_id"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={selectedOrg.orgName}
+                    value={selectedOrg.org_name}
                     disabled
                   />
                 )}
@@ -145,14 +145,14 @@ const CreateService = (props) => {
                 <Form.Control
                   type="text"
                   placeholder="Enter Service Name"
-                  name="name"
+                  name="service_name"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.name}
-                  isInvalid={touched.name && !!errors.name}
+                  value={values.service_name}
+                  isInvalid={touched.service_name && !!errors.service_name}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.name}
+                  {errors.service_name}
                 </Form.Control.Feedback>
               </Form.Group>
               {/* <Form.Group className="mb-3" controlId="serviceDescription">

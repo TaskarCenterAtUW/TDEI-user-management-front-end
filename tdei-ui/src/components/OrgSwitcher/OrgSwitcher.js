@@ -27,17 +27,17 @@ const OrgSwitcher = () => {
           <div className={style.orgLabel}>Organization</div>
           <Dropdown className={style.customDropdown} align="end">
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-              <div className={style.selectedOrgName}>{selected?.orgName}</div>
+              <div className={style.selectedOrgName}>{selected?.org_name}</div>
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Header>Switch Organization</Dropdown.Header>
               {data?.map((val, index) => (
                 <Dropdown.Item
-                  key={val.orgName}
+                  key={val.org_name}
                   onClick={() => handleOrgSelection(index)}
-                  active={val.orgName === selected?.orgName}
+                  active={val.org_name === selected?.org_name}
                 >
-                  {val.orgName}
+                  {val.org_name}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>

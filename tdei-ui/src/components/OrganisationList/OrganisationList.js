@@ -26,7 +26,7 @@ const OrganisationList = ({ pocData, setPocData }) => {
   );
 
   const handleClick = (e) => {
-    setPocData({ ...pocData, org_id: e.target.id });
+    setPocData({ ...pocData, tdei_org_id: e.target.id });
   };
 
   const handleSearch = (e) => {
@@ -83,8 +83,8 @@ const OrganisationList = ({ pocData, setPocData }) => {
   return (
     <Dropdown>
       <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-        {pocData.org_id
-          ? orgList.find((val) => val.id === pocData.org_id)?.name
+        {pocData.tdei_org_id
+          ? orgList.find((val) => val.id === pocData.tdei_org_id)?.org_name
           : "Select Organization"}
       </Dropdown.Toggle>
       <Dropdown.Menu
@@ -92,9 +92,9 @@ const OrganisationList = ({ pocData, setPocData }) => {
         className={styles.dropdownBox}
         handleSearch={handleSearch}
         searchText={searchText}
-        test="1234"
       >
         {orgList.map((val, index) => {
+          console.log(val)
           if (orgList.length === index + 1) {
             return (
               <Dropdown.Item
@@ -102,9 +102,9 @@ const OrganisationList = ({ pocData, setPocData }) => {
                 onClick={handleClick}
                 ref={lastOrgListRef}
                 key={val.id}
-                active={pocData.org_id === val.id}
+                active={pocData.tdei_org_id === val.id}
               >
-                {val.name}
+                {val.org_name}
               </Dropdown.Item>
             );
           } else {
@@ -113,9 +113,9 @@ const OrganisationList = ({ pocData, setPocData }) => {
                 id={val.id}
                 onClick={handleClick}
                 key={val.id}
-                active={pocData.org_id === val.id}
+                active={pocData.tdei_org_id === val.id}
               >
-                {val.name}
+                {val.org_name}
               </Dropdown.Item>
             );
           }

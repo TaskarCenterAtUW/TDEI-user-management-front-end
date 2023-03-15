@@ -10,9 +10,9 @@ import * as yup from "yup";
 
 const AssignPoc = () => {
   const dispatch = useDispatch();
-  const initialvalues = { org_id: "", user_name: "", roles: ["poc"] };
+  const initialvalues = { tdei_org_id: "", user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
-    org_id: yup.string().required("Organization Name is required"),
+    tdei_org_id: yup.string().required("Organization Name is required"),
     user_name: yup.string().required("Username is required"),
   });
   const onSuccess = (data) => {
@@ -73,7 +73,7 @@ const AssignPoc = () => {
             </Form.Group>
             <Form.Group className="mb-3" controlId="organisationId">
               <Form.Label>Organization Name</Form.Label>
-              <Field component={OrgList} name="org_id" />
+              <Field component={OrgList} name="tdei_org_id" />
             </Form.Group>
             <Button variant="primary" type="submit" disabled={isLoading}>
               {isLoading ? "Assigning..." : "Submit"}

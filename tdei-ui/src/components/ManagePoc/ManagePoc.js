@@ -23,7 +23,7 @@ const ManagePoc = (props) => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
   const [userId, setUserId] = React.useState("");
-  const initialvalues = { org_id: data.org_id, user_name: "", roles: ["poc"] };
+  const initialvalues = { tdei_org_id: data.tdei_org_id, user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
     user_name: yup.string().required("Username is required"),
   });
@@ -73,7 +73,7 @@ const ManagePoc = (props) => {
 
   const handleRevokePermission = () => {
     revokePermission({
-      org_id: data.org_id,
+      tdei_org_id: data.tdei_org_id,
       user_name: userId,
       roles: ["poc"],
     });
@@ -94,7 +94,7 @@ const ManagePoc = (props) => {
         </Modal.Header>
         <Modal.Body className={style.modalBody}>
           <div className={style.orgDetails}>
-            <div className={style.name}>{data.name}</div>
+            <div className={style.name}>{data.org_name}</div>
             <div className={style.address}>{data.address}</div>
           </div>
           {!toggle ? (
