@@ -17,8 +17,8 @@ function CreateStation(props) {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [stationData, setStationData] = React.useState({
-    owner_org: "",
-    name: "",
+    tdei_org_id: "",
+    station_name: "",
   });
 
   const { user } = useAuth();
@@ -26,11 +26,11 @@ function CreateStation(props) {
 
   React.useEffect(() => {
     if (!user.isAdmin) {
-      if (selectedOrg?.orgId) {
+      if (selectedOrg?.tdei_org_id) {
         setStationData({
           ...stationData,
-          owner_org: selectedOrg.orgId,
-          name: props.data?.name || "",
+          tdei_org_id: selectedOrg.tdei_org_id,
+          station_name: props.data?.station_name || "",
         });
       }
     }
@@ -38,8 +38,8 @@ function CreateStation(props) {
   }, [selectedOrg, user.isAdmin, props]);
 
   const validationSchema = yup.object().shape({
-    owner_org: yup.string().required("Organization Name is required"),
-    name: yup.string().required("Station Name is required"),
+    tdei_org_id: yup.string().required("Organization Name is required"),
+    station_name: yup.string().required("Station Name is required"),
   });
 
   const onSuccess = (data) => {
@@ -49,7 +49,7 @@ function CreateStation(props) {
     dispatch(
       showModal({
         message: `Station ${
-          props.data?.station_id ? "updated" : "created"
+          props.data?.tdei_station_id ? "updated" : "created"
         } successfully.`,
       })
     );
@@ -59,7 +59,7 @@ function CreateStation(props) {
     dispatch(
       show({
         message: `Error in ${
-          props.data?.station_id ? "updating" : "creating"
+          props.data?.tdei_station_id ? "updating" : "creating"
         } station`,
         type: "danger",
       })
@@ -70,11 +70,11 @@ function CreateStation(props) {
     useUpdateStation({ onSuccess, onError });
 
   const handleCreateStation = (values) => {
-    if (props.data?.station_id) {
+    if (props.data?.tdei_station_id) {
       updateStation({
-        name: values.name,
-        station_id: props.data?.station_id,
-        owner_org: values.owner_org,
+        station_name: values.station_name,
+        tdei_station_id: props.data?.tdei_station_id,
+        tdei_org_id: values.tdei_org_id,
       });
     } else {
       mutate(values);
@@ -82,7 +82,7 @@ function CreateStation(props) {
   };
 
   const getText = () => {
-    if (props.data?.station_id) {
+    if (props.data?.tdei_station_id) {
       if (isUpdateLoading) {
         return "Updating";
       }
@@ -126,13 +126,13 @@ function CreateStation(props) {
               <Form.Group className="mb-3" controlId="organisationId ">
                 <Form.Label>Organization Name</Form.Label>
                 {user.isAdmin ? (
-                  <Field component={OrgList} name="owner_org" />
+                  <Field component={OrgList} name="tdei_org_id" />
                 ) : (
                   <Form.Control
                     type="text"
                     placeholder="Enter Organization ID"
-                    name="owner_org"
-                    value={selectedOrg.orgName}
+                    name="tdei_org_id"
+                    value={selectedOrg.org_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     disabled
@@ -144,14 +144,14 @@ function CreateStation(props) {
                 <Form.Control
                   type="text"
                   placeholder="Enter Station Name"
-                  name="name"
+                  name="station_name"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.name}
-                  isInvalid={touched.name && !!errors.name}
+                  value={values.station_name}
+                  isInvalid={touched.station_name && !!errors.station_name}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.name}
+                  {errors.station_name}
                 </Form.Control.Feedback>
               </Form.Group>
               {/* <Form.Group className="mb-3" controlId="stopCode">

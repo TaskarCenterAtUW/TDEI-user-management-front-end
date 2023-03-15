@@ -1,5 +1,5 @@
 .customDropdown {
-  width: 162px;
+  max-width: 162px;
 }
 
 .selectedOrgName {

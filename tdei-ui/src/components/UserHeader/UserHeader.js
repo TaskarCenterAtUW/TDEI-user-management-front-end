@@ -23,7 +23,7 @@ const UserHeader = ({ roles }) => {
           <div className="mb-2">{`Welcome back, ${user.name} !`}</div>
           {user.isAdmin ? null : (
             <div className={style.roleText}>
-              Organization : {selectedOrg.orgName}
+              Organization : {selectedOrg.org_name}
             </div>
           )}
           <div className={style.roleText}>Roles : {role}</div>

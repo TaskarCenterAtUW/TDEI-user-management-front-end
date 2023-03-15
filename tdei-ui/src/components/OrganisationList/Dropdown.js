@@ -64,7 +64,7 @@ const Dropdown = ({
     if (!selectedValue || selectedValue.length === 0) {
       return placeHolder;
     }
-    return selectedValue.name;
+    return selectedValue.org_name;
   };
 
   const onItemClick = (option) => {
@@ -77,7 +77,7 @@ const Dropdown = ({
       return false;
     }
 
-    return selectedValue.name === option.name;
+    return selectedValue.org_name === option.org_name;
   };
 
   const onSearch = (e) => {
@@ -123,25 +123,25 @@ const Dropdown = ({
                   return (
                     <div
                       onClick={() => onItemClick(option)}
-                      key={option.org_id}
+                      key={option.tdei_org_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
                       ])}
                       ref={lastOrgListRef}
                     >
-                      {option.name}
+                      {option.org_name}
                     </div>
                   );
                 } else {
                   return (
                     <div
                       onClick={() => onItemClick(option)}
-                      key={option.org_id}
+                      key={option.tdei_org_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
                       ])}
                     >
-                      {option.name}
+                      {option.org_name}
                     </div>
                   );
                 }

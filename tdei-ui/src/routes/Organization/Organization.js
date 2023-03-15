@@ -76,7 +76,7 @@ const Organization = () => {
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
-    return list?.find((org) => org.org_id === id);
+    return list?.find((org) => org.tdei_org_id === id);
   };
 
   const handleEdit = (e) => {
@@ -99,8 +99,8 @@ const Organization = () => {
   };
 
   const confirmDelete = () => {
-    const { org_id } = selectedData;
-    mutate({ org_id, status: false });
+    const { tdei_org_id } = selectedData;
+    mutate({ tdei_org_id, status: false });
   };
 
   const handleCreate = () => {
@@ -148,13 +148,13 @@ const Organization = () => {
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.map((list) => (
-                <div className={style.gridContainer} key={list.org_id}>
+                <div className={style.gridContainer} key={list.tdei_org_id}>
                   <div className={style.details}>
                     <div className={style.icon}>
                       <img src={sitemapSolid} alt="sitemap-solid" />
                     </div>
                     <div>
-                      <div className={style.name}>{list.name}</div>
+                      <div className={style.name}>{list.org_name}</div>
                       <div className={style.address}>{list.address}</div>
                     </div>
                   </div>
@@ -167,13 +167,13 @@ const Organization = () => {
                     <Dropdown align="end">
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       <Dropdown.Menu align="end">
-                        <Dropdown.Item id={list.org_id} onClick={handlePoc}>
+                        <Dropdown.Item id={list.tdei_org_id} onClick={handlePoc}>
                           Manage POC
                         </Dropdown.Item>
-                        <Dropdown.Item id={list.org_id} onClick={handleEdit}>
+                        <Dropdown.Item id={list.tdei_org_id} onClick={handleEdit}>
                           Edit Organization
                         </Dropdown.Item>
-                        <Dropdown.Item id={list.org_id} onClick={handleDelete}>
+                        <Dropdown.Item id={list.tdei_org_id} onClick={handleDelete}>
                           Delete Organization
                         </Dropdown.Item>
                       </Dropdown.Menu>
@@ -214,7 +214,7 @@ const Organization = () => {
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         message={{
-          title: `Delete Organization ${selectedData.name}`,
+          title: `Delete Organization ${selectedData.org_name}`,
           details: "Are you sure you want to delete organization?",
         }}
         handler={confirmDelete}
@@ -275,7 +275,7 @@ const DisplayList = ({ list, handlePoc }) => {
           ) : null}
         </div>
       ) : (
-        <div className={style.notAssigned} id={list.org_id} onClick={handlePoc}>
+        <div className={style.notAssigned} id={list.tdei_org_id} onClick={handlePoc}>
           Not Assigned
         </div>
       )}

@@ -65,7 +65,7 @@ const Stations = () => {
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
-    return list?.find((station) => station.station_id === id);
+    return list?.find((station) => station.tdei_station_id === id);
   };
   const handleDelete = (id) => {
     const dataToEdit = getData(id);
@@ -74,8 +74,8 @@ const Stations = () => {
   };
 
   const confirmDelete = () => {
-    const { station_id } = selectedData;
-    mutate({ station_id, status: false });
+    const { tdei_station_id, tdei_org_id } = selectedData;
+    mutate({ tdei_station_id, status: false, tdei_org_id });
   };
 
   const handleEdit = (id) => {
@@ -152,12 +152,12 @@ const Stations = () => {
                 {values?.data?.length === 0 ? "No station exist" : null}
                 {values?.data?.map((list) => (
                   <ListingBlock
-                    id={list.station_id}
-                    name={list.name}
+                    id={list.tdei_station_id}
+                    name={list.station_name}
                     icon={stationIcon}
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
-                    key={list.station_id}
+                    key={list.tdei_station_id}
                   />
                 ))}
               </React.Fragment>
@@ -189,7 +189,7 @@ const Stations = () => {
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         message={{
-          title: `Delete Station ${selectedData.name}`,
+          title: `Delete Station ${selectedData.station_name}`,
           details: "Are you sure you want to delete station?",
         }}
         handler={confirmDelete}
