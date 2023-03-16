@@ -20,16 +20,16 @@ const AssignRoles = (props) => {
 
   const [rolesData, setRolesData] = React.useState({
     user_name: "",
-    org_id: "",
+    tdei_org_id: "",
     roles: [],
   });
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    if (selectedOrg?.orgId) {
+    if (selectedOrg?.tdei_org_id) {
       setRolesData({
         ...rolesData,
-        org_id: selectedOrg.orgId,
+        tdei_org_id: selectedOrg.tdei_org_id,
         user_name: props.data.username || "",
         roles: props.data.roles || [],
       });
@@ -132,8 +132,8 @@ const AssignRoles = (props) => {
                     <Form.Control
                       type="text"
                       placeholder="Enter Organization ID"
-                      value={selectedOrg.orgName}
-                      name="org_id"
+                      value={selectedOrg.org_name}
+                      name="tdei_org_id"
                       disabled
                     />
                   </Form.Group>

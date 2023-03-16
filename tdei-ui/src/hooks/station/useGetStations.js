@@ -5,9 +5,9 @@ import { getStations } from "../../services";
 import { GET_STATIONS } from "../../utils";
 
 function useGetStations(query = "") {
-  const { orgId } = useSelector(getSelectedOrg);
+  const { tdei_org_id } = useSelector(getSelectedOrg);
   return useInfiniteQuery(
-    [GET_STATIONS, query, orgId],
+    [GET_STATIONS, query, tdei_org_id],
     ({ queryKey, pageParam }) =>
       getStations(queryKey[1], queryKey[2], pageParam),
     {
@@ -16,7 +16,7 @@ function useGetStations(query = "") {
           ? lastPage.pageParam + 1
           : undefined;
       },
-      enabled: !!orgId,
+      enabled: !!tdei_org_id,
     }
   );
 }

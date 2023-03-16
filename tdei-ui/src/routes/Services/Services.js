@@ -64,7 +64,7 @@ const Services = () => {
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
-    return list?.find((service) => service.service_id === id);
+    return list?.find((service) => service.tdei_service_id === id);
   };
   const handleDelete = (id) => {
     const dataToEdit = getData(id);
@@ -73,8 +73,8 @@ const Services = () => {
   };
 
   const confirmDelete = () => {
-    const { service_id } = selectedData;
-    mutate({ service_id, status: false });
+    const { tdei_service_id, tdei_org_id } = selectedData;
+    mutate({ tdei_service_id, status: false, tdei_org_id });
   };
 
   const handleEdit = (id) => {
@@ -148,12 +148,12 @@ const Services = () => {
                 {values?.data?.length === 0 ? "No service exist" : null}
                 {values?.data?.map((list) => (
                   <ListingBlock
-                    id={list.service_id}
-                    name={list.name}
+                    id={list.tdei_service_id}
+                    name={list.service_name}
                     icon={serviceIcon}
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
-                    key={list.service_id}
+                    key={list.tdei_service_id}
                   />
                 ))}
               </React.Fragment>
@@ -185,7 +185,7 @@ const Services = () => {
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         message={{
-          title: `Delete Service ${selectedData.name}`,
+          title: `Delete Service ${selectedData.service_name}`,
           details: "Are you sure you want to delete service?",
         }}
         handler={confirmDelete}
@@ -209,11 +209,11 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
       </div>
       <div className={style.buttons}>
         <div className={style.editButton} onClick={() => handleEdit(id)}>
-          <img alt="edit-icon" />
+          {/* <img alt="edit-icon" /> */}
           <span>Edit</span>
         </div>
         <div className={style.deleteButton} onClick={() => handleDelete(id)}>
-          <img alt="delete-icon" />
+          {/* <img alt="delete-icon" /> */}
           <span>Delete</span>
         </div>
       </div>

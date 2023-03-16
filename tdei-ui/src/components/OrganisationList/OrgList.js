@@ -28,7 +28,7 @@ const OrgList = ({ field, form }) => {
   };
 
   const handleChange = (orgList) => {
-    form.setFieldValue(field.name, orgList?.org_id);
+    form.setFieldValue(field.name, orgList?.tdei_org_id);
   };
   return (
     <Dropdown
