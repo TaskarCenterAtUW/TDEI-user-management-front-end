@@ -22,7 +22,7 @@ export async function postOrganisationDelete(data) {
 }
 
 export async function postServiceDelete(data) {
-  const { tdei_service_id, status,tdei_org_id } = data;
+  const { tdei_service_id, status, tdei_org_id } = data;
   const res = await axios.delete(
     `${url}/service/${tdei_org_id}/${tdei_service_id}/active/${status}`
   );

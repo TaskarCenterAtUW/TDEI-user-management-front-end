@@ -21,8 +21,7 @@ import useDeleteOrganization from "../../hooks/organisation/useDeleteOrganizatio
 import { getUserName, GET_ORG_LIST } from "../../utils";
 import { useQueryClient } from "react-query";
 import DeleteModal from "../../components/DeleteModal";
-import sitemapSolid from "../../assets/img/sitemap-solid.svg";
-import iconOrg from "./../../assets/img/icon-orgIcon.svg"
+import iconOrg from "./../../assets/img/icon-orgIcon.svg";
 import { debounce } from "lodash";
 import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/icon-userAvatar.png";
@@ -151,7 +150,11 @@ const Organization = () => {
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.tdei_org_id}>
                   <div className={style.details}>
-                    <img src={iconOrg} className={style.orgIcon} alt="sitemap-solid" />
+                    <img
+                      src={iconOrg}
+                      className={style.orgIcon}
+                      alt="sitemap-solid"
+                    />
                     <div>
                       <div className={style.name}>{list.org_name}</div>
                       <div className={style.address}>{list.address}</div>
@@ -166,13 +169,22 @@ const Organization = () => {
                     <Dropdown align="end">
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       <Dropdown.Menu align="end">
-                        <Dropdown.Item id={list.tdei_org_id} onClick={handlePoc}>
+                        <Dropdown.Item
+                          id={list.tdei_org_id}
+                          onClick={handlePoc}
+                        >
                           Manage POC
                         </Dropdown.Item>
-                        <Dropdown.Item id={list.tdei_org_id} onClick={handleEdit}>
+                        <Dropdown.Item
+                          id={list.tdei_org_id}
+                          onClick={handleEdit}
+                        >
                           Edit Organization
                         </Dropdown.Item>
-                        <Dropdown.Item id={list.tdei_org_id} onClick={handleDelete}>
+                        <Dropdown.Item
+                          id={list.tdei_org_id}
+                          onClick={handleDelete}
+                        >
                           Delete Organization
                         </Dropdown.Item>
                       </Dropdown.Menu>
@@ -254,8 +266,14 @@ const DisplayList = ({ list, handlePoc }) => {
                       if (i !== 0) {
                         return (
                           <div className={style.pocList} key={i}>
-                            <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
-                            <div className={style.content}>{getUserName(val)}</div>
+                            <img
+                              src={userIcon}
+                              className={style.pocUserIcon}
+                              alt="user-icon"
+                            />
+                            <div className={style.content}>
+                              {getUserName(val)}
+                            </div>
                           </div>
                         );
                       }
@@ -270,7 +288,11 @@ const DisplayList = ({ list, handlePoc }) => {
           ) : null}
         </div>
       ) : (
-        <div className={style.notAssigned} id={list.tdei_org_id} onClick={handlePoc}>
+        <div
+          className={style.notAssigned}
+          id={list.tdei_org_id}
+          onClick={handlePoc}
+        >
           Not Assigned
         </div>
       )}

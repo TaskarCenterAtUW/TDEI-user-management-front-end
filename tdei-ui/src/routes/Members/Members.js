@@ -6,13 +6,14 @@ import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import useGetOrgUsers from "../../hooks/organisation/useGerOrgUsers";
 import { ActionItem } from "../Organization/Organization";
-import sitemapSolid from "../../assets/img/sitemap-solid.svg";
 import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
-import userIcon from "./../../assets/img/icon-feather-user.svg"
+import userIcon from "./../../assets/img/icon-feather-user.svg";
+import { useAuth } from "../../hooks/useAuth";
 
 const Members = () => {
+  const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
@@ -48,7 +49,6 @@ const Members = () => {
     setSelectedData(dataToEdit);
     setShowModal(true);
   };
-
   return (
     <Layout>
       <div className={style.header}>
@@ -95,7 +95,9 @@ const Members = () => {
                       <img src={userIcon} alt="sitemap-solid" />
                     </div>
                     <div>
-                      <div className={style.name}>{getUserName(list)}</div>
+                      <div className={style.name}>
+                        {getUserName(list, list.username === user?.emailId)}
+                      </div>
                       <div className={style.address}>{list.username}</div>
                     </div>
                   </div>

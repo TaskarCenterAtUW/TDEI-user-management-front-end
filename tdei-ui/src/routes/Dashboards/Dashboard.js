@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import Creation from "../../components/Creation/Creation";
 import Layout from "../../components/Layout";
 import UserHeader from "../../components/UserHeader/UserHeader";
 import { getSelectedOrg } from "../../selectors";

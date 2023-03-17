@@ -53,7 +53,9 @@ const LoginPage = () => {
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
                 <div className={style.loginTitle}>Welcome!</div>
-                <div className={style.loginSubTitle}>Please login to your account.</div>
+                <div className={style.loginSubTitle}>
+                  Please login to your account.
+                </div>
                 <Formik
                   initialValues={initialValues}
                   onSubmit={handleSignIn}
@@ -78,6 +80,7 @@ const LoginPage = () => {
                           isInvalid={touched.username && !!errors.username}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          autoComplete="username"
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.username}
@@ -96,6 +99,7 @@ const LoginPage = () => {
                           isInvalid={touched.password && !!errors.password}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          autoComplete="current-password"
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.password}
@@ -117,7 +121,10 @@ const LoginPage = () => {
                         {loading ? "Signing In..." : "Sign In"}
                       </Button>
                       <div className="mt-5">
-                        New to TDEI? <Link className="tdei-primary-link" to={"/register"}>Register Now</Link>
+                        New to TDEI?{" "}
+                        <Link className="tdei-primary-link" to={"/register"}>
+                          Register Now
+                        </Link>
                       </div>
                     </Form>
                   )}

@@ -24,7 +24,11 @@ const ManagePoc = (props) => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
   const [userId, setUserId] = React.useState("");
-  const initialvalues = { tdei_org_id: data.tdei_org_id, user_name: "", roles: ["poc"] };
+  const initialvalues = {
+    tdei_org_id: data.tdei_org_id,
+    user_name: "",
+    roles: ["poc"],
+  };
   const validationSchema = yup.object().shape({
     user_name: yup.string().required("Email Id is required"),
   });
@@ -109,17 +113,23 @@ const ManagePoc = (props) => {
                   + Add New POC
                 </div>
               </div>
-              {data?.poc?.length === 0 ? 
+              {data?.poc?.length === 0 ? (
                 <div className={style.noPocBlock}>
                   <img src={iconAddPoc} className={style.noPocIcon} alt="" />
-                  <div className={style.noPocText}>No POC added.  Please add new POC.</div>
-                </div> 
-              : null}
+                  <div className={style.noPocText}>
+                    No POC added. Please add new POC.
+                  </div>
+                </div>
+              ) : null}
               <div className={style.pocCardDetails}>
                 {data?.poc?.map((user, i) => (
                   <div className={style.pocCard} key={i}>
                     <div className={style.userList}>
-                      <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
+                      <img
+                        src={userIcon}
+                        className={style.pocUserIcon}
+                        alt="user-icon"
+                      />
                       <div className={style.userName}>{getUserName(user)}</div>
                     </div>
                     <div

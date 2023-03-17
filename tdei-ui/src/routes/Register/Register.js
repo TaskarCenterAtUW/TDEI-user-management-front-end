@@ -26,7 +26,12 @@ const Register = () => {
 
   const validationSchema = yup.object().shape({
     email: yup.string().required("Email is required"),
-    password: yup.string().required("Password is required"),
+    password: yup
+      .string()
+      .min(8, "Password must be 8 characters long")
+      .matches(/[0-9]/, "Password requires a number")
+      .matches(/[A-Z]/, "Password requires an uppercase letter")
+      .matches(/[^\w]/, "Password requires a symbol"),
     phone: yup.string().matches(PHONE_REGEX, "Phone number is not valid"),
   });
 
@@ -124,6 +129,7 @@ const Register = () => {
                           isInvalid={touched.email && !!errors.email}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          autoComplete="username"
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.email}
@@ -153,6 +159,8 @@ const Register = () => {
                           isInvalid={touched.password && !!errors.password}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          type="password"
+                          autoComplete="new-password"
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.password}
@@ -168,7 +176,9 @@ const Register = () => {
                       </Button>
                       <div className="mt-5">
                         Already have an account?{" "}
-                        <Link className="tdei-primary-link" to={"/login"}>Sign in</Link>
+                        <Link className="tdei-primary-link" to={"/login"}>
+                          Sign in
+                        </Link>
                       </div>
                     </Form>
                   )}

@@ -94,7 +94,6 @@ const OrganisationList = ({ pocData, setPocData }) => {
         searchText={searchText}
       >
         {orgList.map((val, index) => {
-          console.log(val)
           if (orgList.length === index + 1) {
             return (
               <Dropdown.Item

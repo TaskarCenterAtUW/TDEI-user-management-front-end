@@ -57,10 +57,10 @@ const AssignPoc = () => {
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email Id</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Enter Username"
+                placeholder="Enter Email Id"
                 value={values.user_name}
                 name="user_name"
                 isInvalid={touched.user_name && !!errors.user_name}

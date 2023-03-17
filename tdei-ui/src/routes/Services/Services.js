@@ -16,8 +16,8 @@ import { show as showModal } from "../../store/notificationModal.slice";
 import DeleteModal from "../../components/DeleteModal";
 import { GET_SERVICES } from "../../utils";
 import { show } from "../../store/notification.slice";
-import iconEdit from "./../../assets/img/icon-edit.svg"
-import iconDelete from "./../../assets/img/icon-delete.svg"
+import iconEdit from "./../../assets/img/icon-edit.svg";
+import iconDelete from "./../../assets/img/icon-delete.svg";
 
 const Services = () => {
   const dispatch = useDispatch();

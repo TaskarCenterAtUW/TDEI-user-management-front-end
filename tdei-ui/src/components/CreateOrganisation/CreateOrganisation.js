@@ -14,7 +14,13 @@ const CreateOrganisation = (props) => {
   const [showModal, setShowModal] = React.useState(false);
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
-  const { org_name = "", address = "", url = "", phone = "", tdei_org_id } = props.data;
+  const {
+    org_name = "",
+    address = "",
+    url = "",
+    phone = "",
+    tdei_org_id,
+  } = props.data;
   const isEdit = !!tdei_org_id;
   const initialValues = {
     org_name,
