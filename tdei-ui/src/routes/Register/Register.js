@@ -22,17 +22,21 @@ const Register = () => {
     email: "",
     phone: "",
     password: "",
+    confirm: "",
   };
 
   const validationSchema = yup.object().shape({
     email: yup.string().required("Email is required"),
     password: yup
       .string()
-      .min(8, "Password must be 8 characters long")
-      .matches(/[0-9]/, "Password requires a number")
-      .matches(/[A-Z]/, "Password requires an uppercase letter")
-      .matches(/[^\w]/, "Password requires a symbol"),
+      .matches(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}/,
+        "Password must be 8 characters long, requires a number, requires an uppercase letter, requires an lowercase letter, requires a symbol"
+      ),
     phone: yup.string().matches(PHONE_REGEX, "Phone number is not valid"),
+    confirm: yup
+      .string()
+      .oneOf([yup.ref("password"), null], 'Must match "Password" field value'),
   });
 
   const handleCreateAccount = async ({
@@ -164,6 +168,22 @@ const Register = () => {
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.password}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="confirmPassword">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control
+                          placeholder="Enter Password"
+                          value={values.confirm}
+                          name="confirm"
+                          isInvalid={touched.confirm && !!errors.confirm}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          type="password"
+                          autoComplete="new-password"
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.confirm}
                         </Form.Control.Feedback>
                       </Form.Group>
                       <Button

@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 
 body {
   margin: 0;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif; */
@@ -17,26 +17,26 @@ body {
 } */
 
 .tdei-primary-button {
-  background-color: #59C3C8 !important;
-  border-color: #59C3C8 !important;
+  background-color: #59c3c8 !important;
+  border-color: #59c3c8 !important;
   color: #fff !important;
   font-weight: 600;
 }
 
 .tdei-primary-button:hover,
 .tdei-primary-button:active {
-  background-color: #4DA9AD !important;
-  border-color: #4DA9AD !important;
+  background-color: #4da9ad !important;
+  border-color: #4da9ad !important;
   color: #fff !important;
   font-weight: 600;
 }
 
 .tdei-primary-link {
-  color: #59C3C8;
+  color: #59c3c8;
 }
 
 .tdei-primary-link:hover {
-  color: #4DA9AD;
+  color: #4da9ad;
 }
 
 .tdei-secondary-button {
@@ -54,7 +54,7 @@ body {
 }
 .page-header-subtitle {
   font-size: 14px;
-  color: #83879B;
+  color: #83879b;
 }
 
 .tdei-bold-name {
@@ -69,7 +69,8 @@ body {
   color: #83879b;
 }
 
-.dropdown-item.active, .dropdown-item:active {
+.dropdown-item.active,
+.dropdown-item:active {
   color: #2f3661;
   text-decoration: none;
   background-color: #e2f0f8;
