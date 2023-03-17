@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Modal, Form, Alert } from "react-bootstrap";
 import style from "./ManagePoc.module.css";
 import closeIcon from "../../assets/img/close-icon.svg";
+import iconAddPoc from "../../assets/img/icon-add-poc.svg";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
@@ -11,7 +12,7 @@ import trashIcon from "../../assets/img/trash-icon.svg";
 import useRevokePermission from "../../hooks/roles/useRevokePermission";
 import DeleteModal from "../DeleteModal";
 import { useQueryClient } from "react-query";
-import userIcon from "../../assets/img/account-icon.png";
+import userIcon from "../../assets/img/icon-userIcon.svg";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 
@@ -25,7 +26,7 @@ const ManagePoc = (props) => {
   const [userId, setUserId] = React.useState("");
   const initialvalues = { tdei_org_id: data.tdei_org_id, user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
-    user_name: yup.string().required("Username is required"),
+    user_name: yup.string().required("Email Id is required"),
   });
 
   const onSuccess = (data) => {
@@ -89,13 +90,13 @@ const ManagePoc = (props) => {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            MANAGE POC
+            Manage POC
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className={style.modalBody}>
           <div className={style.orgDetails}>
-            <div className={style.name}>{data.org_name}</div>
-            <div className={style.address}>{data.address}</div>
+            <div className={style.orgName}>{data.org_name}</div>
+            {/* <div className={style.address}>{data.address}</div> */}
           </div>
           {!toggle ? (
             <div className={style.pocDetails}>
@@ -108,14 +109,17 @@ const ManagePoc = (props) => {
                   + Add New POC
                 </div>
               </div>
-              {data?.poc?.length === 0 ? <div>No POC present</div> : null}
+              {data?.poc?.length === 0 ? 
+                <div className={style.noPocBlock}>
+                  <img src={iconAddPoc} className={style.noPocIcon} alt="" />
+                  <div className={style.noPocText}>No POC added.  Please add new POC.</div>
+                </div> 
+              : null}
               <div className={style.pocCardDetails}>
                 {data?.poc?.map((user, i) => (
                   <div className={style.pocCard} key={i}>
                     <div className={style.userList}>
-                      <div className={style.userImg}>
-                        <img src={userIcon} alt="user-icon" />
-                      </div>
+                      <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
                       <div className={style.userName}>{getUserName(user)}</div>
                     </div>
                     <div
@@ -163,10 +167,10 @@ const ManagePoc = (props) => {
                 }) => (
                   <Form noValidate onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                      <Form.Label>User Name</Form.Label>
+                      <Form.Label>Email Id</Form.Label>
                       <Form.Control
                         type="email"
-                        placeholder="Enter User Name"
+                        placeholder="Enter Email Id"
                         value={values.user_name}
                         name="user_name"
                         isInvalid={touched.user_name && !!errors.user_name}

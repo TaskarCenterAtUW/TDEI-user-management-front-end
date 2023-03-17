@@ -6,7 +6,7 @@
 }
 
 .successModal > div {
-  padding-bottom: 15px;
+  padding-bottom: 8px;
 }
 
 .title {
@@ -15,6 +15,6 @@
   font-weight: bold;
 }
 .message {
-  font-size: 22px;
+  font-size: 18px;
   color: #83879b;
 }

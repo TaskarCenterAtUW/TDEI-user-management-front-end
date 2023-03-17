@@ -7,7 +7,13 @@ const Layout = ({ children }) => {
   const isPocUser = useIsPoc();
   const { user } = useAuth();
   if (!isPocUser && !user?.isAdmin) {
-    return <div>User is not authorised to access this page</div>;
+    return (
+      <div className="p-4">
+        <div className="alert alert-warning" role="alert">
+          Oops! User doesn't have permission to access this page!
+        </div>
+      </div>
+    )
   }
   return <div className={style.layout}>{children}</div>;
 };

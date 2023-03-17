@@ -38,7 +38,7 @@ const AssignRoles = (props) => {
   }, [selectedOrg, props]);
 
   const validationSchema = yup.object().shape({
-    user_name: yup.string().required("Username is required"),
+    user_name: yup.string().required("Email Id is required"),
     roles: yup.array().of(yup.string()).min(1, "Please select roles"),
   });
 
@@ -87,7 +87,7 @@ const AssignRoles = (props) => {
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              ASSIGN NEW USER
+              Assign Role to New User
             </Modal.Title>
           </Modal.Header>
           {assignRolesError ? (
@@ -113,10 +113,10 @@ const AssignRoles = (props) => {
               <Form noValidate onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>User Name</Form.Label>
+                    <Form.Label>Email Id</Form.Label>
                     <Form.Control
                       type="email"
-                      placeholder="Enter User Name"
+                      placeholder="Enter Email Id"
                       value={values.user_name}
                       name="user_name"
                       isInvalid={touched.user_name && !!errors.user_name}

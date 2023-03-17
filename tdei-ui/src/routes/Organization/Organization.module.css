@@ -25,12 +25,13 @@
   display: grid;
   grid-template-columns: 25% 25% 20% 20% 10%;
   grid-column-gap: 10px;
-  min-height: 70px;
+  /* min-height: 70px; */
   align-items: center;
   border: 1px solid #dddddd;
   border-radius: 5px;
   padding: 15px;
   margin-bottom: 15px;
+  font-size: 14px;
 }
 
 .menuVertical {
@@ -43,14 +44,14 @@
 }
 
 .name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: #162848;
 }
 
 .address {
   color: #83879b;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .details {
@@ -70,7 +71,7 @@
 }
 
 .content {
-  font-size: 18px;
+  font-size: 16px;
   color: #162848;
 }
 
@@ -81,6 +82,7 @@
   padding: 5px 15px;
   width: fit-content;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -102,7 +104,21 @@
   padding: 3px;
 }
 
+.orgIcon {
+  width: 45px;
+  margin-right: 10px;
+}
+
+.pocUserIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
 .overlayList {
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
+  color: #C65D03;
+  font-size: 16px;
+  padding-left: 2px;
 }

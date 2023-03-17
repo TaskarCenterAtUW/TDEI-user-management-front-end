@@ -92,7 +92,7 @@ const Stations = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">STATION</div>
+          <div className="page-header-title">STATIONS</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -112,7 +112,7 @@ const Stations = () => {
           <div className={style.insideContainer}>
             <div
               className="page-header-title"
-              style={{ paddingBottom: "22px" }}
+              style={{ paddingBottom: "10px" }}
             >
               Add New Station for Organization
             </div>
@@ -145,7 +145,7 @@ const Stations = () => {
                   debouncedHandleSearch(e);
                 }}
               />
-              <div>Sort by</div>
+              {/* <div>Sort by</div> */}
             </div>
             {data?.pages?.map((values, i) => (
               <React.Fragment key={i}>

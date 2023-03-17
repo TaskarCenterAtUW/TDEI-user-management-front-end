@@ -10,6 +10,7 @@ import sitemapSolid from "../../assets/img/sitemap-solid.svg";
 import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
+import userIcon from "./../../assets/img/icon-feather-user.svg"
 
 const Members = () => {
   const [, setQuery] = React.useState("");
@@ -76,7 +77,7 @@ const Members = () => {
                 debouncedHandleSearch(e);
               }}
             />
-            <div>Sort by</div>
+            {/* <div>Sort by</div> */}
           </div>
           <div className={clsx(style.gridContainer, style.userHeader)}>
             <div>Name & Email Id</div>
@@ -91,7 +92,7 @@ const Members = () => {
                 <div className={style.gridContainer} key={list.user_id}>
                   <div className={style.details}>
                     <div className={style.icon}>
-                      <img src={sitemapSolid} alt="sitemap-solid" />
+                      <img src={userIcon} alt="sitemap-solid" />
                     </div>
                     <div>
                       <div className={style.name}>{getUserName(list)}</div>
@@ -165,7 +166,7 @@ const DisplayRolesList = ({ list }) => {
       {list.roles.length > 2 && !showMore && (
         //eslint-disable-next-line
         <a className={style.showMore} onClick={handleShowMore}>
-          Show more
+          Show all
         </a>
       )}
     </>

@@ -8,13 +8,13 @@
 .insideContainer {
   background-color: #f8f8f8;
   border-radius: 15px;
-  width: 982px;
-  height: 537px;
+  width: 70%;
+  /* height: 434px; */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 117px 90px;
+  padding: 75px;
   margin: 50px auto;
 }
 

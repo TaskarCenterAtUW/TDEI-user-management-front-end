@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="30" viewBox="0 0 36 30">
+  <g id="Icon_feather-user-plus" data-name="Icon feather-user-plus" transform="translate(0 -3)">
+    <path id="Path_38215" data-name="Path 38215" d="M24,31.5v-3a6,6,0,0,0-6-6H7.5a6,6,0,0,0-6,6v3" fill="none" stroke="#83879b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    <path id="Path_38216" data-name="Path 38216" d="M18.75,10.5a6,6,0,1,1-6-6,6,6,0,0,1,6,6Z" fill="none" stroke="#83879b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    <path id="Path_38217" data-name="Path 38217" d="M30,12v9" fill="none" stroke="#83879b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    <path id="Path_38218" data-name="Path 38218" d="M34.5,16.5h-9" fill="none" stroke="#83879b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+  </g>
+</svg>

@@ -104,7 +104,7 @@ function CreateStation(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          CREATE STATION
+          Create New Station
         </Modal.Title>
       </Modal.Header>
       <Formik

@@ -25,12 +25,13 @@
   display: grid;
   grid-template-columns: 30% 25% 35% 10%;
   grid-column-gap: 10px;
-  min-height: 70px;
+  /* min-height: 70px; */
   align-items: center;
   border: 1px solid #dddddd;
   border-radius: 5px;
   padding: 15px;
   margin-bottom: 15px;
+  font-size: 14px;
 }
 
 .menuVertical {
@@ -43,14 +44,14 @@
 }
 
 .name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: #162848;
 }
 
 .address {
   color: #83879b;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .details {
@@ -70,7 +71,7 @@
 }
 
 .content {
-  font-size: 18px;
+  font-size: 16px;
   color: #162848;
 }
 
@@ -84,15 +85,17 @@
   background: #f0f1f4;
   border: 1px solid #e5e5e5;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
   color: #162848;
-  padding: 0 19px;
+  padding: 1px 20px 4px 20px;
   margin-right: 10px;
   margin-top: 10px;
 }
 
 .showMore {
-  margin-top: 10px;
+  margin-top: 5px;
   cursor: pointer;
-  text-decoration: none;
+  /* text-decoration: none; */
+  font-size: 14px;
+  color: #C65D03;
 }

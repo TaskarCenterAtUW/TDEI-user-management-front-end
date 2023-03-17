@@ -159,6 +159,7 @@ const Register = () => {
                         </Form.Control.Feedback>
                       </Form.Group>
                       <Button
+                        className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
                         type="submit"
                         disabled={loading}
@@ -167,7 +168,7 @@ const Register = () => {
                       </Button>
                       <div className="mt-5">
                         Already have an account?{" "}
-                        <Link to={"/login"}>Sign in</Link>
+                        <Link className="tdei-primary-link" to={"/login"}>Sign in</Link>
                       </div>
                     </Form>
                   )}

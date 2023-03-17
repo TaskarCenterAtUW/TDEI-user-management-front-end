@@ -13,7 +13,7 @@ const AssignPoc = () => {
   const initialvalues = { tdei_org_id: "", user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
     tdei_org_id: yup.string().required("Organization Name is required"),
-    user_name: yup.string().required("Username is required"),
+    user_name: yup.string().required("Email Id is required"),
   });
   const onSuccess = (data) => {
     console.log("Assigned POC", data);

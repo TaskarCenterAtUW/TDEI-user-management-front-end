@@ -6,17 +6,17 @@
 }
 
 .deleteModal > div {
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   text-align: center;
 }
 
 .title {
-  font-size: 26px;
+  font-size: 18px;
   color: #162848;
-  font-weight: bold;
+  font-weight: 700;
 }
 .message {
-  font-size: 22px;
+  font-size: 16px;
   color: #83879b;
   display: flex;
   justify-content: center;

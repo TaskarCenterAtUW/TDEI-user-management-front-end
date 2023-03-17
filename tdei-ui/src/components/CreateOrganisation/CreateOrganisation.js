@@ -68,7 +68,7 @@ const CreateOrganisation = (props) => {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {isEdit ? "EDIT ORGANIZATION" : "CREATE ORGANIZATION"}
+            {isEdit ? "Edit Organization" : "Create New Organization"}
           </Modal.Title>
         </Modal.Header>
         <Formik
@@ -157,7 +157,7 @@ const CreateOrganisation = (props) => {
                     className="tdei-primary-button"
                     type="submit"
                     disabled={isUpdateOrgLoading || !dirty}
-                  >{`${isUpdateOrgLoading ? "Editing..." : "Edit"}`}</Button>
+                  >{`${isUpdateOrgLoading ? "Updating..." : "Update"}`}</Button>
                 ) : (
                   <Button
                     type="submit"

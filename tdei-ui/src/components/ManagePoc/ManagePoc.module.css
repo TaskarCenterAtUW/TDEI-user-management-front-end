@@ -1,18 +1,22 @@
 .orgDetails {
   padding: 15px;
-  border-bottom: var(--bs-modal-header-border-width) solid
-    var(--bs-modal-header-border-color);
 }
 
 .name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: #162848;
 }
 
+.orgName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #83879b;
+}
+
 .address {
   color: #83879b;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .modalBody {
@@ -70,7 +74,13 @@
 }
 .userName {
   color: #192a4b;
-  font-size: 20px;
+  font-size: 16px;
+}
+
+.pocUserIcon {
+  width: 26px;
+  height: 26px;
+  margin-right: 5px;
 }
 
 .userImg img {
@@ -78,4 +88,18 @@
 }
 .trashIcon {
   cursor: pointer;
+}
+.noPocBlock {
+  border: 1px dashed #ddd;
+  padding: 30px 30px;
+  text-align: center;
+  border-radius: 5px;
+}
+.noPocIcon{
+  width: 32px;
+}
+.noPocText {
+  color: #83879b;
+  margin-top: 10px;
+  font-size: 14px;
 }

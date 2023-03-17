@@ -21,7 +21,7 @@ const LoginPage = () => {
   };
 
   const validationSchema = yup.object().shape({
-    username: yup.string().required("Username is required"),
+    username: yup.string().required("Email Id is required"),
     password: yup.string().required("Password is required"),
   });
 
@@ -52,6 +52,8 @@ const LoginPage = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
+                <div className={style.loginTitle}>Welcome!</div>
+                <div className={style.loginSubTitle}>Please login to your account.</div>
                 <Formik
                   initialValues={initialValues}
                   onSubmit={handleSignIn}
@@ -67,10 +69,10 @@ const LoginPage = () => {
                   }) => (
                     <Form noValidate onSubmit={handleSubmit}>
                       <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Username</Form.Label>
+                        <Form.Label>Email Id</Form.Label>
                         <Form.Control
                           type="email"
-                          placeholder="Enter Username"
+                          placeholder="Enter Email Id"
                           value={values.username}
                           name="username"
                           isInvalid={touched.username && !!errors.username}
@@ -104,9 +106,10 @@ const LoginPage = () => {
                         controlId="formBasicCheckbox"
                       >
                         <Form.Check type="checkbox" label="Remember me" />
-                        <Button variant="link">Reset Password?</Button>
+                        {/* <Button className="tdei-primary-link" variant="link">Reset Password?</Button> */}
                       </Form.Group>
                       <Button
+                        className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
                         type="submit"
                         disabled={loading}
@@ -114,7 +117,7 @@ const LoginPage = () => {
                         {loading ? "Signing In..." : "Sign In"}
                       </Button>
                       <div className="mt-5">
-                        New to TDEI? <Link to={"/register"}>Register Now</Link>
+                        New to TDEI? <Link className="tdei-primary-link" to={"/register"}>Register Now</Link>
                       </div>
                     </Form>
                   )}

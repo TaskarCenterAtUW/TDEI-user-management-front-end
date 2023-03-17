@@ -14,7 +14,7 @@ const DeleteModal = (props) => {
     >
       <Modal.Body>
         <div className={style.deleteModal}>
-          <div>
+          <div className="mb-2">
             <img src={deleteIcon} alt="delete-icon" />
           </div>
           <div className={style.title}>{props.message.title}</div>

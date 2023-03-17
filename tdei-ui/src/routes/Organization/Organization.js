@@ -22,9 +22,10 @@ import { getUserName, GET_ORG_LIST } from "../../utils";
 import { useQueryClient } from "react-query";
 import DeleteModal from "../../components/DeleteModal";
 import sitemapSolid from "../../assets/img/sitemap-solid.svg";
+import iconOrg from "./../../assets/img/icon-orgIcon.svg"
 import { debounce } from "lodash";
 import SuccessModal from "../../components/SuccessModal";
-import userIcon from "../../assets/img/account-icon.png";
+import userIcon from "../../assets/img/icon-userAvatar.png";
 
 const Organization = () => {
   const [, setQuery] = React.useState("");
@@ -112,7 +113,7 @@ const Organization = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">ORGANIZATION</div>
+          <div className="page-header-title">ORGANIZATIONS</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry’s standard dummy text
@@ -136,7 +137,7 @@ const Organization = () => {
                 debouncedHandleSearch(e);
               }}
             />
-            <div>Sort by</div>
+            {/* <div>Sort by</div> */}
           </div>
           <div className={clsx(style.gridContainer, style.orgHeader)}>
             <div>Name & Address</div>
@@ -150,9 +151,7 @@ const Organization = () => {
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.tdei_org_id}>
                   <div className={style.details}>
-                    <div className={style.icon}>
-                      <img src={sitemapSolid} alt="sitemap-solid" />
-                    </div>
+                    <img src={iconOrg} className={style.orgIcon} alt="sitemap-solid" />
                     <div>
                       <div className={style.name}>{list.org_name}</div>
                       <div className={style.address}>{list.address}</div>
@@ -242,10 +241,8 @@ const DisplayList = ({ list, handlePoc }) => {
     <>
       {poc.length ? (
         <div className={style.pocList}>
-          <div className={style.pocIcon}>
-            <img src={userIcon} alt="user-icon" />
-          </div>
-          <div>{getUserName(poc[0])}</div>
+          <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
+          <div className={style.content}>{getUserName(poc[0])}</div>
           {poc.length > 1 ? (
             <OverlayTrigger
               trigger={["hover", "focus"]}
@@ -257,10 +254,8 @@ const DisplayList = ({ list, handlePoc }) => {
                       if (i !== 0) {
                         return (
                           <div className={style.pocList} key={i}>
-                            <div className={style.pocIcon}>
-                              <img src={userIcon} alt="user-icon" />
-                            </div>
-                            <div>{getUserName(val)}</div>
+                            <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
+                            <div className={style.content}>{getUserName(val)}</div>
                           </div>
                         );
                       }

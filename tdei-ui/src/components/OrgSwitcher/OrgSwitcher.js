@@ -23,7 +23,7 @@ const OrgSwitcher = () => {
   return (
     <>
       {data?.length ? (
-        <div style={{ marginRight: "2rem" }}>
+        <div style={{ marginRight: "1rem" }}>
           <div className={style.orgLabel}>Organization</div>
           <Dropdown className={style.customDropdown} align="end">
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">

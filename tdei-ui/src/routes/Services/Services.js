@@ -16,6 +16,8 @@ import { show as showModal } from "../../store/notificationModal.slice";
 import DeleteModal from "../../components/DeleteModal";
 import { GET_SERVICES } from "../../utils";
 import { show } from "../../store/notification.slice";
+import iconEdit from "./../../assets/img/icon-edit.svg"
+import iconDelete from "./../../assets/img/icon-delete.svg"
 
 const Services = () => {
   const dispatch = useDispatch();
@@ -91,7 +93,7 @@ const Services = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">SERVICE</div>
+          <div className="page-header-title">SERVICES</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -111,7 +113,7 @@ const Services = () => {
           <div className={style.insideContainer}>
             <div
               className="page-header-title"
-              style={{ paddingBottom: "22px" }}
+              style={{ paddingBottom: "10px" }}
             >
               Add New Service for Organization
             </div>
@@ -141,7 +143,7 @@ const Services = () => {
                   debouncedHandleSearch(e);
                 }}
               />
-              <div>Sort by</div>
+              {/* <div>Sort by</div> */}
             </div>
             {data?.pages?.map((values, i) => (
               <React.Fragment key={i}>
@@ -204,17 +206,17 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
         </div>
         <div>
           <div className="tdei-bold-name">{name}</div>
-          <div className="tdei-name-desc">--</div>
+          <div className="tdei-name-desc">No description added</div>
         </div>
       </div>
       <div className={style.buttons}>
         <div className={style.editButton} onClick={() => handleEdit(id)}>
-          {/* <img alt="edit-icon" /> */}
-          <span>Edit</span>
+          <img src={iconEdit} alt="edit-icon" />
+          <div className={style.btnText}>Edit</div>
         </div>
         <div className={style.deleteButton} onClick={() => handleDelete(id)}>
-          {/* <img alt="delete-icon" /> */}
-          <span>Delete</span>
+          <img src={iconDelete} alt="delete-icon" />
+          <div className={style.btnText}>Delete</div>
         </div>
       </div>
     </div>
