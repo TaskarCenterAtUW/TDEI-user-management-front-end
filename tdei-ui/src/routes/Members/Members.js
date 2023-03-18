@@ -11,6 +11,7 @@ import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
 import userIcon from "./../../assets/img/icon-feather-user.svg";
 import { useAuth } from "../../hooks/useAuth";
+import iconNoData from "./../../assets/img/icon-noData.svg";
 
 const Members = () => {
   const { user } = useAuth();
@@ -53,7 +54,7 @@ const Members = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">MEMBERS</div>
+          <div className="page-header-title">Members</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -87,7 +88,12 @@ const Members = () => {
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
-              {values?.data?.length === 0 ? "No members exist" : null}
+              {values?.data?.length === 0 ? 
+              <div className="d-flex align-items-center mt-4">
+                <img src={iconNoData} className={style.noDataIcon} />
+                <div className={style.noDataText}>No members found..!</div>
+              </div> 
+             : null}
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.user_id}>
                   <div className={style.details}>

@@ -30,7 +30,7 @@ const UserHeader = ({ roles }) => {
         </>
       ) : (
         <div className={style.userName}>
-          Welcome to TDEI, contact tdei admin or your organization POC to get
+          Welcome to TDEI, contact TDEI admin or your organization POC to get
           roles assigned.
         </div>
       )}

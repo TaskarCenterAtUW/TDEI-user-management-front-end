@@ -31,12 +31,12 @@ const Register = () => {
       .string()
       .matches(
         /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}/,
-        "Password must be 8 characters long, requires a number, requires an uppercase letter, requires an lowercase letter, requires a symbol"
+        "Password must be minimum of 8 characters in length, requires at least one lower case, one upper case, one special character and a number."
       ),
-    phone: yup.string().matches(PHONE_REGEX, "Phone number is not valid"),
+    phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
     confirm: yup
       .string()
-      .oneOf([yup.ref("password"), null], 'Must match "Password" field value'),
+      .oneOf([yup.ref("password"), null], 'Confirm password does not match'),
   });
 
   const handleCreateAccount = async ({

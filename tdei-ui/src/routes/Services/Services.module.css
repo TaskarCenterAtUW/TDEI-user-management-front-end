@@ -54,6 +54,7 @@
 
 .names {
   display: flex;
+  align-items: center;
 }
 
 .imgBlock img {
@@ -83,5 +84,13 @@
   font-size: 14px;
 }
 .btnText {
+  margin-left: 5px;
+}
+.noDataIcon {
+  width: 20px;
+}
+.noDataText {
+  font-size: 14px;
+  color: #83879b;
   margin-left: 5px;
 }

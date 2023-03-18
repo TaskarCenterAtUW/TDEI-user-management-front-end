@@ -99,3 +99,12 @@
   font-size: 14px;
   color: #c65d03;
 }
+
+.noDataIcon {
+  width: 20px;
+}
+.noDataText {
+  font-size: 14px;
+  color: #83879b;
+  margin-left: 5px;
+}

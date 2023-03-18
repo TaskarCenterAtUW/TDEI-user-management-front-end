@@ -112,7 +112,7 @@ const Organization = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">ORGANIZATIONS</div>
+          <div className="page-header-title">Organizations</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry’s standard dummy text

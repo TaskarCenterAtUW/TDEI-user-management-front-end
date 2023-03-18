@@ -28,3 +28,13 @@
 .searchPanel input {
   width: 300px;
 }
+
+.noDataIcon {
+  width: 20px;
+}
+.noDataText {
+  font-size: 14px;
+  color: #83879b;
+  margin-left: 5px;
+}
+
