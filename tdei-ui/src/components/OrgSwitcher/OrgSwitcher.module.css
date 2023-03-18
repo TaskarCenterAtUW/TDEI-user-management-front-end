@@ -1,11 +1,12 @@
 .customDropdown {
-  max-width: 162px;
+  max-width: 160px;
 }
 
 .selectedOrgName {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 14px;
 }
 
 .customElement {

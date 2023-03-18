@@ -17,6 +17,7 @@ import DeleteModal from "../../components/DeleteModal";
 import { GET_STATIONS } from "../../utils";
 import { show } from "../../store/notification.slice";
 import { ListingBlock } from "../Services/Services";
+import iconNoData from "./../../assets/img/icon-noData.svg";
 
 const Stations = () => {
   const [showCreateStation, setShowCreateStation] = React.useState(false);
@@ -92,7 +93,7 @@ const Stations = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">STATION</div>
+          <div className="page-header-title">Stations</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -112,7 +113,7 @@ const Stations = () => {
           <div className={style.insideContainer}>
             <div
               className="page-header-title"
-              style={{ paddingBottom: "22px" }}
+              style={{ paddingBottom: "10px" }}
             >
               Add New Station for Organization
             </div>
@@ -145,11 +146,16 @@ const Stations = () => {
                   debouncedHandleSearch(e);
                 }}
               />
-              <div>Sort by</div>
+              {/* <div>Sort by</div> */}
             </div>
             {data?.pages?.map((values, i) => (
               <React.Fragment key={i}>
-                {values?.data?.length === 0 ? "No station exist" : null}
+                {values?.data?.length === 0 ? 
+                <div className="d-flex align-items-center mt-2">
+                  <img src={iconNoData} className={style.noDataIcon} />
+                  <div className={style.noDataText}>No station found..!</div>
+                </div> 
+               : null}
                 {values?.data?.map((list) => (
                   <ListingBlock
                     id={list.tdei_station_id}

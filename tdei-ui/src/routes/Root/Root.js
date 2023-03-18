@@ -1,11 +1,9 @@
 import React from "react";
 import { Container, Spinner } from "react-bootstrap";
 import Navigation from "../../components/Navigation/Navigation";
-import UserHeader from "../../components/UserHeader/UserHeader";
-import Creation from "../../components/Creation/Creation";
 import style from "./style.module.css";
 import useGetOrgRoles from "../../hooks/roles/useOrgRoles";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedOrg, getSideMenuFlag } from "../../selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { set } from "../../store";
 import { Outlet } from "react-router-dom";
@@ -14,6 +12,7 @@ const Root = () => {
   const { data: orgData, isLoading: isOrgLoading, isError } = useGetOrgRoles();
   const dispatch = useDispatch();
   const selectedOrg = useSelector(getSelectedOrg);
+  const flag = useSelector(getSideMenuFlag);
   React.useEffect(() => {
     if (orgData?.length) {
       dispatch(set(orgData[0]));
@@ -33,9 +32,11 @@ const Root = () => {
         </div>
       ) : (
         <div className="d-flex">
-          <div className={style.navigationBlock}>
-            <Navigation />
-          </div>
+          {flag && (
+            <div className={style.navigationBlock}>
+              <Navigation />
+            </div>
+          )}
           <div className={style.contentBlock}>
             <Outlet roles={roles} />
           </div>

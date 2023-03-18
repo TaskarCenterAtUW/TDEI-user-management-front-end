@@ -9,8 +9,12 @@ import Organization from "./Organization";
 import Services from "./Services";
 import Stations from "./Stations";
 import Members from "./Members";
+import { useAuth } from "../hooks/useAuth";
+import NotFound from "./NotFound";
 
 const Router = () => {
+  const { user } = useAuth();
+
   return (
     <Routes>
       <>
@@ -19,10 +23,13 @@ const Router = () => {
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/organization" element={<Organization />} />
+            {user?.isAdmin && (
+              <Route path="/organization" element={<Organization />} />
+            )}
             <Route path="/services" element={<Services />} />
             <Route path="/stations" element={<Stations />} />
-            <Route path="/members" element={<Members />} />
+            {!user?.isAdmin && <Route path="/members" element={<Members />} />}
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
       </>

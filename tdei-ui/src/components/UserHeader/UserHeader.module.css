@@ -1,12 +1,18 @@
 .userHeader {
   border-radius: 5px;
-  background-color: #728495;
+  background-color: #e2f0f8;
   color: #ffffff;
   padding: 25px 20px;
   margin-bottom: 15px;
 }
 .roleText {
-  color: #ffffff99;
-  font-size: 14px;
+  color: #6e7897;
+  font-size: 16px;
   font-weight: 500;
+}
+.userName {
+  color: #2f3661;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 5px;
 }

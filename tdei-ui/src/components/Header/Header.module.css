@@ -1,16 +1,16 @@
 .container {
   height: 60px;
-  background-color: #343a40;
+  background-color: #2f3661;
   color: #ffffff;
   display: flex;
-  padding: 15px;
+  padding: 0px 15px;
   align-items: center;
   justify-content: space-between;
 }
 .logoImage {
   width: 70px;
   background-color: #fff;
-  padding: 5px 5px;
+  padding: 5px 8px;
   border-radius: 4px;
 }
 .userIcon {
@@ -32,8 +32,8 @@
 
 .horizontalLine {
   border-right: 1px solid #ffffff80;
-  height: 28px;
-  margin-right: 2rem;
+  height: 25px;
+  margin-right: 1rem;
 }
 
 .userProfile {
@@ -42,4 +42,22 @@
 .userProfile > div {
   padding-right: 1rem;
   cursor: pointer;
+}
+
+.sideMenuIcon {
+  margin-right: 15px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.sideMenuIcon > div {
+  width: 24px;
+  height: 2px;
+  background-color: #ffffff;
+  margin: 6px 0;
+}
+
+.imgContainer {
+  display: flex;
+  align-items: center;
 }

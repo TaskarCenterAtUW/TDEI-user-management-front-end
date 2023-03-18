@@ -22,12 +22,21 @@ const Register = () => {
     email: "",
     phone: "",
     password: "",
+    confirm: "",
   };
 
   const validationSchema = yup.object().shape({
     email: yup.string().required("Email is required"),
-    password: yup.string().required("Password is required"),
-    phone: yup.string().matches(PHONE_REGEX, "Phone number is not valid"),
+    password: yup
+      .string()
+      .matches(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}/,
+        "Password must be minimum of 8 characters in length, requires at least one lower case, one upper case, one special character and a number."
+      ),
+    phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
+    confirm: yup
+      .string()
+      .oneOf([yup.ref("password"), null], 'Confirm password does not match'),
   });
 
   const handleCreateAccount = async ({
@@ -124,6 +133,7 @@ const Register = () => {
                           isInvalid={touched.email && !!errors.email}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          autoComplete="username"
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.email}
@@ -153,12 +163,31 @@ const Register = () => {
                           isInvalid={touched.password && !!errors.password}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          type="password"
+                          autoComplete="new-password"
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.password}
                         </Form.Control.Feedback>
                       </Form.Group>
+                      <Form.Group className="mb-3" controlId="confirmPassword">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control
+                          placeholder="Enter Password"
+                          value={values.confirm}
+                          name="confirm"
+                          isInvalid={touched.confirm && !!errors.confirm}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          type="password"
+                          autoComplete="new-password"
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.confirm}
+                        </Form.Control.Feedback>
+                      </Form.Group>
                       <Button
+                        className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
                         type="submit"
                         disabled={loading}
@@ -167,7 +196,9 @@ const Register = () => {
                       </Button>
                       <div className="mt-5">
                         Already have an account?{" "}
-                        <Link to={"/login"}>Sign in</Link>
+                        <Link className="tdei-primary-link" to={"/login"}>
+                          Sign in
+                        </Link>
                       </div>
                     </Form>
                   )}

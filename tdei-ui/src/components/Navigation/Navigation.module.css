@@ -19,10 +19,12 @@
 .menuItem:hover {
   background-color: #2f366112;
   color: #42526e;
+  border-radius: 4px;
 }
 .menuItem.active {
   background-color: #2f366112;
   font-weight: 700;
+  border-radius: 4px;
 }
 .menuIcon {
   width: 18px;

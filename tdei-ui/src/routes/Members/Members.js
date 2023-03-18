@@ -6,12 +6,15 @@ import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import useGetOrgUsers from "../../hooks/organisation/useGerOrgUsers";
 import { ActionItem } from "../Organization/Organization";
-import sitemapSolid from "../../assets/img/sitemap-solid.svg";
 import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
+import userIcon from "./../../assets/img/icon-feather-user.svg";
+import { useAuth } from "../../hooks/useAuth";
+import iconNoData from "./../../assets/img/icon-noData.svg";
 
 const Members = () => {
+  const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
@@ -47,12 +50,11 @@ const Members = () => {
     setSelectedData(dataToEdit);
     setShowModal(true);
   };
-
   return (
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">MEMBERS</div>
+          <div className="page-header-title">Members</div>
           <div className="page-header-subtitle">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -76,7 +78,7 @@ const Members = () => {
                 debouncedHandleSearch(e);
               }}
             />
-            <div>Sort by</div>
+            {/* <div>Sort by</div> */}
           </div>
           <div className={clsx(style.gridContainer, style.userHeader)}>
             <div>Name & Email Id</div>
@@ -86,15 +88,22 @@ const Members = () => {
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
-              {values?.data?.length === 0 ? "No members exist" : null}
+              {values?.data?.length === 0 ? 
+              <div className="d-flex align-items-center mt-4">
+                <img src={iconNoData} className={style.noDataIcon} />
+                <div className={style.noDataText}>No members found..!</div>
+              </div> 
+             : null}
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.user_id}>
                   <div className={style.details}>
                     <div className={style.icon}>
-                      <img src={sitemapSolid} alt="sitemap-solid" />
+                      <img src={userIcon} alt="sitemap-solid" />
                     </div>
                     <div>
-                      <div className={style.name}>{getUserName(list)}</div>
+                      <div className={style.name}>
+                        {getUserName(list, list.username === user?.emailId)}
+                      </div>
                       <div className={style.address}>{list.username}</div>
                     </div>
                   </div>
@@ -165,7 +174,7 @@ const DisplayRolesList = ({ list }) => {
       {list.roles.length > 2 && !showMore && (
         //eslint-disable-next-line
         <a className={style.showMore} onClick={handleShowMore}>
-          Show more
+          Show all
         </a>
       )}
     </>

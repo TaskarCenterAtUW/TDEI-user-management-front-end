@@ -105,7 +105,7 @@ const CreateService = (props) => {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          CREATE SERVICE
+          Create New Service
         </Modal.Title>
       </Modal.Header>
       <Formik

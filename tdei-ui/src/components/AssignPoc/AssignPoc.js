@@ -13,7 +13,7 @@ const AssignPoc = () => {
   const initialvalues = { tdei_org_id: "", user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
     tdei_org_id: yup.string().required("Organization Name is required"),
-    user_name: yup.string().required("Username is required"),
+    user_name: yup.string().required("Email Id is required"),
   });
   const onSuccess = (data) => {
     console.log("Assigned POC", data);
@@ -57,10 +57,10 @@ const AssignPoc = () => {
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email Id</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Enter Username"
+                placeholder="Enter Email Id"
                 value={values.user_name}
                 name="user_name"
                 isInvalid={touched.user_name && !!errors.user_name}
