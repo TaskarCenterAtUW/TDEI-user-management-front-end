@@ -43,3 +43,21 @@
   padding-right: 1rem;
   cursor: pointer;
 }
+
+.sideMenuIcon {
+  margin-right: 15px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.sideMenuIcon > div {
+  width: 30px;
+  height: 4px;
+  background-color: #ffffff;
+  margin: 6px 0;
+}
+
+.imgContainer {
+  display: flex;
+  align-items: center;
+}

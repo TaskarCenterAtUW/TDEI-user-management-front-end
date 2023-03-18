@@ -9,3 +9,7 @@ export const getSelectedOrg = (state) => {
 export const getNotificationModal = (state) => {
   return state.notificationModal;
 };
+
+export const getSideMenuFlag = (state) => {
+  return state.sideMenuBar.flag;
+};

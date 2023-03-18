@@ -5,8 +5,11 @@ import { useAuth } from "../../hooks/useAuth";
 import { Dropdown } from "react-bootstrap";
 import userIcon from "./../../assets/img/user.png";
 import OrgSwitcher from "../OrgSwitcher";
+import { useDispatch } from "react-redux";
+import { toggle } from "../../store/sideMenuBar.slice";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const { user } = useAuth();
   const authenticated = !!user?.name;
   const handleLogout = () => {
@@ -16,7 +19,19 @@ const Header = () => {
   };
   return (
     <div className={style.container}>
-      <img src={tempLogo} className={style.logoImage} alt="logo" />
+      <div className={style.imgContainer}>
+        {authenticated && (
+          <div
+            className={style.sideMenuIcon}
+            onClick={() => dispatch(toggle())}
+          >
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        )}
+        <img src={tempLogo} className={style.logoImage} alt="logo" />
+      </div>
       {authenticated ? (
         <div className={style.rightContainer}>
           {!user?.isAdmin ? (
