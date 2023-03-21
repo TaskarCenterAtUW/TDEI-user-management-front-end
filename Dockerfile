@@ -6,5 +6,9 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 # Copy static assets from builder stage
 COPY ./tdei-ui/build/ .
+
+# Copy nginx custom configuration file
+COPY ./default.conf /etc/nginx/conf.d/
+
 # Containers run nginx with global directives and daemon off
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
