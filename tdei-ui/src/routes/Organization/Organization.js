@@ -114,9 +114,7 @@ const Organization = () => {
         <div className={style.title}>
           <div className="page-header-title">Organizations</div>
           <div className="page-header-subtitle">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry’s standard dummy text
-            ever since
+            Here are the organizations currently in the <span className="fw-bold">TDEI system</span>.
           </div>
         </div>
         <div>

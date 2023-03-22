@@ -134,7 +134,7 @@ const LoginPage = () => {
           </Card>
         </div>
       </Row>
-      <div className={style.appVersionText}>V 0.1.2</div>
+      <div className={style.appVersionText}>V 0.1.3</div>
     </div>
   );
 };

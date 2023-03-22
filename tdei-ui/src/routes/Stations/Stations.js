@@ -18,8 +18,11 @@ import { GET_STATIONS } from "../../utils";
 import { show } from "../../store/notification.slice";
 import { ListingBlock } from "../Services/Services";
 import iconNoData from "./../../assets/img/icon-noData.svg";
+import { useSelector } from "react-redux";
+import { getSelectedOrg } from "../../selectors";
 
 const Stations = () => {
+  const selectedOrg = useSelector(getSelectedOrg);
   const [showCreateStation, setShowCreateStation] = React.useState(false);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
@@ -95,9 +98,7 @@ const Stations = () => {
         <div className={style.title}>
           <div className="page-header-title">Stations</div>
           <div className="page-header-subtitle">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since
+            Here are the stations currently in the <span className="fw-bold">{user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}</span>.
           </div>
         </div>
         {!user?.isAdmin ? (
