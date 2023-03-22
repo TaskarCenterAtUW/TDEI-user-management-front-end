@@ -12,8 +12,11 @@ import AssignRoles from "../../components/AssignRoles/AssignRoles";
 import userIcon from "./../../assets/img/icon-feather-user.svg";
 import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
+import { useSelector } from "react-redux";
+import { getSelectedOrg } from "../../selectors";
 
 const Members = () => {
+  const selectedOrg = useSelector(getSelectedOrg);
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
@@ -56,9 +59,7 @@ const Members = () => {
         <div className={style.title}>
           <div className="page-header-title">Members</div>
           <div className="page-header-subtitle">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since
+            Here are the members currently in the <span className="fw-bold">{user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}</span>.
           </div>
         </div>
         <div>

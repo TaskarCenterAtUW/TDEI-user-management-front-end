@@ -19,8 +19,11 @@ import { show } from "../../store/notification.slice";
 import iconEdit from "./../../assets/img/icon-edit.svg";
 import iconDelete from "./../../assets/img/icon-delete.svg";
 import iconNoData from "./../../assets/img/icon-noData.svg";
+import { useSelector } from "react-redux";
+import { getSelectedOrg } from "../../selectors";
 
 const Services = () => {
+  const selectedOrg = useSelector(getSelectedOrg);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [showCreateService, setShowCreateService] = React.useState(false);
@@ -96,9 +99,7 @@ const Services = () => {
         <div className={style.title}>
           <div className="page-header-title">Services</div>
           <div className="page-header-subtitle">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since
+            Here are the services currently in the <span className="fw-bold">{user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}</span>.
           </div>
         </div>
         {!user?.isAdmin ? (
