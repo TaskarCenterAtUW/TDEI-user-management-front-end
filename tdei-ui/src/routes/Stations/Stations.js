@@ -98,7 +98,11 @@ const Stations = () => {
         <div className={style.title}>
           <div className="page-header-title">Stations</div>
           <div className="page-header-subtitle">
-            Here are the stations currently in the <span className="fw-bold">{user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}</span>.
+            Here are the stations currently in the{" "}
+            <span className="fw-bold">
+              {user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}
+            </span>
+            .
           </div>
         </div>
         {!user?.isAdmin ? (
@@ -151,12 +155,12 @@ const Stations = () => {
             </div>
             {data?.pages?.map((values, i) => (
               <React.Fragment key={i}>
-                {values?.data?.length === 0 ? 
-                <div className="d-flex align-items-center mt-2">
-                  <img src={iconNoData} className={style.noDataIcon} />
-                  <div className={style.noDataText}>No station found..!</div>
-                </div> 
-               : null}
+                {values?.data?.length === 0 ? (
+                  <div className="d-flex align-items-center mt-2">
+                    <img src={iconNoData} className={style.noDataIcon} />
+                    <div className={style.noDataText}>No station found..!</div>
+                  </div>
+                ) : null}
                 {values?.data?.map((list) => (
                   <ListingBlock
                     id={list.tdei_station_id}

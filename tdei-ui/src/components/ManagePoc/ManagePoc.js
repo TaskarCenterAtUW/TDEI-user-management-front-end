@@ -15,6 +15,7 @@ import { useQueryClient } from "react-query";
 import userIcon from "../../assets/img/icon-userIcon.svg";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
+import clsx from "clsx";
 
 const ManagePoc = (props) => {
   const { data } = props;
@@ -36,6 +37,7 @@ const ManagePoc = (props) => {
   const onSuccess = (data) => {
     console.log("Assigned POC", data);
     queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
+    setToggle(false);
     setShowModal(true);
     props.onHide();
   };
@@ -87,7 +89,8 @@ const ManagePoc = (props) => {
   return (
     <>
       <Modal
-        {...props}
+        onHide={handleHide}
+        show={props.show}
         size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -106,12 +109,13 @@ const ManagePoc = (props) => {
             <div className={style.pocDetails}>
               <div className={style.header}>
                 <div className={style.name}>List of POC</div>
-                <div
-                  className={style.addNew}
+                <Button
+                  className={clsx(style.addNew)}
                   onClick={() => setToggle((prev) => !prev)}
+                  variant="link"
                 >
                   + Add New POC
-                </div>
+                </Button>
               </div>
               {data?.poc?.length === 0 ? (
                 <div className={style.noPocBlock}>
@@ -132,16 +136,17 @@ const ManagePoc = (props) => {
                       />
                       <div className={style.userName}>{getUserName(user)}</div>
                     </div>
-                    <div
+                    <Button
                       className={style.trashIcon}
                       onClick={() => {
                         setUserId(user.username);
                         setShowDeleteModal(true);
                         props.onHide();
                       }}
+                      variant="link"
                     >
                       <img src={trashIcon} alt="trash-icon" />
-                    </div>
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -150,12 +155,13 @@ const ManagePoc = (props) => {
             <div className={style.pocDetails}>
               <div className={style.header}>
                 <div className={style.name}>Add New POC</div>
-                <div
+                <Button
                   className={style.addNew}
                   onClick={() => setToggle((prev) => !prev)}
+                  variant="link"
                 >
                   <img src={closeIcon} alt="close-icon" />
-                </div>
+                </Button>
               </div>
               {isError ? (
                 <Alert variant={"danger"}>

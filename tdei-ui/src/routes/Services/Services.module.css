@@ -75,13 +75,33 @@
   align-items: center;
 }
 .editButton {
+  display: flex;
   color: #42526e;
   font-size: 14px;
   margin-right: 10px;
+  text-decoration: none;
+  align-items: center;
+  background: #f5f5f5;
+}
+.editButton:hover,
+.editButton:active,
+.editButton:focus-visible {
+  color: #42526e !important;
+  background: #f5f5f5 !important;
 }
 .deleteButton {
+  display: flex;
   color: #c65d03;
   font-size: 14px;
+  text-decoration: none;
+  align-items: center;
+  background: #f5f5f5;
+}
+.deleteButton:hover,
+.deleteButton:active,
+.deleteButton:focus-visible {
+  color: #c65d03 !important;
+  background: #f5f5f5 !important;
 }
 .btnText {
   margin-left: 5px;
