@@ -32,7 +32,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
+.roleListBlock:hover {
+  border-color: #4da9ad;
+  background: #4da9ad14;
+}
+
 .active {
   border-color: #4da9ad;
   background: #4da9ad14;
@@ -43,8 +49,6 @@
 }
 
 .successIcon {
-  width: 23px;
-  height: 23px;
   display: none;
 }
 
@@ -60,4 +64,10 @@
 .roleDesc {
   font-size: 14px;
   color: #83879b;
+}
+.iconSelected {
+  width: 25px;
+}
+.roleInfoBlock {
+  text-align: left;
 }

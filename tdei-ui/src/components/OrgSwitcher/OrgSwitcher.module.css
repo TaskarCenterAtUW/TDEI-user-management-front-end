@@ -1,7 +1,3 @@
-.customDropdown {
-  max-width: 160px;
-}
-
 .selectedOrgName {
   white-space: nowrap;
   overflow: hidden;
@@ -12,6 +8,11 @@
 .customElement {
   cursor: pointer;
   display: flex;
+  max-width: 165px;
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  color: #fff;
 }
 
 .customElement [data-arrow="upArrow"] {

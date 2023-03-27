@@ -38,6 +38,12 @@
 
 .userProfile {
   display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  color: #fff;
+  font-size: 14px;
 }
 .userProfile > div {
   padding-right: 1rem;

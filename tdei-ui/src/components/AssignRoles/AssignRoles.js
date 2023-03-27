@@ -158,7 +158,7 @@ const AssignRoles = (props) => {
                           })}
                         >
                           {data?.data?.map((val) => (
-                            <div
+                            <button type="button"
                               className={clsx(style.roleListBlock, {
                                 [style.active]: form.values.roles?.includes(
                                   val.name
@@ -177,16 +177,16 @@ const AssignRoles = (props) => {
                               }}
                               key={val.name}
                             >
-                              <div>
+                              <div className={style.roleInfoBlock}>
                                 <div className={style.roleName}>{val.name}</div>
                                 <div className={style.roleDesc}>
                                   {val.description}
                                 </div>
                               </div>
                               <div className={style.successIcon}>
-                                <img src={successIcon} alt="success-icon" />
+                                <img src={successIcon} className={style.iconSelected} alt="success-icon" />
                               </div>
-                            </div>
+                            </button>
                           ))}
                         </div>
                         <Form.Control.Feedback type="invalid">

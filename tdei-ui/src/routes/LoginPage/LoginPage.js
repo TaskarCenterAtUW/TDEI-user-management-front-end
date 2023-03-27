@@ -109,7 +109,7 @@ const LoginPage = () => {
                         className="mb-3 d-flex justify-content-between align-items-center"
                         controlId="formBasicCheckbox"
                       >
-                        <Form.Check type="checkbox" label="Remember me" />
+                        {/* <Form.Check type="checkbox" label="Remember me" /> */}
                         {/* <Button className="tdei-primary-link" variant="link">Reset Password?</Button> */}
                       </Form.Group>
                       <Button
@@ -134,7 +134,7 @@ const LoginPage = () => {
           </Card>
         </div>
       </Row>
-      <div className={style.appVersionText}>V 0.1.3</div>
+      <div className={style.appVersionText}>V 0.1.4</div>
     </div>
   );
 };

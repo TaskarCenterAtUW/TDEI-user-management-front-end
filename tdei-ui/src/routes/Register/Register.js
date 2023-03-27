@@ -28,8 +28,8 @@ const Register = () => {
   const validationSchema = yup.object().shape({
     email: yup
       .string()
-      .email("Must be valid email")
-      .required("Email is required"),
+      .email("Invalid email Id")
+      .required("Please enter email Id"),
     password: yup
       .string()
       .matches(
