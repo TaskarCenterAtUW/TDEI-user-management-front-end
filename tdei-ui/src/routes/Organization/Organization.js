@@ -114,7 +114,8 @@ const Organization = () => {
         <div className={style.title}>
           <div className="page-header-title">Organizations</div>
           <div className="page-header-subtitle">
-            Here are the organizations currently in the <span className="fw-bold">TDEI system</span>.
+            Here are the organizations currently in the{" "}
+            <span className="fw-bold">TDEI system</span>.
           </div>
         </div>
         <div>
@@ -239,10 +240,10 @@ const Organization = () => {
 };
 
 export const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
-  <div onClick={onClick} ref={ref}>
+  <button onClick={onClick} ref={ref} className="btn btn-link">
     <img src={menuVertical} className={style.menuVertical} alt="menu-verical" />
     {children}
-  </div>
+  </button>
 ));
 
 const DisplayList = ({ list, handlePoc }) => {
@@ -286,13 +287,13 @@ const DisplayList = ({ list, handlePoc }) => {
           ) : null}
         </div>
       ) : (
-        <div
+        <Button
           className={style.notAssigned}
           id={list.tdei_org_id}
           onClick={handlePoc}
         >
           Not Assigned
-        </div>
+        </Button>
       )}
     </>
   );

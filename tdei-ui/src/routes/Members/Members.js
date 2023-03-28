@@ -59,7 +59,11 @@ const Members = () => {
         <div className={style.title}>
           <div className="page-header-title">Members</div>
           <div className="page-header-subtitle">
-            Here are the members currently in the <span className="fw-bold">{user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}</span>.
+            Here are the members currently in the{" "}
+            <span className="fw-bold">
+              {user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}
+            </span>
+            .
           </div>
         </div>
         <div>
@@ -89,12 +93,12 @@ const Members = () => {
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
-              {values?.data?.length === 0 ? 
-              <div className="d-flex align-items-center mt-4">
-                <img src={iconNoData} className={style.noDataIcon} />
-                <div className={style.noDataText}>No members found..!</div>
-              </div> 
-             : null}
+              {values?.data?.length === 0 ? (
+                <div className="d-flex align-items-center mt-4">
+                  <img src={iconNoData} className={style.noDataIcon} />
+                  <div className={style.noDataText}>No members found..!</div>
+                </div>
+              ) : null}
               {values?.data?.map((list) => (
                 <div className={style.gridContainer} key={list.user_id}>
                   <div className={style.details}>

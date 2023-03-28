@@ -92,7 +92,7 @@ const Dropdown = ({
           "is-invalid": form.touched[field.name] && !!form.errors[field.name],
         })}
       >
-        <div
+        <button type="button"
           ref={inputRef}
           onClick={handleInputClick}
           className={style.dropdownInput}
@@ -103,7 +103,7 @@ const Dropdown = ({
               <Icon />
             </div>
           </div>
-        </div>
+        </button>
         {showMenu && (
           <div className={style.dropdownMenu}>
             {isSearchable && (
@@ -121,28 +121,30 @@ const Dropdown = ({
               {options.map((option, index) => {
                 if (options.length === index + 1) {
                   return (
-                    <div
+                    <a href="#"
                       onClick={() => onItemClick(option)}
                       key={option.tdei_org_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
                       ])}
                       ref={lastOrgListRef}
+                      tabIndex="0"
                     >
                       {option.org_name}
-                    </div>
+                    </a>
                   );
                 } else {
                   return (
-                    <div
+                    <a href="#"
                       onClick={() => onItemClick(option)}
                       key={option.tdei_org_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
                       ])}
+                      tabIndex="0"
                     >
                       {option.org_name}
-                    </div>
+                    </a>
                   );
                 }
               })}

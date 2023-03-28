@@ -99,7 +99,11 @@ const Services = () => {
         <div className={style.title}>
           <div className="page-header-title">Services</div>
           <div className="page-header-subtitle">
-            Here are the services currently in the <span className="fw-bold">{user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}</span>.
+            Here are the services currently in the{" "}
+            <span className="fw-bold">
+              {user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}
+            </span>
+            .
           </div>
         </div>
         {!user?.isAdmin ? (
@@ -149,12 +153,12 @@ const Services = () => {
             </div>
             {data?.pages?.map((values, i) => (
               <React.Fragment key={i}>
-                {values?.data?.length === 0 ? 
-                <div className="d-flex align-items-center mt-2">
-                  <img src={iconNoData} className={style.noDataIcon} />
-                  <div className={style.noDataText}>No service found..!</div>
-                </div> 
-                : null}
+                {values?.data?.length === 0 ? (
+                  <div className="d-flex align-items-center mt-2">
+                    <img src={iconNoData} className={style.noDataIcon} />
+                    <div className={style.noDataText}>No service found..!</div>
+                  </div>
+                ) : null}
                 {values?.data?.map((list) => (
                   <ListingBlock
                     id={list.tdei_service_id}
@@ -217,14 +221,22 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
         </div>
       </div>
       <div className={style.buttons}>
-        <div className={style.editButton} onClick={() => handleEdit(id)}>
+        <Button
+          className={style.editButton}
+          onClick={() => handleEdit(id)}
+          variant="link"
+        >
           <img src={iconEdit} alt="edit-icon" />
           <div className={style.btnText}>Edit</div>
-        </div>
-        <div className={style.deleteButton} onClick={() => handleDelete(id)}>
+        </Button>
+        <Button
+          className={style.deleteButton}
+          onClick={() => handleDelete(id)}
+          variant="link"
+        >
           <img src={iconDelete} alt="delete-icon" />
           <div className={style.btnText}>Delete</div>
-        </div>
+        </Button>
       </div>
     </div>
   );

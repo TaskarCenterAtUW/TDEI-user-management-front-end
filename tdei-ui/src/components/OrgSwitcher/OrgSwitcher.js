@@ -49,7 +49,7 @@ const OrgSwitcher = () => {
 };
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-  <div
+  <button type="button"
     ref={ref}
     onClick={(e) => {
       e.preventDefault();
@@ -62,7 +62,7 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
       <span data-arrow="downArrow">&#x25bc;</span>
       <span data-arrow="upArrow">&#x25B2;</span>
     </div>
-  </div>
+  </button>
 ));
 
 export default OrgSwitcher;

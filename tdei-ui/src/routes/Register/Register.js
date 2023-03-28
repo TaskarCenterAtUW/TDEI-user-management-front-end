@@ -26,7 +26,10 @@ const Register = () => {
   };
 
   const validationSchema = yup.object().shape({
-    email: yup.string().required("Email is required"),
+    email: yup
+      .string()
+      .email("Invalid email Id")
+      .required("Please enter email Id"),
     password: yup
       .string()
       .matches(
@@ -36,7 +39,7 @@ const Register = () => {
     phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
     confirm: yup
       .string()
-      .oneOf([yup.ref("password"), null], 'Confirm password does not match'),
+      .oneOf([yup.ref("password"), null], "Confirm password does not match"),
   });
 
   const handleCreateAccount = async ({

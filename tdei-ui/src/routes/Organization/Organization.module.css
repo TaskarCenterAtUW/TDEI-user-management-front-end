@@ -78,12 +78,19 @@
 .notAssigned {
   color: #ffffff;
   background-color: #6c757d;
+  border-color: #6c757d;
   border-radius: 20px;
   padding: 5px 15px;
   width: fit-content;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+}
+.notAssigned:hover,
+.notAssigned:active,
+.notAssigned:focus-visible {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
 }
 
 .pocList {
