@@ -49,7 +49,8 @@ const OrgSwitcher = () => {
 };
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-  <button type="button"
+  <button
+    type="button"
     ref={ref}
     onClick={(e) => {
       e.preventDefault();

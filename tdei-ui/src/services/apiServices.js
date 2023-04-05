@@ -1,7 +1,6 @@
 import axios from "axios";
 
-export const url =
-  "https://tdei-usermanagement-ts-dev.azurewebsites.net/api/v1";
+export const url = process.env.REACT_APP_URL;
 
 export async function postOrganisationCreation(data) {
   const res = await axios.post(`${url}/organization`, data);
@@ -44,6 +43,12 @@ export async function postAssignPoc(data) {
 
 export async function getRoles() {
   const res = await axios.get(`${url}/roles`);
+  return res.data;
+}
+
+export async function getApiKey({ queryKey }) {
+  const [, userId] = queryKey;
+  const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
   return res.data;
 }
 

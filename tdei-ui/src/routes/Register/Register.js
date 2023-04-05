@@ -51,16 +51,13 @@ const Register = () => {
   }) => {
     setLoading(true);
     try {
-      await axios.post(
-        "https://tdei-usermanagement-ts-dev.azurewebsites.net/api/v1/register",
-        {
-          firstName,
-          lastName,
-          email,
-          phone,
-          password,
-        }
-      );
+      await axios.post(`${process.env.REACT_APP_URL}/register`, {
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+      });
       auth.signin(
         { username: email, password },
         (data) => {
