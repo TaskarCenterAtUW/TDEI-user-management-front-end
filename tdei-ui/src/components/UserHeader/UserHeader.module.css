@@ -17,23 +17,24 @@
   margin-bottom: 5px;
 }
 .apiKey {
-  border-top: 1px dotted #4dace3;
-  margin-top: 25px;
-  padding-top: 25px;
+  border-top: 1px dashed #b5b5b5;
+  margin-top: 20px;
+  padding-top: 20px;
   color: #6e7897;
   display: flex;
   align-items: center;
 }
 .maskedKey {
-  border: 1px solid #6e7897;
-  background-color: rgb(238, 236, 236);
+  border: 1px solid #D0D7DB;
+  background-color: #DAE7EF;
   border-radius: 4px;
-  height: 20px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
-  margin-left: 5px;
+  padding: 5px 15px 5px 15px;
+  margin-left: 10px;
+  width: 475px;
 }
 .buttonContainer {
   display: flex;
@@ -41,14 +42,23 @@
 }
 
 .verticalLine {
-  border-right: 1px solid #6e7897;
-  margin: 0 5px;
+  border-right: 1px solid #d0d0d0;
+  margin: 0 10px;
 }
 
 .buttonContainer button,
 .buttonContainer button:hover,
 .buttonContainer button:active {
   text-decoration: none;
-  color: #6e7897;
   padding: 0;
+  font-size: 14px;
+  color: #6B7593;
+  font-weight: 600;
+}
+.keyVisible {
+  font-size: 14px;
+}
+.keyHidden {
+  margin-top: 8px;
+  font-size: 20px;
 }

@@ -47,16 +47,16 @@ const UserHeader = ({ roles }) => {
         </div>
       )}
       <div className={style.apiKey}>
-        <div>API Key: </div>
+        <div>My API Key </div>
         <div className={style.maskedKey}>
-          <div>{show ? API_KEY : maskedKey}</div>
+          {show ? <div className={style.keyVisible}>{API_KEY}</div> : <div className={style.keyHidden}>{maskedKey}</div>}
           <div className={style.buttonContainer}>
             <Button variant="link" onClick={() => setShow(true)}>
               Show
             </Button>
             <div className={style.verticalLine}></div>
             <CopyToClipboard text={API_KEY} onCopy={() => setCopy(true)}>
-              <Button variant="link">{copy ? "Copied" : "Copy"}</Button>
+              <Button variant="link">{copy ? "Copied!" : "Copy"}</Button>
             </CopyToClipboard>
           </div>
         </div>
