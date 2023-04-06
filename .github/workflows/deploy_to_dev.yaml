@@ -9,13 +9,13 @@ jobs:
   Build:
     environment: Development
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true    
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v2
       - name: Create env file
-        run : |
+        run: |
           touch tdei-ui/.env
-          echo REACT_APP_API_URL=${{ vars.REACT_APP_API_URL }} >> tdei-ui/.env
+          echo REACT_APP_URL=${{ vars.REACT_APP_URL }} >> tdei-ui/.env
           cat tdei-ui/.env
           npm -v
           node -v
@@ -38,13 +38,13 @@ jobs:
           docker push ${{ secrets.REGISTRY_DOMAIN }}/${{ secrets.REGISTRY_REPO }} --all-tags
   Deploy:
     needs: Build
-    environment: 
+    environment:
       name: Development
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to Dev
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        images: ${{ secrets.REGISTRY_DOMAIN }}/${{ secrets.REGISTRY_REPO }}:${{ github.sha }}
+      - name: Deploy to Dev
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: ${{ secrets.REGISTRY_DOMAIN }}/${{ secrets.REGISTRY_REPO }}:${{ github.sha }}
