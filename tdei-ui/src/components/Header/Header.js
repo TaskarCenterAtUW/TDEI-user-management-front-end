@@ -57,7 +57,12 @@ const Header = () => {
 };
 
 const ProfileImage = React.forwardRef(({ children, onClick }, ref) => (
-  <button type="button" onClick={onClick} ref={ref} className={style.userProfile}>
+  <button
+    type="button"
+    onClick={onClick}
+    ref={ref}
+    className={style.userProfile}
+  >
     {children}
     <img src={userIcon} className={style.userIcon} alt="user-icon" />
   </button>

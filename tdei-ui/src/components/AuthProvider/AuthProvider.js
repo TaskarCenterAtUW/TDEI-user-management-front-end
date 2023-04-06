@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
   ) => {
     try {
       const response = await axios.post(
-        "https://tdei-usermanagement-ts-dev.azurewebsites.net/api/v1/authenticate",
+        `${process.env.REACT_APP_URL}/authenticate`,
         {
           username,
           password,
