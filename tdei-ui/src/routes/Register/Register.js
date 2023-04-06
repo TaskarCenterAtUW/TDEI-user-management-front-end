@@ -51,7 +51,7 @@ const Register = () => {
   }) => {
     setLoading(true);
     try {
-      await axios.post(`${window.env.REACT_APP_URL}/register`, {
+      await axios.post(`${process.env.REACT_APP_URL}/register`, {
         firstName,
         lastName,
         email,
