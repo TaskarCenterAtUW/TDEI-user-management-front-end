@@ -17,12 +17,16 @@ jobs:
           touch tdei-ui/.env
           echo REACT_APP_API_URL=${{ vars.REACT_APP_API_URL }} >> tdei-ui/.env
           cat tdei-ui/.env
+          npm -v
+          node -v
+          ls tdei-ui
       - name: Build react app
         run: |
           cd tdei-ui && npm install
           rm -rf build/
           unset CI
           npm run build
+          ls build
       - uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.REGISTRY_DOMAIN }}
