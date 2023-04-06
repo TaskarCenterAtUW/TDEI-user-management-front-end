@@ -9,7 +9,7 @@ import { Button } from "react-bootstrap";
 import { maskString } from "maskdata";
 
 const UserHeader = ({ roles }) => {
-  const { data } = useApiKey();
+  const { data, isLoading } = useApiKey();
   const { user } = useAuth();
   const [show, setShow] = useState(false);
   const [copy, setCopy] = useState(false);
@@ -22,7 +22,8 @@ const UserHeader = ({ roles }) => {
   };
   const role = getRoles();
   const authorizedUser = user.isAdmin || !!roles?.length;
-  let API_KEY = "121212 21212 1212122 1212121";
+  console.log("api key---", data);
+  let API_KEY = data?.apiKey;
   const maskedKey = maskString(API_KEY, {
     maskAll: true,
     maskSpace: false,
@@ -46,22 +47,34 @@ const UserHeader = ({ roles }) => {
           roles assigned.
         </div>
       )}
-      {/* TODO: My API Key */}
-      {/* <div className={style.apiKey}>
-        <div>My API Key </div>
-        <div className={style.maskedKey}>
-          {show ? <div className={style.keyVisible}>{API_KEY}</div> : <div className={style.keyHidden}>{maskedKey}</div>}
-          <div className={style.buttonContainer}>
-            <Button variant="link" onClick={() => setShow(true)}>
-              Show
-            </Button>
-            <div className={style.verticalLine}></div>
-            <CopyToClipboard text={API_KEY} onCopy={() => setCopy(true)}>
-              <Button variant="link">{copy ? "Copied!" : "Copy"}</Button>
-            </CopyToClipboard>
+      {user.isAdmin ? null : (
+        <div className={style.apiKey}>
+          <div>My API Key </div>
+          <div className={style.maskedKey}>
+            {isLoading ? (
+              <span class={style.font14}>loading api key...</span>
+            ) : (
+              <>
+                {show ? (
+                  <div className={style.keyVisible}>{API_KEY}</div>
+                ) : (
+                  <div className={style.keyHidden}>{maskedKey}</div>
+                )}
+              </>
+            )}
+
+            <div className={style.buttonContainer}>
+              <Button variant="link" onClick={() => setShow(!show)}>
+                {show ? "Hide" : "Show" }
+              </Button>
+              <div className={style.verticalLine}></div>
+              <CopyToClipboard text={API_KEY} onCopy={() => setCopy(true)}>
+                <Button variant="link">{copy ? "Copied!" : "Copy"}</Button>
+              </CopyToClipboard>
+            </div>
           </div>
         </div>
-      </div> */}
+      )}
     </div>
   );
 };
