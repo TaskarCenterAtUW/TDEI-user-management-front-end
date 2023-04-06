@@ -20,6 +20,7 @@ jobs:
       - name: Build react app
         run: |
           cd tdei-ui && npm install
+          rm -rf build/
           unset CI
           npm run build
       - uses: azure/docker-login@v1
