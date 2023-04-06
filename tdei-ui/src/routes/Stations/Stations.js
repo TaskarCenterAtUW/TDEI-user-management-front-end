@@ -157,7 +157,11 @@ const Stations = () => {
               <React.Fragment key={i}>
                 {values?.data?.length === 0 ? (
                   <div className="d-flex align-items-center mt-2">
-                    <img src={iconNoData} className={style.noDataIcon} />
+                    <img
+                      src={iconNoData}
+                      className={style.noDataIcon}
+                      alt="no-data-icon"
+                    />
                     <div className={style.noDataText}>No station found..!</div>
                   </div>
                 ) : null}

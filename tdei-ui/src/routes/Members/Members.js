@@ -95,7 +95,11 @@ const Members = () => {
             <React.Fragment key={i}>
               {values?.data?.length === 0 ? (
                 <div className="d-flex align-items-center mt-4">
-                  <img src={iconNoData} className={style.noDataIcon} />
+                  <img
+                    src={iconNoData}
+                    className={style.noDataIcon}
+                    alt="no-member-icon"
+                  />
                   <div className={style.noDataText}>No members found..!</div>
                 </div>
               ) : null}

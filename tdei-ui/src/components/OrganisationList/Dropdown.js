@@ -92,7 +92,8 @@ const Dropdown = ({
           "is-invalid": form.touched[field.name] && !!form.errors[field.name],
         })}
       >
-        <button type="button"
+        <button
+          type="button"
           ref={inputRef}
           onClick={handleInputClick}
           className={style.dropdownInput}
@@ -121,7 +122,9 @@ const Dropdown = ({
               {options.map((option, index) => {
                 if (options.length === index + 1) {
                   return (
-                    <a href="#"
+                    // eslint-disable-next-line
+                    <a
+                      href="#"
                       onClick={() => onItemClick(option)}
                       key={option.tdei_org_id}
                       className={clsx(style.dropdownItem, [
@@ -135,7 +138,9 @@ const Dropdown = ({
                   );
                 } else {
                   return (
-                    <a href="#"
+                    // eslint-disable-next-line
+                    <a
+                      href="#"
                       onClick={() => onItemClick(option)}
                       key={option.tdei_org_id}
                       className={clsx(style.dropdownItem, [

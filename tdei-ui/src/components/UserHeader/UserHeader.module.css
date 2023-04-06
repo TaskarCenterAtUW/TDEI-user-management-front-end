@@ -16,3 +16,49 @@
   font-size: 18px;
   margin-bottom: 5px;
 }
+.apiKey {
+  border-top: 1px dashed #b5b5b5;
+  margin-top: 20px;
+  padding-top: 20px;
+  color: #6e7897;
+  display: flex;
+  align-items: center;
+}
+.maskedKey {
+  border: 1px solid #D0D7DB;
+  background-color: #DAE7EF;
+  border-radius: 4px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 15px 5px 15px;
+  margin-left: 10px;
+  width: 475px;
+}
+.buttonContainer {
+  display: flex;
+  margin-left: 20px;
+}
+
+.verticalLine {
+  border-right: 1px solid #d0d0d0;
+  margin: 0 10px;
+}
+
+.buttonContainer button,
+.buttonContainer button:hover,
+.buttonContainer button:active {
+  text-decoration: none;
+  padding: 0;
+  font-size: 14px;
+  color: #6B7593;
+  font-weight: 600;
+}
+.keyVisible {
+  font-size: 14px;
+}
+.keyHidden {
+  margin-top: 8px;
+  font-size: 20px;
+}
