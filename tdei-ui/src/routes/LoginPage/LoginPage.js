@@ -10,7 +10,6 @@ import { Formik } from "formik";
 import * as yup from "yup";
 
 const LoginPage = () => {
-  console.log(`${process.env.REACT_APP_URL}`)
   const [loading, setLoading] = React.useState(false);
   const location = useLocation();
   const auth = useAuth();
