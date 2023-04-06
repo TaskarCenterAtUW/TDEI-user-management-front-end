@@ -46,7 +46,8 @@ const UserHeader = ({ roles }) => {
           roles assigned.
         </div>
       )}
-      <div className={style.apiKey}>
+      {/* TODO: My API Key */}
+      {/* <div className={style.apiKey}>
         <div>My API Key </div>
         <div className={style.maskedKey}>
           {show ? <div className={style.keyVisible}>{API_KEY}</div> : <div className={style.keyHidden}>{maskedKey}</div>}
@@ -60,7 +61,7 @@ const UserHeader = ({ roles }) => {
             </CopyToClipboard>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
