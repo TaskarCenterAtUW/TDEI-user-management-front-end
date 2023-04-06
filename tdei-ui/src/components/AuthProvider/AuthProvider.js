@@ -4,6 +4,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const AuthProvider = ({ children }) => {
+  console.log(window.env.REACT_APP_URL)
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = React.useState(null);
@@ -37,7 +38,7 @@ const AuthProvider = ({ children }) => {
   ) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_URL}/authenticate`,
+        `${window.env.REACT_APP_URL}/authenticate`,
         {
           username,
           password,

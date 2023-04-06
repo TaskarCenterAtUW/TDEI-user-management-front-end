@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const url = process.env.REACT_APP_URL;
+export const url = window.env.REACT_APP_URL;
 
 export async function postOrganisationCreation(data) {
   const res = await axios.post(`${url}/organization`, data);
