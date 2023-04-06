@@ -26,7 +26,7 @@ jobs:
           rm -rf build/
           unset CI
           npm run build
-          ls
+          ls build
       - uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.REGISTRY_DOMAIN }}
