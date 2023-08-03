@@ -35,7 +35,7 @@ const LoginPage = () => {
       (err) => {
         console.error(err);
         setLoading(false);
-        dispatch(show({ message: "Error in signing in", type: "danger" }));
+        dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
       }
     );
   };

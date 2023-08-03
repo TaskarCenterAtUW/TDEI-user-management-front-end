@@ -4,15 +4,17 @@ import { url } from "./apiServices";
 async function refreshRequest() {
   try {
     const token = localStorage.getItem("refreshToken");
-    const data = await axios({
-      url: `${url}/refresh-token`,
-      method: "POST",
-      headers: {
-        refresh_token: token,
-      },
-    });
-    localStorage.setItem("accessToken", data?.data?.access_token);
-    localStorage.setItem("refreshToken", data?.data?.refresh_token);
+    if(token){
+      const data = await axios({
+        url: `${url}/refresh-token`,
+        method: "POST",
+        headers: {
+          refresh_token: token,
+        },
+      });
+      localStorage.setItem("accessToken", data?.data?.access_token);
+      localStorage.setItem("refreshToken", data?.data?.refresh_token);
+    }
   } catch (e) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
