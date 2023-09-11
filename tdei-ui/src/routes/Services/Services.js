@@ -21,6 +21,7 @@ import iconDelete from "./../../assets/img/icon-delete.svg";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedOrg } from "../../selectors";
+import ClipboardCopy from "./ClipBoardCopy";
 
 const Services = () => {
   const selectedOrg = useSelector(getSelectedOrg);
@@ -222,6 +223,9 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
         <div>
           <div className="tdei-bold-name">{name}</div>
           <div className="tdei-name-desc">No description added</div>
+          <div>
+            <ClipboardCopy copyText={id} />
+          </div>
         </div>
       </div>
       <div className={style.buttons}>
