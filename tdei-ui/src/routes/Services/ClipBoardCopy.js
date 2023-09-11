@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import copyIcon from "../../assets/img/copy-icon.svg";
-import copiedIcon from "../../assets/img/clipboard-copied.svg"
+import { Button } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import style from "../../components/UserHeader/UserHeader.module.css"
 ///
 /// Copy to ClipBoard Component
 ///
@@ -29,22 +30,17 @@ function ClipboardCopy({ copyText }) {
       });
   }
   return (
-
-    <div className="input-group" style={{
-      minWidth: "400px",
-      marginTop: "10px"
-    }}>
-      <input className="form-control" type="text" value={copyText} readOnly />
-      <div className="input-group-append">
-        <button className="btn btn-outline-secondary" style={{
-          borderRadius: "0px 5px 5px 0px", borderLeft: "none",
-          borderColor: "lightgray"
-        }} onClick={handleCopyClick} alt="Copy ID">
-          <img src={ isCopied? copiedIcon : copyIcon} alt="Copy" />
-        </button>
+    <div className={style.apiKey}>
+      <div>Id : </div>
+      <div className={style.maskedKey}>
+        <div className={style.keyVisible}>{copyText}</div>
+        <div className={style.buttonContainer}>
+          <CopyToClipboard text={copyText} onCopy={() => handleCopyClick()}>
+            <Button variant="link">{isCopied ? "Copied!" : "Copy"}</Button>
+          </CopyToClipboard>
+        </div>
       </div>
     </div>
-
   );
 }
 export default ClipboardCopy;
