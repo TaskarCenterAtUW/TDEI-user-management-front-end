@@ -10,7 +10,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoicmFqZXNoa2FudGlwdWRpMTIzNCIsImEiOiJjbGdqbWI3ODgwdnJ4M3BwZ2NvMmc1bnJ6In0.7pYEjYMQFucsipP71biCqg';
 
-export default function MapBox({onGeoJsonAdded}) {
+export default function MapBox({geojson,onGeoJsonAdded}) {
     const [zoom, setZoom] = useState(9);
     const [generatedPolygon, setGeneratedPolygon] = useState();
 
@@ -62,6 +62,7 @@ export default function MapBox({onGeoJsonAdded}) {
             document.getElementById('json').innerHTML = JSON.stringify(jsonObject, null, 2);
             onGeoJsonAdded(jsonObject);
         }
+        document.getElementById('json').innerHTML = JSON.stringify(geojson, null, 2);
         return () => map.remove();
     }, [onGeoJsonAdded,zoom]);
     return (

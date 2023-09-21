@@ -194,8 +194,7 @@ const Maps = () => {
                                 </Form.Group>
                                 <div className={style.apiKey}>
                                     <Form.Label>Station Location</Form.Label>
-                                    <p>{JSON.stringify(geoJson)}</p>
-                                    <MapBox onGeoJsonAdded={handleGeoJson} />
+                                    <MapBox geojson={geoJson} onGeoJsonAdded={handleGeoJson} />
                                 </div>
                             </Container>
                         </Form>
