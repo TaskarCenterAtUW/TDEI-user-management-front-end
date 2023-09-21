@@ -51,7 +51,41 @@ export const POC_SIDE_NAV = [
     linkName: "Members",
     to: "/members",
     icon: membersIcon,
-  },
+  }
 ];
 
 export const POC = "poc";
+
+export const GEOJSON = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 0,
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+};

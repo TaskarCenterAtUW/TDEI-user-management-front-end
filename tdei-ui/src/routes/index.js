@@ -9,6 +9,7 @@ import Organization from "./Organization";
 import Services from "./Services";
 import Stations from "./Stations";
 import Members from "./Members";
+import Maps from "./Maps";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 
@@ -30,6 +31,7 @@ const Router = () => {
             <Route path="/stations" element={<Stations />} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}
             <Route path="*" element={<NotFound />} />
+            <Route path="/maps" element={<Maps />} />           
           </Route>
         </Route>
       </>

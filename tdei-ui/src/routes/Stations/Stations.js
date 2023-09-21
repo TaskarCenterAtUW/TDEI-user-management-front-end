@@ -20,6 +20,8 @@ import { ListingBlock } from "../Services/Services";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedOrg } from "../../selectors";
+import { useNavigate } from 'react-router-dom';
+
 
 const Stations = () => {
   const selectedOrg = useSelector(getSelectedOrg);
@@ -31,6 +33,7 @@ const Stations = () => {
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const navigate = useNavigate();
 
   const {
     data = [],
@@ -85,12 +88,14 @@ const Stations = () => {
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    setShowCreateStation(true);
+    setShowCreateStation(false);
+    navigate('/maps', { state: dataToEdit });
   };
 
   const handleCreate = () => {
     setSelectedData({});
-    setShowCreateStation(true);
+    setShowCreateStation(false);
+    navigate('/maps');
   };
   return (
     <Layout>
