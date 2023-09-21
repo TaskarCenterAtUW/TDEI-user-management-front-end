@@ -18,6 +18,7 @@ import { useQueryClient } from "react-query";
 import style from "./Maps.module.css";
 import { useNavigate, useLocation } from 'react-router-dom';
 import {GEOJSON} from '../../utils'
+import "./Map.css"
 
 const Maps = () => {
     const queryClient = useQueryClient();

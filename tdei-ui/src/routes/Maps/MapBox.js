@@ -37,8 +37,8 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
             controls: {
                 polygon: true,
                 trash: true,
-                line_string: true,
-                point: true
+                line_string: false,
+                point: false
             },
         });
         map.addControl(
@@ -73,26 +73,29 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
         <div className={style.mapbox}>
             <div className="row">
                 <div className="col-7">
+                    <div className='mapbox'>
+                    <div className='mapbox-container'>
                     <div id='map' className={style.mapContainer}/>
+                    </div>
+                    </div>
                 </div>
                 <div className="col-5">
                     <div className={style.jsonContent}>
                         <Box
-                            sx={{
-                                position: 'relative',
-                                backgroundColor: '#f7f7f7',
-                                padding: '20px',
-                                minHeight: '200px',
-                                height: 500,
-                                overflow: "hidden",
-                                overflowY: "scroll",
-                                mb: 2,
-                                display: "flex",
-                                flexDirection: "column",
-                                marginTop: "0%",
-                            }}
+                            // sx={{
+                            //     position: 'relative',
+                            //     padding: '20px',
+                            //     minHeight: '200px',
+                            //     height: 500,
+                            //     overflow: "hidden",
+                            //     overflowY: "scroll",
+                            //     mb: 2,
+                            //     display: "flex",
+                            //     flexDirection: "column",
+                            //     marginTop: "0%",
+                            // }}
                         >
-                            <Button
+                            {/* <Button
                                 sx={{
                                     position: 'absolute',
                                     top: '8px',
@@ -108,7 +111,7 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
                             onClick={handleCopyToClipboard}
                             >
                                 Copy
-                            </Button>
+                            </Button> */}
                             <pre id='json' />
                         </Box>
                     </div>
