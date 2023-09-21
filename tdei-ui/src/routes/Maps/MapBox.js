@@ -16,7 +16,7 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
 
     const handleCopyToClipboard = () => {
         // @ts-ignore
-        if (generatedPolygon != undefined) {
+        if (generatedPolygon !== undefined) {
             navigator.clipboard.writeText(JSON.stringify(generatedPolygon))
         }else{
             navigator.clipboard.writeText(JSON.stringify(geojson))
