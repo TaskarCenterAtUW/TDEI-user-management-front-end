@@ -16,7 +16,11 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
 
     const handleCopyToClipboard = () => {
         // @ts-ignore
-        navigator.clipboard.writeText(JSON.stringify(generatedPolygon))
+        if (generatedPolygon != undefined) {
+            navigator.clipboard.writeText(JSON.stringify(generatedPolygon))
+        }else{
+            navigator.clipboard.writeText(JSON.stringify(geojson))
+        }
       };
     
 
@@ -64,7 +68,7 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
         }
         document.getElementById('json').innerHTML = JSON.stringify(geojson, null, 2);
         return () => map.remove();
-    }, [onGeoJsonAdded,zoom]);
+    }, [onGeoJsonAdded]);
     return (
         <div className={style.mapbox}>
             <div className="row">

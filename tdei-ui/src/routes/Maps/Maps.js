@@ -44,7 +44,7 @@ const Maps = () => {
                     station_name: data?.station_name || "",
                     polygon: data?.polygon || GEOJSON
                 });
-                setGeoJson(data?.polygon || {})
+                setGeoJson(data?.polygon || GEOJSON)
             }
         }
     }, [selectedOrg, user.isAdmin, data]);
@@ -63,6 +63,7 @@ const Maps = () => {
                     } successfully. ${data?.polygon}`,
             })
         );
+        navigate(-1);
     };
     const onError = (err) => {
         console.error("error message", err);
@@ -73,6 +74,7 @@ const Maps = () => {
                 type: "danger",
             })
         );
+        navigate(-1);
     };
     const { isLoading, mutate } = useCreateStation({ onSuccess, onError });
     const { isLoading: isUpdateLoading, mutate: updateStation } =
@@ -87,7 +89,11 @@ const Maps = () => {
                 polygon: geoJson
             });
         } else {
-            mutate(values);
+            mutate({                
+                station_name: values.station_name,
+                tdei_station_id: data?.tdei_station_id,
+                tdei_org_id: values.tdei_org_id,
+                polygon: geoJson});
         }
     };
 
@@ -117,7 +123,6 @@ const Maps = () => {
 
     const handleGeoJson = (data) => {
         setGeoJson(data);
-        alert(data);
     };
 
     return (
