@@ -3,60 +3,60 @@ import { Button, Form } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import { getSelectedOrg } from "../../selectors";
-import MapBox from "./MapBox";
+import MapBox from "../Maps/MapBox";
 import { useDispatch, useSelector } from "react-redux";
-import useCreateStation from "../../hooks/station/useCreateStation";
+import useCreateService from "../../hooks/service/useCreateService";
 import { useAuth } from "../../hooks/useAuth";
 import { show } from "../../store/notification.slice";
 import { show as showModal } from "../../store/notificationModal.slice";
 import OrgList from "../../components/OrganisationList/OrgList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
-import useUpdateStation from "../../hooks/station/useUpdateStation";
-import { GET_STATIONS } from "../../utils";
+import useUpdateSevice from "../../hooks/service/useUpdateService";
 import { useQueryClient } from "react-query";
-import style from "./Maps.module.css";
+import style from "../Maps/Maps.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { GEOJSON } from '../../utils'
-import "./Map.css"
-import { getStation } from "../../services";
+import "../Maps/Map.css"
+import { GET_SERVICES } from "../../utils";
+import { getService } from "../../services";
 
-const CreateUpdateStation = () => {
+const CreateUpdateService = () => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    var data = {};
     const selectedOrg = useSelector(getSelectedOrg);  
     const idData = useParams();
     const [geoJson, setGeoJson] = useState(GEOJSON);
-    const [stationData, setStationData] = React.useState({
+    const [serviceData, setServiceData] = React.useState({
+        service_name: "",
         tdei_org_id: selectedOrg.tdei_org_id,
-        station_name: "",
         polygon: GEOJSON
-    });
+      });
     const { user } = useAuth();
    
     console.log("Params ",idData['id']);
     React.useEffect(()=>{
         if(idData['id'] !== undefined){
-            getStation(idData['id']).then((stations)=>{
-                console.log(stations);
-                setStationData(stations.data[0]);
+            getService(idData['id']).then((services)=>{
+                console.log(services);
+                setServiceData(services.data[0]);
+                setGeoJson(services.data[0].polygon)
             })
         }
     },[idData]);
 
     const validationSchema = yup.object().shape({
         tdei_org_id: yup.string().required("Organization Name is required"),
-        station_name: yup.string().required("Station Name is required"),
-    });
+        service_name: yup.string().required("Service Name is required"),
+      });
 
     const onSuccess = (data) => {
-        console.log("suucessfully created", data);
-        queryClient.invalidateQueries({ queryKey: [GET_STATIONS] });
+        console.log("sucessfully created", data);
+        queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
         dispatch(
             showModal({
-                message: `Station ${stationData?.tdei_station_id ? "updated" : "created"
+                message: `Service ${serviceData?.tdei_service_id ? "updated" : "created"
                     } successfully.`,
             })
         );
@@ -66,30 +66,31 @@ const CreateUpdateStation = () => {
         console.error("error message", err);
         dispatch(
             show({
-                message: `Error in ${stationData?.tdei_station_id ? "updating" : "creating"
-                    } station`,
+                message: `Error in ${serviceData?.tdei_service_id ? "updating" : "creating"
+                    } Service`,
                 type: "danger",
             })
         );
         navigate(-1);
     };
-    const { isLoading, mutate } = useCreateStation({ onSuccess, onError });
-    const { isLoading: isUpdateLoading, mutate: updateStation } =
-        useUpdateStation({ onSuccess, onError });
+    const { isLoading, mutate } = useCreateService({ onSuccess, onError });
+  const { isLoading: isUpdateLoading, mutate: updateService } = useUpdateSevice(
+    { onSuccess, onError }
+  );
 
-    const handleCreateStation = (values) => {
-        if (stationData?.tdei_station_id) {
-            updateStation({
-                station_name: values.station_name? values.station_name : "",
-                tdei_station_id: stationData?.tdei_station_id ? stationData?.tdei_station_id : "",
+    const handleCreateService = (values) => {
+        if (serviceData?.tdei_service_id) {
+            updateService({
+                service_name: values.service_name? values.service_name : "",
+                tdei_service_id: serviceData?.tdei_service_id ? serviceData?.tdei_service_id : "",
                 tdei_org_id: values.tdei_org_id? values.tdei_org_id : "",
                 polygon: geoJson.features.length === 0 ? GEOJSON : geoJson
             });
         } else {
             console.log("geoJson", geoJson);
             mutate({
-                station_name: values.station_name,
-                tdei_station_id: stationData?.tdei_station_id,
+                service_name: values.service_name,
+                tdei_service_id: serviceData?.tdei_service_id,
                 tdei_org_id: values.tdei_org_id,
                 polygon: geoJson
             });
@@ -111,9 +112,9 @@ const CreateUpdateStation = () => {
     };
     const getHeader = () => {
         if (idData['id'] !== undefined) {
-            return "Edit Station";
+            return "Edit Service";
         } else {
-            return "Create New Station";
+            return "Create New Service";
         }
     };
     const handlePop = () => {
@@ -124,9 +125,9 @@ const CreateUpdateStation = () => {
         setGeoJson(data);
     };
     const getJson = () => {
-        if (selectedOrg?.tdei_org_id && stationData?.polygon !== undefined ){
-            return stationData?.polygon;
-        }else if (!selectedOrg?.tdei_org_id && stationData?.polygon === undefined ){
+        if (selectedOrg?.tdei_org_id && serviceData?.polygon !== undefined ){
+            return serviceData?.polygon;
+        }else if (!selectedOrg?.tdei_org_id && serviceData?.polygon === undefined ){
             return GEOJSON;
         }
         return geoJson
@@ -135,8 +136,8 @@ const CreateUpdateStation = () => {
     return (
         <Layout>
             <Formik
-                initialValues={stationData}
-                onSubmit={handleCreateStation}
+                initialValues={serviceData}
+                onSubmit={handleCreateService}
                 validationSchema={validationSchema}
                 enableReinitialize
             >
@@ -190,23 +191,23 @@ const CreateUpdateStation = () => {
                                     )}
                                 </Form.Group>
                                 <Form.Group className="col-7 mb-3" controlId="name">
-                                    <Form.Label>Station Name</Form.Label>
+                                    <Form.Label>Service Name</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Enter Station Name"
-                                        name="station_name"
+                                        placeholder="Enter Service Name"
+                                        name="service_name"
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        value={values.station_name}
-                                        isInvalid={touched.station_name && !!errors.station_name}
+                                        value={values.service_name}
+                                        isInvalid={touched.service_name && !!errors.service_name}
                                     />
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.station_name}
+                                        {errors.service_name}
                                     </Form.Control.Feedback>
                                 </Form.Group>
                                 <div className={style.apiKey}>
-                                    <Form.Label>Station Location</Form.Label>
-                                    <MapBox isEdit = {stationData?.tdei_station_id ? true : false} geojson={getJson()} onGeoJsonAdded={handleGeoJson} />
+                                    <Form.Label>Service Location</Form.Label>
+                                    <MapBox isEdit = {serviceData?.tdei_service_id ? true : false} geojson={getJson()} onGeoJsonAdded={handleGeoJson} />
                                 </div>
                             </Container>
                         </Form>
@@ -218,4 +219,4 @@ const CreateUpdateStation = () => {
 };
 
 
-export default CreateUpdateStation;
+export default CreateUpdateService;

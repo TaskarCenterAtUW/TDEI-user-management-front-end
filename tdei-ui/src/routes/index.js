@@ -9,8 +9,8 @@ import Organization from "./Organization";
 import Services from "./Services";
 import Stations from "./Stations";
 import Members from "./Members";
-import CreateUpdateStation from "./Maps/CreateUpdateStation";
-import CreateUpdateService from "./Maps/CreateUpdateService";
+import CreateUpdateStation from "./Stations/CreateUpdateStation";
+import CreateUpdateService from "./Services/CreateUpdateService";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 
