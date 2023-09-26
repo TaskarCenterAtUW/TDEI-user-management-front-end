@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "react-query";
 import { useSelector } from "react-redux";
-import { getSelectedOrg , getSelectedStation } from "../../selectors";
+import { getSelectedOrg } from "../../selectors";
 import { getStations } from "../../services";
 import { GET_STATIONS } from "../../utils";
 

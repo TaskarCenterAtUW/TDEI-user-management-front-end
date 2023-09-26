@@ -119,6 +119,22 @@ export async function getServices(searchText, tdei_org_id, pageParam = 1) {
     pageParam,
   };
 }
+export async function getService(tdei_service_id, tdei_org_id, pageParam = 1) {
+  const res = await axios({
+    url: `${url}/service`,
+    params: {
+      tdei_service_id,
+      page_no: pageParam,
+      page_size: 10,
+      tdei_org_id: tdei_org_id,
+    },
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
 
 export async function getStations(searchText, tdei_org_id ,pageParam = 1) {
   const res = await axios({

@@ -22,6 +22,7 @@ import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedOrg } from "../../selectors";
 import ClipboardCopy from "./ClipBoardCopy";
+import { useNavigate } from 'react-router-dom';
 
 const Services = () => {
   const selectedOrg = useSelector(getSelectedOrg);
@@ -33,7 +34,8 @@ const Services = () => {
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-
+  const navigate = useNavigate();
+  
   const {
     data = [],
     isError,
@@ -87,12 +89,12 @@ const Services = () => {
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    setShowCreateService(true);
+    navigate('/service/edit/'+id);
   };
 
   const handleCreate = () => {
     setSelectedData({});
-    setShowCreateService(true);
+    navigate('/CreateUpdateService');
   };
   return (
     <Layout>

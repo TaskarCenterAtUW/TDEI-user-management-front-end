@@ -16,22 +16,17 @@ import useUpdateStation from "../../hooks/station/useUpdateStation";
 import { GET_STATIONS } from "../../utils";
 import { useQueryClient } from "react-query";
 import style from "./Maps.module.css";
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { GEOJSON } from '../../utils'
 import "./Map.css"
-import useGetStation from "../../hooks/station/useGetStation";
 import { getStation } from "../../services";
 
-const Maps = () => {
+const CreateUpdateStation = () => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
-    // const data = location.state;
     var data = {};
-    const selectedOrg = useSelector(getSelectedOrg);
-    // const [stationData, setStationData] = useState()
-    
+    const selectedOrg = useSelector(getSelectedOrg);  
     const idData = useParams();
     const [geoJson, setGeoJson] = useState(GEOJSON);
     const [stationData, setStationData] = React.useState({
@@ -49,7 +44,7 @@ const Maps = () => {
                 setStationData(stations.data[0]);
             })
         }
-    },[]);
+    },[idData]);
 
     const validationSchema = yup.object().shape({
         tdei_org_id: yup.string().required("Organization Name is required"),
@@ -61,8 +56,8 @@ const Maps = () => {
         queryClient.invalidateQueries({ queryKey: [GET_STATIONS] });
         dispatch(
             showModal({
-                message: `Station ${data?.tdei_station_id ? "updated" : "created"
-                    } successfully. ${data?.polygon}`,
+                message: `Station ${stationData?.tdei_station_id ? "updated" : "created"
+                    } successfully.`,
             })
         );
         navigate(-1);
@@ -71,7 +66,7 @@ const Maps = () => {
         console.error("error message", err);
         dispatch(
             show({
-                message: `Error in ${data?.tdei_station_id ? "updating" : "creating"
+                message: `Error in ${stationData?.tdei_station_id ? "updating" : "creating"
                     } station`,
                 type: "danger",
             })
@@ -223,4 +218,4 @@ const Maps = () => {
 };
 
 
-export default Maps;
+export default CreateUpdateStation;

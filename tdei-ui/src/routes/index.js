@@ -9,7 +9,8 @@ import Organization from "./Organization";
 import Services from "./Services";
 import Stations from "./Stations";
 import Members from "./Members";
-import Maps from "./Maps";
+import CreateUpdateStation from "./Maps/CreateUpdateStation";
+import CreateUpdateService from "./Maps/CreateUpdateService";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 
@@ -31,8 +32,11 @@ const Router = () => {
             <Route path="/stations" element={<Stations />} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}
             <Route path="*" element={<NotFound />} />
-            <Route path="station/edit/:id" element={<Maps />}/>       
-            <Route path="/maps" element={<Maps />}/>          
+            <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
+            <Route path="/CreateUpdateStation" element={<CreateUpdateStation />}/>
+            <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
+            <Route path="/CreateUpdateService" element={<CreateUpdateService />}/>   
+            <Route path="service/edit/:id" element={<CreateUpdateService />}/>                  
           </Route>
         </Route>
       </>

@@ -96,7 +96,7 @@ const Stations = () => {
   const handleCreate = () => {
     setSelectedData({});
     setShowCreateStation(false);
-    navigate('/maps');
+    navigate('/CreateUpdateStation');
   };
   return (
     <Layout>
