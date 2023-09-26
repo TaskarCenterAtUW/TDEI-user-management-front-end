@@ -31,7 +31,8 @@ const Router = () => {
             <Route path="/stations" element={<Stations />} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}
             <Route path="*" element={<NotFound />} />
-            <Route path="/maps" element={<Maps />} />           
+            <Route path="station/edit/:id" element={<Maps />}/>       
+            <Route path="/maps" element={<Maps />}/>          
           </Route>
         </Route>
       </>

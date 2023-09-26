@@ -89,7 +89,8 @@ const Stations = () => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
     setShowCreateStation(false);
-    navigate('/maps', { state: dataToEdit });
+    // navigate('/maps', { state: dataToEdit });
+    navigate('/station/edit/'+id);
   };
 
   const handleCreate = () => {

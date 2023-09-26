@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import style from "./Maps.module.css";
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -8,9 +8,9 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 
 
-mapboxgl.accessToken = 'pk.eyJ1IjoicmFqZXNoa2FudGlwdWRpMTIzNCIsImEiOiJjbGdqbWI3ODgwdnJ4M3BwZ2NvMmc1bnJ6In0.7pYEjYMQFucsipP71biCqg';
+mapboxgl.accessToken = `${process.env.REACT_APP_MAP_KEY}`
 
-export default function MapBox({geojson,onGeoJsonAdded}) {
+export default function MapBox({ isEdit, geojson, onGeoJsonAdded }) {
     const [zoom, setZoom] = useState(9);
     const [generatedPolygon, setGeneratedPolygon] = useState();
 
@@ -18,11 +18,21 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
         // @ts-ignore
         if (generatedPolygon !== undefined) {
             navigator.clipboard.writeText(JSON.stringify(generatedPolygon))
-        }else{
+        } else {
             navigator.clipboard.writeText(JSON.stringify(geojson))
         }
-      };
-    
+    };
+
+    const handleGeoJsonSelected = (jsonContent) => {
+        onGeoJsonAdded(jsonContent);
+    }
+
+    function areAllCoordinatesZero(geojsonData) {        
+        const coordinates = geojsonData.features[0].geometry.coordinates[0];
+        return coordinates.every(coordArray =>
+            coordArray.every(element => element === 0)
+          );
+      }    
 
     useEffect(() => {
         const map = new mapboxgl.Map({
@@ -54,9 +64,36 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
             console.log('A zoomend event occurred.');
             setZoom(map.getZoom());
         });
+
+        // Get the average of coordinates
+        const coordinates = geojson?.features[0].geometry.coordinates
+        console.log(coordinates[0])
+        const longitudes = coordinates[0].map((coords) => coords[0])
+        console.log(longitudes)
+        const latitudes = coordinates[0].map((coords) => coords[1])
+        const minLat = Math.min(...latitudes)
+        const maxLat = Math.max(...latitudes)
+        const minLon = Math.min(...longitudes)
+        const maxLon = Math.max(...longitudes)
+        const centerLat = (minLat + maxLat) / 2.0
+        const centerLon = (minLon + maxLon) / 2.0
+        console.log(centerLat)
+        console.log(centerLon)
+        console.log(minLat)
+
+        if (isEdit && !areAllCoordinatesZero(geojson)) {
+            draw.add(geojson.features[0]);
+            const bounds = new mapboxgl.LngLatBounds(
+                new mapboxgl.LngLat(minLon, minLat),
+                new mapboxgl.LngLat(maxLon, maxLat)
+            );
+            map.fitBounds(bounds,{maxZoom: 16});
+        }
+
         map.on('draw.create', updateArea);
         map.on('draw.delete', updateArea);
         map.on('draw.update', updateArea);
+        map.on('draw.add', updateArea);
 
         function updateArea(e) {
             const data = draw.getAll();
@@ -64,38 +101,38 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
             const jsonObject = JSON.parse(geojson);
             setGeneratedPolygon(jsonObject)
             document.getElementById('json').innerHTML = JSON.stringify(jsonObject, null, 2);
-            onGeoJsonAdded(jsonObject);
+            handleGeoJsonSelected(jsonObject);
         }
         document.getElementById('json').innerHTML = JSON.stringify(geojson, null, 2);
         return () => map.remove();
-    }, [onGeoJsonAdded]);
+    }, [ isEdit]);
     return (
         <div className={style.mapbox}>
             <div className="row">
                 <div className="col-7">
                     <div className='mapbox'>
-                    <div className='mapbox-container'>
-                    <div id='map' className={style.mapContainer}/>
-                    </div>
+                        <div className='mapbox-container'>
+                            <div id='map' className={style.mapContainer} />
+                        </div>
                     </div>
                 </div>
                 <div className="col-5">
                     <div className={style.jsonContent}>
                         <Box
-                            // sx={{
-                            //     position: 'relative',
-                            //     padding: '20px',
-                            //     minHeight: '200px',
-                            //     height: 500,
-                            //     overflow: "hidden",
-                            //     overflowY: "scroll",
-                            //     mb: 2,
-                            //     display: "flex",
-                            //     flexDirection: "column",
-                            //     marginTop: "0%",
-                            // }}
+                            sx={{
+                                position: 'relative',
+                                padding: '20px',
+                                minHeight: '200px',
+                                height: '90vh',
+                                overflow: "hidden",
+                                overflowY: "scroll",
+                                mb: 2,
+                                display: "flex",
+                                flexDirection: "column",
+                                marginTop: "0%",
+                            }}
                         >
-                            {/* <Button
+                            <Button
                                 sx={{
                                     position: 'absolute',
                                     top: '8px',
@@ -107,11 +144,11 @@ export default function MapBox({geojson,onGeoJsonAdded}) {
                                         background: 'transparent',
                                     },
                                 }}
-                            startIcon={<FileCopyIcon/>}
-                            onClick={handleCopyToClipboard}
+                                startIcon={<FileCopyIcon />}
+                                onClick={handleCopyToClipboard}
                             >
                                 Copy
-                            </Button> */}
+                            </Button>
                             <pre id='json' />
                         </Box>
                     </div>

@@ -16,39 +16,40 @@ import useUpdateStation from "../../hooks/station/useUpdateStation";
 import { GET_STATIONS } from "../../utils";
 import { useQueryClient } from "react-query";
 import style from "./Maps.module.css";
-import { useNavigate, useLocation } from 'react-router-dom';
-import {GEOJSON} from '../../utils'
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { GEOJSON } from '../../utils'
 import "./Map.css"
+import useGetStation from "../../hooks/station/useGetStation";
+import { getStation } from "../../services";
 
 const Maps = () => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
-    const [geoJson, setGeoJson] = useState([]);
+    const navigate = useNavigate();
+    const location = useLocation();
+    // const data = location.state;
+    var data = {};
+    const selectedOrg = useSelector(getSelectedOrg);
+    // const [stationData, setStationData] = useState()
+    
+    const idData = useParams();
+    const [geoJson, setGeoJson] = useState(GEOJSON);
     const [stationData, setStationData] = React.useState({
-        tdei_org_id: "",
+        tdei_org_id: selectedOrg.tdei_org_id,
         station_name: "",
         polygon: GEOJSON
     });
     const { user } = useAuth();
-    const selectedOrg = useSelector(getSelectedOrg);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const data = location.state;
-
-
-    React.useEffect(() => {
-        if (!user.isAdmin) {
-            if (selectedOrg?.tdei_org_id) {
-                setStationData({
-                    ...stationData,
-                    tdei_org_id: selectedOrg.tdei_org_id,
-                    station_name: data?.station_name || "",
-                    polygon: data?.polygon || GEOJSON
-                });
-                setGeoJson(data?.polygon || GEOJSON)
-            }
+   
+    console.log("Params ",idData['id']);
+    React.useEffect(()=>{
+        if(idData['id'] !== undefined){
+            getStation(idData['id']).then((stations)=>{
+                console.log(stations);
+                setStationData(stations.data[0]);
+            })
         }
-    }, [selectedOrg, user.isAdmin, data]);
+    },[]);
 
     const validationSchema = yup.object().shape({
         tdei_org_id: yup.string().required("Organization Name is required"),
@@ -82,24 +83,26 @@ const Maps = () => {
         useUpdateStation({ onSuccess, onError });
 
     const handleCreateStation = (values) => {
-        if (data?.tdei_station_id) {
+        if (stationData?.tdei_station_id) {
             updateStation({
+                station_name: values.station_name? values.station_name : "",
+                tdei_station_id: stationData?.tdei_station_id ? stationData?.tdei_station_id : "",
+                tdei_org_id: values.tdei_org_id? values.tdei_org_id : "",
+                polygon: geoJson.features.length === 0 ? GEOJSON : geoJson
+            });
+        } else {
+            console.log("geoJson", geoJson);
+            mutate({
                 station_name: values.station_name,
-                tdei_station_id: data?.tdei_station_id,
+                tdei_station_id: stationData?.tdei_station_id,
                 tdei_org_id: values.tdei_org_id,
                 polygon: geoJson
             });
-        } else {
-            mutate({                
-                station_name: values.station_name,
-                tdei_station_id: data?.tdei_station_id,
-                tdei_org_id: values.tdei_org_id,
-                polygon: geoJson});
         }
     };
 
     const getText = () => {
-        if (data?.tdei_station_id) {
+        if (idData['id'] !== undefined) {
             if (isUpdateLoading) {
                 return "Updating";
             }
@@ -112,7 +115,7 @@ const Maps = () => {
         }
     };
     const getHeader = () => {
-        if (data?.tdei_station_id) {
+        if (idData['id'] !== undefined) {
             return "Edit Station";
         } else {
             return "Create New Station";
@@ -124,6 +127,14 @@ const Maps = () => {
 
     const handleGeoJson = (data) => {
         setGeoJson(data);
+    };
+    const getJson = () => {
+        if (selectedOrg?.tdei_org_id && stationData?.polygon !== undefined ){
+            return stationData?.polygon;
+        }else if (!selectedOrg?.tdei_org_id && stationData?.polygon === undefined ){
+            return GEOJSON;
+        }
+        return geoJson
     };
 
     return (
@@ -200,7 +211,7 @@ const Maps = () => {
                                 </Form.Group>
                                 <div className={style.apiKey}>
                                     <Form.Label>Station Location</Form.Label>
-                                    <MapBox geojson={geoJson} onGeoJsonAdded={handleGeoJson} />
+                                    <MapBox isEdit = {stationData?.tdei_station_id ? true : false} geojson={getJson()} onGeoJsonAdded={handleGeoJson} />
                                 </div>
                             </Container>
                         </Form>

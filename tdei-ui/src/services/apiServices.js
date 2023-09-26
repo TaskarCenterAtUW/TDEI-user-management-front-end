@@ -120,11 +120,27 @@ export async function getServices(searchText, tdei_org_id, pageParam = 1) {
   };
 }
 
-export async function getStations(searchText, tdei_org_id, pageParam = 1) {
+export async function getStations(searchText, tdei_org_id ,pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
     params: {
       searchText,
+      page_no: pageParam,
+      page_size: 10,
+      tdei_org_id: tdei_org_id,
+    },
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+export async function getStation(tdei_station_id, tdei_org_id ,pageParam = 1) {
+  const res = await axios({
+    url: `${url}/station`,
+    params: {
+      tdei_station_id,
       page_no: pageParam,
       page_size: 10,
       tdei_org_id: tdei_org_id,
