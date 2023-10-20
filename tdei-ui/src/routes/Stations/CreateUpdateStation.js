@@ -17,7 +17,6 @@ import { useQueryClient } from "react-query";
 import { useNavigate, useParams } from 'react-router-dom';
 import { GEOJSON } from '../../utils'
 import { getStation } from "../../services";
-import { Box } from '@mui/material';
 
 const CreateUpdateStation = () => {
     const queryClient = useQueryClient();
@@ -196,29 +195,15 @@ const CreateUpdateStation = () => {
                                     <Form.Label>Station Boundaries</Form.Label>
                                     <div className="tdei-hint-text">(hint: Create the bounding box using {link} )</div>
                                     <div className="jsonContent">
-                                        <Box
-                                            sx={{
-                                                position: 'relative',
-                                                minHeight: '200px',
-                                                height: '90vh',
-                                                overflow: "hidden",
-                                                overflowY: "scroll",
-                                                mb: 2,
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                marginTop: "0%",
-                                            }}
-                                        >
-                                            <Form.Control
-                                                as="textarea"
-                                                type="text"
-                                                name="polygon"
-                                                onChange={handleTextareaChange}
-                                                onBlur={handleBlur}
-                                                rows={20}
-                                                value={geoJson}
-                                            />
-                                        </Box>
+                                        <Form.Control
+                                            as="textarea"
+                                            type="text"
+                                            name="polygon"
+                                            onChange={handleTextareaChange}
+                                            onBlur={handleBlur}
+                                            rows={20}
+                                            value={geoJson}
+                                        />
                                     </div>
                                 </div>
                             </Container>
