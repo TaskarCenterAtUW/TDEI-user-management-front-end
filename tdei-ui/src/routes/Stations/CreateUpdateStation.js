@@ -33,11 +33,9 @@ const CreateUpdateStation = () => {
     });
     const { user } = useAuth();
 
-    console.log("Params ", idData['id']);
     React.useEffect(() => {
         if (idData['id'] !== undefined) {
             getStation(idData['id']).then((stations) => {
-                console.log(stations);
                 setStationData(stations.data[0]);
                 setGeoJson(JSON.stringify(stations.data[0].polygon, null, 2))
             })
@@ -50,7 +48,6 @@ const CreateUpdateStation = () => {
     });
 
     const onSuccess = (data) => {
-        console.log("suucessfully created", data);
         queryClient.invalidateQueries({ queryKey: [GET_STATIONS] });
         dispatch(
             showModal({
@@ -61,7 +58,6 @@ const CreateUpdateStation = () => {
         navigate(-1);
     };
     const onError = (err) => {
-        console.error("error message", err);
         dispatch(
             show({
                 message: `Error in ${stationData?.tdei_station_id ? "updating" : "creating"
@@ -85,7 +81,6 @@ const CreateUpdateStation = () => {
                 polygon: parsedData.features.length === 0 ? GEOJSON : parsedData
             });
         } else {
-            console.log("geoJson", geoJson);
             mutate({
                 station_name: values.station_name,
                 tdei_station_id: stationData?.tdei_station_id,

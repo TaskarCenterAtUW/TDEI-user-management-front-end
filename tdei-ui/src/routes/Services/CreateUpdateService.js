@@ -33,11 +33,9 @@ const CreateUpdateService = () => {
     });
     const { user } = useAuth();
 
-    console.log("Params ", idData['id']);
     React.useEffect(() => {
         if (idData['id'] !== undefined) {
             getService(idData['id']).then((services) => {
-                console.log(services);
                 setServiceData(services.data[0]);
                 setGeoJson(JSON.stringify(services.data[0].polygon, null, 2))
             })
@@ -50,7 +48,6 @@ const CreateUpdateService = () => {
     });
 
     const onSuccess = (data) => {
-        console.log("sucessfully created", data);
         queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
         dispatch(
             showModal({
@@ -61,7 +58,6 @@ const CreateUpdateService = () => {
         navigate(-1);
     };
     const onError = (err) => {
-        console.error("error message", err);
         dispatch(
             show({
                 message: `Error in ${serviceData?.tdei_service_id ? "updating" : "creating"
@@ -86,7 +82,6 @@ const CreateUpdateService = () => {
                 polygon: parsedData.features.length === 0 ? GEOJSON : parsedData
             });
         } else {
-            console.log("geoJson", geoJson);
             mutate({
                 service_name: values.service_name,
                 tdei_service_id: serviceData?.tdei_service_id,
