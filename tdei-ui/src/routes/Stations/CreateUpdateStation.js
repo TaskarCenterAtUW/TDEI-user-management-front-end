@@ -3,7 +3,6 @@ import { Button, Form } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import { getSelectedOrg } from "../../selectors";
-import MapBox from "../Maps/MapBox";
 import { useDispatch, useSelector } from "react-redux";
 import useCreateStation from "../../hooks/station/useCreateStation";
 import { useAuth } from "../../hooks/useAuth";
@@ -15,36 +14,35 @@ import * as yup from "yup";
 import useUpdateStation from "../../hooks/station/useUpdateStation";
 import { GET_STATIONS } from "../../utils";
 import { useQueryClient } from "react-query";
-import style from "../Maps/Maps.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { GEOJSON } from '../../utils'
-import "../Maps/Map.css"
 import { getStation } from "../../services";
+import { Box } from '@mui/material';
 
 const CreateUpdateStation = () => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const selectedOrg = useSelector(getSelectedOrg);  
+    const selectedOrg = useSelector(getSelectedOrg);
     const idData = useParams();
-    const [geoJson, setGeoJson] = useState(GEOJSON);
+    const [geoJson, setGeoJson] = useState(JSON.stringify(GEOJSON, null, 2));
     const [stationData, setStationData] = React.useState({
         tdei_org_id: selectedOrg.tdei_org_id,
         station_name: "",
-        polygon: GEOJSON
+        polygon: JSON.stringify(GEOJSON, null, 2)
     });
     const { user } = useAuth();
-   
-    console.log("Params ",idData['id']);
-    React.useEffect(()=>{
-        if(idData['id'] !== undefined){
-            getStation(idData['id']).then((stations)=>{
+
+    console.log("Params ", idData['id']);
+    React.useEffect(() => {
+        if (idData['id'] !== undefined) {
+            getStation(idData['id']).then((stations) => {
                 console.log(stations);
                 setStationData(stations.data[0]);
-                setGeoJson(stations.data[0].polygon)
+                setGeoJson(JSON.stringify(stations.data[0].polygon, null, 2))
             })
         }
-    },[idData]);
+    }, [idData]);
 
     const validationSchema = yup.object().shape({
         tdei_org_id: yup.string().required("Organization Name is required"),
@@ -67,7 +65,7 @@ const CreateUpdateStation = () => {
         dispatch(
             show({
                 message: `Error in ${stationData?.tdei_station_id ? "updating" : "creating"
-                    } station`,
+                    } station. ${err.data.message}`,
                 type: "danger",
             })
         );
@@ -78,12 +76,13 @@ const CreateUpdateStation = () => {
         useUpdateStation({ onSuccess, onError });
 
     const handleCreateStation = (values) => {
+        const parsedData = JSON.parse(geoJson);
         if (stationData?.tdei_station_id) {
             updateStation({
-                station_name: values.station_name? values.station_name : "",
+                station_name: values.station_name ? values.station_name : "",
                 tdei_station_id: stationData?.tdei_station_id ? stationData?.tdei_station_id : "",
-                tdei_org_id: values.tdei_org_id? values.tdei_org_id : "",
-                polygon: geoJson.features.length === 0 ? GEOJSON : geoJson
+                tdei_org_id: values.tdei_org_id ? values.tdei_org_id : "",
+                polygon: parsedData.features.length === 0 ? GEOJSON : parsedData
             });
         } else {
             console.log("geoJson", geoJson);
@@ -91,9 +90,14 @@ const CreateUpdateStation = () => {
                 station_name: values.station_name,
                 tdei_station_id: stationData?.tdei_station_id,
                 tdei_org_id: values.tdei_org_id,
-                polygon: geoJson
+                polygon: parsedData
             });
         }
+    };
+
+    const handleTextareaChange = (e) => {
+        const { value } = e.target;
+        setGeoJson(value);
     };
 
     const getText = () => {
@@ -119,18 +123,7 @@ const CreateUpdateStation = () => {
     const handlePop = () => {
         navigate(-1);
     };
-
-    const handleGeoJson = (data) => {
-        setGeoJson(data);
-    };
-    const getJson = () => {
-        if (selectedOrg?.tdei_org_id && stationData?.polygon !== undefined ){
-            return stationData?.polygon;
-        }else if (!selectedOrg?.tdei_org_id && stationData?.polygon === undefined ){
-            return GEOJSON;
-        }
-        return geoJson
-    };
+    var link = <a href={'https://geojson.io/'} target="_blank" rel="noreferrer">geojson.io</a>;
 
     return (
         <Layout>
@@ -150,7 +143,7 @@ const CreateUpdateStation = () => {
                 }) => (
                     <>
                         <Form noValidate onSubmit={handleSubmit}>
-                            <div className={style.header}>
+                            <div className="header">
                                 <div className="page-header-title">  {getHeader()}</div>
                                 <div className="d-grid gap-2 d-md-flex">
                                     <Button
@@ -204,9 +197,34 @@ const CreateUpdateStation = () => {
                                         {errors.station_name}
                                     </Form.Control.Feedback>
                                 </Form.Group>
-                                <div className={style.apiKey}>
-                                    <Form.Label>Station Location</Form.Label>
-                                    <MapBox isEdit = {stationData?.tdei_station_id ? true : false} geojson={getJson()} onGeoJsonAdded={handleGeoJson} />
+                                <div className="apiKey">
+                                    <Form.Label>Station Boundaries</Form.Label>
+                                    <div className="tdei-hint-text">(hint: Create the bounding box using {link} )</div>
+                                    <div className="jsonContent">
+                                        <Box
+                                            sx={{
+                                                position: 'relative',
+                                                minHeight: '200px',
+                                                height: '90vh',
+                                                overflow: "hidden",
+                                                overflowY: "scroll",
+                                                mb: 2,
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                marginTop: "0%",
+                                            }}
+                                        >
+                                            <Form.Control
+                                                as="textarea"
+                                                type="text"
+                                                name="polygon"
+                                                onChange={handleTextareaChange}
+                                                onBlur={handleBlur}
+                                                rows={20}
+                                                value={geoJson}
+                                            />
+                                        </Box>
+                                    </div>
                                 </div>
                             </Container>
                         </Form>
