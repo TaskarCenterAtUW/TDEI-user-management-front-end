@@ -13,3 +13,7 @@ export const getNotificationModal = (state) => {
 export const getSideMenuFlag = (state) => {
   return state.sideMenuBar.flag;
 };
+
+export const getSelectedStation = (state) => {
+  return state.selectedStation;
+};
