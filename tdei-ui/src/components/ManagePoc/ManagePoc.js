@@ -37,7 +37,6 @@ const ManagePoc = (props) => {
   const onSuccess = (data) => {
     console.log("Assigned POC", data);
     queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
-    setToggle(false);
     setShowModal(true);
     props.onHide();
   };
@@ -222,7 +221,10 @@ const ManagePoc = (props) => {
       </Modal>
       <SuccessModal
         show={showModal}
-        onHide={() => setShowModal(false)}
+        onHide={() => {
+          setShowModal(false)
+          setToggle(false);
+        }}
         message={`POC ${toggle ? "assigned" : "deleted"} successfully.`}
       />
       <DeleteModal

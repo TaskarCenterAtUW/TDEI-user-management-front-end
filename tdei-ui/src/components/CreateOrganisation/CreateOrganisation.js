@@ -45,7 +45,7 @@ const CreateOrganisation = (props) => {
     console.error("error message", err);
     dispatch(
       show({
-        message: `Error in ${isEdit ? "updating" : "creating"} organization`,
+        message: `Error in ${isEdit ? "updating" : "creating"} organization. ${err.data.message}`,
         type: "danger",
       })
     );
@@ -111,7 +111,7 @@ const CreateOrganisation = (props) => {
                 <Form.Group className="mb-3" controlId="phoneNumber">
                   <Form.Label>Phone Number</Form.Label>
                   <Form.Control
-                    type="number"
+                    type="text"
                     placeholder="Enter Phone Number"
                     name="phone"
                     onChange={handleChange}
