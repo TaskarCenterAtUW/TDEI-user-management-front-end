@@ -7,7 +7,7 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = React.useState(null);
-  const origin = location.state?.from?.pathname || "/";
+  const origin = location.pathname || "/";
 
   const decodeToken = (accessToken) => {
     if (!accessToken) return;
