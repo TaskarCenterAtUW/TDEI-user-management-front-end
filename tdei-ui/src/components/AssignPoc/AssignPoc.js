@@ -3,16 +3,16 @@ import style from "./AssignPoc.module.css";
 import { Button, Form, Alert } from "react-bootstrap";
 import { show } from "../../store/notification.slice";
 import { useDispatch } from "react-redux";
-import OrgList from "../OrganisationList/OrgList";
+import ProjectGroupList from "../ProjectGroupList";
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
 
 const AssignPoc = () => {
   const dispatch = useDispatch();
-  const initialvalues = { tdei_org_id: "", user_name: "", roles: ["poc"] };
+  const initialvalues = { tdei_project_group_id: "", user_name: "", roles: ["poc"] };
   const validationSchema = yup.object().shape({
-    tdei_org_id: yup.string().required("Organization Name is required"),
+    tdei_project_group_id: yup.string().required("Project Group Name is required"),
     user_name: yup.string().required("Email Id is required"),
   });
   const onSuccess = (data) => {
@@ -71,9 +71,9 @@ const AssignPoc = () => {
                 {errors.user_name}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="organisationId">
-              <Form.Label>Organization Name</Form.Label>
-              <Field component={OrgList} name="tdei_org_id" />
+            <Form.Group className="mb-3" controlId="projectGroupId">
+              <Form.Label>Project Group Name</Form.Label>
+              <Field component={ProjectGroupList} name="tdei_project_group_id" />
             </Form.Group>
             <Button variant="primary" type="submit" disabled={isLoading}>
               {isLoading ? "Assigning..." : "Submit"}

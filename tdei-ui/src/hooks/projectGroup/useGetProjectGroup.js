@@ -2,42 +2,22 @@ import { useState, useEffect } from "react";
 import { url } from "../../services";
 import axios from "axios";
 
-function useGetOrganisation(query, pageNumber) {
+function useGetProjectGroup(query, pageNumber) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [orgList, setOrgList] = useState([]);
+  const [projectGroupList, setProjectGroupList] = useState([]);
   const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
-    setOrgList([]);
+    setProjectGroupList([]);
   }, [query]);
-
-  // useEffect(() => {
-  //     const getOrg = async () => {
-  //         setLoading(true)
-  //         setError(false)
-  //         try {
-  //             let data = await getOrgList(query, pageNumber)
-  //             setOrgList(prevOrg => {
-  //                 return [...prevOrg, ...data]
-  //             })
-  //             setHasMore(data.length > 0)
-  //             setLoading(false)
-
-  //         } catch (e) {
-  //             setError(true)
-  //         }
-  //     }
-  //     getOrg();
-
-  // }, [query, pageNumber])
 
   useEffect(() => {
     setLoading(true);
     setError(false);
     let cancel;
     axios({
-      url: `${url}/organization`,
+      url: `${url}/project-group`,
       params: {
         searchText: query,
         page_no: pageNumber,
@@ -47,8 +27,8 @@ function useGetOrganisation(query, pageNumber) {
       cancelToken: new axios.CancelToken((c) => (cancel = c)),
     })
       .then((res) => {
-        setOrgList((prevOrg) => {
-          return [...prevOrg, ...res.data];
+        setProjectGroupList((prevProjectGroup) => {
+          return [...prevProjectGroup, ...res.data];
         });
         setHasMore(res.data.length > 0);
         setLoading(false);
@@ -60,6 +40,6 @@ function useGetOrganisation(query, pageNumber) {
     return () => cancel();
   }, [query, pageNumber]);
 
-  return { loading, error, orgList, hasMore };
+  return { loading, error, projectGroupList: projectGroupList, hasMore };
 }
-export default useGetOrganisation;
+export default useGetProjectGroup;

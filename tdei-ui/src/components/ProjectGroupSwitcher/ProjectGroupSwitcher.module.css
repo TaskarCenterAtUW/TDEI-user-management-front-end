@@ -1,4 +1,4 @@
-.selectedOrgName {
+.selectedProjectGroupName {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -27,7 +27,7 @@
   display: none;
 }
 
-.orgLabel {
+.projectGroupLabel {
   color: #ffffff80;
   font-size: 14px;
 }

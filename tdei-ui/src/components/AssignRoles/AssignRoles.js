@@ -5,37 +5,37 @@ import style from "./AssignRoles.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { show as showModal } from "../../store/notificationModal.slice";
 import useGetRoles from "../../hooks/roles/useGetRoles";
-import { getSelectedOrg } from "../../selectors";
 import { Field, Formik } from "formik";
 import * as yup from "yup";
 import clsx from "clsx";
 import successIcon from "../../assets/img/success-icon.svg";
 import { useQueryClient } from "react-query";
-import { GET_ORG_USERS } from "../../utils";
+import { GET_PROJECT_GROUP_USERS } from "../../utils";
+import { getSelectedProjectGroup } from "../../selectors";
 
 const AssignRoles = (props) => {
   const { data, isLoading: isRolesLoading, isError } = useGetRoles();
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const queryClient = useQueryClient();
 
   const [rolesData, setRolesData] = React.useState({
     user_name: "",
-    tdei_org_id: "",
+    tdei_project_group_id: "",
     roles: [],
   });
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    if (selectedOrg?.tdei_org_id) {
+    if (selectedProjectGroup?.tdei_project_group_id) {
       setRolesData({
         ...rolesData,
-        tdei_org_id: selectedOrg.tdei_org_id,
+        tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
         user_name: props.data.username || "",
         roles: props.data.roles || [],
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOrg, props]);
+  }, [selectedProjectGroup, props]);
 
   const validationSchema = yup.object().shape({
     user_name: yup.string().required("Email Id is required"),
@@ -43,7 +43,7 @@ const AssignRoles = (props) => {
   });
 
   const onSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: [GET_ORG_USERS] });
+    queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_USERS] });
     props.onHide();
     dispatch(
       showModal({
@@ -127,13 +127,13 @@ const AssignRoles = (props) => {
                       {errors.user_name}
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="organisationId">
-                    <Form.Label>Organization Name</Form.Label>
+                  <Form.Group className="mb-3" controlId="projectGroupId">
+                    <Form.Label>Project Group Name</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Enter Organization ID"
-                      value={selectedOrg.org_name}
-                      name="tdei_org_id"
+                      placeholder="Enter Project Group ID"
+                      value={selectedProjectGroup.name}
+                      name="tdei_project_group_id"
                       disabled
                     />
                   </Form.Group>

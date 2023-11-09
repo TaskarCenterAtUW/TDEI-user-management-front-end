@@ -3,10 +3,10 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import useCreateService from "../../hooks/service/useCreateService";
 import { useAuth } from "../../hooks/useAuth";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
 import { show } from "../../store/notification.slice";
 import { show as modalShow } from "../../store/notificationModal.slice";
-import OrgList from "../OrganisationList/OrgList";
+import ProjectGrpList from "../ProjectGroupList/ProjectGrpList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
 import useUpdateSevice from "../../hooks/service/useUpdateService";
@@ -18,27 +18,27 @@ const CreateService = (props) => {
   const dispatch = useDispatch();
   const [serviceData, setServiceData] = React.useState({
     service_name: "",
-    tdei_org_id: "",
+    tdei_project_group_id: "",
     // description: ""
   });
   const { user } = useAuth();
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
 
   React.useEffect(() => {
     if (!user.isAdmin) {
-      if (selectedOrg?.tdei_org_id) {
+      if (selectedProjectGroup?.tdei_project_group_id) {
         setServiceData({
           ...serviceData,
-          tdei_org_id: selectedOrg.tdei_org_id,
+          tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
           service_name: props.data?.service_name || "",
         });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOrg, user.isAdmin, props]);
+  }, [selectedProjectGroup, user.isAdmin, props]);
 
   const validationSchema = yup.object().shape({
-    tdei_org_id: yup.string().required("Organization Name is required"),
+    tdei_project_group_id: yup.string().required("Project Group Name is required"),
     service_name: yup.string().required("Service Name is required"),
   });
   const onSuccess = (data) => {
@@ -74,7 +74,7 @@ const CreateService = (props) => {
       updateService({
         service_name: values.service_name,
         tdei_service_id: props.data?.tdei_service_id,
-        tdei_org_id: values.tdei_org_id,
+        tdei_project_group_id: values.tdei_project_group_id,
       });
     } else {
       mutate(values);
@@ -124,18 +124,18 @@ const CreateService = (props) => {
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Modal.Body>
-              <Form.Group className="mb-3" controlId="organisationId ">
-                <Form.Label>Organization Name</Form.Label>
+              <Form.Group className="mb-3" controlId="projectgGroupId ">
+                <Form.Label>Project Group Name</Form.Label>
                 {user.isAdmin ? (
-                  <Field component={OrgList} name="tdei_org_id" />
+                  <Field component={ProjectGrpList} name="tdei_project_group_id" />
                 ) : (
                   <Form.Control
                     type="text"
-                    placeholder="Enter Organization ID"
-                    name="tdei_org_id"
+                    placeholder="Enter Project Group ID"
+                    name="tdei_project_group_id"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={selectedOrg.org_name}
+                    value={selectedProjectGroup.name}
                     disabled
                   />
                 )}

@@ -1,15 +1,15 @@
 import { useInfiniteQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
-import { getServices } from "../../services";
-import { GET_SERVICES } from "../../utils";
+import { GET_PROJECT_GROUP_USERS } from "../../utils";
+import { getProjectGroupUsers } from "../../services";
 
-function useGetServices(query = "") {
+function useGetProjectGroupUsers(query = "") {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
   return useInfiniteQuery(
-    [GET_SERVICES, query, tdei_project_group_id],
+    [GET_PROJECT_GROUP_USERS, query, tdei_project_group_id],
     ({ queryKey, pageParam }) =>
-      getServices(queryKey[1], queryKey[2], pageParam),
+    getProjectGroupUsers(queryKey[1], queryKey[2], pageParam),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10
@@ -21,4 +21,4 @@ function useGetServices(query = "") {
   );
 }
 
-export default useGetServices;
+export default useGetProjectGroupUsers;

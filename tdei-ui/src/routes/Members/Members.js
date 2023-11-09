@@ -4,8 +4,8 @@ import React from "react";
 import { Button, Dropdown, Form, Spinner } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
-import useGetOrgUsers from "../../hooks/organisation/useGerOrgUsers";
-import { ActionItem } from "../Organization/Organization";
+import useGetProjectGroupUsers from "../../hooks/projectGroup/useGetProjectGroupUsers";
+import { ActionItem } from "../ProjectGroup/ProjectGroup";
 import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
@@ -13,10 +13,10 @@ import userIcon from "./../../assets/img/icon-feather-user.svg";
 import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
 
 const Members = () => {
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
@@ -29,7 +29,7 @@ const Members = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetOrgUsers(debounceQuery);
+  } = useGetProjectGroupUsers(debounceQuery);
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -61,7 +61,7 @@ const Members = () => {
           <div className="page-header-subtitle">
             Here are the members currently in the{" "}
             <span className="fw-bold">
-              {user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}
+              {user.isAdmin ? "TDEI system" : `${selectedProjectGroup.name}`}
             </span>
             .
           </div>

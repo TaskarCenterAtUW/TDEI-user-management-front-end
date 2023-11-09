@@ -5,7 +5,7 @@ import Register from "./Register";
 import LoginPage from "./LoginPage";
 import RequireAuth from "../components/RequireAuth/RequireAuth";
 import Dashboard from "./Dashboards/Dashboard";
-import Organization from "./Organization";
+import ProjectGroup from "./ProjectGroup";
 import Services from "./Services";
 import Stations from "./Stations";
 import Members from "./Members";
@@ -26,7 +26,7 @@ const Router = () => {
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />
             {user?.isAdmin && (
-              <Route path="/organization" element={<Organization />} />
+              <Route path="/projectGroup" element={<ProjectGroup />} />
             )}
             <Route path="/services" element={<Services />} />
             <Route path="/stations" element={<Stations />} />
