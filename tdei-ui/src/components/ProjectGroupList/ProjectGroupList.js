@@ -84,7 +84,7 @@ const ProjectGroupList = ({ pocData, setPocData }) => {
     <Dropdown>
       <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
         {pocData.tdei_project_group_id
-          ? projectGroupList.find((val) => val.id === pocData.tdei_project_group_id)?.name
+          ? projectGroupList.find((val) => val.id === pocData.tdei_project_group_id)?.project_group_name
           : "Select Project Group"}
       </Dropdown.Toggle>
       <Dropdown.Menu
@@ -103,7 +103,7 @@ const ProjectGroupList = ({ pocData, setPocData }) => {
                 key={val.id}
                 active={pocData.tdei_project_group_id === val.id}
               >
-                {val.name}
+                {val.project_group_name}
               </Dropdown.Item>
             );
           } else {
@@ -114,7 +114,7 @@ const ProjectGroupList = ({ pocData, setPocData }) => {
                 key={val.id}
                 active={pocData.tdei_project_group_id === val.id}
               >
-                {val.name}
+                {val.project_group_name}
               </Dropdown.Item>
             );
           }

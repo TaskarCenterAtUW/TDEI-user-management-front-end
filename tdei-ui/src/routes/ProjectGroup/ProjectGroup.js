@@ -156,7 +156,7 @@ const ProjectGroup = () => {
                       alt="sitemap-solid"
                     />
                     <div>
-                      <div className={style.name}>{list.name}</div>
+                      <div className={style.name}>{list.project_group_name}</div>
                       <div className={style.address}>{list.address}</div>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ const ProjectGroup = () => {
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         message={{
-          title: `Delete Project Group ${selectedData.name}`,
+          title: `Delete Project Group ${selectedData.project_group_name}`,
           details: "Are you sure you want to delete project group?",
         }}
         handler={confirmDelete}

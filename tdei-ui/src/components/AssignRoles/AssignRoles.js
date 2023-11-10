@@ -132,7 +132,7 @@ const AssignRoles = (props) => {
                     <Form.Control
                       type="text"
                       placeholder="Enter Project Group ID"
-                      value={selectedProjectGroup.name}
+                      value={selectedProjectGroup.project_group_name}
                       name="tdei_project_group_id"
                       disabled
                     />

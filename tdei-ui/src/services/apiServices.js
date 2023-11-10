@@ -1,18 +1,14 @@
 import axios from "axios";
 
 export const url = process.env.REACT_APP_URL;
-//done
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);
   return res.data;
 }
-//done
 export async function postProjectGroupUpdate(data) {
   const res = await axios.put(`${url}/project-group`, data);
   return res.data;
 }
-//done
-//api/v1/project-group/{projectGroupId}/active/{status}
 export async function postProjectGroupDelete(data) {
   const { tdei_project_group_id, status } = data;
   const res = await axios.delete(
@@ -20,7 +16,6 @@ export async function postProjectGroupDelete(data) {
   );
   return res.data;
 }
-//done
 export async function postServiceDelete(data) {
   const { tdei_service_id, status, tdei_project_group_id } = data;
   const res = await axios.delete(
@@ -28,7 +23,6 @@ export async function postServiceDelete(data) {
   );
   return res.data;
 }
-//done
 export async function postStationDelete(data) {
   const { tdei_station_id, status, tdei_project_group_id } = data;
   const res = await axios.delete(
@@ -52,13 +46,11 @@ export async function getApiKey({ queryKey }) {
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
   return res.data;
 }
-// done
 export async function getProjectGroupRoles({ queryKey }) {
   const [, userId] = queryKey;
   const res = await axios.get(`${url}/project-group-roles/${userId}`);
   return res.data;
 }
-//done
 export async function getProjectGroupList(searchText, page_no) {
   const res = await axios({
     url: `${url}/project-group`,
@@ -71,7 +63,6 @@ export async function getProjectGroupList(searchText, page_no) {
   });
   return res.data;
 }
-//done
 export async function getProjectGroupLists(searchText, pageParam = 1) {
   const res = await axios({
     url: `${url}/project-group`,
@@ -87,8 +78,6 @@ export async function getProjectGroupLists(searchText, pageParam = 1) {
     pageParam,
   };
 }
-//done
-///api/v1/project-group/{projectGroupId}/users
 export async function getProjectGroupUsers(searchText, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/project-group/${tdei_project_group_id}/users`,
@@ -104,7 +93,6 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-//done
 export async function getServices(searchText, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
@@ -121,7 +109,6 @@ export async function getServices(searchText, tdei_project_group_id, pageParam =
     pageParam,
   };
 }
-//done
 export async function getService(tdei_service_id, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
@@ -138,7 +125,6 @@ export async function getService(tdei_service_id, tdei_project_group_id, pagePar
     pageParam,
   };
 }
-//done
 export async function getStations(searchText, tdei_project_group_id ,pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
@@ -187,12 +173,10 @@ export async function postCreateService(data) {
   const res = await axios.post(`${url}/service`, data);
   return res.data;
 }
-//done
 export async function postUpdateService(data) {
   const res = await axios.put(`${url}/service/${data.tdei_project_group_id}`, data);
   return res.data;
 }
-//done
 export async function postUpdateStation(data) {
   const res = await axios.put(`${url}/station/${data.tdei_project_group_id}`, data);
   return res.data;

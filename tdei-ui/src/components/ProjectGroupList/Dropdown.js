@@ -64,7 +64,7 @@ const Dropdown = ({
     if (!selectedValue || selectedValue.length === 0) {
       return placeHolder;
     }
-    return selectedValue.name;
+    return selectedValue.project_group_name;
   };
 
   const onItemClick = (option) => {
@@ -77,7 +77,7 @@ const Dropdown = ({
       return false;
     }
 
-    return selectedValue.name === option.name;
+    return selectedValue.project_group_name === option.project_group_name;
   };
 
   const onSearch = (e) => {
@@ -133,7 +133,7 @@ const Dropdown = ({
                       ref={lastProjectGrpListRef}
                       tabIndex="0"
                     >
-                      {option.name}
+                      {option.project_group_name}
                     </a>
                   );
                 } else {
@@ -148,7 +148,7 @@ const Dropdown = ({
                       ])}
                       tabIndex="0"
                     >
-                      {option.name}
+                      {option.project_group_name}
                     </a>
                   );
                 }

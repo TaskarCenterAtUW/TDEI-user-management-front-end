@@ -135,7 +135,7 @@ const CreateService = (props) => {
                     name="tdei_project_group_id"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={selectedProjectGroup.name}
+                    value={selectedProjectGroup.project_group_name}
                     disabled
                   />
                 )}

@@ -170,7 +170,7 @@ const CreateUpdateService = () => {
                                             type="text"
                                             placeholder="Enter Project Group ID"
                                             name="tdei_project_group_id"
-                                            value={selectedProjectGroup.name}
+                                            value={selectedProjectGroup.project_group_name}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             disabled
