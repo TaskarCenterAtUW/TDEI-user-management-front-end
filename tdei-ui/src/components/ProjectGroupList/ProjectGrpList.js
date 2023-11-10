@@ -1,14 +1,14 @@
 import React, { useState, useRef, useCallback } from "react";
-import useGetOrganisation from "../../hooks/organisation/useGetOrganisation";
 import Dropdown from "./Dropdown";
+import useGetProjectGroup from "../../hooks/projectGroup/useGetProjectGroup";
 
-const OrgList = ({ field, form }) => {
+const ProjectGrpList = ({ field, form }) => {
   const [searchText, setSearchText] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const { loading, orgList, hasMore } = useGetOrganisation(searchText, pageNo);
+  const { loading, projectGrpList, hasMore } = useGetProjectGroup(searchText, pageNo);
 
   const observer = useRef();
-  const lastOrgListRef = useCallback(
+  const lastProjectGrpListRef = useCallback(
     (node) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
@@ -27,19 +27,19 @@ const OrgList = ({ field, form }) => {
     setPageNo(1);
   };
 
-  const handleChange = (orgList) => {
-    form.setFieldValue(field.name, orgList?.tdei_org_id);
+  const handleChange = (projectGrpList) => {
+    form.setFieldValue(field.name, projectGrpList?.tdei_project_group_id);
   };
   return (
     <Dropdown
       isSearchable
-      placeHolder="Select Organization"
-      options={orgList}
+      placeHolder="Select Project Group"
+      options={projectGrpList}
       onChange={handleChange}
       onSearchText={handleSearch}
       searchText={searchText}
       setSearchText={setSearchText}
-      lastOrgListRef={lastOrgListRef}
+      lastProjectGrpListRef={lastProjectGrpListRef}
       loading={loading}
       field={field}
       form={form}
@@ -47,4 +47,4 @@ const OrgList = ({ field, form }) => {
   );
 };
 
-export default OrgList;
+export default ProjectGrpList;

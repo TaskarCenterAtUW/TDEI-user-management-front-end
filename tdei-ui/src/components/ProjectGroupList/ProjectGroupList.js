@@ -1,17 +1,17 @@
 import React, { useState, useRef, useCallback } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
-import useGetOrganisation from "../../hooks/organisation/useGetOrganisation";
-import styles from "./OrganisationList.module.css";
+import useGetProjectGroup from "../../hooks/projectGroup/useGetProjectGroup";
+import styles from "./ProjectGroupList.module.css"
 import { Spinner } from "react-bootstrap";
 
-const OrganisationList = ({ pocData, setPocData }) => {
+const ProjectGroupList = ({ pocData, setPocData }) => {
   const [searchText, setSearchText] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const { loading, orgList, hasMore } = useGetOrganisation(searchText, pageNo);
+  const { loading, projectGroupList, hasMore } = useGetProjectGroup(searchText, pageNo);
 
   const observer = useRef();
-  const lastOrgListRef = useCallback(
+  const lastProjectGroupList = useCallback(
     (node) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
@@ -26,7 +26,7 @@ const OrganisationList = ({ pocData, setPocData }) => {
   );
 
   const handleClick = (e) => {
-    setPocData({ ...pocData, tdei_org_id: e.target.id });
+    setPocData({ ...pocData, tdei_project_group_id: e.target.id });
   };
 
   const handleSearch = (e) => {
@@ -70,7 +70,7 @@ const OrganisationList = ({ pocData, setPocData }) => {
           <Form.Control
             autoFocus
             className="mx-3 my-2 w-auto"
-            placeholder="Search Organization"
+            placeholder="Search Project Group"
             onChange={handleSearch}
             value={searchText}
           />
@@ -83,9 +83,9 @@ const OrganisationList = ({ pocData, setPocData }) => {
   return (
     <Dropdown>
       <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-        {pocData.tdei_org_id
-          ? orgList.find((val) => val.id === pocData.tdei_org_id)?.org_name
-          : "Select Organization"}
+        {pocData.tdei_project_group_id
+          ? projectGroupList.find((val) => val.id === pocData.tdei_project_group_id)?.project_group_name
+          : "Select Project Group"}
       </Dropdown.Toggle>
       <Dropdown.Menu
         as={CustomMenu}
@@ -93,17 +93,17 @@ const OrganisationList = ({ pocData, setPocData }) => {
         handleSearch={handleSearch}
         searchText={searchText}
       >
-        {orgList.map((val, index) => {
-          if (orgList.length === index + 1) {
+        {projectGroupList.map((val, index) => {
+          if (projectGroupList.length === index + 1) {
             return (
               <Dropdown.Item
                 id={val.id}
                 onClick={handleClick}
-                ref={lastOrgListRef}
+                ref={lastProjectGroupList}
                 key={val.id}
-                active={pocData.tdei_org_id === val.id}
+                active={pocData.tdei_project_group_id === val.id}
               >
-                {val.org_name}
+                {val.project_group_name}
               </Dropdown.Item>
             );
           } else {
@@ -112,9 +112,9 @@ const OrganisationList = ({ pocData, setPocData }) => {
                 id={val.id}
                 onClick={handleClick}
                 key={val.id}
-                active={pocData.tdei_org_id === val.id}
+                active={pocData.tdei_project_group_id === val.id}
               >
-                {val.org_name}
+                {val.project_group_name}
               </Dropdown.Item>
             );
           }
@@ -129,4 +129,4 @@ const OrganisationList = ({ pocData, setPocData }) => {
   );
 };
 
-export default OrganisationList;
+export default ProjectGroupList;

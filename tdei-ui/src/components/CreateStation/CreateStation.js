@@ -3,10 +3,10 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import useCreateStation from "../../hooks/station/useCreateStation";
 import { useAuth } from "../../hooks/useAuth";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
 import { show } from "../../store/notification.slice";
 import { show as showModal } from "../../store/notificationModal.slice";
-import OrgList from "../OrganisationList/OrgList";
+import ProjectGrpList from "../ProjectGroupList/ProjectGrpList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
 import useUpdateStation from "../../hooks/station/useUpdateStation";
@@ -17,28 +17,28 @@ function CreateStation(props) {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [stationData, setStationData] = React.useState({
-    tdei_org_id: "",
+    tdei_project_group_id: "",
     station_name: "",
   });
 
   const { user } = useAuth();
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
 
   React.useEffect(() => {
     if (!user.isAdmin) {
-      if (selectedOrg?.tdei_org_id) {
+      if (selectedProjectGroup?.tdei_project_group_id) {
         setStationData({
           ...stationData,
-          tdei_org_id: selectedOrg.tdei_org_id,
+          tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
           station_name: props.data?.station_name || "",
         });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOrg, user.isAdmin, props]);
+  }, [selectedProjectGroup, user.isAdmin, props]);
 
   const validationSchema = yup.object().shape({
-    tdei_org_id: yup.string().required("Organization Name is required"),
+    tdei_project_group_id: yup.string().required("Project Group Name is required"),
     station_name: yup.string().required("Station Name is required"),
   });
 
@@ -74,7 +74,7 @@ function CreateStation(props) {
       updateStation({
         station_name: values.station_name,
         tdei_station_id: props.data?.tdei_station_id,
-        tdei_org_id: values.tdei_org_id,
+        tdei_project_group_id: values.tdei_project_group_id,
       });
     } else {
       mutate(values);
@@ -123,16 +123,16 @@ function CreateStation(props) {
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Modal.Body>
-              <Form.Group className="mb-3" controlId="organisationId ">
-                <Form.Label>Organization Name</Form.Label>
+              <Form.Group className="mb-3" controlId="projectGroupId ">
+                <Form.Label>Project Group Name</Form.Label>
                 {user.isAdmin ? (
-                  <Field component={OrgList} name="tdei_org_id" />
+                  <Field component={ProjectGrpList} name="tdei_project_group_id" />
                 ) : (
                   <Form.Control
                     type="text"
-                    placeholder="Enter Organization ID"
-                    name="tdei_org_id"
-                    value={selectedOrg.org_name}
+                    placeholder="Enter Project Group ID"
+                    name="tdei_project_group_id"
+                    value={selectedProjectGroup.project_group_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     disabled

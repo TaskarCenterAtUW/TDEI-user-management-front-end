@@ -10,23 +10,24 @@ import {
 } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
-import useGetOrganizations from "../../hooks/organisation/useGetOrganizations";
+import useGetProjectGroups from "../../hooks/projectGroup/useGetProjectGroups";
 import menuVertical from "../../assets/img/menu-vertical.png";
-import CreateOrganisation from "../../components/CreateOrganisation/CreateOrganisation";
-import style from "./Organization.module.css";
+import CreateProjectGroup from "../../components/CreateProjectGroup/CreateProjectGroup";
+import style from "./ProjectGroup.module.css";
 import ManagePoc from "../../components/ManagePoc";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
-import useDeleteOrganization from "../../hooks/organisation/useDeleteOrganization";
-import { getUserName, GET_ORG_LIST } from "../../utils";
+import useDeleteProjectGroup from "../../hooks/projectGroup/useDeleteProjectGroup";
+import { getUserName, GET_PROJECT_GROUP_LIST } from "../../utils";
 import { useQueryClient } from "react-query";
 import DeleteModal from "../../components/DeleteModal";
-import iconOrg from "./../../assets/img/icon-orgIcon.svg";
+//src/assets/img/icon-projectgroupIcon.svg
+import projectgroupIcon from "./../../assets/img/icon-projectgroupIcon.svg";
 import { debounce } from "lodash";
 import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/icon-userAvatar.png";
 
-const Organization = () => {
+const ProjectGroup = () => {
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ const Organization = () => {
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
-  const [showCreateOrganisation, setShowCreateOrganisation] =
+  const [showCreateProjectGroup, setShowCreateProjectGroup] =
     React.useState(false);
   const [showManagePoc, setShowManagePoc] = React.useState(false);
   const {
@@ -44,7 +45,7 @@ const Organization = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetOrganizations(debounceQuery);
+  } = useGetProjectGroups(debounceQuery);
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -59,31 +60,31 @@ const Organization = () => {
     console.log("suucessfull", data);
     setShowDeleteModal(false);
     setShowModal(true);
-    queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
+    queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
   };
   const onError = (err) => {
     setShowDeleteModal(false);
     console.error("error message", err);
     dispatch(
-      show({ message: `Error in deleteing organization`, type: "danger" })
+      show({ message: `Error in deleteing project group`, type: "danger" })
     );
   };
 
-  const { mutate, isLoading: deleteOrgLoading } = useDeleteOrganization({
+  const { mutate, isLoading: deleteProjectGroupLoading } = useDeleteProjectGroup({
     onSuccess,
     onError,
   });
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
-    return list?.find((org) => org.tdei_org_id === id);
+    return list?.find((project) => project.tdei_project_group_id === id);
   };
 
   const handleEdit = (e) => {
     const { id } = e.target;
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    setShowCreateOrganisation(true);
+    setShowCreateProjectGroup(true);
   };
   const handlePoc = (e) => {
     const { id } = e.target;
@@ -99,22 +100,22 @@ const Organization = () => {
   };
 
   const confirmDelete = () => {
-    const { tdei_org_id } = selectedData;
-    mutate({ tdei_org_id, status: false });
+    const { tdei_project_group_id } = selectedData;
+    mutate({ tdei_project_group_id, status: false });
   };
 
   const handleCreate = () => {
     setSelectedData({});
-    setShowCreateOrganisation(true);
+    setShowCreateProjectGroup(true);
   };
 
   return (
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">Organizations</div>
+          <div className="page-header-title">Project Groups</div>
           <div className="page-header-subtitle">
-            Here are the organizations currently in the{" "}
+            Here are the project groups currently in the{" "}
             <span className="fw-bold">TDEI system</span>.
           </div>
         </div>
@@ -129,7 +130,7 @@ const Organization = () => {
           <div className={style.searchPanel}>
             <Form.Control
               type="text"
-              placeholder="Search Organization"
+              placeholder="Search Project Group"
               onChange={(e) => {
                 setQuery(e.target.value);
                 debouncedHandleSearch(e);
@@ -137,7 +138,7 @@ const Organization = () => {
             />
             {/* <div>Sort by</div> */}
           </div>
-          <div className={clsx(style.gridContainer, style.orgHeader)}>
+          <div className={clsx(style.gridContainer, style.projectHeader)}>
             <div>Name & Address</div>
             <div>URL</div>
             <div>Contact Number</div>
@@ -147,15 +148,15 @@ const Organization = () => {
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.map((list) => (
-                <div className={style.gridContainer} key={list.tdei_org_id}>
+                <div className={style.gridContainer} key={list.tdei_project_group_id}>
                   <div className={style.details}>
                     <img
-                      src={iconOrg}
-                      className={style.orgIcon}
+                      src={projectgroupIcon}
+                      className={style.projectGroupIcon}
                       alt="sitemap-solid"
                     />
                     <div>
-                      <div className={style.name}>{list.org_name}</div>
+                      <div className={style.name}>{list.project_group_name}</div>
                       <div className={style.address}>{list.address}</div>
                     </div>
                   </div>
@@ -169,22 +170,22 @@ const Organization = () => {
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       <Dropdown.Menu align="end">
                         <Dropdown.Item
-                          id={list.tdei_org_id}
+                          id={list.tdei_project_group_id}
                           onClick={handlePoc}
                         >
                           Manage POC
                         </Dropdown.Item>
                         <Dropdown.Item
-                          id={list.tdei_org_id}
+                          id={list.tdei_project_group_id}
                           onClick={handleEdit}
                         >
-                          Edit Organization
+                          Edit Project Group
                         </Dropdown.Item>
                         <Dropdown.Item
-                          id={list.tdei_org_id}
+                          id={list.tdei_project_group_id}
                           onClick={handleDelete}
                         >
-                          Delete Organization
+                          Delete Project Group
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
@@ -193,7 +194,7 @@ const Organization = () => {
               ))}
             </React.Fragment>
           ))}
-          {isError ? " Error loading organization list" : null}
+          {isError ? " Error loading project group list" : null}
           {isLoading ? (
             <div className="d-flex justify-content-center">
               <Spinner size="md" />
@@ -210,9 +211,9 @@ const Organization = () => {
           ) : null}
         </>
       </Container>
-      <CreateOrganisation
-        show={showCreateOrganisation}
-        onHide={() => setShowCreateOrganisation(false)}
+      <CreateProjectGroup
+        show={showCreateProjectGroup}
+        onHide={() => setShowCreateProjectGroup(false)}
         data={selectedData}
       />
       <ManagePoc
@@ -224,16 +225,16 @@ const Organization = () => {
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         message={{
-          title: `Delete Organization ${selectedData.org_name}`,
-          details: "Are you sure you want to delete organization?",
+          title: `Delete Project Group ${selectedData.project_group_name}`,
+          details: "Are you sure you want to delete project group?",
         }}
         handler={confirmDelete}
-        isLoading={deleteOrgLoading}
+        isLoading={deleteProjectGroupLoading}
       />
       <SuccessModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        message={`Organization deleted successfully.`}
+        message={`Project group deleted successfully.`}
       />
     </Layout>
   );
@@ -289,7 +290,7 @@ const DisplayList = ({ list, handlePoc }) => {
       ) : (
         <Button
           className={style.notAssigned}
-          id={list.tdei_org_id}
+          id={list.tdei_project_group_id}
           onClick={handlePoc}
         >
           Not Assigned
@@ -299,4 +300,4 @@ const DisplayList = ({ list, handlePoc }) => {
   );
 };
 
-export default Organization;
+export default ProjectGroup;

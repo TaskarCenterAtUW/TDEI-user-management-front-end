@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
 import { useDispatch, useSelector } from "react-redux";
 import useCreateService from "../../hooks/service/useCreateService";
 import { useAuth } from "../../hooks/useAuth";
 import { show } from "../../store/notification.slice";
 import { show as showModal } from "../../store/notificationModal.slice";
-import OrgList from "../../components/OrganisationList/OrgList";
+import ProjectGrpList from "../../components/ProjectGroupList/ProjectGrpList";
 import { Formik, Field } from "formik";
 import * as yup from "yup";
 import useUpdateSevice from "../../hooks/service/useUpdateService";
@@ -22,12 +22,12 @@ const CreateUpdateService = () => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const selectedOrg = useSelector(getSelectedOrg);
+    const selectedProjectGroup = useSelector(getSelectedProjectGroup);
     const idData = useParams();
     const [geoJson, setGeoJson] = useState(JSON.stringify(GEOJSON, null, 2));
     const [serviceData, setServiceData] = React.useState({
         service_name: "",
-        tdei_org_id: selectedOrg.tdei_org_id,
+        tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
         polygon: JSON.stringify(GEOJSON, null, 2)
     });
     const { user } = useAuth();
@@ -42,7 +42,7 @@ const CreateUpdateService = () => {
     }, [idData]);
 
     const validationSchema = yup.object().shape({
-        tdei_org_id: yup.string().required("Organization Name is required"),
+        tdei_project_group_id: yup.string().required("Project Group Name is required"),
         service_name: yup.string().required("Service Name is required"),
     });
 
@@ -77,14 +77,14 @@ const CreateUpdateService = () => {
             updateService({
                 service_name: values.service_name ? values.service_name : "",
                 tdei_service_id: serviceData?.tdei_service_id ? serviceData?.tdei_service_id : "",
-                tdei_org_id: values.tdei_org_id ? values.tdei_org_id : "",
+                tdei_project_group_id: values.tdei_project_group_id ? values.tdei_project_group_id : "",
                 polygon: parsedData.features.length === 0 ? GEOJSON : parsedData
             });
         } else {
             mutate({
                 service_name: values.service_name,
                 tdei_service_id: serviceData?.tdei_service_id,
-                tdei_org_id: values.tdei_org_id,
+                tdei_project_group_id: values.tdei_project_group_id,
                 polygon: parsedData
             });
         }
@@ -160,17 +160,17 @@ const CreateUpdateService = () => {
                             </div>
                             <Container className="d-flex align-items-center mt-2">
 
-                                <Form.Group className="col-7 mb-3" controlId="organisationId ">
-                                    <Form.Label>Organization Name</Form.Label>
+                                <Form.Group className="col-7 mb-3" controlId="projectGroupId ">
+                                    <Form.Label>Project Group Name</Form.Label>
 
                                     {user.isAdmin ? (
-                                        <Field component={OrgList} name="tdei_org_id" />
+                                        <Field component={ProjectGrpList} name="tdei_project_group_id" />
                                     ) : (
                                         <Form.Control
                                             type="text"
-                                            placeholder="Enter Organization ID"
-                                            name="tdei_org_id"
-                                            value={selectedOrg.org_name}
+                                            placeholder="Enter Project Group ID"
+                                            name="tdei_project_group_id"
+                                            value={selectedProjectGroup.tdei_project_group_id}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             disabled

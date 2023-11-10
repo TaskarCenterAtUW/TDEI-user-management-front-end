@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import style from "./UserHeader.module.css";
 import { useAuth } from "../../hooks/useAuth";
 import { useSelector } from "react-redux";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
 import useApiKey from "../../hooks/roles/useApiKey";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Button } from "react-bootstrap";
@@ -13,7 +13,7 @@ const UserHeader = ({ roles }) => {
   const { user } = useAuth();
   const [show, setShow] = useState(false);
   const [copy, setCopy] = useState(false);
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const getRoles = () => {
     if (user.isAdmin) {
       return "TDEI Admin";
@@ -36,14 +36,14 @@ const UserHeader = ({ roles }) => {
           <div className={style.userName}>{`Welcome back, ${user.name} !`}</div>
           {user.isAdmin ? null : (
             <div className={style.roleText}>
-              Organization : {selectedOrg.org_name}
+              Project Group : {selectedProjectGroup.name}
             </div>
           )}
           <div className={style.roleText}>Roles : {role}</div>
         </>
       ) : (
         <div className={style.userName}>
-          Welcome to TDEI, contact TDEI admin or your organization POC to get
+          Welcome to TDEI, contact TDEI admin or your project group POC to get
           roles assigned.
         </div>
       )}

@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
 import SuccessModal from "../SuccessModal";
-import { getUserName, GET_ORG_LIST } from "../../utils";
+import { getUserName, GET_PROJECT_GROUP_LIST } from "../../utils";
 import trashIcon from "../../assets/img/trash-icon.svg";
 import useRevokePermission from "../../hooks/roles/useRevokePermission";
 import DeleteModal from "../DeleteModal";
@@ -26,7 +26,7 @@ const ManagePoc = (props) => {
   const [showModal, setShowModal] = React.useState(false);
   const [userId, setUserId] = React.useState("");
   const initialvalues = {
-    tdei_org_id: data.tdei_org_id,
+    tdei_project_group_id: data.tdei_project_group_id,
     user_name: "",
     roles: ["poc"],
   };
@@ -36,7 +36,7 @@ const ManagePoc = (props) => {
 
   const onSuccess = (data) => {
     console.log("Assigned POC", data);
-    queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
+    queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
     setShowModal(true);
     props.onHide();
   };
@@ -48,7 +48,7 @@ const ManagePoc = (props) => {
   const onRevokeSuccess = (data) => {
     setShowDeleteModal(false);
     setShowModal(true);
-    queryClient.invalidateQueries({ queryKey: [GET_ORG_LIST] });
+    queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
   };
 
   const onRevokeError = (err) => {
@@ -79,7 +79,7 @@ const ManagePoc = (props) => {
 
   const handleRevokePermission = () => {
     revokePermission({
-      tdei_org_id: data.tdei_org_id,
+      tdei_project_group_id: data.tdei_project_group_id,
       user_name: userId,
       roles: ["poc"],
     });
@@ -100,8 +100,8 @@ const ManagePoc = (props) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className={style.modalBody}>
-          <div className={style.orgDetails}>
-            <div className={style.orgName}>{data.org_name}</div>
+          <div className={style.projectGroupDetails}>
+            <div className={style.projectGroupName}>{data.name}</div>
             {/* <div className={style.address}>{data.address}</div> */}
           </div>
           {!toggle ? (
@@ -232,7 +232,7 @@ const ManagePoc = (props) => {
         onHide={() => setShowDeleteModal(false)}
         message={{
           title: "Remove POC",
-          details: "Are you sure you want to remove POC from the organisation?",
+          details: "Are you sure you want to remove POC from the project group?",
         }}
         handler={handleRevokePermission}
         isLoading={revokePermissionLoading}

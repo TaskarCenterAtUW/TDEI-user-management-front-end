@@ -2,15 +2,14 @@ import React from "react";
 import { useSelector } from "react-redux";
 import Layout from "../../components/Layout";
 import UserHeader from "../../components/UserHeader/UserHeader";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
 
 const Dashboard = () => {
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
 
   return (
     <Layout>
-      <UserHeader roles={selectedOrg?.roles} />
-      {/* <Creation roles={selectedOrg?.roles} /> */}
+      <UserHeader roles={selectedProjectGroup?.roles} />
     </Layout>
   );
 };

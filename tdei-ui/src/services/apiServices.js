@@ -1,37 +1,32 @@
 import axios from "axios";
 
 export const url = process.env.REACT_APP_URL;
-
-export async function postOrganisationCreation(data) {
-  const res = await axios.post(`${url}/organization`, data);
+export async function postProjectGroupCreation(data) {
+  const res = await axios.post(`${url}/project-group`, data);
   return res.data;
 }
-
-export async function postOrganisationUpdate(data) {
-  const res = await axios.put(`${url}/organization`, data);
+export async function postProjectGroupUpdate(data) {
+  const res = await axios.put(`${url}/project-group`, data);
   return res.data;
 }
-
-export async function postOrganisationDelete(data) {
-  const { tdei_org_id, status } = data;
+export async function postProjectGroupDelete(data) {
+  const { tdei_project_group_id, status } = data;
   const res = await axios.delete(
-    `${url}/organization/${tdei_org_id}/active/${status}`
+    `${url}/project-group/${tdei_project_group_id}/active/${status}`
   );
   return res.data;
 }
-
 export async function postServiceDelete(data) {
-  const { tdei_service_id, status, tdei_org_id } = data;
+  const { tdei_service_id, status, tdei_project_group_id } = data;
   const res = await axios.delete(
-    `${url}/service/${tdei_org_id}/${tdei_service_id}/active/${status}`
+    `${url}/service/${tdei_project_group_id}/${tdei_service_id}/active/${status}`
   );
   return res.data;
 }
-
 export async function postStationDelete(data) {
-  const { tdei_station_id, status, tdei_org_id } = data;
+  const { tdei_station_id, status, tdei_project_group_id } = data;
   const res = await axios.delete(
-    `${url}/station/${tdei_org_id}/${tdei_station_id}/active/${status}`
+    `${url}/station/${tdei_project_group_id}/${tdei_station_id}/active/${status}`
   );
   return res.data;
 }
@@ -51,16 +46,14 @@ export async function getApiKey({ queryKey }) {
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
   return res.data;
 }
-
-export async function getOrgRoles({ queryKey }) {
+export async function getProjectGroupRoles({ queryKey }) {
   const [, userId] = queryKey;
-  const res = await axios.get(`${url}/org-roles/${userId}`);
+  const res = await axios.get(`${url}/project-group-roles/${userId}`);
   return res.data;
 }
-
-export async function getOrgList(searchText, page_no) {
+export async function getProjectGroupList(searchText, page_no) {
   const res = await axios({
-    url: `${url}/organization`,
+    url: `${url}/project-group`,
     params: {
       searchText,
       page_no,
@@ -70,10 +63,9 @@ export async function getOrgList(searchText, page_no) {
   });
   return res.data;
 }
-
-export async function getOrgLists(searchText, pageParam = 1) {
+export async function getProjectGroupLists(searchText, pageParam = 1) {
   const res = await axios({
-    url: `${url}/organization`,
+    url: `${url}/project-group`,
     params: {
       searchText,
       page_no: pageParam,
@@ -86,10 +78,9 @@ export async function getOrgLists(searchText, pageParam = 1) {
     pageParam,
   };
 }
-
-export async function getOrgUsers(searchText, tdei_org_id, pageParam = 1) {
+export async function getProjectGroupUsers(searchText, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
-    url: `${url}/organization/${tdei_org_id}/users`,
+    url: `${url}/project-group/${tdei_project_group_id}/users`,
     params: {
       searchText,
       page_no: pageParam,
@@ -102,15 +93,14 @@ export async function getOrgUsers(searchText, tdei_org_id, pageParam = 1) {
     pageParam,
   };
 }
-
-export async function getServices(searchText, tdei_org_id, pageParam = 1) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
-      tdei_org_id: tdei_org_id,
+      tdei_project_group_id: tdei_project_group_id,
     },
     method: "GET",
   });
@@ -119,14 +109,14 @@ export async function getServices(searchText, tdei_org_id, pageParam = 1) {
     pageParam,
   };
 }
-export async function getService(tdei_service_id, tdei_org_id, pageParam = 1) {
+export async function getService(tdei_service_id, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
     params: {
       tdei_service_id,
       page_no: pageParam,
       page_size: 10,
-      tdei_org_id: tdei_org_id,
+      tdei_project_group_id: tdei_project_group_id,
     },
     method: "GET",
   });
@@ -135,15 +125,14 @@ export async function getService(tdei_service_id, tdei_org_id, pageParam = 1) {
     pageParam,
   };
 }
-
-export async function getStations(searchText, tdei_org_id ,pageParam = 1) {
+export async function getStations(searchText, tdei_project_group_id ,pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
-      tdei_org_id: tdei_org_id,
+      tdei_project_group_id: tdei_project_group_id,
     },
     method: "GET",
   });
@@ -152,14 +141,15 @@ export async function getStations(searchText, tdei_org_id ,pageParam = 1) {
     pageParam,
   };
 }
-export async function getStation(tdei_station_id, tdei_org_id ,pageParam = 1) {
+//done
+export async function getStation(tdei_station_id, tdei_project_group_id ,pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
     params: {
       tdei_station_id,
       page_no: pageParam,
       page_size: 10,
-      tdei_org_id: tdei_org_id,
+      tdei_project_group_id: tdei_project_group_id,
     },
     method: "GET",
   });
@@ -184,12 +174,11 @@ export async function postCreateService(data) {
   return res.data;
 }
 export async function postUpdateService(data) {
-  const res = await axios.put(`${url}/service/${data.tdei_org_id}`, data);
+  const res = await axios.put(`${url}/service/${data.tdei_project_group_id}`, data);
   return res.data;
 }
-
 export async function postUpdateStation(data) {
-  const res = await axios.put(`${url}/station/${data.tdei_org_id}`, data);
+  const res = await axios.put(`${url}/station/${data.tdei_project_group_id}`, data);
   return res.data;
 }
 

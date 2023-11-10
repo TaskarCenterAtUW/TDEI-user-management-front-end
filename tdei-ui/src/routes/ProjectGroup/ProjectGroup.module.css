@@ -16,7 +16,7 @@
   width: 300px;
 }
 
-.orgHeader {
+.projectHeader {
   background-color: #f8f8f8;
   font-weight: bold;
 }
@@ -111,7 +111,7 @@
   padding: 3px;
 }
 
-.orgIcon {
+.projectGroupIcon {
   width: 45px;
   margin-right: 10px;
 }

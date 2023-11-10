@@ -1,12 +1,12 @@
 import { useInfiniteQuery } from "react-query";
-import { getOrgLists } from "../../services";
-import { GET_ORG_LIST } from "../../utils";
+import { getProjectGroupLists } from "../../services";
+import { GET_PROJECT_GROUP_LIST } from "../../utils";
 
-function useGetOrganizations(query = "") {
+function useGetProjectGroups(query = "") {
   return useInfiniteQuery(
-    [GET_ORG_LIST, query],
+    [GET_PROJECT_GROUP_LIST, query],
     ({ queryKey, pageParam, signal }) =>
-      getOrgLists(queryKey[1], pageParam, signal),
+    getProjectGroupLists(queryKey[1], pageParam, signal),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10
@@ -17,4 +17,4 @@ function useGetOrganizations(query = "") {
   );
 }
 
-export default useGetOrganizations;
+export default useGetProjectGroups;

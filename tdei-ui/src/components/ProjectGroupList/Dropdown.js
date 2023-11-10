@@ -20,7 +20,7 @@ const Dropdown = ({
   onSearchText,
   searchText,
   setSearchText,
-  lastOrgListRef,
+  lastProjectGrpListRef,
   loading,
   field,
   form,
@@ -64,7 +64,7 @@ const Dropdown = ({
     if (!selectedValue || selectedValue.length === 0) {
       return placeHolder;
     }
-    return selectedValue.org_name;
+    return selectedValue.project_group_name;
   };
 
   const onItemClick = (option) => {
@@ -77,7 +77,7 @@ const Dropdown = ({
       return false;
     }
 
-    return selectedValue.org_name === option.org_name;
+    return selectedValue.project_group_name === option.project_group_name;
   };
 
   const onSearch = (e) => {
@@ -114,7 +114,7 @@ const Dropdown = ({
                   onChange={onSearch}
                   value={searchText}
                   ref={searchRef}
-                  placeholder="Search Organization"
+                  placeholder="Search Project Group"
                 />
               </div>
             )}
@@ -126,14 +126,14 @@ const Dropdown = ({
                     <a
                       href="#"
                       onClick={() => onItemClick(option)}
-                      key={option.tdei_org_id}
+                      key={option.tdei_project_group_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
                       ])}
-                      ref={lastOrgListRef}
+                      ref={lastProjectGrpListRef}
                       tabIndex="0"
                     >
-                      {option.org_name}
+                      {option.project_group_name}
                     </a>
                   );
                 } else {
@@ -142,13 +142,13 @@ const Dropdown = ({
                     <a
                       href="#"
                       onClick={() => onItemClick(option)}
-                      key={option.tdei_org_id}
+                      key={option.tdei_project_group_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
                       ])}
                       tabIndex="0"
                     >
-                      {option.org_name}
+                      {option.project_group_name}
                     </a>
                   );
                 }
