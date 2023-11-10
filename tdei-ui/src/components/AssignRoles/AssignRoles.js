@@ -128,11 +128,11 @@ const AssignRoles = (props) => {
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="projectGroupId">
-                    <Form.Label>Project Group Name</Form.Label>
+                    <Form.Label>Project Group ID</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Enter Project Group ID"
-                      value={selectedProjectGroup.project_group_name}
+                      value={selectedProjectGroup.tdei_project_group_id}
                       name="tdei_project_group_id"
                       disabled
                     />

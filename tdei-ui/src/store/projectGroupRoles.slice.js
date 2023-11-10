@@ -7,7 +7,7 @@ const projectGroupRolesSlice = createSlice({
   initialState,
   reducers: {
     set(state, action) {
-      state.name = action.payload.name;
+      state.name = action.payload.project_group_name;
       state.tdei_project_group_id = action.payload.tdei_project_group_id;
       state.roles = action.payload.roles;
     },

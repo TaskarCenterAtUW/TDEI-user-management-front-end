@@ -27,17 +27,18 @@ const ProjectGroupSwitcher = () => {
           <div className={style.projectGroupLabel}>Project Group</div>
           <Dropdown className={style.customDropdown} align="end">
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-              <div className={style.selectedProjectGroupName}>{selected?.projectGroup}</div>
+              <div className={style.selectedProjectGroupName}>{selected?.project_group_name}</div>
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Header>Switch Project Group</Dropdown.Header>
               {data?.map((val, index) => (
+               
                 <Dropdown.Item
-                  key={val.name}
+                  key={val.tdei_project_group_id}
                   onClick={() => handleProjectGroupSelection(index)}
-                  active={val.name === selected?.name}
+                  active={val.tdei_project_group_id === selected?.tdei_project_group_id}
                 >
-                  {val.name}
+                  {val.project_group_name}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
