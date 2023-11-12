@@ -28,7 +28,8 @@ function useGetProjectGroup(query, pageNumber) {
     })
       .then((res) => {
         setProjectGroupList((prevProjectGroup) => {
-          return [...prevProjectGroup, ...res.data];
+          const result = [...prevProjectGroup, ...res.data];
+          return result;
         });
         setHasMore(res.data.length > 0);
         setLoading(false);
@@ -40,6 +41,6 @@ function useGetProjectGroup(query, pageNumber) {
     return () => cancel();
   }, [query, pageNumber]);
 
-  return { loading, error, projectGroupList: projectGroupList, hasMore };
+  return { loading, error, projectGroupList, hasMore };
 }
 export default useGetProjectGroup;

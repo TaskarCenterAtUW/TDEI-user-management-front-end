@@ -1,12 +1,11 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import Dropdown from "./Dropdown";
 import useGetProjectGroup from "../../hooks/projectGroup/useGetProjectGroup";
 
 const ProjectGrpList = ({ field, form }) => {
   const [searchText, setSearchText] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const { loading, projectGrpList, hasMore } = useGetProjectGroup(searchText, pageNo);
-
+  const { loading,error,projectGroupList, hasMore } = useGetProjectGroup(searchText, pageNo);
   const observer = useRef();
   const lastProjectGrpListRef = useCallback(
     (node) => {
@@ -34,7 +33,7 @@ const ProjectGrpList = ({ field, form }) => {
     <Dropdown
       isSearchable
       placeHolder="Select Project Group"
-      options={projectGrpList}
+      options={projectGroupList}
       onChange={handleChange}
       onSearchText={handleSearch}
       searchText={searchText}
