@@ -128,19 +128,19 @@ const Stations = () => {
             >
               Add New Station for Project Group
             </div>
-            <div
+            {/* <div
               className="page-header-subtitle"
               style={{ paddingBottom: "40px", textAlign: "center" }}
             >
               Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry's standard dummy text
               ever since
-            </div>
+            </div> */}
             <div style={{ paddingBottom: "40px" }}>
               <img src={newWindowIcon} alt="new-window-icon" />
             </div>
             <Button
-              onClick={() => setShowCreateStation(true)}
+              onClick={handleCreate}
               className="tdei-primary-button"
             >
               Create New Station
