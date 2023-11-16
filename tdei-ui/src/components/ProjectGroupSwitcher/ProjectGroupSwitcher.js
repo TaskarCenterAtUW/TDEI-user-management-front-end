@@ -1,12 +1,12 @@
 import React from "react";
 import { Dropdown } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import useGetOrgRoles from "../../hooks/roles/useOrgRoles";
+import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import { set } from "../../store";
-import style from "./OrgSwitcher.module.css";
+import style from "./ProjectGroupSwitcher.module.css";
 
-const OrgSwitcher = () => {
-  const { data } = useGetOrgRoles();
+const ProjectGroupSwitcher = () => {
+  const { data } = useGetProjectGroupRoles();
   const dispatch = useDispatch();
   const [selected, setSelected] = React.useState(null);
   React.useEffect(() => {
@@ -15,7 +15,7 @@ const OrgSwitcher = () => {
     }
   }, [data]);
 
-  const handleOrgSelection = (index) => {
+  const handleProjectGroupSelection = (index) => {
     setSelected(data?.[index]);
     dispatch(set(data?.[index]));
   };
@@ -24,20 +24,21 @@ const OrgSwitcher = () => {
     <>
       {data?.length ? (
         <div style={{ marginRight: "1rem" }}>
-          <div className={style.orgLabel}>Organization</div>
+          <div className={style.projectGroupLabel}>Project Group</div>
           <Dropdown className={style.customDropdown} align="end">
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-              <div className={style.selectedOrgName}>{selected?.org_name}</div>
+              <div className={style.selectedProjectGroupName}>{selected?.project_group_name}</div>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Header>Switch Organization</Dropdown.Header>
+              <Dropdown.Header>Switch Project Group</Dropdown.Header>
               {data?.map((val, index) => (
+               
                 <Dropdown.Item
-                  key={val.org_name}
-                  onClick={() => handleOrgSelection(index)}
-                  active={val.org_name === selected?.org_name}
+                  key={val.tdei_project_group_id}
+                  onClick={() => handleProjectGroupSelection(index)}
+                  active={val.tdei_project_group_id === selected?.tdei_project_group_id}
                 >
-                  {val.org_name}
+                  {val.project_group_name}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
@@ -66,4 +67,4 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
   </button>
 ));
 
-export default OrgSwitcher;
+export default ProjectGroupSwitcher;

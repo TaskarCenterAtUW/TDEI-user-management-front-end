@@ -20,10 +20,12 @@ import iconEdit from "./../../assets/img/icon-edit.svg";
 import iconDelete from "./../../assets/img/icon-delete.svg";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
+import ClipboardCopy from "./ClipBoardCopy";
+import { useNavigate } from 'react-router-dom';
 
 const Services = () => {
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [showCreateService, setShowCreateService] = React.useState(false);
@@ -32,7 +34,8 @@ const Services = () => {
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-
+  const navigate = useNavigate();
+  
   const {
     data = [],
     isError,
@@ -79,19 +82,19 @@ const Services = () => {
   };
 
   const confirmDelete = () => {
-    const { tdei_service_id, tdei_org_id } = selectedData;
-    mutate({ tdei_service_id, status: false, tdei_org_id });
+    const { tdei_service_id, tdei_project_group_id } = selectedData;
+    mutate({ tdei_service_id, status: false, tdei_project_group_id });
   };
 
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    setShowCreateService(true);
+    navigate('/service/edit/'+id);
   };
 
   const handleCreate = () => {
     setSelectedData({});
-    setShowCreateService(true);
+    navigate('/CreateUpdateService');
   };
   return (
     <Layout>
@@ -101,7 +104,7 @@ const Services = () => {
           <div className="page-header-subtitle">
             Here are the services currently in the{" "}
             <span className="fw-bold">
-              {user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}
+              {user.isAdmin ? "TDEI system" : `${selectedProjectGroup.name}`}
             </span>
             .
           </div>
@@ -121,16 +124,16 @@ const Services = () => {
               className="page-header-title"
               style={{ paddingBottom: "10px" }}
             >
-              Add New Service for Organization
+              Add New Service for Project Group
             </div>
-            <div
+            {/* <div
               className="page-header-subtitle"
               style={{ paddingBottom: "40px", textAlign: "center" }}
             >
               Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry's standard dummy text
               ever since
-            </div>
+            </div> */}
             <div style={{ paddingBottom: "40px" }}>
               <img src={newWindowIcon} alt="new-window-icon" />
             </div>
@@ -175,7 +178,7 @@ const Services = () => {
                 ))}
               </React.Fragment>
             ))}
-            {isError ? " Error loading organization list" : null}
+            {isError ? " Error loading project group list" : null}
             {isLoading ? (
               <div className="d-flex justify-content-center">
                 <Spinner size="md" />
@@ -222,6 +225,9 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
         <div>
           <div className="tdei-bold-name">{name}</div>
           <div className="tdei-name-desc">No description added</div>
+          <div>
+            <ClipboardCopy copyText={id} />
+          </div>
         </div>
       </div>
       <div className={style.buttons}>

@@ -2,8 +2,8 @@ export const getNotification = (state) => {
   return state.notification;
 };
 
-export const getSelectedOrg = (state) => {
-  return state.selectedOrg;
+export const getSelectedProjectGroup = (state) => {
+  return state.selectedProjectGroup;
 };
 
 export const getNotificationModal = (state) => {
@@ -12,4 +12,8 @@ export const getNotificationModal = (state) => {
 
 export const getSideMenuFlag = (state) => {
   return state.sideMenuBar.flag;
+};
+
+export const getSelectedStation = (state) => {
+  return state.selectedStation;
 };

@@ -68,10 +68,32 @@ body {
   font-size: 14px;
   color: #83879b;
 }
+.tdei-hint-text {
+  font-size: 14px;
+  color: #83879b;
+  font-style: italic;
+}
 
 .dropdown-item.active,
 .dropdown-item:active {
   color: #2f3661;
   text-decoration: none;
   background-color: #e2f0f8;
+}
+.apiKey {
+  border-top: 1px dashed #b5b5b5;
+  margin-top: 10px;
+  padding-top: 10px;
+
+}
+.jsonContent {
+  border: 1px solid var(--text-color);
+  margin-top: 1%;
+  overflow: auto;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
 }

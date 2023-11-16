@@ -19,10 +19,12 @@ import { show } from "../../store/notification.slice";
 import { ListingBlock } from "../Services/Services";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
-import { getSelectedOrg } from "../../selectors";
+import { getSelectedProjectGroup } from "../../selectors";
+import { useNavigate } from 'react-router-dom';
+
 
 const Stations = () => {
-  const selectedOrg = useSelector(getSelectedOrg);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const [showCreateStation, setShowCreateStation] = React.useState(false);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
@@ -31,6 +33,7 @@ const Stations = () => {
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const navigate = useNavigate();
 
   const {
     data = [],
@@ -78,19 +81,22 @@ const Stations = () => {
   };
 
   const confirmDelete = () => {
-    const { tdei_station_id, tdei_org_id } = selectedData;
-    mutate({ tdei_station_id, status: false, tdei_org_id });
+    const { tdei_station_id, tdei_project_group_id } = selectedData;
+    mutate({ tdei_station_id, status: false, tdei_project_group_id });
   };
 
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    setShowCreateStation(true);
+    setShowCreateStation(false);
+    // navigate('/maps', { state: dataToEdit });
+    navigate('/station/edit/'+id);
   };
 
   const handleCreate = () => {
     setSelectedData({});
-    setShowCreateStation(true);
+    setShowCreateStation(false);
+    navigate('/CreateUpdateStation');
   };
   return (
     <Layout>
@@ -100,7 +106,7 @@ const Stations = () => {
           <div className="page-header-subtitle">
             Here are the stations currently in the{" "}
             <span className="fw-bold">
-              {user.isAdmin ? "TDEI system" : `${selectedOrg.org_name}`}
+              {user.isAdmin ? "TDEI system" : `${selectedProjectGroup.name}`}
             </span>
             .
           </div>
@@ -120,21 +126,21 @@ const Stations = () => {
               className="page-header-title"
               style={{ paddingBottom: "10px" }}
             >
-              Add New Station for Organization
+              Add New Station for Project Group
             </div>
-            <div
+            {/* <div
               className="page-header-subtitle"
               style={{ paddingBottom: "40px", textAlign: "center" }}
             >
               Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry's standard dummy text
               ever since
-            </div>
+            </div> */}
             <div style={{ paddingBottom: "40px" }}>
               <img src={newWindowIcon} alt="new-window-icon" />
             </div>
             <Button
-              onClick={() => setShowCreateStation(true)}
+              onClick={handleCreate}
               className="tdei-primary-button"
             >
               Create New Station
@@ -177,7 +183,7 @@ const Stations = () => {
                 ))}
               </React.Fragment>
             ))}
-            {isError ? " Error loading organization list" : null}
+            {isError ? " Error loading project group list" : null}
             {isLoading ? (
               <div className="d-flex justify-content-center">
                 <Spinner size="md" />
