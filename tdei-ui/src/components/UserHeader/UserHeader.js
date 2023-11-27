@@ -7,6 +7,7 @@ import useApiKey from "../../hooks/roles/useApiKey";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Button } from "react-bootstrap";
 import { maskString } from "maskdata";
+import ClipboardCopy from "../../routes/Services/ClipBoardCopy";
 
 const UserHeader = ({ roles }) => {
   const { data, isLoading } = useApiKey();
@@ -40,6 +41,7 @@ const UserHeader = ({ roles }) => {
             </div>
           )}
           <div className={style.roleText}>Roles : {role}</div>
+          {user.isAdmin ? null :  <ClipboardCopy copyText={selectedProjectGroup.tdei_project_group_id} copyTitle={"Project Id"} />}
         </>
       ) : (
         <div className={style.userName}>

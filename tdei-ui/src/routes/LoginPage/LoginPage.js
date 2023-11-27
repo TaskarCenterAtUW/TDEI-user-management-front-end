@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import { Formik } from "formik";
 import * as yup from "yup";
+import ForgotPassModal from "../../components/ForgotPassModal/ForgotPassModal";
 
 const LoginPage = () => {
   const [loading, setLoading] = React.useState(false);
@@ -126,6 +127,7 @@ const LoginPage = () => {
                           Register Now
                         </Link>
                       </div>
+                    <ForgotPassModal />
                     </Form>
                   )}
                 </Formik>
