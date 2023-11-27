@@ -21,7 +21,7 @@ const ForgotPassModal = () => {
                     <Modal.Title>Forgot Password?</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Please send an email with your username to : admin@tdei.com</p>
+                    <p>Please send an email with your username to : {process.env.REACT_APP_ADMIN_EMAIL} </p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
