@@ -16,6 +16,7 @@ jobs:
         run: |
           touch tdei-ui/.env
           echo REACT_APP_URL=${{ vars.REACT_APP_URL }} >> tdei-ui/.env
+          echo REACT_APP_ADMIN_EMAIL= ${{ vars.REACT_APP_URL }} >> tdei-ui/.env
       - name: Build react app
         run: |
           cd tdei-ui && npm install
