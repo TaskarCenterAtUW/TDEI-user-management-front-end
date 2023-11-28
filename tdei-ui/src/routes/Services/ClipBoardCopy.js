@@ -5,7 +5,7 @@ import style from "../../components/UserHeader/UserHeader.module.css"
 ///
 /// Copy to ClipBoard Component
 ///
-function ClipboardCopy({ copyText }) {
+function ClipboardCopy({ copyText, copyTitle }) {
   const [isCopied, setIsCopied] = useState(false);
 
   async function copyTextToClipboard(text) {
@@ -30,8 +30,9 @@ function ClipboardCopy({ copyText }) {
       });
   }
   return (
-    <div className={style.apiKey}>
-      <div>Id : </div>
+    <div className={ copyTitle == "Id" ? style.apiKey:style.projectId}>
+      <div style={{display: "flex"}}>
+      <div  style={{ width:  copyTitle != "Id" ? "80px" : null}}>{copyTitle} : </div>
       <div className={style.maskedKey}>
         <div className={style.keyVisible}>{copyText}</div>
         <div className={style.buttonContainer}>
@@ -39,6 +40,7 @@ function ClipboardCopy({ copyText }) {
             <Button variant="link">{isCopied ? "Copied!" : "Copy"}</Button>
           </CopyToClipboard>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -26,6 +26,7 @@ import projectgroupIcon from "./../../assets/img/icon-projectgroupIcon.svg";
 import { debounce } from "lodash";
 import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/icon-userAvatar.png";
+import ClipboardCopy from "../Services/ClipBoardCopy";
 
 const ProjectGroup = () => {
   const [, setQuery] = React.useState("");
@@ -190,6 +191,7 @@ const ProjectGroup = () => {
                       </Dropdown.Menu>
                     </Dropdown>
                   </div>
+                  <ClipboardCopy copyText={list.tdei_project_group_id} copyTitle={"Project Id"} />
                 </div>
               ))}
             </React.Fragment>
