@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Form, Button, Card, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
@@ -15,6 +15,7 @@ const Register = () => {
   const [loading, setLoading] = React.useState(false);
   const auth = useAuth();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const initialValues = {
     firstName: "",
@@ -26,20 +27,21 @@ const Register = () => {
   };
 
   const validationSchema = yup.object().shape({
+    firstName: yup.string().required("First Name is required"),
     email: yup
       .string()
       .email("Invalid email Id")
       .required("Please enter email Id"),
+    phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
     password: yup
       .string()
       .matches(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         "Password must be minimum of 8 characters in length, requires at least one lower case, one upper case, one special character and a number."
-      ),
-    phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
+      ).required("Please enter password"),
     confirm: yup
       .string()
-      .oneOf([yup.ref("password"), null], "Confirm password does not match"),
+      .oneOf([yup.ref("password"), null], "Confirm password does not match").required("Please confirm password"),
   });
 
   const handleCreateAccount = async ({
@@ -74,6 +76,10 @@ const Register = () => {
     }
   };
 
+  if (auth.user) {
+    return <Navigate to={location.state?.from?.pathname || "/"} replace />;
+  }
+
   return (
     <div className={style.registerContainer}>
       <Row className="justify-content-center align-items-center">
@@ -94,12 +100,14 @@ const Register = () => {
                     handleChange,
                     handleBlur,
                     handleSubmit,
+                    isValid,
+                    dirty
                   }) => (
                     <Form noValidate onSubmit={handleSubmit} autoComplete="off">
                       <Row>
                         <Col lg="6">
                           <Form.Group className="mb-3" controlId="firstName">
-                            <Form.Label>First Name</Form.Label>
+                            <Form.Label>First Name*</Form.Label>
                             <Form.Control
                               type="text"
                               placeholder="Enter First Name"
@@ -107,7 +115,11 @@ const Register = () => {
                               name="firstName"
                               onChange={handleChange}
                               onBlur={handleBlur}
+                              isInvalid={touched.firstName && !!errors.firstName}
                             />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.firstName}
+                            </Form.Control.Feedback>
                           </Form.Group>
                         </Col>
                         <Col lg="6">
@@ -120,20 +132,24 @@ const Register = () => {
                               name="lastName"
                               onChange={handleChange}
                               onBlur={handleBlur}
+                              isInvalid={touched.lastName && !!errors.lastName}
                             />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.lastName}
+                            </Form.Control.Feedback>
                           </Form.Group>
                         </Col>
                       </Row>
-                      <Form.Group className="mb-3" controlId="emailId">
-                        <Form.Label>Email Id</Form.Label>
+                      <Form.Group className="mb-3" controlId="email">
+                        <Form.Label>Email Id*</Form.Label>
                         <Form.Control
                           placeholder="Enter Email Id"
                           value={values.email}
                           name="email"
-                          isInvalid={touched.email && !!errors.email}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           autoComplete="username"
+                          isInvalid={touched.email && !!errors.email}
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.email}
@@ -142,7 +158,7 @@ const Register = () => {
                       <Form.Group className="mb-3" controlId="phoneNumber">
                         <Form.Label>Phone Number</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           placeholder="Enter Phone Number"
                           name="phone"
                           onChange={handleChange}
@@ -155,32 +171,32 @@ const Register = () => {
                         </Form.Control.Feedback>
                       </Form.Group>
                       <Form.Group className="mb-3" controlId="registerPassword">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>Password*</Form.Label>
                         <Form.Control
                           placeholder="Enter Password"
                           value={values.password}
                           name="password"
-                          isInvalid={touched.password && !!errors.password}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           type="password"
                           autoComplete="new-password"
+                          isInvalid={touched.password && !!errors.password}
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.password}
                         </Form.Control.Feedback>
                       </Form.Group>
                       <Form.Group className="mb-3" controlId="confirmPassword">
-                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Label>Confirm Password*</Form.Label>
                         <Form.Control
                           placeholder="Enter Password"
                           value={values.confirm}
                           name="confirm"
-                          isInvalid={touched.confirm && !!errors.confirm}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           type="password"
                           autoComplete="new-password"
+                          isInvalid={touched.confirm && !!errors.confirm}
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors.confirm}
@@ -190,7 +206,7 @@ const Register = () => {
                         className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
                         type="submit"
-                        disabled={loading}
+                        disabled={!dirty || !isValid}
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
@@ -201,7 +217,8 @@ const Register = () => {
                         </Link>
                       </div>
                     </Form>
-                  )}
+                  )
+                  }
                 </Formik>
               </>
             </Card.Body>
