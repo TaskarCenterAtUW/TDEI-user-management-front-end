@@ -42,7 +42,7 @@ const Stations = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetStations(debounceQuery);
+  } = useGetStations(debounceQuery, user?.isAdmin);
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
@@ -120,33 +120,6 @@ const Stations = () => {
         ) : null}
       </div>
       <Container>
-        {user?.isAdmin ? (
-          <div className={style.insideContainer}>
-            <div
-              className="page-header-title"
-              style={{ paddingBottom: "10px" }}
-            >
-              Add New Station for Project Group
-            </div>
-            {/* <div
-              className="page-header-subtitle"
-              style={{ paddingBottom: "40px", textAlign: "center" }}
-            >
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since
-            </div> */}
-            <div style={{ paddingBottom: "40px" }}>
-              <img src={newWindowIcon} alt="new-window-icon" />
-            </div>
-            <Button
-              onClick={handleCreate}
-              className="tdei-primary-button"
-            >
-              Create New Station
-            </Button>
-          </div>
-        ) : (
           <>
             <div className={style.searchPanel}>
               <Form.Control
@@ -199,7 +172,6 @@ const Stations = () => {
               </Button>
             ) : null}
           </>
-        )}
       </Container>
       <CreateStation
         show={showCreateStation}

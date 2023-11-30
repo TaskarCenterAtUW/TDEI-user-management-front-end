@@ -43,7 +43,7 @@ const Services = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery);
+  } = useGetServices(debounceQuery, user?.isAdmin);
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
@@ -117,32 +117,8 @@ const Services = () => {
           </div>
         ) : null}
       </div>
-      <Container>
-        {user?.isAdmin ? (
-          <div className={style.insideContainer}>
-            <div
-              className="page-header-title"
-              style={{ paddingBottom: "10px" }}
-            >
-              Add New Service for Project Group
-            </div>
-            {/* <div
-              className="page-header-subtitle"
-              style={{ paddingBottom: "40px", textAlign: "center" }}
-            >
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since
-            </div> */}
-            <div style={{ paddingBottom: "40px" }}>
-              <img src={newWindowIcon} alt="new-window-icon" />
-            </div>
-            <Button onClick={handleCreate} className="tdei-primary-button">
-              Create New Service
-            </Button>
-          </div>
-        ) : (
-          <>
+      <Container>   
+        <>
             <div className={style.searchPanel}>
               <Form.Control
                 type="text"
@@ -194,7 +170,6 @@ const Services = () => {
               </Button>
             ) : null}
           </>
-        )}
       </Container>
       <CreateService
         show={showCreateService}
