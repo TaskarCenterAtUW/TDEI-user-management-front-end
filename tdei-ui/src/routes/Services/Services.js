@@ -91,7 +91,7 @@ const Services = () => {
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    navigate('/service/edit/'+id);
+    navigate('/service/edit/' + id);
   };
 
   const handleCreate = () => {
