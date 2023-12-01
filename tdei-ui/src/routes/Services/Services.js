@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import ClipboardCopy from "./ClipBoardCopy";
 import { useNavigate } from 'react-router-dom';
+import useIsPoc from "../../hooks/useIsPoc";
 
 const Services = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -35,6 +36,7 @@ const Services = () => {
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
+  const isUserPoc = useIsPoc();
   
   const {
     data = [],
@@ -109,7 +111,7 @@ const Services = () => {
             .
           </div>
         </div>
-        {!user?.isAdmin ? (
+        {user?.isAdmin || isUserPoc ? (
           <div>
             <Button onClick={handleCreate} className="tdei-primary-button">
               Create New

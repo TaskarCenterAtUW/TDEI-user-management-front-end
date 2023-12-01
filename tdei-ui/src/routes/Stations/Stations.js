@@ -21,6 +21,7 @@ import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import { useNavigate } from 'react-router-dom';
+import useIsPoc from "../../hooks/useIsPoc";
 
 
 const Stations = () => {
@@ -34,6 +35,7 @@ const Stations = () => {
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
+  const isUserPoc = useIsPoc();
 
   const {
     data = [],
@@ -111,7 +113,7 @@ const Stations = () => {
             .
           </div>
         </div>
-        {!user?.isAdmin ? (
+        {user?.isAdmin || isUserPoc ?  (
           <div>
             <Button onClick={handleCreate} className="tdei-primary-button">
               Create New
