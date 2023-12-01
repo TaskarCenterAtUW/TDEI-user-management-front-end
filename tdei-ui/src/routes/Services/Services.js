@@ -99,7 +99,7 @@ const Services = () => {
     navigate('/CreateUpdateService');
   };
   return (
-    !user.isAdmin && !isUserPoc && selectedProjectGroup.id === undefined ? (<div className="p-4">
+    !user.isAdmin && !isUserPoc && selectedProjectGroup.tdei_project_group_id === undefined ? (<div className="p-4">
       <div className="alert alert-warning" role="alert">
         Oops! User doesn't have permission to access this page!
       </div>
