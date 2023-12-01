@@ -37,7 +37,7 @@ const Services = () => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
   const isUserPoc = useIsPoc();
-  
+
   const {
     data = [],
     isError,
@@ -99,7 +99,11 @@ const Services = () => {
     navigate('/CreateUpdateService');
   };
   return (
-    <Layout>
+    !user.isAdmin && !isUserPoc && selectedProjectGroup.id === undefined ? (<div className="p-4">
+      <div className="alert alert-warning" role="alert">
+        Oops! User doesn't have permission to access this page!
+      </div>
+    </div>) : (<div className={style.layout}>
       <div className={style.header}>
         <div className={style.title}>
           <div className="page-header-title">Services</div>
@@ -119,59 +123,59 @@ const Services = () => {
           </div>
         ) : null}
       </div>
-      <Container>   
+      <Container>
         <>
-            <div className={style.searchPanel}>
-              <Form.Control
-                type="text"
-                placeholder="Search Service"
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  debouncedHandleSearch(e);
-                }}
-              />
-              {/* <div>Sort by</div> */}
-            </div>
-            {data?.pages?.map((values, i) => (
-              <React.Fragment key={i}>
-                {values?.data?.length === 0 ? (
-                  <div className="d-flex align-items-center mt-2">
-                    <img
-                      src={iconNoData}
-                      className={style.noDataIcon}
-                      alt="no-data-icon"
-                    />
-                    <div className={style.noDataText}>No service found..!</div>
-                  </div>
-                ) : null}
-                {values?.data?.map((list) => (
-                  <ListingBlock
-                    id={list.tdei_service_id}
-                    name={list.service_name}
-                    icon={serviceIcon}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    key={list.tdei_service_id}
+          <div className={style.searchPanel}>
+            <Form.Control
+              type="text"
+              placeholder="Search Service"
+              onChange={(e) => {
+                setQuery(e.target.value);
+                debouncedHandleSearch(e);
+              }}
+            />
+            {/* <div>Sort by</div> */}
+          </div>
+          {data?.pages?.map((values, i) => (
+            <React.Fragment key={i}>
+              {values?.data?.length === 0 ? (
+                <div className="d-flex align-items-center mt-2">
+                  <img
+                    src={iconNoData}
+                    className={style.noDataIcon}
+                    alt="no-data-icon"
                   />
-                ))}
-              </React.Fragment>
-            ))}
-            {isError ? " Error loading project group list" : null}
-            {isLoading ? (
-              <div className="d-flex justify-content-center">
-                <Spinner size="md" />
-              </div>
-            ) : null}
-            {hasNextPage ? (
-              <Button
-                className="tdei-primary-button"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage || isError || !hasNextPage}
-              >
-                Load More {isFetchingNextPage && <Spinner size="sm" />}
-              </Button>
-            ) : null}
-          </>
+                  <div className={style.noDataText}>No service found..!</div>
+                </div>
+              ) : null}
+              {values?.data?.map((list) => (
+                <ListingBlock
+                  id={list.tdei_service_id}
+                  name={list.service_name}
+                  icon={serviceIcon}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                  key={list.tdei_service_id}
+                />
+              ))}
+            </React.Fragment>
+          ))}
+          {isError ? " Error loading project group list" : null}
+          {isLoading ? (
+            <div className="d-flex justify-content-center">
+              <Spinner size="md" />
+            </div>
+          ) : null}
+          {hasNextPage ? (
+            <Button
+              className="tdei-primary-button"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage || isError || !hasNextPage}
+            >
+              Load More {isFetchingNextPage && <Spinner size="sm" />}
+            </Button>
+          ) : null}
+        </>
       </Container>
       <CreateService
         show={showCreateService}
@@ -188,11 +192,14 @@ const Services = () => {
         handler={confirmDelete}
         isLoading={isDeletingService}
       />
-    </Layout>
-  );
+    </div>
+    ));
 };
 
 export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
+  const isUserPoc = useIsPoc();
+  const { user } = useAuth();
+
   return (
     <div className={style.block} key={id}>
       <div className={style.names}>
@@ -207,7 +214,7 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
           </div>
         </div>
       </div>
-      <div className={style.buttons}>
+      {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
         <Button
           className={style.editButton}
           onClick={() => handleEdit(id)}
@@ -224,7 +231,7 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
           <img src={iconDelete} alt="delete-icon" />
           <div className={style.btnText}>Delete</div>
         </Button>
-      </div>
+      </div>) : null}
     </div>
   );
 };

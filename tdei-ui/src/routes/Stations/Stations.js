@@ -92,7 +92,7 @@ const Stations = () => {
     setSelectedData(dataToEdit);
     setShowCreateStation(false);
     // navigate('/maps', { state: dataToEdit });
-    navigate('/station/edit/'+id);
+    navigate('/station/edit/' + id);
   };
 
   const handleCreate = () => {
@@ -101,27 +101,32 @@ const Stations = () => {
     navigate('/CreateUpdateStation');
   };
   return (
-    <Layout>
-      <div className={style.header}>
-        <div className={style.title}>
-          <div className="page-header-title">Stations</div>
-          <div className="page-header-subtitle">
-            Here are the stations currently in the{" "}
-            <span className="fw-bold">
-              {user.isAdmin ? "TDEI system" : `${selectedProjectGroup.name}`}
-            </span>
-            .
-          </div>
-        </div>
-        {user?.isAdmin || isUserPoc ?  (
-          <div>
-            <Button onClick={handleCreate} className="tdei-primary-button">
-              Create New
-            </Button>
-          </div>
-        ) : null}
+    !user.isAdmin && !isUserPoc && selectedProjectGroup.id === undefined ? (<div className="p-4">
+      <div className="alert alert-warning" role="alert">
+        Oops! User doesn't have permission to access this page!
       </div>
-      <Container>
+    </div>) : (
+      <div className={style.layout} >
+        <div className={style.header}>
+          <div className={style.title}>
+            <div className="page-header-title">Stations</div>
+            <div className="page-header-subtitle">
+              Here are the stations currently in the{" "}
+              <span className="fw-bold">
+                {user.isAdmin ? "TDEI system" : `${selectedProjectGroup.name}`}
+              </span>
+              .
+            </div>
+          </div>
+          {user?.isAdmin || isUserPoc ? (
+            <div>
+              <Button onClick={handleCreate} className="tdei-primary-button">
+                Create New
+              </Button>
+            </div>
+          ) : null}
+        </div>
+        <Container>
           <>
             <div className={style.searchPanel}>
               <Form.Control
@@ -174,24 +179,24 @@ const Stations = () => {
               </Button>
             ) : null}
           </>
-      </Container>
-      <CreateStation
-        show={showCreateStation}
-        onHide={() => setShowCreateStation(false)}
-        data={selectedData}
-      />
-      <DeleteModal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        message={{
-          title: `Delete Station ${selectedData.station_name}`,
-          details: "Are you sure you want to delete station?",
-        }}
-        handler={confirmDelete}
-        isLoading={isDeletingStation}
-      />
-    </Layout>
-  );
+        </Container>
+        <CreateStation
+          show={showCreateStation}
+          onHide={() => setShowCreateStation(false)}
+          data={selectedData}
+        />
+        <DeleteModal
+          show={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          message={{
+            title: `Delete Station ${selectedData.station_name}`,
+            details: "Are you sure you want to delete station?",
+          }}
+          handler={confirmDelete}
+          isLoading={isDeletingStation}
+        />
+      </div>
+    ));
 };
 
 export default Stations;
