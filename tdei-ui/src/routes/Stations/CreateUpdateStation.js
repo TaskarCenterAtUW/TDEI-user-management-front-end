@@ -54,7 +54,7 @@ const CreateUpdateStation = () => {
                     } successfully.`,
             })
         );
-        navigate(-1);
+        navigate( user.isAdmin && idData['id'] === undefined ? -2 : -1);
     };
     const onError = (err) => {
         dispatch(
@@ -158,22 +158,21 @@ const CreateUpdateStation = () => {
                                 </div>
                             </div>
                             <Container className="d-flex align-items-center mt-2">
-
                                 <Form.Group className="col-7 mb-3" controlId="projectGroupId ">
-                                    <Form.Label>Project Group Name</Form.Label>
+                                    <Form.Label>{user.isAdmin && idData['id'] !== undefined  ? "Project Group Id" : "Project Group Name"}</Form.Label>
 
-                                    {user.isAdmin ? (
+                                    {user.isAdmin && idData['id'] === undefined ? (
                                         <Field component={ProjectGrpList} name="tdei_project_group_id" />
                                     ) : (
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Enter Project Group ID"
-                                            name="tdei_project_group_id"
-                                            value={selectedProjectGroup.tdei_project_group_id}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            disabled
-                                        />
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter Project Group Name"
+                                        name="tdei_project_group_id"
+                                        value={selectedProjectGroup.name === undefined ? values.tdei_project_group_id : selectedProjectGroup.name}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        disabled
+                                    />
                                     )}
                                 </Form.Group>
                                 <Form.Group className="col-7 mb-3" controlId="name">
