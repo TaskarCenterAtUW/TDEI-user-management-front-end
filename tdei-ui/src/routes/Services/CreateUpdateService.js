@@ -57,7 +57,7 @@ const CreateUpdateService = () => {
                     } successfully.`,
             })
         );
-        navigate( user.isAdmin && idData['id'] === undefined ? -2 : !user.isAdmin ? -2 : -1);
+        navigate( user.isAdmin && idData['id'] === undefined ? -2 : !user.isAdmin  && idData['id'] === undefined  ? -2 : -1);
     };
     const onError = (err) => {
         dispatch(
