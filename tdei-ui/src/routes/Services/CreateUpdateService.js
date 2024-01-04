@@ -205,7 +205,7 @@ const CreateUpdateService = () => {
                                             type="text"
                                             placeholder="Select Service Type"
                                             name="service_type"
-                                            value={selectedProjectGroup.name === undefined ? values.service_type : selectedProjectGroup.service_type}
+                                            value={idData['serviceType'] === "" ? values.service_type : idData['serviceType']}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             disabled

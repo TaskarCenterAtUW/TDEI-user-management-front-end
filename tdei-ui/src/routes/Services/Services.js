@@ -134,6 +134,14 @@ const Services = () => {
       <Container>
         <>
           <InputGroup className="mb-3">
+          <DropdownButton onSelect={handleSelect} variant="outline-secondary"
+              title={serviceType ? serviceType : 'Select Service Type'}
+              id="input-group-dropdown-2"
+              align="end" className= {style.dropdownButton}>
+              <Dropdown.Item eventKey="flex">flex</Dropdown.Item>
+              <Dropdown.Item eventKey="pathways">pathways</Dropdown.Item>
+              <Dropdown.Item eventKey="osw">osw</Dropdown.Item>
+            </DropdownButton>
             <Form.Control
             className={style.customFormControl}
               aria-label="Text input with dropdown button"
@@ -143,14 +151,6 @@ const Services = () => {
                 debouncedHandleSearch(e);
               }}
             />
-            <DropdownButton onSelect={handleSelect} variant="outline-secondary"
-              title={serviceType ? serviceType : 'Select Service Type'}
-              id="input-group-dropdown-2"
-              align="end" className= {style.dropdownButton}>
-              <Dropdown.Item eventKey="flex">flex</Dropdown.Item>
-              <Dropdown.Item eventKey="pathways">pathways</Dropdown.Item>
-              <Dropdown.Item eventKey="osw">osw</Dropdown.Item>
-            </DropdownButton>
           </InputGroup>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
