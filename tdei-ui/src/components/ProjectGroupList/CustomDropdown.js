@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-
+import { toPascalCase } from "../../utils";
 import style from "./Dropdown.module.css";
 
 const Icon = () => {
@@ -78,7 +78,7 @@ const CustomDropdown = ({
           onClick={handleInputClick}
           className={style.dropdownInput}
         >
-          <div className={style.dropdownSelectedValue}>{getDisplay()}</div>
+          <div className={style.dropdownSelectedValue}>{toPascalCase(getDisplay())}</div>
           <div className={style.dropdownTools}>
             <div className={style.dropdownTool}>
               <Icon />
@@ -101,7 +101,7 @@ const CustomDropdown = ({
                       ])}
                       tabIndex="0"
                     >
-                      {option}
+                      {toPascalCase(option)}
                     </a>
                   );
                 } else {
@@ -116,7 +116,7 @@ const CustomDropdown = ({
                       ])}
                       tabIndex="0"
                     >
-                      {option}
+                      {toPascalCase(option)}
                     </a>
                   );
                 }

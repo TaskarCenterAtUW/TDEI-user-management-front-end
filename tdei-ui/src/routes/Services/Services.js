@@ -27,6 +27,7 @@ import useIsPoc from "../../hooks/useIsPoc";
 import InputGroup from 'react-bootstrap/InputGroup';
 import {Dropdown} from 'react-bootstrap';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import { toPascalCase } from "../../utils";
 
 const Services = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -135,12 +136,12 @@ const Services = () => {
         <>
           <InputGroup className="mb-3">
           <DropdownButton onSelect={handleSelect} variant="outline-secondary"
-              title={serviceType ? serviceType : 'Select Service Type'}
+              title={serviceType ? toPascalCase(serviceType) : 'Select Service Type'}
               id="input-group-dropdown-2"
               align="end" className= {style.dropdownButton}>
-              <Dropdown.Item eventKey="flex">flex</Dropdown.Item>
-              <Dropdown.Item eventKey="pathways">pathways</Dropdown.Item>
-              <Dropdown.Item eventKey="osw">osw</Dropdown.Item>
+              <Dropdown.Item eventKey="flex">Flex</Dropdown.Item>
+              <Dropdown.Item eventKey="pathways">Pathways</Dropdown.Item>
+              <Dropdown.Item eventKey="osw">Osw</Dropdown.Item>
             </DropdownButton>
             <Form.Control
             className={style.customFormControl}
