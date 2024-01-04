@@ -17,6 +17,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { GEOJSON } from '../../utils'
 import { GET_SERVICES } from "../../utils";
 import { getService } from "../../services";
+import ServiceTypeDropdownForm from "./ServiceTypeDropdownForm";
+import { toPascalCase } from "../../utils";
 
 const CreateUpdateService = () => {
     const queryClient = useQueryClient();
@@ -28,13 +30,14 @@ const CreateUpdateService = () => {
     const [serviceData, setServiceData] = React.useState({
         service_name: "",
         tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
-        polygon: JSON.stringify(GEOJSON, null, 2)
+        service_type: selectedProjectGroup.service_type,
+        polygon: JSON.stringify(GEOJSON, null, 2),
     });
     const { user } = useAuth();
 
     React.useEffect(() => {
-        if (idData['id'] !== undefined) {
-            getService(idData['id']).then((services) => {
+        if (idData['id'] !== undefined && idData['serviceType'] !== undefined) {
+            getService(idData['id'],idData['serviceType']).then((services) => {
                 setServiceData(services.data[0]);
                 setGeoJson(JSON.stringify(services.data[0].polygon, null, 2))
             })
@@ -44,6 +47,7 @@ const CreateUpdateService = () => {
     const validationSchema = yup.object().shape({
         tdei_project_group_id: yup.string().required("Project Group Name is required"),
         service_name: yup.string().required("Service Name is required"),
+        service_type: yup.string().required("Service Type is required")
     });
 
     const onSuccess = (data) => {
@@ -54,7 +58,7 @@ const CreateUpdateService = () => {
                     } successfully.`,
             })
         );
-        navigate( user.isAdmin && idData['id'] === undefined ? -2 : -1);
+        navigate( user.isAdmin && idData['id'] === undefined ? -2 : !user.isAdmin  && idData['id'] === undefined  ? -2 : -1);
     };
     const onError = (err) => {
         dispatch(
@@ -78,14 +82,16 @@ const CreateUpdateService = () => {
                 service_name: values.service_name ? values.service_name : "",
                 tdei_service_id: serviceData?.tdei_service_id ? serviceData?.tdei_service_id : "",
                 tdei_project_group_id: values.tdei_project_group_id ? values.tdei_project_group_id : "",
-                polygon: parsedData.features.length === 0 ? GEOJSON : parsedData
+                polygon: parsedData.features.length === 0 ? GEOJSON : parsedData,
+                service_type : values.service_type ? values.service_type : ""
             });
         } else {
             mutate({
                 service_name: values.service_name,
                 tdei_service_id: serviceData?.tdei_service_id,
                 tdei_project_group_id: values.tdei_project_group_id,
-                polygon: parsedData
+                polygon: parsedData,
+                service_type : values.service_type
             });
         }
     };
@@ -165,17 +171,17 @@ const CreateUpdateService = () => {
                                     {user.isAdmin && idData['id'] === undefined ? (
                                         <Field component={ProjectGrpList} name="tdei_project_group_id" />
                                     ) : (
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Enter Project Group ID"
-                                        name="tdei_project_group_id"
-                                        value={selectedProjectGroup.name === undefined ? values.tdei_project_group_id : selectedProjectGroup.name}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        disabled
-                                    />
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Enter Project Group ID"
+                                            name="tdei_project_group_id"
+                                            value={selectedProjectGroup.name === undefined ? values.tdei_project_group_id : selectedProjectGroup.name}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            disabled
+                                        />
                                     )}
-                                </Form.Group>
+                                </Form.Group>        
                                 <Form.Group className="col-7 mb-3" controlId="name">
                                     <Form.Label>Service Name</Form.Label>
                                     <Form.Control
@@ -190,6 +196,22 @@ const CreateUpdateService = () => {
                                     <Form.Control.Feedback type="invalid">
                                         {errors.service_name}
                                     </Form.Control.Feedback>
+                                </Form.Group>
+                                <Form.Group className="col-7 mb-3" controlId="serviceType ">
+                                    <Form.Label>  Service Type  </Form.Label>
+                                    {idData['id'] === undefined ? (
+                                        <Field component={ServiceTypeDropdownForm} name="service_type" />
+                                    ) : (
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Select Service Type"
+                                            name="service_type"
+                                            value={idData['serviceType'] === "" ?  toPascalCase(values.service_type) : toPascalCase(idData['serviceType'])}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            disabled
+                                        />
+                                    )}
                                 </Form.Group>
                                 <div className="apiKey">
                                     <Form.Label>Service Boundaries</Form.Label>

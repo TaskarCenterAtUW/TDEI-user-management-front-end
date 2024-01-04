@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import style from "./Services.module.css";
@@ -24,6 +24,10 @@ import { getSelectedProjectGroup } from "../../selectors";
 import ClipboardCopy from "./ClipBoardCopy";
 import { useNavigate } from 'react-router-dom';
 import useIsPoc from "../../hooks/useIsPoc";
+import InputGroup from 'react-bootstrap/InputGroup';
+import {Dropdown} from 'react-bootstrap';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { toPascalCase } from "../../utils";
 
 const Services = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -33,6 +37,7 @@ const Services = () => {
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
+  const [serviceType, setServiceType] = React.useState("flex");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
@@ -45,7 +50,7 @@ const Services = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery, user?.isAdmin);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
@@ -63,6 +68,10 @@ const Services = () => {
     onSuccess,
     onError,
   });
+  const handleSelect = (value) => {
+    queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
+    setServiceType(value);
+  };
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -91,7 +100,7 @@ const Services = () => {
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    navigate('/service/edit/' + id);
+    navigate('/service/edit/' + id + "/" + serviceType);
   };
 
   const handleCreate = () => {
@@ -125,17 +134,25 @@ const Services = () => {
       </div>
       <Container>
         <>
-          <div className={style.searchPanel}>
+          <InputGroup className="mb-3">
+          <DropdownButton onSelect={handleSelect} variant="outline-secondary"
+              title={serviceType ? toPascalCase(serviceType) : 'Select Service Type'}
+              id="input-group-dropdown-2"
+              align="end" className= {style.dropdownButton}>
+              <Dropdown.Item eventKey="flex">Flex</Dropdown.Item>
+              <Dropdown.Item eventKey="pathways">Pathways</Dropdown.Item>
+              <Dropdown.Item eventKey="osw">Osw</Dropdown.Item>
+            </DropdownButton>
             <Form.Control
-              type="text"
+            className={style.customFormControl}
+              aria-label="Text input with dropdown button"
               placeholder="Search Service"
               onChange={(e) => {
                 setQuery(e.target.value);
                 debouncedHandleSearch(e);
               }}
             />
-            {/* <div>Sort by</div> */}
-          </div>
+          </InputGroup>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.length === 0 ? (

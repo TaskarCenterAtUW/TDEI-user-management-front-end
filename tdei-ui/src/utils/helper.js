@@ -4,3 +4,7 @@ export const getUserName = (user, isCurrentUser) => {
   }
   return `${user.first_name} ${user.last_name} ${isCurrentUser ? "(You)" : ""}`;
 };
+
+export const toPascalCase = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

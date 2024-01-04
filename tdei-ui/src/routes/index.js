@@ -36,7 +36,7 @@ const Router = () => {
             <Route path="/CreateUpdateStation" element={<CreateUpdateStation />}/>
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
             <Route path="/CreateUpdateService" element={<CreateUpdateService />}/>   
-            <Route path="service/edit/:id" element={<CreateUpdateService />}/>                  
+            <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>                  
           </Route>
         </Route>
       </>
