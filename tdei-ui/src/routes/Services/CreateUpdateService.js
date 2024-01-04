@@ -17,7 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { GEOJSON } from '../../utils'
 import { GET_SERVICES } from "../../utils";
 import { getService } from "../../services";
-import ServiceTypeDropdown from "./ServiceTypeDropdown";
+import ServiceTypeDropdownForm from "./ServiceTypeDropdownForm";
 
 const CreateUpdateService = () => {
     const queryClient = useQueryClient();
@@ -30,13 +30,13 @@ const CreateUpdateService = () => {
         service_name: "",
         tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
         service_type: selectedProjectGroup.service_type,
-        polygon: JSON.stringify(GEOJSON, null, 2)
+        polygon: JSON.stringify(GEOJSON, null, 2),
     });
     const { user } = useAuth();
 
     React.useEffect(() => {
-        if (idData['id'] !== undefined) {
-            getService(idData['id']).then((services) => {
+        if (idData['id'] !== undefined && idData['serviceType'] !== undefined) {
+            getService(idData['id'],idData['serviceType']).then((services) => {
                 setServiceData(services.data[0]);
                 setGeoJson(JSON.stringify(services.data[0].polygon, null, 2))
             })
@@ -199,7 +199,7 @@ const CreateUpdateService = () => {
                                 <Form.Group className="col-7 mb-3" controlId="serviceType ">
                                     <Form.Label>  Service Type  </Form.Label>
                                     {idData['id'] === undefined ? (
-                                        <Field component={ServiceTypeDropdown} name="service_type" />
+                                        <Field component={ServiceTypeDropdownForm} name="service_type" />
                                     ) : (
                                         <Form.Control
                                             type="text"
