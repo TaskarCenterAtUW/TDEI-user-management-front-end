@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import style from "./Services.module.css";
@@ -23,6 +23,11 @@ import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import ClipboardCopy from "./ClipBoardCopy";
 import { useNavigate } from 'react-router-dom';
+import useIsPoc from "../../hooks/useIsPoc";
+import InputGroup from 'react-bootstrap/InputGroup';
+import {Dropdown} from 'react-bootstrap';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { toPascalCase } from "../../utils";
 
 const Services = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -32,10 +37,12 @@ const Services = () => {
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
+  const [serviceType, setServiceType] = React.useState("flex");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
-  
+  const isUserPoc = useIsPoc();
+
   const {
     data = [],
     isError,
@@ -43,7 +50,7 @@ const Services = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
   const onSuccess = (data) => {
     console.log("suucessfull", data);
@@ -61,6 +68,10 @@ const Services = () => {
     onSuccess,
     onError,
   });
+  const handleSelect = (value) => {
+    queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
+    setServiceType(value);
+  };
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -89,7 +100,7 @@ const Services = () => {
   const handleEdit = (id) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    navigate('/service/edit/'+id);
+    navigate('/service/edit/' + id + "/" + serviceType);
   };
 
   const handleCreate = () => {
@@ -97,7 +108,11 @@ const Services = () => {
     navigate('/CreateUpdateService');
   };
   return (
-    <Layout>
+    !user.isAdmin && !isUserPoc && selectedProjectGroup.tdei_project_group_id === undefined ? (<div className="p-4">
+      <div className="alert alert-warning" role="alert">
+        Oops! User doesn't have permission to access this page!
+      </div>
+    </div>) : (<div className={style.layout}>
       <div className={style.header}>
         <div className={style.title}>
           <div className="page-header-title">Services</div>
@@ -109,7 +124,7 @@ const Services = () => {
             .
           </div>
         </div>
-        {!user?.isAdmin ? (
+        {user?.isAdmin || isUserPoc ? (
           <div>
             <Button onClick={handleCreate} className="tdei-primary-button">
               Create New
@@ -118,83 +133,66 @@ const Services = () => {
         ) : null}
       </div>
       <Container>
-        {user?.isAdmin ? (
-          <div className={style.insideContainer}>
-            <div
-              className="page-header-title"
-              style={{ paddingBottom: "10px" }}
-            >
-              Add New Service for Project Group
-            </div>
-            {/* <div
-              className="page-header-subtitle"
-              style={{ paddingBottom: "40px", textAlign: "center" }}
-            >
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since
-            </div> */}
-            <div style={{ paddingBottom: "40px" }}>
-              <img src={newWindowIcon} alt="new-window-icon" />
-            </div>
-            <Button onClick={handleCreate} className="tdei-primary-button">
-              Create New Service
-            </Button>
-          </div>
-        ) : (
-          <>
-            <div className={style.searchPanel}>
-              <Form.Control
-                type="text"
-                placeholder="Search Service"
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  debouncedHandleSearch(e);
-                }}
-              />
-              {/* <div>Sort by</div> */}
-            </div>
-            {data?.pages?.map((values, i) => (
-              <React.Fragment key={i}>
-                {values?.data?.length === 0 ? (
-                  <div className="d-flex align-items-center mt-2">
-                    <img
-                      src={iconNoData}
-                      className={style.noDataIcon}
-                      alt="no-data-icon"
-                    />
-                    <div className={style.noDataText}>No service found..!</div>
-                  </div>
-                ) : null}
-                {values?.data?.map((list) => (
-                  <ListingBlock
-                    id={list.tdei_service_id}
-                    name={list.service_name}
-                    icon={serviceIcon}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    key={list.tdei_service_id}
+        <>
+          <InputGroup className="mb-3">
+          <DropdownButton onSelect={handleSelect} variant="outline-secondary"
+              title={serviceType ? toPascalCase(serviceType) : 'Select Service Type'}
+              id="input-group-dropdown-2"
+              align="end" className= {style.dropdownButton}>
+              <Dropdown.Item eventKey="flex">Flex</Dropdown.Item>
+              <Dropdown.Item eventKey="pathways">Pathways</Dropdown.Item>
+              <Dropdown.Item eventKey="osw">Osw</Dropdown.Item>
+            </DropdownButton>
+            <Form.Control
+            className={style.customFormControl}
+              aria-label="Text input with dropdown button"
+              placeholder="Search Service"
+              onChange={(e) => {
+                setQuery(e.target.value);
+                debouncedHandleSearch(e);
+              }}
+            />
+          </InputGroup>
+          {data?.pages?.map((values, i) => (
+            <React.Fragment key={i}>
+              {values?.data?.length === 0 ? (
+                <div className="d-flex align-items-center mt-2">
+                  <img
+                    src={iconNoData}
+                    className={style.noDataIcon}
+                    alt="no-data-icon"
                   />
-                ))}
-              </React.Fragment>
-            ))}
-            {isError ? " Error loading project group list" : null}
-            {isLoading ? (
-              <div className="d-flex justify-content-center">
-                <Spinner size="md" />
-              </div>
-            ) : null}
-            {hasNextPage ? (
-              <Button
-                className="tdei-primary-button"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage || isError || !hasNextPage}
-              >
-                Load More {isFetchingNextPage && <Spinner size="sm" />}
-              </Button>
-            ) : null}
-          </>
-        )}
+                  <div className={style.noDataText}>No service found..!</div>
+                </div>
+              ) : null}
+              {values?.data?.map((list) => (
+                <ListingBlock
+                  id={list.tdei_service_id}
+                  name={list.service_name}
+                  icon={serviceIcon}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                  key={list.tdei_service_id}
+                />
+              ))}
+            </React.Fragment>
+          ))}
+          {isError ? " Error loading project group list" : null}
+          {isLoading ? (
+            <div className="d-flex justify-content-center">
+              <Spinner size="md" />
+            </div>
+          ) : null}
+          {hasNextPage ? (
+            <Button
+              className="tdei-primary-button"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage || isError || !hasNextPage}
+            >
+              Load More {isFetchingNextPage && <Spinner size="sm" />}
+            </Button>
+          ) : null}
+        </>
       </Container>
       <CreateService
         show={showCreateService}
@@ -211,11 +209,14 @@ const Services = () => {
         handler={confirmDelete}
         isLoading={isDeletingService}
       />
-    </Layout>
-  );
+    </div>
+    ));
 };
 
 export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
+  const isUserPoc = useIsPoc();
+  const { user } = useAuth();
+
   return (
     <div className={style.block} key={id}>
       <div className={style.names}>
@@ -230,7 +231,7 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
           </div>
         </div>
       </div>
-      <div className={style.buttons}>
+      {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
         <Button
           className={style.editButton}
           onClick={() => handleEdit(id)}
@@ -247,7 +248,7 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
           <img src={iconDelete} alt="delete-icon" />
           <div className={style.btnText}>Delete</div>
         </Button>
-      </div>
+      </div>) : null}
     </div>
   );
 };

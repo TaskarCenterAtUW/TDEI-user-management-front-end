@@ -93,14 +93,15 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id, pageParam = 1) {
+export async function getServices(searchText, tdei_project_group_id,pageParam = 1, isAdmin,service_type) {
   const res = await axios({
     url: `${url}/service`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
-      tdei_project_group_id: tdei_project_group_id,
+      tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
+      service_type
     },
     method: "GET",
   });
@@ -109,7 +110,7 @@ export async function getServices(searchText, tdei_project_group_id, pageParam =
     pageParam,
   };
 }
-export async function getService(tdei_service_id, tdei_project_group_id, pageParam = 1) {
+export async function getService(tdei_service_id, service_type,tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
     params: {
@@ -117,6 +118,7 @@ export async function getService(tdei_service_id, tdei_project_group_id, pagePar
       page_no: pageParam,
       page_size: 10,
       tdei_project_group_id: tdei_project_group_id,
+      service_type: service_type
     },
     method: "GET",
   });
@@ -125,14 +127,14 @@ export async function getService(tdei_service_id, tdei_project_group_id, pagePar
     pageParam,
   };
 }
-export async function getStations(searchText, tdei_project_group_id ,pageParam = 1) {
+export async function getStations(searchText, tdei_project_group_id ,pageParam = 1,isAdmin) {
   const res = await axios({
     url: `${url}/station`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
-      tdei_project_group_id: tdei_project_group_id,
+      tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
     },
     method: "GET",
   });
@@ -141,7 +143,6 @@ export async function getStations(searchText, tdei_project_group_id ,pageParam =
     pageParam,
   };
 }
-//done
 export async function getStation(tdei_station_id, tdei_project_group_id ,pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
