@@ -4,6 +4,7 @@ import style from "./Datasets.module.css";
 import { getSelectedProjectGroup } from "../../selectors";
 import { Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
+import DatasetsTabsContainer from "./DatasetsTabsContainer";
 
 /** Page to display list of Datasets. */
 
@@ -12,7 +13,7 @@ const Datasets = () => {
   const navigate = useNavigate();
   const handleCreate = () => {
     
-    navigate('/CreateUpdateService');
+    // navigate('/CreateUpdateService');
   };
   
   return (
@@ -30,6 +31,7 @@ const Datasets = () => {
               </Button>
           </div>
           </div>
+          <DatasetsTabsContainer/>
       </div>
     
   );

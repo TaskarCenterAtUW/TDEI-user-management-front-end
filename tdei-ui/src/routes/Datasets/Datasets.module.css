@@ -8,3 +8,31 @@
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
+.datasetsTabsHeaderContainer{
+    display: flex;
+    /* background-color: green; */
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    margin-left: 2rem;
+}
+.datasetsTabsHeader,.datasetsTabsHeaderActive {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    padding:5px;
+    cursor: pointer;
+    padding-bottom: 0px;
+    
+}
+
+.datasetsTabsHeaderActive{
+    border-bottom: 4px solid #D3A651
+}
+
+.smallMargin{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.boldText{
+    font-weight: 600;
+}
