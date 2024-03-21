@@ -3,6 +3,7 @@ import servicesIcon from "../assets/img/services-icon.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
 import projectGroupIcon from "../assets/img/project-group-icon.svg"
 import membersIcon from "../assets/img/members-icon.svg";
+import datasetIcon from "../assets/img/dataset-menu-item.svg";
 
 export const PHONE_REGEX = 
 // eslint-disable-next-line
@@ -29,6 +30,11 @@ export const ADMIN_SIDE_NAV = [
     to: "/stations",
     icon: stationsIcon,
   },
+  {
+    linkName:"Datasets",
+    to:"/datasets",
+    icon: datasetIcon
+  }
 ];
 
 export const POC_SIDE_NAV = [
@@ -51,6 +57,11 @@ export const POC_SIDE_NAV = [
     linkName: "Members",
     to: "/members",
     icon: membersIcon,
+  },
+  {
+    linkName:"Datasets",
+    to:"/datasets",
+    icon: datasetIcon
   }
 ];
 

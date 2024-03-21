@@ -17,10 +17,11 @@ body {
 } */
 
 .tdei-primary-button {
-  background-color: #59c3c8 !important;
+  background-color: #4DA9AD !important;
   border-color: #59c3c8 !important;
   color: #fff !important;
   font-weight: 600;
+  border-radius: 4px;
 }
 
 .tdei-primary-button:hover,
