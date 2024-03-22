@@ -13,7 +13,6 @@ const UploadDataset = () => {
     <Layout>
       <Container className="d-flex align-items-center mt-2">
       <div className="page-header-title">Upload Dataset</div>
-      <hr className={style.hr}></hr>
       <VerticalStepper steps={steps} />
      </Container>
     </Layout>
