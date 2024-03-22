@@ -29,6 +29,25 @@
     border-bottom: 4px solid #D3A651
 }
 
+.datasetsTableHeaderRow{
+    background-color: #F8F8F8;
+    padding:0.8rem;
+    color: #162848;
+    font-size: 16px;
+    font-weight: bold;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+}
+.datasetsTableRow {
+    margin-top:1rem;
+    margin-bottom: 1rem;
+    min-height: 100px;
+    box-shadow: 0px 1px 6px #33333314;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+    align-content: center;
+    align-items: center;
+}
 .smallMargin{
     margin-left: 5px;
     margin-right: 5px;
