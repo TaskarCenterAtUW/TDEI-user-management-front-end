@@ -6,6 +6,7 @@ import style from "./Datasets.module.css"
 import releasedDatasets from "../../assets/img/released-data-sets.svg"
 import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
+import DatasetsActions from "./DatasetsActions";
 
 // Overall tabs container for Datasets
 const DatasetsTabsContainer = () => {
@@ -29,7 +30,9 @@ const DatasetsTabsContainer = () => {
                 </div> 
         </div>
         <hr/> 
+        <DatasetsActions/>
         <DatasetTableHeader/>
+        
         <DatasetRow/>
         <DatasetRow/>
         <DatasetRow/>

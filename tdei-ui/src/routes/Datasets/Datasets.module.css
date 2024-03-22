@@ -47,6 +47,8 @@
     border-radius: 5px;
     align-content: center;
     align-items: center;
+    padding-left:1.2rem; 
+    border-left: 12px solid #B6EDD7 ;
 }
 .smallMargin{
     margin-left: 5px;
