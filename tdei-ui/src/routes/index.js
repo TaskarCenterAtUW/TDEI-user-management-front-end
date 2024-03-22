@@ -13,6 +13,7 @@ import CreateUpdateStation from "./Stations/CreateUpdateStation";
 import CreateUpdateService from "./Services/CreateUpdateService";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
+import UploadDataset from "./UploadDataset/UploadDataset";
 
 const Router = () => {
   const { user } = useAuth();
@@ -36,7 +37,8 @@ const Router = () => {
             <Route path="/CreateUpdateStation" element={<CreateUpdateStation />}/>
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
             <Route path="/CreateUpdateService" element={<CreateUpdateService />}/>   
-            <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>                  
+            <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>  
+            <Route path="/UploadDataset" element={<UploadDataset/>}/>                   
           </Route>
         </Route>
       </>
