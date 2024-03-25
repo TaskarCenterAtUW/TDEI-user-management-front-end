@@ -4,3 +4,55 @@
     background-color: #66666a;
     border: none;
   }
+  .item-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #DDDDDD;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+  }
+  
+  .item.selected {
+    border-color: #4DA9AD; 
+    background-color: #4DA9AD14;
+  }
+  
+  .item i {
+    margin-left: auto;
+    color: transparent; 
+  }
+  
+  .item.selected i {
+    color: #4DA9AD; 
+  }
+  .serviceTypeContainer {
+    display: flex;
+    align-items: center;
+    margin-left: auto; 
+    margin-right: 10px; 
+  }
+  
+  .serviceType {
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    width: 90px; 
+    color: #83879B;
+  }
+  
+  .divider {
+    margin-left: 5px; 
+    margin-right: 5px; 
+    color: #ccc; 
+    margin-right: 10px; 
+    font: normal normal bold 18px/22px Lato;
+  }
+  
+  
