@@ -89,14 +89,13 @@ ColorlibStepIcon.propTypes = {
    */
   icon: PropTypes.node,
 };
-const steps = ['Service', 'Data File', 'Metadata File', 'Changeset'];
 
-export default function VerticalStepper() {
+export default function VerticalStepper({ stepsData }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
 
   const totalSteps = () => {
-    return steps.length;
+    return stepsData.length;
   };
 
   const completedSteps = () => {
@@ -113,11 +112,7 @@ export default function VerticalStepper() {
 
   const handleNext = () => {
     const newCompleted = completed;
-    const newActiveStep =
-      isLastStep()
-        ?
-        activeStep
-        : activeStep + 1;
+    const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
     setActiveStep(newActiveStep);
     newCompleted[activeStep] = true;
     setCompleted(newCompleted);
@@ -130,21 +125,7 @@ export default function VerticalStepper() {
     setCompleted(newCompleted);
   };
 
-  const handleStep = (step) => () => {
-    setActiveStep(step);
-  };
-
-  const handleComplete = () => {
-    const newCompleted = completed;
-    newCompleted[activeStep] = true;
-    setCompleted(newCompleted);
-    handleNext();
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-    setCompleted({});
-  };
+  const SelectedComponent = stepsData[activeStep].component;
 
   return (
     <Box sx={{ width: '100%', borderTop: 1, marginTop: "10px", borderColor: "grey.300" }}>
@@ -161,9 +142,20 @@ export default function VerticalStepper() {
                 borderWidth: "2px",
               }
             }} >
-              {steps.map((label, index) => (
-                <Step key={label} completed={completed[index]}>
-                  <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+              {stepsData.map((step, index) => (
+                <Step key={index} completed={completed[index]}>
+                  <StepLabel StepIconComponent={ColorlibStepIcon}>
+                    <Typography variant="h6" sx={{
+                      font: 'normal normal bold 16px/20px Lato',
+                      color: '#162848'
+                    }}>{step.title}</Typography>
+                    <Typography variant="subtitle2" sx={{
+                      font: 'normal normal medium 10px/12px Lato',
+                      color: '#83879B'
+                    }}>
+                      {step.subtitle}
+                    </Typography>
+                  </StepLabel>
                 </Step>
               ))}
             </Stepper>
@@ -172,16 +164,14 @@ export default function VerticalStepper() {
         <Grid item xs={11}>
           <Grid container >
             <Grid item xs={12}>
-              <Container style={{ height: 500, overflow: 'auto' }}>
-                <List>
-                  Select Service
-                </List>
+              <Container style={{ height: 500, overflow: 'auto', margin:"20px"}}>
+                <SelectedComponent />
               </Container>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ width: '100%', borderTop: 1, borderColor: "grey.300" }}>
                 <React.Fragment>
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', pt: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', pt: 2 }}>
                     <Button
                       variant="ouline-secondary"
                       className="tdei-secondary-button"
