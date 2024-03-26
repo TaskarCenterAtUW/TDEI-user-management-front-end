@@ -14,6 +14,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Icon, List } from '@mui/material';
 import { Grid, Button, Container, Paper } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const ServiceIcon = () => (
   <Icon sx={{ alignItems: "center", display: "flex" }}>
@@ -84,53 +86,72 @@ export default function VerticalStepper({ stepsData }) {
   const [selectedData, setSelectedData] = React.useState({});
   const [previousSelectedData, setPreviousSelectedData] = React.useState({});
 
-    // Function to update selected data
-    const updateSelectedData = (stepIndex, data) => {
-      setSelectedData(prevData => ({
-        ...prevData,
-        [stepIndex]: data
-      }));
-    };
-  
-    // Function to update previous selected data
-    const updatePreviousSelectedData = (stepIndex, data) => {
-      setPreviousSelectedData(prevData => ({
-        ...prevData,
-        [stepIndex]: data
-      }));
-    };
+  // Function to update selected data
+  const updateSelectedData = (stepIndex, data) => {
+    setSelectedData(prevData => ({
+      ...prevData,
+      [stepIndex]: data
+    }));
+  };
+
+  // Function to update previous selected data
+  const updatePreviousSelectedData = (stepIndex, data) => {
+    setPreviousSelectedData(prevData => ({
+      ...prevData,
+      [stepIndex]: data
+    }));
+  };
 
   const totalSteps = () => {
     return stepsData.length;
   };
-
-  const completedSteps = () => {
-    return Object.keys(completed).length;
-  };
-
   const isLastStep = () => {
     return activeStep === totalSteps() - 1;
-  };
-
-  const allStepsCompleted = () => {
-    return completedSteps() === totalSteps();
-  };
-  const handlePrevStepData = () => {
-    return selectedData[activeStep - 1];
   };
   const handleSelectedServiceChange = (id) => {
     updateSelectedData(activeStep, id)
   };
+  const showToastMessage = () => {
+    toast.error("Fill the required fields!", {
+      position: "top-center"
+    });
+  };
 
+  // Function to handle next button click
   const handleNext = () => {
-    const newCompleted = completed;
-    const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
-    setActiveStep(newActiveStep);
-    newCompleted[activeStep] = true;
-    setCompleted(newCompleted);
-    // To store selected data for the current step
-    updatePreviousSelectedData(activeStep, selectedData[activeStep]);
-    updateSelectedData(activeStep, selectedData[activeStep + 1]);
+    let isValid = false;
+
+    // Perform validation based on active step
+    switch (activeStep) {
+      case 0:
+        isValid = validateServiceUpload();
+        break;
+      case 1:
+        isValid = validateDataFile();
+        break;
+      case 2:
+        isValid = validateMetadata();
+        break;
+      case 3:
+        isValid = validateChangeset();
+        break;
+      default:
+        isValid = true;
+    }
+
+    // Proceed to next step if validation passes
+    if (isValid) {
+      const newCompleted = completed;
+      const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
+      setActiveStep(newActiveStep);
+      newCompleted[activeStep] = true;
+      setCompleted(newCompleted);
+      // To store selected data for the current step
+      updatePreviousSelectedData(activeStep, selectedData[activeStep]);
+      updateSelectedData(activeStep, selectedData[activeStep + 1]);
+    } else {
+      showToastMessage()
+    }
   };
 
   const handleBack = () => {
@@ -144,6 +165,28 @@ export default function VerticalStepper({ stepsData }) {
       return newData;
     });
     updateSelectedData(activeStep - 1, previousSelectedData[activeStep - 1]);
+  };
+  // Validation function for the first step (ServiceUpload)
+  const validateServiceUpload = () => {
+    if (selectedData[activeStep] != null && selectedData[activeStep].length > 0){
+      return true
+    }
+    return false;
+  };
+
+  // Validation function for the second step (DataFile)
+  const validateDataFile = () => {
+    return true;
+  };
+
+  // Validation function for the third step (Metadata)
+  const validateMetadata = () => {
+    return true;
+  };
+
+  // Validation function for the fourth step (Changeset)
+  const validateChangeset = () => {
+    return true;
   };
 
   const SelectedComponent = stepsData[activeStep].component;
@@ -204,8 +247,8 @@ export default function VerticalStepper({ stepsData }) {
         <Grid item xs={11}>
           <Grid container >
             <Grid item xs={12}>
-              <Container style={{ height: 500, overflow: 'auto', margin:"20px"}}>
-              <SelectedComponent {...componentProps} />
+              <Container style={{ height: 500, overflow: 'auto', margin: "20px" }}>
+                <SelectedComponent {...componentProps} />
               </Container>
             </Grid>
             <Grid item xs={12}>
@@ -232,6 +275,7 @@ export default function VerticalStepper({ stepsData }) {
                     <Button className="tdei-primary-button" onClick={handleNext} endIcon={isLastStep() ? <div></div> : <ChevronRightIcon />} >
                       {isLastStep() ? 'Submit' : 'Next'}
                     </Button>
+                    <ToastContainer />
                   </Box>
                 </React.Fragment>
               </Box>

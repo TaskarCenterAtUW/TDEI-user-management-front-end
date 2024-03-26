@@ -105,6 +105,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
               ) : null}
               {values?.data?.map((list) => (
                 <ServicesList
+                  key={list.tdei_service_id}
                   id={list.tdei_service_id}
                   name={list.service_name}
                   isSelected={selectedData && selectedData.length > 0 ? selectedData === list.tdei_service_id : selectedService === list.tdei_service_id}
