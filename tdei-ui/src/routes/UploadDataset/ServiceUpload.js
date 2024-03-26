@@ -5,18 +5,13 @@ import { Button, Form, Spinner, Col, Row } from "react-bootstrap";
 import { useAuth } from "../../hooks/useAuth";
 import { debounce } from "lodash";
 import useGetServices from "../../hooks/service/useGetServices";
-import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
 import { GET_SERVICES } from "../../utils";
 import iconNoData from "./../../assets/img/icon-noData.svg";
-import { useSelector } from "react-redux";
-import { getSelectedProjectGroup } from "../../selectors";
 import Select from 'react-select';
 import ServicesList from './ServicesList';
 
-const ServiceUpload = () => {
-  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
-  const dispatch = useDispatch();
+const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
@@ -39,6 +34,7 @@ const ServiceUpload = () => {
   };
   const handleSelectedService = (id) => {
     setSelectedService(id);
+    onSelectedServiceChange(id)
   };
 
   const handleSearch = (e) => {
@@ -49,11 +45,6 @@ const ServiceUpload = () => {
     () => debounce(handleSearch, 300),
     []
   );
-  const getData = (id) => {
-    const list = data?.pages?.map((val) => val?.data).flat();
-    return list?.find((service) => service.tdei_service_id === id);
-  };
-
   const options = [
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },
@@ -116,7 +107,7 @@ const ServiceUpload = () => {
                 <ServicesList
                   id={list.tdei_service_id}
                   name={list.service_name}
-                  isSelected={selectedService === list.tdei_service_id}
+                  isSelected={selectedData && selectedData.length > 0 ? selectedData === list.tdei_service_id : selectedService === list.tdei_service_id}
                   serviceType={list.service_type}
                   handleSelectedService={handleSelectedService}
                 />

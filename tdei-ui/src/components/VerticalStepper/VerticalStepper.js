@@ -14,7 +14,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Icon, List } from '@mui/material';
 import { Grid, Button, Container, Paper } from '@mui/material';
-import { margin } from '@mui/system';
 
 export const ServiceIcon = () => (
   <Icon sx={{ alignItems: "center", display: "flex" }}>
@@ -73,26 +72,33 @@ function ColorlibStepIcon({ active, completed, icon, className }) {
 }
 
 ColorlibStepIcon.propTypes = {
-  /**
-   * Whether this step is active.
-   * @default false
-   */
   active: PropTypes.bool,
   className: PropTypes.string,
-  /**
-   * Mark the step as completed. Is passed to child components.
-   * @default false
-   */
   completed: PropTypes.bool,
-  /**
-   * The label displayed in the step icon.
-   */
   icon: PropTypes.node,
 };
 
 export default function VerticalStepper({ stepsData }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
+  const [selectedData, setSelectedData] = React.useState({});
+  const [previousSelectedData, setPreviousSelectedData] = React.useState({});
+
+    // Function to update selected data
+    const updateSelectedData = (stepIndex, data) => {
+      setSelectedData(prevData => ({
+        ...prevData,
+        [stepIndex]: data
+      }));
+    };
+  
+    // Function to update previous selected data
+    const updatePreviousSelectedData = (stepIndex, data) => {
+      setPreviousSelectedData(prevData => ({
+        ...prevData,
+        [stepIndex]: data
+      }));
+    };
 
   const totalSteps = () => {
     return stepsData.length;
@@ -109,6 +115,12 @@ export default function VerticalStepper({ stepsData }) {
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
+  const handlePrevStepData = () => {
+    return selectedData[activeStep - 1];
+  };
+  const handleSelectedServiceChange = (id) => {
+    updateSelectedData(activeStep, id)
+  };
 
   const handleNext = () => {
     const newCompleted = completed;
@@ -116,6 +128,9 @@ export default function VerticalStepper({ stepsData }) {
     setActiveStep(newActiveStep);
     newCompleted[activeStep] = true;
     setCompleted(newCompleted);
+    // To store selected data for the current step
+    updatePreviousSelectedData(activeStep, selectedData[activeStep]);
+    updateSelectedData(activeStep, selectedData[activeStep + 1]);
   };
 
   const handleBack = () => {
@@ -123,9 +138,34 @@ export default function VerticalStepper({ stepsData }) {
     delete newCompleted[activeStep];
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setCompleted(newCompleted);
+    setSelectedData(prevData => {
+      const newData = { ...prevData };
+      delete newData[activeStep];
+      return newData;
+    });
+    updateSelectedData(activeStep - 1, previousSelectedData[activeStep - 1]);
   };
 
   const SelectedComponent = stepsData[activeStep].component;
+  let componentProps = {};
+  if (activeStep === 0) {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedServiceChange: handleSelectedServiceChange
+    };
+  } else if (activeStep === 1) {
+    componentProps = {
+      selectedData: selectedData,
+    };
+  } else if (activeStep === 2) {
+    componentProps = {
+      selectedData: selectedData,
+    };
+  } else if (activeStep === 3) {
+    componentProps = {
+      selectedData: selectedData,
+    };
+  }
 
   return (
     <Box sx={{ width: '100%', borderTop: 1, marginTop: "10px", borderColor: "grey.300" }}>
@@ -165,7 +205,7 @@ export default function VerticalStepper({ stepsData }) {
           <Grid container >
             <Grid item xs={12}>
               <Container style={{ height: 500, overflow: 'auto', margin:"20px"}}>
-                <SelectedComponent />
+              <SelectedComponent {...componentProps} />
               </Container>
             </Grid>
             <Grid item xs={12}>
