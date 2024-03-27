@@ -17,11 +17,13 @@ import { Grid, Button, Container, Paper } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Custom Icon component for service upload
 export const ServiceIcon = () => (
   <Icon sx={{ alignItems: "center", display: "flex" }}>
     <img src={serviceUpload} height={20} width={20} color='white' style={{ width: "100%", height: "70%" }} />
   </Icon>
 )
+// Styled components for customized step icons in the stepper
 const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
   position: 'relative',
   width: 45,
@@ -55,6 +57,7 @@ const InnerCircle = styled('div')(({ theme, ownerState }) => ({
   alignItems: 'center',
 }));
 
+// Custom step icon component for the stepper
 function ColorlibStepIcon({ active, completed, icon, className }) {
   const icons = {
     1: <ServiceIcon />,
@@ -79,7 +82,7 @@ ColorlibStepIcon.propTypes = {
   completed: PropTypes.bool,
   icon: PropTypes.node,
 };
-
+// Main VerticalStepper component
 export default function VerticalStepper({ stepsData }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
@@ -101,16 +104,19 @@ export default function VerticalStepper({ stepsData }) {
       [stepIndex]: data
     }));
   };
-
+  // Calculate total number of steps
   const totalSteps = () => {
     return stepsData.length;
   };
+  // Check if current step is the last step
   const isLastStep = () => {
     return activeStep === totalSteps() - 1;
   };
-  const handleSelectedServiceChange = (id) => {
-    updateSelectedData(activeStep, id)
+  // Event handler for changing selected step data
+  const handleSelectedDataChange = (selectedData) => {
+    updateSelectedData(activeStep, selectedData)
   };
+  // Function to display toast message
   const showToastMessage = () => {
     toast.error("Fill the required fields!", {
       position: "top-center"
@@ -148,27 +154,26 @@ export default function VerticalStepper({ stepsData }) {
       setCompleted(newCompleted);
       // To store selected data for the current step
       updatePreviousSelectedData(activeStep, selectedData[activeStep]);
-      updateSelectedData(activeStep, selectedData[activeStep + 1]);
     } else {
       showToastMessage()
     }
   };
-
+  // Inside VerticalStepper component
   const handleBack = () => {
     const newCompleted = { ...completed };
     delete newCompleted[activeStep];
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setCompleted(newCompleted);
-    setSelectedData(prevData => {
-      const newData = { ...prevData };
-      delete newData[activeStep];
-      return newData;
-    });
-    updateSelectedData(activeStep - 1, previousSelectedData[activeStep - 1]);
+
+    // Retrieve previously selected data for the DataFile step
+    setSelectedData(prevData => ({
+      ...prevData,
+      [activeStep - 1]: previousSelectedData[activeStep - 1]
+    }));
   };
   // Validation function for the first step (ServiceUpload)
   const validateServiceUpload = () => {
-    if (selectedData[activeStep] != null && selectedData[activeStep].length > 0){
+    if (selectedData[activeStep] != null && selectedData[activeStep].length > 0) {
       return true
     }
     return false;
@@ -176,7 +181,10 @@ export default function VerticalStepper({ stepsData }) {
 
   // Validation function for the second step (DataFile)
   const validateDataFile = () => {
-    return true;
+    if (selectedData[activeStep] != null) {
+      return true
+    }
+    return false;
   };
 
   // Validation function for the third step (Metadata)
@@ -188,17 +196,20 @@ export default function VerticalStepper({ stepsData }) {
   const validateChangeset = () => {
     return true;
   };
-
+  // To Determine the component to render based on active step and prepare component props
   const SelectedComponent = stepsData[activeStep].component;
   let componentProps = {};
+  //TODO: To be changed/ make it generic based on rest of the steps data retrieval
+  // Depending on the active step, prepare different props for the selected component
   if (activeStep === 0) {
     componentProps = {
       selectedData: selectedData[activeStep],
-      onSelectedServiceChange: handleSelectedServiceChange
+      onSelectedServiceChange: handleSelectedDataChange
     };
   } else if (activeStep === 1) {
     componentProps = {
-      selectedData: selectedData,
+      selectedData: selectedData[activeStep],
+      onSelectedFileChange: handleSelectedDataChange
     };
   } else if (activeStep === 2) {
     componentProps = {
@@ -209,7 +220,7 @@ export default function VerticalStepper({ stepsData }) {
       selectedData: selectedData,
     };
   }
-
+  // Rendering the vertical stepper component
   return (
     <Box sx={{ width: '100%', borderTop: 1, marginTop: "10px", borderColor: "grey.300" }}>
       <Grid container spacing={0} columns={15}>

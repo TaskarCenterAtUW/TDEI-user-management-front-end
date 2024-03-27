@@ -11,6 +11,7 @@ import iconNoData from "./../../assets/img/icon-noData.svg";
 import Select from 'react-select';
 import ServicesList from './ServicesList';
 
+// Functional component for Service Upload
 const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -19,6 +20,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
   const [serviceType, setServiceType] = React.useState("");
   const [selectedService, setSelectedService] = React.useState({});
 
+  // Fetching services data using custom hook
   const {
     data = [],
     isError,
@@ -28,23 +30,26 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
     isLoading,
   } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
+  // Event handler for selecting service type from dropdown
   const handleSelect = (value) => {
     queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
     setServiceType(value.value);
   };
+  // Event handler for selecting a service
   const handleSelectedService = (id) => {
     setSelectedService(id);
     onSelectedServiceChange(id)
   };
-
+  // Event handler for searching services
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
   };
-
+  // Debounced event handler for searching services
   const debouncedHandleSearch = React.useMemo(
     () => debounce(handleSearch, 300),
     []
   );
+  // Options for service type dropdown
   const options = [
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },

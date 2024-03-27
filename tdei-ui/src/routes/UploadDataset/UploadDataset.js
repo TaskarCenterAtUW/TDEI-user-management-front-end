@@ -1,13 +1,13 @@
 import React from 'react';
 import Layout from '../../components/Layout';
 import Container from "../../components/Container/Container";
-import style from "./UploadDataset.module.css"
 import VerticalStepper from "../../components/VerticalStepper/VerticalStepper";
 import ServiceUpload from './ServiceUpload';
 import Metadata from './Metadata';
 import DataFile from './DataFile';
 import Changeset from './Changeset';
 
+// Array of steps data for the vertical stepper
 const stepsData = [
   {
     title: 'Service',
@@ -30,6 +30,7 @@ const stepsData = [
     component: Changeset,
   },
 ];
+// Functional component UploadDataset
 const UploadDataset = () => {
   return (
     <Layout>

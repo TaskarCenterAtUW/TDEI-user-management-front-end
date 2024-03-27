@@ -31,7 +31,7 @@ export const ADMIN_SIDE_NAV = [
     icon: stationsIcon,
   },
   {
-    linkName: "Upload Datasets",
+    linkName: "Upload Dataset",
     to: "/UploadDataset",
     icon: stationsIcon,
   }
