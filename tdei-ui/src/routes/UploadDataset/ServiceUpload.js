@@ -37,8 +37,6 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
   };
   // Event handler for selecting a service
   const handleSelectedService = (list) => {
-    // setSelectedService(id);
-    // onSelectedServiceChange(id)
   setSelectedService(list);
   onSelectedServiceChange({
     tdei_project_group_id: list.tdei_project_group_id,

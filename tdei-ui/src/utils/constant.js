@@ -57,6 +57,11 @@ export const POC_SIDE_NAV = [
     linkName: "Members",
     to: "/members",
     icon: membersIcon,
+  },
+  {
+    linkName: "Upload Dataset",
+    to: "/UploadDataset",
+    icon: stationsIcon,
   }
 ];
 

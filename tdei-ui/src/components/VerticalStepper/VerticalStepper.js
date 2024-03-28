@@ -14,9 +14,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Icon, List } from '@mui/material';
 import { Grid, Button, Container, Paper } from '@mui/material';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import ToastMessage from '../ToastMessage/ToastMessage';
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -89,6 +88,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete }) {
   const [completed, setCompleted] = React.useState({});
   const [selectedData, setSelectedData] = React.useState({});
   const [previousSelectedData, setPreviousSelectedData] = React.useState({});
+  const [showToast, setToast] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
   const navigate = useNavigate();
   // Function to update selected data
   const updateSelectedData = (stepIndex, data) => {
@@ -113,15 +114,13 @@ export default function VerticalStepper({ stepsData, onStepsComplete }) {
   const isLastStep = () => {
     return activeStep === totalSteps() - 1;
   };
+  // Function to close toast message
+  const handleClose = () => {
+    setToast(false);
+  };
   // Event handler for changing selected step data
   const handleSelectedDataChange = (selectedData) => {
     updateSelectedData(activeStep, selectedData)
-  };
-  // Function to display toast message
-  const showToastMessage = () => {
-    toast.error("Fill the required fields!", {
-      position: "top-center"
-    });
   };
 
   // Function to handle next button click
@@ -161,7 +160,9 @@ export default function VerticalStepper({ stepsData, onStepsComplete }) {
         updatePreviousSelectedData(activeStep, selectedData[activeStep]);
       }
     } else {
-      showToastMessage()
+      //to display toast message
+      setErrorMessage("Please fill in the required fields!")
+      setToast(true);
     }
   };
   // Inside VerticalStepper component
@@ -293,7 +294,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete }) {
                     <Button className="tdei-primary-button" onClick={handleNext} endIcon={isLastStep() ? <div></div> : <ChevronRightIcon />} >
                       {isLastStep() ? 'Submit' : 'Next'}
                     </Button>
-                    <ToastContainer />
+                    <ToastMessage showToast={showToast} toastMessage={errorMessage} onClose={handleClose} isSuccess={false} />
                   </Box>
                 </React.Fragment>
               </Box>

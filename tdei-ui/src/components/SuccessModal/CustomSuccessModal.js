@@ -28,7 +28,7 @@ const CustomSuccessModal = (props) => {
           variant="outline-secondary"
           className="tdei-rounded-button"
         >
-          {props.btnLabel}
+          {props.btnlabel}
         </Button>
       </Modal.Footer>
     </Modal>
