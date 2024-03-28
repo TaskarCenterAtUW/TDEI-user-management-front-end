@@ -1,6 +1,8 @@
 import axios from "axios";
 
 export const url = process.env.REACT_APP_URL;
+export const osmUrl = process.env.REACT_APP_OSM_URL;
+
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);
   return res.data;
@@ -196,11 +198,7 @@ export async function postUploadDataset(data) {
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
-  console.log('formData-tdei_project_group_id:', formData.get('tdei_project_group_id'));
-  console.log('formData-tdei_service_id:', formData.get('tdei_service_id'));
-  console.log('formData-dataset:', formData.get('dataset'));
-  console.log('formData-metadata:', formData.get('metadata'));
-  const response = await axios.post(`https://tdei-api-dev.azurewebsites.net/api/v1/osw/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
+  const response = await axios.post(`${osmUrl}/osw/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
