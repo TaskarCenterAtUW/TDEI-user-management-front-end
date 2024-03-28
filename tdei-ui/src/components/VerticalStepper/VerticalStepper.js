@@ -84,7 +84,7 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 // Main VerticalStepper component
-export default function VerticalStepper({ stepsData, onStepsComplete, isLoading }) {
+export default function VerticalStepper({ stepsData, onStepsComplete }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
   const [selectedData, setSelectedData] = React.useState({});
