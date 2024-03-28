@@ -32,6 +32,9 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
     };
     // Function to convert bytes to megabytes
     const bytesToMB = (bytes) => {
+        if(format == ".json"){
+            return bytes
+        }
         return (bytes / (1024 * 1024)).toFixed(2);
     };
 
@@ -40,7 +43,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
             <div className={style.circle}>
                 <InsertDriveFileOutlinedIcon sx={{ fontSize: "20px" }} />
             </div>
-            <span className={style.fileTitle}>{file.path}</span> <span style={{ color: "#CBCBD3", fontSize: "24px", paddingLeft: "15px", paddingRight: "15px" }}>|</span> {bytesToMB(file.size)} MB
+            <span className={style.fileTitle}>{file.path}</span> <span style={{ color: "#CBCBD3", fontSize: "24px", paddingLeft: "15px", paddingRight: "15px" }}>|</span> {bytesToMB(file.size)} {format == ".json"? "bytes" : "MB"}
             <IconButton onClick={removeFile(file)} sx={{ marginLeft: "auto", marginRight: "10px" }}>
                 <CancelIcon sx={{ color: "#D55962", fontSize: "20px" }} />
             </IconButton>

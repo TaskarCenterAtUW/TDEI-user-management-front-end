@@ -187,3 +187,24 @@ export async function postCreateStation(data) {
   const res = await axios.post(`${url}/station`, data);
   return res.data;
 }
+export async function postUploadDataset(data) {
+  const formData = new FormData();
+  formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
+  formData.append('tdei_service_id', data[0].tdei_service_id);
+  formData.append('dataset', data[1]);
+  formData.append('metadata', data[2]);
+  if (data[3] != null) {
+    formData.append('changeset', data[3]);
+  }
+  console.log('formData-tdei_project_group_id:', formData.get('tdei_project_group_id'));
+  console.log('formData-tdei_service_id:', formData.get('tdei_service_id'));
+  console.log('formData-dataset:', formData.get('dataset'));
+  console.log('formData-metadata:', formData.get('metadata'));
+  const response = await axios.post(`https://tdei-api-dev.azurewebsites.net/api/v1/osw/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log('Response:', response);
+  return response.data;
+}

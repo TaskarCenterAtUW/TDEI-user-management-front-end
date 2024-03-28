@@ -16,6 +16,7 @@ import { Icon, List } from '@mui/material';
 import { Grid, Button, Container, Paper } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -83,12 +84,12 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 // Main VerticalStepper component
-export default function VerticalStepper({ stepsData }) {
+export default function VerticalStepper({ stepsData, onStepsComplete, isLoading }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
   const [selectedData, setSelectedData] = React.useState({});
   const [previousSelectedData, setPreviousSelectedData] = React.useState({});
-
+  const navigate = useNavigate();
   // Function to update selected data
   const updateSelectedData = (stepIndex, data) => {
     setSelectedData(prevData => ({
@@ -149,11 +150,16 @@ export default function VerticalStepper({ stepsData }) {
     if (isValid) {
       const newCompleted = completed;
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
-      setActiveStep(newActiveStep);
-      newCompleted[activeStep] = true;
-      setCompleted(newCompleted);
-      // To store selected data for the current step
-      updatePreviousSelectedData(activeStep, selectedData[activeStep]);
+      if (isLastStep()) {
+        console.log(isLastStep())
+        onStepsComplete(selectedData)
+      } else {
+        setActiveStep(newActiveStep);
+        newCompleted[activeStep] = true;
+        setCompleted(newCompleted);
+        // To store selected data for the current step
+        updatePreviousSelectedData(activeStep, selectedData[activeStep]);
+      }
     } else {
       showToastMessage()
     }
@@ -173,7 +179,7 @@ export default function VerticalStepper({ stepsData }) {
   };
   // Validation function for the first step (ServiceUpload)
   const validateServiceUpload = () => {
-    if (selectedData[activeStep] != null && selectedData[activeStep].length > 0) {
+    if (selectedData[activeStep] != null) {
       return true
     }
     return false;
@@ -189,7 +195,10 @@ export default function VerticalStepper({ stepsData }) {
 
   // Validation function for the third step (Metadata)
   const validateMetadata = () => {
-    return true;
+    if (selectedData[activeStep] != null) {
+      return true
+    }
+    return false;
   };
 
   // Validation function for the fourth step (Changeset)
@@ -206,18 +215,15 @@ export default function VerticalStepper({ stepsData }) {
       selectedData: selectedData[activeStep],
       onSelectedServiceChange: handleSelectedDataChange
     };
-  } else if (activeStep === 1) {
+  } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
     componentProps = {
       selectedData: selectedData[activeStep],
       onSelectedFileChange: handleSelectedDataChange
     };
-  } else if (activeStep === 2) {
+  } else {
     componentProps = {
-      selectedData: selectedData,
-    };
-  } else if (activeStep === 3) {
-    componentProps = {
-      selectedData: selectedData,
+      selectedData: selectedData[activeStep],
+      onSelectedFileChange: handleSelectedDataChange
     };
   }
   // Rendering the vertical stepper component
@@ -270,6 +276,7 @@ export default function VerticalStepper({ stepsData }) {
                       variant="ouline-secondary"
                       className="tdei-secondary-button"
                       sx={{ border: "1px solid #83879B", marginLeft: "20px" }}
+                      onClick={() => navigate(-1)}
                     >
                       Cancel
                     </Button>

@@ -36,9 +36,14 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
     setServiceType(value.value);
   };
   // Event handler for selecting a service
-  const handleSelectedService = (id) => {
-    setSelectedService(id);
-    onSelectedServiceChange(id)
+  const handleSelectedService = (list) => {
+    // setSelectedService(id);
+    // onSelectedServiceChange(id)
+  setSelectedService(list);
+  onSelectedServiceChange({
+    tdei_project_group_id: list.tdei_project_group_id,
+    tdei_service_id: list.tdei_service_id
+  });
   };
   // Event handler for searching services
   const handleSearch = (e) => {
@@ -113,9 +118,9 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
                   key={list.tdei_service_id}
                   id={list.tdei_service_id}
                   name={list.service_name}
-                  isSelected={selectedData && selectedData.length > 0 ? selectedData === list.tdei_service_id : selectedService === list.tdei_service_id}
+                  isSelected={ selectedData != null ? selectedData.tdei_service_id === list.tdei_service_id : selectedService.tdei_service_id === list.tdei_service_id}
                   serviceType={list.service_type}
-                  handleSelectedService={handleSelectedService}
+                  handleSelectedService={() => handleSelectedService(list)}
                 />
               ))}
             </React.Fragment>
