@@ -57,3 +57,35 @@
 .boldText{
     font-weight: 600;
 }
+.projectHeader {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  .gridContainer {
+    display: grid;
+    grid-template-columns: 25% 25% 20% 20% 10%;
+    grid-column-gap: 10px;
+    /* min-height: 70px; */
+    align-items: center;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  .customFormControl {
+    max-width: 300px; 
+  }
+  .statusContainer{
+    padding: 10px;
+    width: 100px;
+    height: 30px;
+    border-radius: 100px;
+    text-align: center;
+    font: normal normal normal 14px/16px Lato;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+  

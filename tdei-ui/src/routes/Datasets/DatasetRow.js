@@ -1,51 +1,59 @@
-// Represents one dataset row
 import React from "react";
-import style from "./Datasets.module.css"
+import style from "./Datasets.module.css";
 import { Badge, Col, Container, Row } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
-import menuOptionIcon from "../../assets/img/menu-options.svg"
+import menuOptionIcon from "../../assets/img/menu-options.svg";
 import { Link } from "react-router-dom";
 
-const DatasetRow = () => {
+const DatasetRow = ({ datasetName, version ,type, collectionDate, status, onInspect, onAction }) => {
+    const getStatusColor = () => {
+        switch (status) {
+            case "Publish":
+                return "#B6EDD7"; 
+            case "Pre-Release":
+                return "#F3E7C7"; 
+            default:
+                return "#C7E3FF"; 
+        }
+    };
+    // Inline style for the left border based on status color
+    const leftBorderStyle = {
+        borderLeft: `12px solid ${getStatusColor()}`
+    };
 
     return (
-         
-        <Container className={style.datasetsTableRow} fluid >
-            <Row style={{alignItems:"center",minHeight:'100px'}}>
+        <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
+            <Row style={{ alignItems: "center", minHeight: '100px' }}>
                 <Col md lg="6">
-                   
-                    <div style={{display:'flex', flexDirection:'row',  alignItems:'center'}}>
-                    <div>
-                        <img src={datasetRowIcon}/>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <div>
+                            <img src={datasetRowIcon} alt="Dataset Icon" />
+                        </div>
+                        <div style={{ marginLeft: '1rem' }}>
+                            <p style={{ fontWeight: 600, marginBottom: '0px' }}>{datasetName}</p>
+                            <p style={{ color: '#83879B' }}> {version}</p>
+                        </div>
                     </div>
-                    <div style={{marginLeft:'1rem'}} >
-                        <p style={{fontWeight:600, marginBottom:'0px'}}>Lorem ipsum data set name </p>
-                        <p style={{color:'#83879B'}}> Version 2.0</p>
+                </Col>
+                <Col>
+                    {type}
+                </Col>
+                <Col>
+                    {collectionDate}
+                </Col>
+                <Col>
+                    <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }}>
+                        {status}
                     </div>
-                    </div>
                 </Col>
                 <Col>
-                Pathway 
+                    <Link onClick={onInspect}>Inspect</Link>
                 </Col>
                 <Col>
-                 25 Mar 2024
-                </Col>
-                <Col>
-                
-                 <div style={{backgroundColor:"#B6EDD7", width:'60%',alignContent:'center', textAlign:'center',borderRadius:'15px',border:'1px solid #A9E2CB'}}>
-                    Released
-                </div>
-                 
-                </Col>
-                <Col>
-                    <Link> Inspect </Link>
-                </Col>
-                <Col>
-                   <img src={menuOptionIcon}/>
+                    <img src={menuOptionIcon} alt="Menu Options" onClick={onAction} />
                 </Col>
             </Row>
         </Container>
-       
     )
 }
 
