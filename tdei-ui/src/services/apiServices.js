@@ -1,6 +1,8 @@
 import axios from "axios";
 
 export const url = process.env.REACT_APP_URL;
+export const osmUrl = process.env.REACT_APP_OSM_URL;
+
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);
   return res.data;
@@ -186,4 +188,21 @@ export async function postUpdateStation(data) {
 export async function postCreateStation(data) {
   const res = await axios.post(`${url}/station`, data);
   return res.data;
+}
+export async function postUploadDataset(data) {
+  const formData = new FormData();
+  formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
+  formData.append('tdei_service_id', data[0].tdei_service_id);
+  formData.append('dataset', data[1]);
+  formData.append('metadata', data[2]);
+  if (data[3] != null) {
+    formData.append('changeset', data[3]);
+  }
+  const response = await axios.post(`${osmUrl}/osw/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log('Response:', response);
+  return response.data;
 }
