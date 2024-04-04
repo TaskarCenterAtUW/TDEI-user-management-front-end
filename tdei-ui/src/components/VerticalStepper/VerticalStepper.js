@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
@@ -83,7 +83,7 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 // Main VerticalStepper component
-export default function VerticalStepper({ stepsData, onStepsComplete }) {
+export default function VerticalStepper({ stepsData, onStepsComplete,currentStep}) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
   const [selectedData, setSelectedData] = React.useState({});
@@ -91,6 +91,15 @@ export default function VerticalStepper({ stepsData, onStepsComplete }) {
   const [showToast, setToast] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentStep == 0) {
+      // If currentStep is 0, don't update activeStep
+      return;
+    }
+    handleBackUntil()
+  }, [currentStep]);
+
   // Function to update selected data
   const updateSelectedData = (stepIndex, data) => {
     setSelectedData(prevData => ({
@@ -159,12 +168,30 @@ export default function VerticalStepper({ stepsData, onStepsComplete }) {
         // To store selected data for the current step
         updatePreviousSelectedData(activeStep, selectedData[activeStep]);
       }
-    } else {
+    } else { 
       //to display toast message
-      setErrorMessage("Please fill in the required fields!")
+      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": "Please Attach metadata file or fill up the form!")
       setToast(true);
     }
   };
+  const handleBackUntil = () => {
+    // Calculate the target step to go back to
+    const targetStep = currentStep;
+    if (activeStep === targetStep) {
+      return;
+    }
+    // Update completed steps and selected data until the target step
+    const newCompleted = {};
+    const newSelectedData = {};
+    for (let i = 0; i <= targetStep; i++) {
+      newCompleted[i] = completed[i];
+      newSelectedData[i] = previousSelectedData[i];
+    }
+    setCompleted(newCompleted);
+    setSelectedData(newSelectedData);
+    setActiveStep(targetStep);
+  };
+  
   // Inside VerticalStepper component
   const handleBack = () => {
     const newCompleted = { ...completed };
