@@ -97,3 +97,30 @@ body {
   align-items: center;
   padding-bottom: 20px;
 }
+.tdei-button2 {
+  color: #59c3c8 !important;
+  font-weight: 600;
+  border: 2px solid #59c3c8;
+}
+.tdei-rounded-button{
+  background-color: #4da9ad !important; 
+  border-color: #4da9ad !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 100px;
+}
+.tdei-rounded-button:hover,
+.tdei-rounded-button:active {
+  background-color: #59c3c8 !important;
+  border-color: #59c3c8 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+.maroon-bg, 
+.maroon-bg:hover{
+  background-color: #c84349 !important;
+  border-color: #c84349 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 100px;
+}
