@@ -170,7 +170,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       }
     } else { 
       //to display toast message
-      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? "Please Attach metadata file!!" : "Please select a service! ")
+      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? "Please attach metadata file!!" : "Please select a service! ")
       setToast(true);
     }
   };
