@@ -17,7 +17,7 @@ const Changeset = ({ selectedData, onSelectedFileChange }) => {
         color: '#162848',
         marginBottom: "15px"
       }}>
-       Attach changeset file or input the details<span style={{ color: 'red' }}> *</span>
+       Attach changeset file
       </Typography>
       <Dropzone onDrop={onDrop} accept={{
         "text/plain": [".txt"]

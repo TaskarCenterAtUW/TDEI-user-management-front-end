@@ -116,4 +116,11 @@ body {
   color: #fff !important;
   font-weight: 600;
 }
-
+.maroon-bg, 
+.maroon-bg:hover{
+  background-color: #c84349 !important;
+  border-color: #c84349 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 100px;
+}
