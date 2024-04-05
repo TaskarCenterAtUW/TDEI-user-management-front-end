@@ -17,7 +17,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
         color: '#162848',
         marginBottom: "15px"
       }}>
-       Attach metadata file or fill up the form<span style={{ color: 'red' }}> *</span>
+       Attach metadata file<span style={{ color: 'red' }}> *</span>
       </Typography>
       <Dropzone onDrop={onDrop} accept={{
         'application/json': ['.json']
