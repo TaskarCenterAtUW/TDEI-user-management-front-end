@@ -15,6 +15,7 @@ import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 import Datasets from "./Datasets";
 import UploadDataset from "./UploadDataset/UploadDataset";
+import Jobs from "./Jobs";
 
 const Router = () => {
   const { user } = useAuth();
@@ -31,6 +32,7 @@ const Router = () => {
               <Route path="/projectGroup" element={<ProjectGroup />} />
             )}
             <Route path="/services" element={<Services />} />
+            <Route path="/jobs" element={<Jobs/>}/>
             <Route path="/stations" element={<Stations />} />
             <Route path="/datasets" element={<Datasets/>} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}

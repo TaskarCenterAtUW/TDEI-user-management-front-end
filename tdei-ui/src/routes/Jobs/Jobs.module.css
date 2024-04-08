@@ -1,0 +1,151 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.searchPanel input {
+  width: 200px;
+}
+
+.selectPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selectPanel > *:not(:last-child) {
+  margin-right: 20px; /* Adjust as needed */
+}
+
+/* The last item should not have a margin to avoid extra space at the end */
+.selectItem:last-child {
+  margin-right: 0;
+}
+
+.select-label {
+  display: inline-block;
+  align-content: center;
+}
+
+.projectHeader {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 25% 20% 25% 15% 15%;
+  grid-column-gap: 10px;
+  /* min-height: 70px; */
+  align-items: center;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.menuVertical {
+  width: 28px;
+  cursor: pointer;
+}
+
+.actionItem {
+  width: 28px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #162848;
+}
+
+.address {
+  color: #83879b;
+  font-size: 14px;
+}
+
+.details {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #83879b;
+  margin-right: 15px;
+}
+
+.content {
+  font-size: 16px;
+  color: #162848;
+}
+
+.notAssigned {
+  color: #ffffff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  border-radius: 20px;
+  padding: 5px 15px;
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.notAssigned:hover,
+.notAssigned:active,
+.notAssigned:focus-visible {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.pocList {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  color: #162848;
+  margin-bottom: 5px;
+}
+
+.pocIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: 0px 3px 6px #00000029;
+  margin-right: 6px;
+  display: flex;
+  padding: 3px;
+}
+
+.projectGroupIcon {
+  width: 45px;
+  margin-right: 10px;
+}
+
+.pocUserIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+.overlayList {
+  font-weight: 700;
+  cursor: pointer;
+  color: #c65d03;
+  font-size: 16px;
+  padding-left: 2px;
+}

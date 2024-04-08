@@ -1,4 +1,5 @@
 import axios from "axios";
+import {number} from "yup";
 
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
@@ -122,6 +123,41 @@ export async function getService(tdei_service_id, service_type,tdei_project_grou
       tdei_project_group_id: tdei_project_group_id,
       service_type: service_type
     },
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+export async function getJobs(tdei_project_group_id, pageParam  = 1, isAdmin, job_id, job_type, status) {
+
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+
+  if (isAdmin) {
+    params.tdei_project_group_id = null;
+  } else {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+
+  if (job_type) {
+    params.job_type = job_type;
+  }
+
+  if (job_id) {
+    params.job_id = job_id;
+  }
+
+  if (status) {
+    params.status = status;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/jobs`,
+    params: params,
     method: "GET",
   });
   return {
