@@ -14,6 +14,7 @@ import CreateUpdateService from "./Services/CreateUpdateService";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 import UploadDataset from "./UploadDataset/UploadDataset";
+import Jobs from "./Jobs";
 
 const Router = () => {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ const Router = () => {
               <Route path="/projectGroup" element={<ProjectGroup />} />
             )}
             <Route path="/services" element={<Services />} />
+            <Route path="/jobs" element={<Jobs/>}/>
             <Route path="/stations" element={<Stations />} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}
             <Route path="*" element={<NotFound />} />

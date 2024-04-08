@@ -3,9 +3,9 @@ import servicesIcon from "../assets/img/services-icon.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
 import projectGroupIcon from "../assets/img/project-group-icon.svg"
 import membersIcon from "../assets/img/members-icon.svg";
-import uploadDataSetIcon from "../assets/img/datasetIcon.svg"
+import jobsIcon from "../assets/img/icon_jobs.svg"
 
-export const PHONE_REGEX = 
+export const PHONE_REGEX =
 // eslint-disable-next-line
 /^(?![A-Za-z])[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/m
 
@@ -34,6 +34,11 @@ export const ADMIN_SIDE_NAV = [
     linkName: "Upload Dataset",
     to: "/UploadDataset",
     icon: stationsIcon,
+  },
+  {
+    linkName: "Jobs",
+    to: "/jobs",
+    icon: jobsIcon
   }
 ];
 
