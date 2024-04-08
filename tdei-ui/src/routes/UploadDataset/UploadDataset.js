@@ -15,6 +15,10 @@ import CustomModal from '../../components/SuccessModal/CustomModal';
 import { Spinner } from "react-bootstrap";
 import style from "./UploadDataset.module.css"
 import ToastMessage from '../../components/ToastMessage/ToastMessage';
+import { useAuth } from '../../hooks/useAuth';
+import { useLocation } from "react-router-dom";
+import useIsDataGenerator from '../../hooks/useIsDataGenerator';
+import useIsPoc from '../../hooks/useIsPoc';
 
 // Array of steps data for the vertical stepper
 const stepsData = [
@@ -42,13 +46,13 @@ const stepsData = [
 // Functional component UploadDataset
 const UploadDataset = () => {
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const [loading, setLoading] = useState(false); // Track loading state
   const [errorMessage, setErrorMessage] = useState("");
   const [showToast, setToast] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const { user } = useAuth();
 
   const onSuccess = (data) => {
     setLoading(false);
@@ -77,9 +81,18 @@ const UploadDataset = () => {
     mutate(uploadData);
     setLoading(true)
   };
-
+  // Check if the user is not an admin, not a flex data generator, not a PoC
+  if (!(user.isAdmin || useIsDataGenerator || useIsPoc)) {
+    return (
+      <div className="p-4">
+        <div className="alert alert-warning" role="alert">
+          Oops! User doesn't have permission to access this page!
+        </div>
+      </div>
+    );
+  }
   return (
-    <Layout>
+    <div className={style.layout}>
       <Container className="d-flex align-items-center mt-2">
         <div className="page-header-title">Upload Dataset</div>
         <VerticalStepper 
@@ -122,7 +135,7 @@ const UploadDataset = () => {
           />
         )}
       </Container>
-    </Layout>
+      </div>
   );
 };
 
