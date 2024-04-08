@@ -104,10 +104,10 @@ const UploadDataset = () => {
           <CustomModal
             show={showSuccessModal}
             message="Dataset upload job has been accepted!"
-            content="You can proceed once the job is completed, please find the status in Datasets page."
+            content="Find the status of the job in jobs page."
             onClick={() => {
               setShowSuccessModal(false);
-              // TODO: navigation to be changed when datasets list UI is available.
+              // TODO: navigation to be changed when jobs list UI is available.
               navigate('../', { replace: true });
             }}
             btnlabel="Go to My Datasets"
