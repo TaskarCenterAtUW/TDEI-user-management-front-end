@@ -110,7 +110,7 @@ const UploadDataset = () => {
               // TODO: navigation to be changed when jobs list UI is available.
               navigate('../', { replace: true });
             }}
-            btnlabel="Go to My Datasets"
+            btnlabel="Go to Jobs page"
             isSuccess = {true}
           />
         )}
