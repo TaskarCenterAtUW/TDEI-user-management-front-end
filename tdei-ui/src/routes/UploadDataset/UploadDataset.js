@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { POST_DATASET } from "../../utils/react-query-constant";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
-import CustomSuccessModal from '../../components/SuccessModal/CustomSuccessModal';
+import CustomModal from '../../components/SuccessModal/CustomModal';
 import { Spinner } from "react-bootstrap";
 import style from "./UploadDataset.module.css"
 import ToastMessage from '../../components/ToastMessage/ToastMessage';
@@ -48,6 +48,7 @@ const UploadDataset = () => {
   const [loading, setLoading] = useState(false); // Track loading state
   const [errorMessage, setErrorMessage] = useState("");
   const [showToast, setToast] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const onSuccess = (data) => {
     setLoading(false);
@@ -58,9 +59,13 @@ const UploadDataset = () => {
 
   const handleClose = () => {
     setToast(false);
+    setCurrentStep(2); // reverting to metadata step.
+    console.log(currentStep)
   };
   const onError = (err) => {
     setLoading(false);
+    // resetting current step
+    setCurrentStep(0);
     console.error("error message", err);
     setToast(true);
     setErrorMessage(err.data)
@@ -77,9 +82,13 @@ const UploadDataset = () => {
     <Layout>
       <Container className="d-flex align-items-center mt-2">
         <div className="page-header-title">Upload Dataset</div>
-        <VerticalStepper stepsData={stepsData} onStepsComplete={onStepsComplete} />
+        <VerticalStepper 
+        stepsData={stepsData} 
+        onStepsComplete={onStepsComplete} 
+        currentStep={currentStep}
+        />
         {showSuccessModal && (
-          <CustomSuccessModal
+          <CustomModal
             show={showSuccessModal}
             message="Dataset upload job has been accepted!"
             content="You can proceed once the job is completed, please find the status in Datasets page."
@@ -89,6 +98,7 @@ const UploadDataset = () => {
               navigate('../', { replace: true });
             }}
             btnlabel="Go to My Datasets"
+            isSuccess = {true}
           />
         )}
         {loading && (
@@ -99,7 +109,18 @@ const UploadDataset = () => {
             </div>
           </div>
         )}
-        <ToastMessage showToast={showToast} toastMessage={errorMessage} onClose={handleClose} isSuccess={false} />
+           {showToast && (
+          <CustomModal
+            show={showToast}
+            message="Dataset Upload Failed!"
+            content={errorMessage}
+            onClick={() => {
+              handleClose()            
+            }}
+            btnlabel="Dismiss"
+            isSuccess = {false}
+          />
+        )}
       </Container>
     </Layout>
   );
