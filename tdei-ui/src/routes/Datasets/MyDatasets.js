@@ -25,13 +25,13 @@ const MyDatasets = () => {
     const [status, setStatus] = React.useState("");
     
     const {
-        data = [],
-        isError,
-        hasNextPage,
-        fetchNextPage,
-        isFetchingNextPage,
-        isLoading,
-      } = useGetDatasets(debounceQuery, user?.isAdmin, status,dataType);
+      data = [],
+      isError,
+      hasNextPage,
+      fetchNextPage,
+      isFetchingNextPage,
+      isLoading,
+    } = useGetDatasets(debounceQuery, status, dataType);
 
 // Event handler for selecting data type from dropdown
   const handleSelectedDataType = (value) => {
@@ -40,7 +40,7 @@ const MyDatasets = () => {
   };
   // Event handler for selecting status from dropdown
   const handleSelectedStatus = (list) => {
-    setStatus(list);
+    setStatus(list.value);
   };
   // Event handler for searching services
   const handleSearch = (e) => {
@@ -60,10 +60,8 @@ const MyDatasets = () => {
   // Options for status type dropdown
   const statusOptions = [
     { value: 'All', label: 'All' },
-    { value: 'Published', label: 'Released' },
+    { value: 'Publish', label: 'Released' },
     { value: 'Pre-Release', label: 'Pre-Release' },
-    { value: 'All', label: 'Release Pending' },
-    { value: 'All', label: 'Upload Pending' }
 ];
 
 // Event handler for selecting action button on a dataset
@@ -74,8 +72,6 @@ const onInspect = () => {
 const onAction = () => {
   
 };
-    
- 
   return (
     <div>
      <Form noValidate>
@@ -114,7 +110,7 @@ const onAction = () => {
               <Select
                 isSearchable={false}
                 defaultValue={{ label: "All", value: "" }}
-                onChange={handleSelectedDataType}
+                onChange={handleSelectedStatus}
                 options={statusOptions}
                 components={{
                   IndicatorSeparator: () => null

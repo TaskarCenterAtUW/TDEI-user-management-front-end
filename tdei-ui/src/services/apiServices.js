@@ -206,14 +206,21 @@ export async function postUploadDataset(data) {
   console.log('Response:', response);
   return response.data;
 }
-export async function getDatasets(tdei_project_group_id,pageParam = 1,status = "All",dataType) {
+export async function getDatasets(searchText,pageParam = 1,status = "All",dataType) {
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+    status: status
+  };
+  if (searchText) {
+    params.name = searchText;
+  }
+  if (dataType) {
+    params.data_type = dataType;
+  }
   const res = await axios({
-    url: `${osmUrl}/datasets?`,
-    params: {
-      page_no: pageParam,
-      page_size: 10,
-      status:status,
-    },
+    url: `${osmUrl}/datasets`,
+    params: params,
     method: "GET",
   });
   return {
