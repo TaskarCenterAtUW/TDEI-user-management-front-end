@@ -5,6 +5,7 @@ import { getSelectedProjectGroup } from "../../selectors";
 import { Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import DatasetsTabsContainer from "./DatasetsTabsContainer";
+import Layout from "../../components/Layout";
 
 /** Page to display list of Datasets. */
 
@@ -33,7 +34,6 @@ const Datasets = () => {
           </div>
           <DatasetsTabsContainer/>
       </div>
-    
   );
 };
 

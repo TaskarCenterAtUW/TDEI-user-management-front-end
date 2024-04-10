@@ -7,12 +7,14 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import MyDatasets from "./MyDatasets";
 import ReleasedDatasets from "./ReleasedDatasets";
+import Container from "../../components/Container/Container";
 
 // Overall tabs container for Datasets
 const DatasetsTabsContainer = () => {
     const [key, setKey] = useState('myDatasets');
     return (
-        <div style={{ padding: "1.5rem" }}>
+        <div className={style.datasetsLayout}>
+        <Container className="d-flex align-items-center mt-2">
             <Tabs
                 onSelect={(k) => setKey(k)}
                 defaultActiveKey="myDatasets"
@@ -25,6 +27,7 @@ const DatasetsTabsContainer = () => {
                     <ReleasedDatasets />
                 </Tab>
             </Tabs>
+        </Container>
         </div>
     )
 }

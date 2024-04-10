@@ -13,6 +13,7 @@ import style from "./Datasets.module.css"
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { toPascalCase, formatDate } from '../../utils';
+import PaginationComponent from '../../components/PaginationComponent/PaginationComponent';
 
 
 
@@ -161,6 +162,7 @@ const onAction = () => {
               Load More {isFetchingNextPage && <Spinner size="sm" />}
             </Button>
           ) : null}
+          <PaginationComponent />
         </Form>
     </div>
   );
