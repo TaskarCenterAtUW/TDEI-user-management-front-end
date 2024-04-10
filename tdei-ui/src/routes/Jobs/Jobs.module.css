@@ -149,3 +149,17 @@
   font-size: 16px;
   padding-left: 2px;
 }
+
+.rectangleBox {
+  width: 100%;
+  max-width: 600px; /* Set a maximum width if needed */
+  height: 100px;
+  background: #F4F9FC;
+  margin: 0 auto; /* Center the box horizontally */
+  border: 2px solid #fc0000;
+  padding: 20px;
+}
+
+.form {
+  width: 100%; /* Occupy entire width */
+}

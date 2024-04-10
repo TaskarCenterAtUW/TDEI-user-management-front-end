@@ -11,6 +11,7 @@ import Stations from "./Stations";
 import Members from "./Members";
 import CreateUpdateStation from "./Stations/CreateUpdateStation";
 import CreateUpdateService from "./Services/CreateUpdateService";
+import CreateJobService from "./Jobs/createJob";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 import Datasets from "./Datasets";
@@ -42,7 +43,8 @@ const Router = () => {
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
             <Route path="/CreateUpdateService" element={<CreateUpdateService />}/>   
             <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>  
-            <Route path="/UploadDataset" element={<UploadDataset/>}/>                   
+            <Route path="/UploadDataset" element={<UploadDataset/>}/>
+            <Route path="/CreateJob" element={<CreateJobService />}/>
           </Route>
         </Route>
       </>
