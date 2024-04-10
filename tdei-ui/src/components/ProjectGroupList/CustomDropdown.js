@@ -78,7 +78,7 @@ const CustomDropdown = ({
           onClick={handleInputClick}
           className={style.dropdownInput}
         >
-          <div className={style.dropdownSelectedValue}>{toPascalCase(getDisplay())}</div>
+          <div className={style.dropdownSelectedValue}>{getDisplay() == "osw" ? "OSW" : toPascalCase(getDisplay())}</div>
           <div className={style.dropdownTools}>
             <div className={style.dropdownTool}>
               <Icon />
@@ -101,7 +101,7 @@ const CustomDropdown = ({
                       ])}
                       tabIndex="0"
                     >
-                      {toPascalCase(option)}
+                      {option == "osw" ? "OSW" : toPascalCase(option)}
                     </a>
                   );
                 } else {
@@ -116,7 +116,7 @@ const CustomDropdown = ({
                       ])}
                       tabIndex="0"
                     >
-                      {toPascalCase(option)}
+                      {option == "osw" ? "OSW" : toPascalCase(option)}
                     </a>
                   );
                 }

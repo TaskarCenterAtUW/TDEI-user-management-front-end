@@ -76,7 +76,7 @@ const CreateUpdateService = () => {
     );
 
     const handleCreateService = (values) => {
-        const parsedData = JSON.parse(geoJson);
+        const parsedData = geoJson ? JSON.parse(geoJson) : GEOJSON;
         if (serviceData?.tdei_service_id) {
             updateService({
                 service_name: values.service_name ? values.service_name : "",
@@ -183,7 +183,7 @@ const CreateUpdateService = () => {
                                     )}
                                 </Form.Group>        
                                 <Form.Group className="col-7 mb-3" controlId="name">
-                                    <Form.Label>Service Name</Form.Label>
+                                    <Form.Label>Service Name<span style={{ color: 'red' }}> *</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter Service Name"
@@ -198,7 +198,7 @@ const CreateUpdateService = () => {
                                     </Form.Control.Feedback>
                                 </Form.Group>
                                 <Form.Group className="col-7 mb-3" controlId="serviceType ">
-                                    <Form.Label>  Service Type  </Form.Label>
+                                    <Form.Label>  Service Type <span style={{ color: 'red' }}> *</span> </Form.Label>
                                     {idData['id'] === undefined ? (
                                         <Field component={ServiceTypeDropdownForm} name="service_type" />
                                     ) : (
