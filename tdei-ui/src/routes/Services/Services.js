@@ -225,7 +225,6 @@ export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
         </div>
         <div>
           <div className="tdei-bold-name">{name}</div>
-          <div className="tdei-name-desc">No description added</div>
           <div>
             <ClipboardCopy copyText={id} copyTitle={"Id"} />
           </div>

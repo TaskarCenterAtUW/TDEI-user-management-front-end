@@ -94,7 +94,7 @@ const CreateProjectGroup = (props) => {
             <Form noValidate onSubmit={handleSubmit}>
               <Modal.Body>
                 <Form.Group className="mb-3" controlId="projectGroupName ">
-                  <Form.Label>Project Group Name</Form.Label>
+                  <Form.Label>Project Group Name<span style={{ color: 'red' }}> *</span></Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="Enter Name"
@@ -135,7 +135,7 @@ const CreateProjectGroup = (props) => {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="address">
-                  <Form.Label>Address</Form.Label>
+                  <Form.Label>Address<span style={{ color: 'red' }}> *</span></Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={3}

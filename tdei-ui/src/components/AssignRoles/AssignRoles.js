@@ -92,7 +92,7 @@ const AssignRoles = (props) => {
           </Modal.Header>
           {assignRolesError ? (
             <Alert variant={"danger"}>
-              {error.data?.message || "Error in Assigning roles"}
+              {error.data || "Error in Assigning roles"}
             </Alert>
           ) : null}
           <Formik
