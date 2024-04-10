@@ -16,7 +16,6 @@ export default function PaginationComponent() {
             '&.Mui-selected': {
               background: '#4DA9AD',
               color: 'white',
-              // borderRadius: '50%',
             },
           }}}/>
         </Grid>

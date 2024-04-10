@@ -13,9 +13,6 @@ import style from "./Datasets.module.css"
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { toPascalCase, formatDate } from '../../utils';
-import PaginationComponent from '../../components/PaginationComponent/PaginationComponent';
-
-
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -32,7 +29,7 @@ const MyDatasets = () => {
       fetchNextPage,
       isFetchingNextPage,
       isLoading,
-    } = useGetDatasets(debounceQuery, status, dataType);
+    } = useGetDatasets(debounceQuery, status, dataType,false);
 
 // Event handler for selecting data type from dropdown
   const handleSelectedDataType = (value) => {
@@ -121,7 +118,7 @@ const onAction = () => {
             </div>
           </div>
         </div> 
-        <DatasetTableHeader />
+        <DatasetTableHeader isReleasedDataList={false}/>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.length === 0 ? (
@@ -143,6 +140,8 @@ const onAction = () => {
                    status = {list.status}
                    onInspect = {onInspect} 
                    onAction = {onAction}
+                   isReleasedList={false}
+                   projectGroup={list.tdei_project_group_id}
                   />
               ))}
             </React.Fragment>
@@ -162,7 +161,6 @@ const onAction = () => {
               Load More {isFetchingNextPage && <Spinner size="sm" />}
             </Button>
           ) : null}
-          <PaginationComponent />
         </Form>
     </div>
   );

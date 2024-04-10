@@ -228,3 +228,25 @@ export async function getDatasets(searchText,pageParam = 1,status = "All",dataTy
     pageParam,
   };
 }
+export async function getReleasedDatasets(searchText,pageParam = 1,dataType) {
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+    status: "Publish"
+  };
+  if (searchText) {
+    params.name = searchText;
+  }
+  if (dataType) {
+    params.data_type = dataType;
+  }
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params: params,
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}

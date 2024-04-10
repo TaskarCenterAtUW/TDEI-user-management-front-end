@@ -53,6 +53,8 @@ const UploadDataset = () => {
   const [showToast, setToast] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const { user } = useAuth();
+  const isPOC = useIsPoc()
+  const isDG = useIsDataGenerator
 
   const onSuccess = (data) => {
     setLoading(false);
@@ -82,7 +84,7 @@ const UploadDataset = () => {
     setLoading(true)
   };
   // Check if the user is not an admin, not a flex data generator, not a PoC
-  if (!(user.isAdmin || useIsDataGenerator || useIsPoc)) {
+  if (!(user.isAdmin || isPOC || isDG)) {
     return (
       <div className="p-4">
         <div className="alert alert-warning" role="alert">
