@@ -36,11 +36,6 @@ export const ADMIN_SIDE_NAV = [
     to:"/datasets",
     icon: datasetIcon
   },
-  {
-    linkName: "Upload Dataset",
-    to: "/UploadDataset",
-    icon: stationsIcon,
-  }
 ];
 
 export const POC_SIDE_NAV = [
@@ -69,11 +64,6 @@ export const POC_SIDE_NAV = [
     to:"/datasets",
     icon: datasetIcon
   },
-  {
-    linkName: "Upload Dataset",
-    to: "/UploadDataset",
-    icon: stationsIcon,
-  }
 ];
 
 export const POC = "poc";
