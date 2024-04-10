@@ -3,34 +3,21 @@ import React from "react";
 import {
     Button,
     Form,
-    Dropdown,
-    Spinner,
-    OverlayTrigger,
-    Popover,
+    Spinner
 } from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import useGetJobs from "../../hooks/jobs/useGetJobs";
-import menuVertical from "../../assets/img/menu-vertical.png";
-import CreateProjectGroup from "../../components/CreateProjectGroup/CreateProjectGroup";
 import style from "./Jobs.module.css";
-import ManagePoc from "../../components/ManagePoc";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
-import { show } from "../../store/notification.slice";
-import useDeleteProjectGroup from "../../hooks/projectGroup/useDeleteProjectGroup";
-import {getUserName, GET_PROJECT_GROUP_LIST, GET_SERVICES, GET_JOBS} from "../../utils";
+import {GET_JOBS} from "../../utils";
 import { useQueryClient } from "react-query";
-import DeleteModal from "../../components/DeleteModal";
-//src/assets/img/icon-projectgroupIcon.svg
 import projectgroupIcon from "./../../assets/img/icon-projectgroupIcon.svg";
 import refreshIcon from "./../../assets/img/icon-refresh.svg"
 import { debounce } from "lodash";
-import SuccessModal from "../../components/SuccessModal";
-import userIcon from "../../assets/img/icon-userAvatar.png";
-import ClipboardCopy from "../Services/ClipBoardCopy";
 import Select from "react-select";
-import useGetProjectGroups from "../../hooks/projectGroup/useGetProjectGroups";
+import {useNavigate} from "react-router-dom";
 
 const Jobs = () => {
     const { user } = useAuth();
@@ -44,6 +31,7 @@ const Jobs = () => {
     const [showCreateProjectGroup, setShowCreateProjectGroup] =
         React.useState(false);
     const [showManagePoc, setShowManagePoc] = React.useState(false);
+    const navigate = useNavigate();
 
     // Options for job type dropdown
     const jobTypeOptions = [
@@ -96,10 +84,8 @@ const Jobs = () => {
     );
 
     const handleCreate = () => {
-        setSelectedData({});
-        setShowCreateProjectGroup(true);
+        navigate('/CreateJob');
     };
-
     return (
         <Layout>
             <div className={style.header}>
