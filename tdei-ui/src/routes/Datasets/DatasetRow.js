@@ -5,18 +5,18 @@ import datasetRowIcon from "../../assets/img/dataset-row.svg";
 import menuOptionIcon from "../../assets/img/menu-options.svg";
 import { Link } from "react-router-dom";
 
-const DatasetRow = ({ datasetName, version ,type, collectionDate, status, onInspect, onAction, isReleasedList,projectGroup = "" }) => {
+const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, onAction, isReleasedList, projectGroup = "" }) => {
     const getStatusColor = () => {
-        if(isReleasedList){
+        if (isReleasedList) {
             return "#B6EDD7"
-        } else{
+        } else {
             switch (status) {
                 case "Publish":
-                    return "#B6EDD7"; 
+                    return "#B6EDD7";
                 case "Pre-Release":
-                    return "#F3E7C7"; 
+                    return "#F3E7C7";
                 default:
-                    return "#C7E3FF"; 
+                    return "#C7E3FF";
             }
         }
     };
@@ -26,38 +26,19 @@ const DatasetRow = ({ datasetName, version ,type, collectionDate, status, onInsp
     };
 
     return (
-<Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
+        <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
             <Row style={{ alignItems: "center", minHeight: '100px' }}>
-                {isReleasedList ? (
-                    <>
-                        <Col md={4}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                <div>
-                                    <img src={datasetRowIcon} alt="Dataset Icon" />
-                                </div>
-                                <div style={{ marginLeft: '1rem' }}>
-                                    <p style={{ fontWeight: 600, marginBottom: '0px' }}>{datasetName}</p>
-                                    <p style={{ color: '#83879B' }}> {version}</p>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md={3}>
-                           {projectGroup}
-                        </Col>
-                    </>
-                ) : (
-                    <Col md={6}>
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            <div>
-                                <img src={datasetRowIcon} alt="Dataset Icon" />
-                            </div>
-                            <div style={{ marginLeft: '1rem' }}>
-                                <p style={{ fontWeight: 600, marginBottom: '0px' }}>{datasetName}</p>
-                                <p style={{ color: '#83879B' }}> {version}</p>
-                            </div>
+                <Col md={6}>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <div>
+                            <img src={datasetRowIcon} alt="Dataset Icon" />
                         </div>
-                    </Col>
-                )}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <p style={{ fontWeight: 600, marginBottom: '0px' }}>{datasetName}</p>
+                            <p style={{ color: '#83879B' }}> {version}</p>
+                        </div>
+                    </div>
+                </Col>
                 <Col>
                     {type}
                 </Col>
@@ -67,12 +48,12 @@ const DatasetRow = ({ datasetName, version ,type, collectionDate, status, onInsp
                 {isReleasedList ? null : (
                     <Col>
                         <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }}>
-                            {status}
+                            {status ==  "Publish" ? "Released" : status}
                         </div>
                     </Col>
                 )}
                 <Col>
-                <Link onClick={onInspect} className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
+                    <Link onClick={onInspect} className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
                         <span>Inspect</span>
                     </Link>
                 </Col>

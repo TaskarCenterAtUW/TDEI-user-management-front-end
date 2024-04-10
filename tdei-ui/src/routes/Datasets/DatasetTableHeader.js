@@ -6,14 +6,9 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
     return (
         <Container className={style.datasetsTableHeaderRow} fluid>
             <Row>
-                <Col md={isReleasedDataList ? 4 : 6}>
+                <Col md={6}>
                     Dataset Name
                 </Col>
-                {isReleasedDataList && (
-                    <Col md={3}>
-                        Project Group
-                    </Col>
-                )}
                 <Col>
                    Type
                 </Col>

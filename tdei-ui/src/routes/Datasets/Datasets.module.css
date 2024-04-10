@@ -115,4 +115,26 @@
   color: #0969DA;
   opacity: 1;
 }
-  
+.dropdownToggle {
+  background-color: transparent !important; 
+  border: none !important; 
+  padding: 0 !important; 
+}
+
+.dropdownToggle::after {
+  display: none; 
+}
+.iconBtn{
+  background: #F8F8F8 0% 0% no-repeat padding-box !important;
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  opacity: 1 !important; 
+  width: 35px;
+  height: 35px;
+}
+.divider {
+  border-left: 1px solid #CED4DA;
+  height: 30px;
+  margin: 10px;
+}
+
