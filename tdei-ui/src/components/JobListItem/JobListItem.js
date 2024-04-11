@@ -34,7 +34,6 @@ class JobListItem extends React.Component {
                     this.setState({ error });
                 });
         }
-
     }
 
     handleClick = (e) => {
@@ -60,14 +59,6 @@ class JobListItem extends React.Component {
         if (error) {
             console.log(error);
         }
-
-        // const handleDownloadReport = (e) => {
-        //     const {id} = e.target;
-        //     console.log(jobItem)
-        //     this.setState({jobId :jobItem.job_id }, () =>{
-        //         console.log(this.state.jobId)
-        //     })
-        // }
 
         const getColorForLabel = (text) => {
             if (!text) return 'green';
@@ -125,8 +116,6 @@ class JobListItem extends React.Component {
                         job_id: `${jobItem.job_id}`,
                         message: `${jobItem.message}`,
                     }}
-                    // handler={confirmDelete}
-                    isLoading={false}
                 />
             </div>
         );

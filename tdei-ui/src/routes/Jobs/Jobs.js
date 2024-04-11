@@ -2,21 +2,16 @@ import clsx from "clsx";
 import React from "react";
 import {Button, Form, Spinner} from "react-bootstrap";
 import Container from "../../components/Container/Container";
-import DownloadIcon from "../../assets/img/icon-download.svg";
 import Layout from "../../components/Layout";
 import useGetJobs from "../../hooks/jobs/useGetJobs";
-import UseGetJobReport from "../../hooks/jobs/useGetJobReport";
 import style from "./Jobs.module.css";
 import {useAuth} from "../../hooks/useAuth";
 import {GET_JOBS} from "../../utils";
 import {useQueryClient} from "react-query";
-import projectgroupIcon from "./../../assets/img/icon-projectgroupIcon.svg";
 import refreshIcon from "./../../assets/img/icon-refresh.svg"
 import {debounce} from "lodash";
 import Select from "react-select";
 import {useNavigate} from "react-router-dom";
-import Typography from '@mui/material/Typography';
-import ColoredLabel from '../../components/ColoredLabel/ColoredLabel';
 import JobListItem from "../../components/JobListItem/JobListItem";
 
 const Jobs = () => {
@@ -80,40 +75,6 @@ const Jobs = () => {
         navigate('/CreateJob');
     };
 
-    const [showMore, setShowMore] = React.useState(false);
-
-    const toggleShowMore = () => {
-        setShowMore(!showMore);
-    };
-    const [jobId, setJobId] = React.useState(null); // Store the job ID to trigger a new query
-
-    const {
-        data1,
-        fetching,
-        hasNextPage1,
-        loadNextPage,
-        error,
-        isLoading1
-    } = UseGetJobReport(jobId);
-
-    const handleDownloadReport = (e) => {
-        const {id} = e.target;
-        console.log(id)
-        setJobId(id)
-    }
-
-    const getColorForLabel = (text) => {
-        console.log(text)
-        if (!text) return 'green';
-        if (text.includes('completed')) {
-            return '#6BD2D6';
-        } else if (text.includes('in-progress')) {
-            return '#E2C7A2';
-        } else {
-            return '#D55962';
-        }
-    }
-
     return (
         <Layout>
             <div className={style.header}>
@@ -166,7 +127,6 @@ const Jobs = () => {
                         <div>
                             <button style={{height: '45px', width: '45px'}}>
                                 <img src={refreshIcon}
-                                     onClick={handleDownloadReport}
                                      alt={Button}
                                 />
                             </button>
@@ -183,12 +143,12 @@ const Jobs = () => {
                     {data?.pages?.map((values, i) => (
                         <React.Fragment key={i}>
                             {values?.data?.map((list) => (
-                                <JobListItem jobItem = {list}/>
+                                <JobListItem jobItem={list}/>
                             ))}
                         </React.Fragment>
                     ))}
                     {isError ? " Error loading project group list" : null}
-                    {isLoading || isLoading1 ? (
+                    {isLoading ? (
                         <div className="d-flex justify-content-center">
                             <Spinner size="md"/>
                         </div>
@@ -204,7 +164,6 @@ const Jobs = () => {
                     ) : null}
                 </>
             </Container>
-
         </Layout>
     );
 };

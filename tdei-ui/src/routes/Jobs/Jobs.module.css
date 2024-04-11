@@ -54,40 +54,10 @@
   font-size: 14px;
 }
 
-.menuVertical {
-  width: 28px;
-  cursor: pointer;
-}
-
-.actionItem {
-  width: 28px;
-}
-
 .name {
   font-size: 16px;
   font-weight: bold;
   color: #162848;
-}
-
-.address {
-  color: #83879b;
-  font-size: 14px;
-}
-
-.details {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #83879b;
-  margin-right: 15px;
 }
 
 .content {
@@ -95,59 +65,9 @@
   color: #162848;
 }
 
-.notAssigned {
-  color: #ffffff;
-  background-color: #6c757d;
-  border-color: #6c757d;
-  border-radius: 20px;
-  padding: 5px 15px;
-  width: fit-content;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.notAssigned:hover,
-.notAssigned:active,
-.notAssigned:focus-visible {
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
-}
-
-.pocList {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  color: #162848;
-  margin-bottom: 5px;
-}
-
-.pocIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  box-shadow: 0px 3px 6px #00000029;
-  margin-right: 6px;
-  display: flex;
-  padding: 3px;
-}
-
 .projectGroupIcon {
   width: 45px;
   margin-right: 10px;
-}
-
-.pocUserIcon {
-  width: 24px;
-  height: 24px;
-  margin-right: 5px;
-}
-
-.overlayList {
-  font-weight: 700;
-  cursor: pointer;
-  color: #c65d03;
-  font-size: 16px;
-  padding-left: 2px;
 }
 
 .rectangleBox {
