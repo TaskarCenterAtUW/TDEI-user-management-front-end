@@ -11,7 +11,7 @@ import Stations from "./Stations";
 import Members from "./Members";
 import CreateUpdateStation from "./Stations/CreateUpdateStation";
 import CreateUpdateService from "./Services/CreateUpdateService";
-import CreateJobService from "./Jobs/createJob";
+import CreateJobService from "./Jobs/CreateJob";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
 import Datasets from "./Datasets";

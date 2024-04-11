@@ -14,6 +14,9 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {GEOJSON, GET_SERVICES} from '../../utils'
 import {getService} from "../../services";
 import style from "./Jobs.module.css";
+import Select from "react-select";
+import Dropzone from "../../components/DropZone/Dropzone";
+import {Button} from "@mui/material";
 
 const CreateJobService = () => {
     const queryClient = useQueryClient();
@@ -29,6 +32,12 @@ const CreateJobService = () => {
         polygon: JSON.stringify(GEOJSON, null, 2),
     });
     const {user} = useAuth();
+
+    const jobTypeOptions = [
+        {value: 'Validate', label: 'Validate'},
+        {value: 'Confidence Metric', label: 'Confidence Metric'},
+        {value: 'Convert', label: 'Convert'}
+    ];
 
     React.useEffect(() => {
         if (idData['id'] !== undefined && idData['serviceType'] !== undefined) {
@@ -70,6 +79,11 @@ const CreateJobService = () => {
         {onSuccess, onError}
     );
 
+    const onDrop = (files) => {
+        const selectedFile = files[0];
+        console.log(selectedFile);
+    };
+
     return (
         <Layout>
             <Container>
@@ -79,12 +93,29 @@ const CreateJobService = () => {
                             <div className="page-header-title">Create New Job</div>
                         </div>
                     </div>
+                    <div className={style.divider}></div>
                     <div className={style.rectangleBox}>
-                        <form className="page-header-title">
-                            {/* Your form fields go here */}
-                            <input type="text" placeholder="Enter something"/>
-                            <button type="submit">Submit</button>
+                        <form className={style.form}>
+                            <div className={style.formItems}>
+                                <p>Job Type</p>
+                                <Select className={style.selectPanel}
+                                        options={jobTypeOptions}
+                                        placeholder="Select a Job type"
+                                />
+                            </div>
+
+                            <div className={style.formItems}>
+                                <p>Attach data file</p>
+                                <Dropzone onDrop={onDrop} accept={{
+                                    'application/zip': ['.zip']
+                                }} format={".zip"}/>
+                            </div>
                         </form>
+                    </div>
+                    <div className={style.divider}></div>
+                    <div className={style.buttonContainer}>
+                        <Button style={{ color: 'grey', borderColor: 'grey' }} variant="outlined">Cancel</Button>
+                        <Button className="tdei-primary-button" variant="contained">Create</Button>
                     </div>
                 </>
             </Container>
