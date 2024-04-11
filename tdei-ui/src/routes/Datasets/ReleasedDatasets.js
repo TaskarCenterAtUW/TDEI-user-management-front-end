@@ -32,7 +32,7 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery,"Publish",dataType);
+  } = useGetReleasedDatasets(debounceQuery,dataType);
 
   useEffect(() => {
     // Check if data is available and update sortedData

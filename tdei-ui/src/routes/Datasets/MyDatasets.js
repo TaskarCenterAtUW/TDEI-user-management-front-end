@@ -29,7 +29,7 @@ const MyDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetDatasets(debounceQuery, status, dataType, false);
+  } = useGetDatasets(debounceQuery, status, dataType);
 
   useEffect(() => {
     // Check if data is available and update sortedData
