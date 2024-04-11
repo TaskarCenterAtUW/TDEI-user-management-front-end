@@ -10,24 +10,20 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                     Dataset Name
                 </Col>
                 <Col>
-                   Type
+                    Type
                 </Col>
                 <Col>
                     Collection Date
                 </Col>
-                {isReleasedDataList ? null : (
-                    <>
-                        <Col>
-                            Status
-                        </Col>
-                        <Col>
-                            Action
-                        </Col>
-                    </>
-                )}
+                {!isReleasedDataList && <Col>
+                    Status
+                </Col>}
                 <Col>
                     View
                 </Col>
+                {!isReleasedDataList && <Col>
+                    Action
+                </Col>}
             </Row>
         </Container>
     )
