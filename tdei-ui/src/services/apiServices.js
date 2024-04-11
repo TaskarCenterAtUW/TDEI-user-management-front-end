@@ -129,6 +129,51 @@ export async function getService(tdei_service_id, service_type,tdei_project_grou
     pageParam,
   };
 }
+export async function getJobs(tdei_project_group_id, pageParam  = 1, isAdmin, job_id, job_type, status) {
+
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+
+  if (isAdmin) {
+    params.tdei_project_group_id = null;
+  } else {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+
+  if (job_type) {
+    params.job_type = job_type;
+  }
+
+  if (job_id) {
+    params.job_id = job_id;
+  }
+
+  if (status) {
+    params.status = status;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/jobs`,
+    params: params,
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+
+export async function getJobReport(job_id){
+  const res = await axios({
+    url: `${osmUrl}/job/download/${job_id}`,
+    method: "GET",
+  });
+  return {
+    data : res.data,
+  }
+}
 export async function getStations(searchText, tdei_project_group_id ,pageParam = 1,isAdmin) {
   const res = await axios({
     url: `${url}/station`,

@@ -1,0 +1,122 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.searchPanel {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.searchPanel input {
+  width: 200px;
+}
+
+.selectPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selectPanel > *:not(:last-child) {
+  margin-right: 20px; /* Adjust as needed */
+}
+
+/* The last item should not have a margin to avoid extra space at the end */
+.selectItem:last-child {
+  margin-right: 0;
+}
+
+.select-label {
+  display: inline-block;
+  align-content: center;
+}
+
+.projectHeader {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 25% 20% 25% 15% 15%;
+  grid-column-gap: 10px;
+  /* min-height: 70px; */
+  align-items: center;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #162848;
+}
+
+.content {
+  font-size: 16px;
+  color: #162848;
+}
+
+.projectGroupIcon {
+  width: 45px;
+  margin-right: 10px;
+}
+
+.rectangleBox {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background: #F4F9FC;
+  margin: auto; /* Center the box horizontally */
+  border: 1px solid #DDDDDD;
+  padding: 20px;
+}
+
+.form {
+  align-self: center;
+  height: 100%;
+  width: 60%; /* Occupy entire width */
+  margin-top: 20px; /* Set top margin */
+  margin-bottom: 20px; /* Set bottom margin */
+}
+
+.formItems {
+  margin-top: 20px; /* Set top margin */
+  margin-bottom: 20px; /* Set bottom margin */
+}
+
+.divider {
+  width: 100%; /* Adjust the width as needed */
+  border-bottom: 1px solid #ccc; /* Adjust color and style as needed */
+  padding-bottom: 20px;
+  margin-bottom: 20px;/* Set bottom margin */
+}
+.buttonContainer {
+  display: flex;
+  justify-content: space-between; /* Ensures equal space between the buttons */
+}
+
+.select {
+  width: 150px; /* Set the width of the select */
+}
+
+.downloadLink {
+  color: #0969DA;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: red; /* Change color as needed */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px; /* Adjust spacing as needed */
+}
