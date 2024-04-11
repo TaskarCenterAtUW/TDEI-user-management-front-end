@@ -206,3 +206,54 @@ export async function postUploadDataset(data) {
   console.log('Response:', response);
   return response.data;
 }
+export async function getDatasets(searchText,pageParam = 1,status,dataType,tdei_project_group_id) {
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+  if (status) {
+    params.status = status;
+  }
+  if (searchText) {
+    params.name = searchText;
+  }
+  if (dataType) {
+    params.data_type = dataType;
+  }
+  if (tdei_project_group_id) {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params: params,
+    method: "GET",
+  });
+  console.log("my datasets", res.data)
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+export async function getReleasedDatasets(searchText,pageParam = 1,dataType) {
+  const params = {
+    status: "Publish",
+    page_no: pageParam,
+    page_size: 10,
+  };
+  if (searchText) {
+    params.name = searchText;
+  }
+  if (dataType) {
+    params.data_type = dataType;
+  }
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params: params,
+    method: "GET",
+  });
+  console.log("released datasets", res.data)
+  return {
+    data: res.data,
+    pageParam,
+  };
+}

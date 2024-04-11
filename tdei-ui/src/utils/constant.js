@@ -3,6 +3,7 @@ import servicesIcon from "../assets/img/services-icon.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
 import projectGroupIcon from "../assets/img/project-group-icon.svg"
 import membersIcon from "../assets/img/members-icon.svg";
+import datasetIcon from "../assets/img/dataset-menu-item.svg";
 import uploadDataSetIcon from "../assets/img/datasetIcon.svg"
 
 export const PHONE_REGEX = 
@@ -31,10 +32,10 @@ export const ADMIN_SIDE_NAV = [
     icon: stationsIcon,
   },
   {
-    linkName: "Upload Dataset",
-    to: "/UploadDataset",
-    icon: stationsIcon,
-  }
+    linkName:"Datasets",
+    to:"/datasets",
+    icon: datasetIcon
+  },
 ];
 
 export const POC_SIDE_NAV = [
@@ -59,10 +60,10 @@ export const POC_SIDE_NAV = [
     icon: membersIcon,
   },
   {
-    linkName: "Upload Dataset",
-    to: "/UploadDataset",
-    icon: stationsIcon,
-  }
+    linkName:"Datasets",
+    to:"/datasets",
+    icon: datasetIcon
+  },
 ];
 
 export const POC = "poc";
