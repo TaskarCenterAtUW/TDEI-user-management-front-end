@@ -1,5 +1,4 @@
 import axios from "axios";
-import {number} from "yup";
 
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
