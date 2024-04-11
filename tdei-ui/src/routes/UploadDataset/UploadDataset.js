@@ -9,16 +9,12 @@ import Changeset from './Changeset';
 import useUploadDataset from "../../hooks/useUploadDataset";
 import { useNavigate } from 'react-router-dom';
 import { POST_DATASET } from "../../utils/react-query-constant";
-import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
 import CustomModal from '../../components/SuccessModal/CustomModal';
 import { Spinner } from "react-bootstrap";
 import style from "./UploadDataset.module.css"
-import ToastMessage from '../../components/ToastMessage/ToastMessage';
 import { useAuth } from '../../hooks/useAuth';
-import { useLocation } from "react-router-dom";
-import useIsDataGenerator from '../../hooks/useIsDataGenerator';
-import useIsPoc from '../../hooks/useIsPoc';
+import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
 
 // Array of steps data for the vertical stepper
 const stepsData = [
@@ -53,8 +49,7 @@ const UploadDataset = () => {
   const [showToast, setToast] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const { user } = useAuth();
-  const isPOC = useIsPoc()
-  const isDG = useIsDataGenerator
+  const isDataGenerator = useIsDatasetsAccessible();
 
   const onSuccess = (data) => {
     setLoading(false);
@@ -84,7 +79,7 @@ const UploadDataset = () => {
     setLoading(true)
   };
   // Check if the user is not an admin, not a flex data generator, not a PoC
-  if (!(user.isAdmin || isPOC || isDG)) {
+  if (!(user.isAdmin || isDataGenerator)) {
     return (
       <div className="p-4">
         <div className="alert alert-warning" role="alert">
