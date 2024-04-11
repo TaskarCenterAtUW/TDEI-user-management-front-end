@@ -5,24 +5,71 @@ import Typography from "@mui/material/Typography";
 import {Button} from "react-bootstrap";
 import ColoredLabel from "../ColoredLabel/ColoredLabel";
 import DownloadIcon from "../../assets/img/icon-download.svg";
+import ShowJobMessageModal from "../ShowJobMessage/ShowJobMessageModal";
+import axios from "axios";
 
 class JobListItem extends React.Component {
-    render() {
-        const {jobItem} = this.props;
-        this.state = { showMore: false, JobId : null };
-        const toggleShowMore = () => {
-            this.setState({showMore: true})
-            console.log(this.state.showMore)
-        };
 
-        const handleDownloadReport = (e) => {
-            const {id} = e.target;
-            console.log(id)
-            // setJobId(id)
+    constructor(props) {
+        super(props);
+        this.state = {showMore: false, jobId: null, data : null};
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    toggleShowMore = () => {
+        this.setState({showMore: !this.state.showMore}, () => {
+            console.log(this.state.showMore);
+        });
+    };
+
+    componentDidMount() {
+        console.log("Mounted")
+        if (this.state.jobId){
+            console.log("Inside")
+            axios.get(`${process.env.REACT_APP_OSM_URL}/job/download/${this.state.jobId}`)
+                .then(response => {
+                    this.setState({ data: response.data });
+                })
+                .catch(error => {
+                    this.setState({ error });
+                });
         }
 
+    }
+
+    handleClick = (e) => {
+        // Set buttonClicked to true when the button is clicked
+        const {id} = e.target;
+        this.setState({jobId :id }, () =>{
+            console.log(this.state.jobId)
+            axios.get(`${process.env.REACT_APP_OSM_URL}/job/download/${this.state.jobId}`)
+                .then(response => {
+                    this.setState({ data: response.data });
+                })
+                .catch(error => {
+                    this.setState({ error });
+                });
+        })
+    }
+
+    render() {
+        const {jobItem} = this.props;
+
+        const { data, error } = this.state;
+
+        if (error) {
+            console.log(error);
+        }
+
+        // const handleDownloadReport = (e) => {
+        //     const {id} = e.target;
+        //     console.log(jobItem)
+        //     this.setState({jobId :jobItem.job_id }, () =>{
+        //         console.log(this.state.jobId)
+        //     })
+        // }
+
         const getColorForLabel = (text) => {
-            console.log(text)
             if (!text) return 'green';
             if (text.includes('completed')) {
                 return '#6BD2D6';
@@ -51,12 +98,12 @@ class JobListItem extends React.Component {
                     {jobItem.message && (
                         <div>
                             <Typography>
-                                {this.state.showMore ? jobItem.message : `${jobItem.message.slice(0, 60)}...`}
+                                {`${jobItem.message.slice(0, 70)}...`}
                             </Typography>
-                            <Button style={{color: '#0969DA'}} onClick={toggleShowMore}
+                            {jobItem.message.length > 70 && <Button style={{color: '#0969DA'}} onClick={this.toggleShowMore}
                                     variant="text">
                                 {this.state.showMore ? 'Show less' : 'Show more'}
-                            </Button>
+                            </Button>}
                         </div>
                     )}
                 </div>
@@ -64,9 +111,23 @@ class JobListItem extends React.Component {
                     <ColoredLabel labelText={jobItem.status} color={getColorForLabel(jobItem.status.toLowerCase())}/>
                 </div>
                 <p id={jobItem.job_id} className={style.downloadLink}
-                   onClick={(e) => handleDownloadReport(e)}>
+                   onClick={(e) => this.handleClick(e)}>
                     <img src={DownloadIcon} alt="Download icon"></img> Download Report
                 </p>
+                <ShowJobMessageModal
+                    show={this.state.showMore}
+                    onHide={() => {
+                        this.toggleShowMore()
+                    }}
+                    message={{
+                        fileName: `File name`,
+                        type: `${jobItem.job_type}`,
+                        job_id: `${jobItem.job_id}`,
+                        message: `${jobItem.message}`,
+                    }}
+                    // handler={confirmDelete}
+                    isLoading={false}
+                />
             </div>
         );
     }
