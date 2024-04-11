@@ -3,15 +3,15 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import { GET_DATASETS } from "../../utils";
-import { getDatasets, getReleasedDatasets } from "../../services";
+import { getReleasedDatasets } from "../../services";
 
-function useGetDatasets(searchText = "", status = "All", dataType, isReleasedDataList) {
+function useGetReleasedDatasets(searchText = "", dataType) {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
-  const [refreshKey, setRefreshKey] = useState(0); // for refeshing data
+  const [refreshKey, setRefreshKey] = useState(0);
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    [GET_DATASETS, searchText, status, dataType, tdei_project_group_id, refreshKey],
+    [GET_DATASETS, searchText, dataType, tdei_project_group_id, refreshKey],
     ({ pageParam }) =>
-    isReleasedDataList ? getReleasedDatasets(searchText, pageParam, dataType) : getDatasets(searchText, pageParam, status, dataType),
+    getReleasedDatasets(searchText, pageParam, dataType),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10
@@ -26,9 +26,9 @@ function useGetDatasets(searchText = "", status = "All", dataType, isReleasedDat
   };
   useEffect(() => {
     refreshData();
-  }, [searchText, status, dataType, isReleasedDataList]);
-  console.log("my datasets hook", data)
+  }, [searchText, dataType]);
+  console.log("released datasets hook", data)
   return { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData };
 }
 
-export default useGetDatasets;
+export default useGetReleasedDatasets;

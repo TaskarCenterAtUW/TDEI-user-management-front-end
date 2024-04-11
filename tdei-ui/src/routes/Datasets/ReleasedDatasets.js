@@ -4,7 +4,6 @@ import DatasetRow from "./DatasetRow";
 import DatasetsActions from "./DatasetsActions";
 import { useQueryClient } from 'react-query';
 import { useAuth } from '../../hooks/useAuth';
-import useGetDatasets from '../../hooks/service/useGetDatasets';
 import { GET_DATASETS } from '../../utils';
 import { debounce } from "lodash";
 import Typography from '@mui/material/Typography';
@@ -14,6 +13,8 @@ import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
+import useGetReleasedDatasets from '../../hooks/service/useGetReleaseDatasets';
+
 
 const ReleasedDatasets = () => {
   const queryClient = useQueryClient();
@@ -31,7 +32,7 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetDatasets(debounceQuery,"Publish",dataType,true);
+  } = useGetReleasedDatasets(debounceQuery,"Publish",dataType);
 
   useEffect(() => {
     // Check if data is available and update sortedData
@@ -156,7 +157,7 @@ const ReleasedDatasets = () => {
             ))}
           </React.Fragment>
         ))}
-        {isError ? " Error loading project group list" : null}
+        {isError ? " Error loading datasets" : null}
         {isLoading ? (
           <div className="d-flex justify-content-center">
             <Spinner size="md" />

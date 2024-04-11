@@ -18,7 +18,7 @@ const MyDatasets = () => {
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [dataType, setDataType] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState("All");
   const [sortedData, setSortedData] = useState([]);
 
   const {
@@ -179,7 +179,7 @@ const MyDatasets = () => {
             ))}
           </React.Fragment>
         ))}
-        {isError ? " Error loading project group list" : null}
+        {isError ? " Error loading datasets" : null}
         {isLoading ? (
           <div className="d-flex justify-content-center">
             <Spinner size="md" />

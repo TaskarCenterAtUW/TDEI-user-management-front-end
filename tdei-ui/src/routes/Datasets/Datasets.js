@@ -20,15 +20,15 @@ const Datasets = () => {
   };
   // Check if the user is not an admin, not a flex data generator, not a PoC, osw_data_generator, pathways_data_generator
 
-  if (!(user.isAdmin || isDatasetsAccessible)) {
-    return (
-      <div className="p-4">
-        <div className="alert alert-warning" role="alert">
-          Oops! User doesn't have permission to access this page!
-        </div>
-      </div>
-    );
-  }
+  // if (!(user.isAdmin || isDatasetsAccessible)) {
+  //   return (
+  //     <div className="p-4">
+  //       <div className="alert alert-warning" role="alert">
+  //         Oops! User doesn't have permission to access this page!
+  //       </div>
+  //     </div>
+  //   );
+  // }
   return (
       <div>
         <div className={style.datasetsHeader}>
