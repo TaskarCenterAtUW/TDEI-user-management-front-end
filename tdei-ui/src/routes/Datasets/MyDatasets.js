@@ -58,6 +58,7 @@ const MyDatasets = () => {
   );
   // Options for data type dropdown
   const options = [
+    { value: '', label: 'All' },
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },
     { value: 'osw', label: 'Osw' },
