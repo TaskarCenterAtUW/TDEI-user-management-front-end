@@ -7,7 +7,7 @@
 
 .searchPanel {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   padding-bottom: 15px;
 }
@@ -151,15 +151,52 @@
 }
 
 .rectangleBox {
+  display: flex;
+  justify-content: center;
   width: 100%;
-  max-width: 600px; /* Set a maximum width if needed */
-  height: 100px;
   background: #F4F9FC;
-  margin: 0 auto; /* Center the box horizontally */
-  border: 2px solid #fc0000;
+  margin: auto; /* Center the box horizontally */
+  border: 1px solid #DDDDDD;
   padding: 20px;
 }
 
 .form {
-  width: 100%; /* Occupy entire width */
+  align-self: center;
+  height: 100%;
+  width: 60%; /* Occupy entire width */
+  margin-top: 20px; /* Set top margin */
+  margin-bottom: 20px; /* Set bottom margin */
+}
+
+.formItems {
+  margin-top: 20px; /* Set top margin */
+  margin-bottom: 20px; /* Set bottom margin */
+}
+
+.divider {
+  width: 100%; /* Adjust the width as needed */
+  border-bottom: 1px solid #ccc; /* Adjust color and style as needed */
+  padding-bottom: 20px;
+  margin-bottom: 20px;/* Set bottom margin */
+}
+.buttonContainer {
+  display: flex;
+  justify-content: space-between; /* Ensures equal space between the buttons */
+}
+
+.select {
+  width: 150px; /* Set the width of the select */
+}
+
+.downloadLink {
+  color: #0969DA;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: red; /* Change color as needed */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px; /* Adjust spacing as needed */
 }

@@ -1,56 +1,49 @@
 import clsx from "clsx";
 import React from "react";
-import {
-    Button,
-    Form,
-    Spinner
-} from "react-bootstrap";
+import {Button, Form, Spinner} from "react-bootstrap";
 import Container from "../../components/Container/Container";
+import DownloadIcon from "../../assets/img/icon-download.svg";
 import Layout from "../../components/Layout";
 import useGetJobs from "../../hooks/jobs/useGetJobs";
+import UseGetJobReport from "../../hooks/jobs/useGetJobReport";
 import style from "./Jobs.module.css";
-import { useDispatch } from "react-redux";
-import { useAuth } from "../../hooks/useAuth";
+import {useAuth} from "../../hooks/useAuth";
 import {GET_JOBS} from "../../utils";
-import { useQueryClient } from "react-query";
+import {useQueryClient} from "react-query";
 import projectgroupIcon from "./../../assets/img/icon-projectgroupIcon.svg";
 import refreshIcon from "./../../assets/img/icon-refresh.svg"
-import { debounce } from "lodash";
+import {debounce} from "lodash";
 import Select from "react-select";
 import {useNavigate} from "react-router-dom";
+import Typography from '@mui/material/Typography';
+import ColoredLabel from '../../components/ColoredLabel/ColoredLabel';
+import JobListItem from "../../components/JobListItem/JobListItem";
 
 const Jobs = () => {
-    const { user } = useAuth();
+    const {user} = useAuth();
     const [, setQuery] = React.useState("");
     const [debounceQuery, setDebounceQuery] = React.useState("");
-    const dispatch = useDispatch();
     const queryClient = useQueryClient();
-    const [selectedData, setSelectedData] = React.useState({});
-    const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-    const [showModal, setShowModal] = React.useState(false);
-    const [showCreateProjectGroup, setShowCreateProjectGroup] =
-        React.useState(false);
-    const [showManagePoc, setShowManagePoc] = React.useState(false);
     const navigate = useNavigate();
 
     // Options for job type dropdown
     const jobTypeOptions = [
-        { value: '', label: 'All' },
-        { value: 'Confidence-Calculate', label: 'Confidence - Calculate' },
-        { value: 'Dataset-Reformat', label: 'Dataset - Reformat' },
-        { value: 'Dataset-Upload', label: 'Dataset - Upload' },
-        { value: 'Dataset-Publish', label: 'Dataset - Publish' },
-        { value: 'Dataset-Validate', label: 'Dataset - Validate'},
-        { value: 'Dataset-Flatten', label: 'Dataset - Flatten' },
-        { value: 'Dataset-Queries', label: 'Dataset - Queries' },
+        {value: '', label: 'All'},
+        {value: 'Confidence-Calculate', label: 'Confidence - Calculate'},
+        {value: 'Dataset-Reformat', label: 'Reformat'},
+        {value: 'Dataset-Upload', label: 'Upload'},
+        {value: 'Dataset-Publish', label: 'Publish'},
+        {value: 'Dataset-Validate', label: 'Validate'},
+        {value: 'Dataset-Flatten', label: 'Flatten'},
+        {value: 'Dataset-Queries', label: 'Queries'},
     ];
 
     // Options for status
     const jobStatusOptions = [
-        { value: '', label: 'ALL' },
-        { value: 'COMPLETED', label: 'COMPLETED' },
-        { value: 'FAILED', label: 'FAILED' },
-        { value: 'IN-PROGRESS', label: 'IN-PROGRESS' }
+        {value: '', label: 'ALL'},
+        {value: 'COMPLETED', label: 'COMPLETED'},
+        {value: 'FAILED', label: 'FAILED'},
+        {value: 'IN-PROGRESS', label: 'IN-PROGRESS'}
     ];
     const [jobType, setJobType] = React.useState(jobTypeOptions[0]);
     const [jobStatus, setJobStatus] = React.useState(jobStatusOptions[0]);
@@ -66,12 +59,12 @@ const Jobs = () => {
 
     const handleJobTypeSelect = (value) => {
         setJobType(value);
-        queryClient.invalidateQueries({ queryKey: [GET_JOBS] });
+        queryClient.invalidateQueries({queryKey: [GET_JOBS]});
     };
 
     const handleJobStatusSelect = (value) => {
         setJobStatus(value);
-        queryClient.invalidateQueries({ queryKey: [GET_JOBS] });
+        queryClient.invalidateQueries({queryKey: [GET_JOBS]});
     };
 
     const handleSearch = (e) => {
@@ -86,6 +79,41 @@ const Jobs = () => {
     const handleCreate = () => {
         navigate('/CreateJob');
     };
+
+    const [showMore, setShowMore] = React.useState(false);
+
+    const toggleShowMore = () => {
+        setShowMore(!showMore);
+    };
+    const [jobId, setJobId] = React.useState(null); // Store the job ID to trigger a new query
+
+    const {
+        data1,
+        fetching,
+        hasNextPage1,
+        loadNextPage,
+        error,
+        isLoading1
+    } = UseGetJobReport(jobId);
+
+    const handleDownloadReport = (e) => {
+        const {id} = e.target;
+        console.log(id)
+        setJobId(id)
+    }
+
+    const getColorForLabel = (text) => {
+        console.log(text)
+        if (!text) return 'green';
+        if (text.includes('completed')) {
+            return '#6BD2D6';
+        } else if (text.includes('in-progress')) {
+            return '#E2C7A2';
+        } else {
+            return '#D55962';
+        }
+    }
+
     return (
         <Layout>
             <div className={style.header}>
@@ -116,7 +144,8 @@ const Jobs = () => {
                         <div className={style.selectPanel}>
                             <label htmlFor="jobTypeSelect" className={style.selectLabel}>Job Type</label>
                             <Select id="jobTypeSelect"
-                                    options = {jobTypeOptions}
+                                    className={style.select}
+                                    options={jobTypeOptions}
                                     value={jobType}
                                     onChange={handleJobTypeSelect}
                             />
@@ -124,18 +153,20 @@ const Jobs = () => {
                         <div className={style.selectPanel}>
                             <label htmlFor="jobStatusSelect" className={style.selectLabel}>Status</label>
                             <Select id="jobStatusSelect"
-                                    options = {jobStatusOptions}
+                                    className={style.select}
+                                    options={jobStatusOptions}
                                     value={jobStatus}
                                     onChange={handleJobStatusSelect}
                             />
                         </div>
                         <div className={style.selectPanel}>
-                            <label htmlFor="jobShowSelect" className={style.selectLabel}                    >Show</label>
+                            <label htmlFor="jobShowSelect" className={style.selectLabel}>Show</label>
                             <Select id="jobShowSelect"/>
                         </div>
                         <div>
-                            <button style={{height : '45px', width : '45px'}}>
+                            <button style={{height: '45px', width: '45px'}}>
                                 <img src={refreshIcon}
+                                     onClick={handleDownloadReport}
                                      alt={Button}
                                 />
                             </button>
@@ -152,30 +183,14 @@ const Jobs = () => {
                     {data?.pages?.map((values, i) => (
                         <React.Fragment key={i}>
                             {values?.data?.map((list) => (
-                                <div className={style.gridContainer} key={list.tdei_project_group_id}>
-                                    <div className={style.details}>
-                                        <img
-                                            src={projectgroupIcon}
-                                            className={style.projectGroupIcon}
-                                            alt="sitemap-solid"
-                                        />
-                                        <div>
-                                            <div className={style.name}>{list.request_input.dataset_name}</div>
-                                            <div className={style.address}>{list.download_url}</div>
-                                        </div>
-                                    </div>
-                                    <div className={style.content}>{list.job_type} <br />{list.job_id}</div>
-                                    <div className={style.content}>{list.message}</div>
-                                    <div className={style.content}>{list.status}</div>
-                                    <div>Download Report</div>
-                                </div>
+                                <JobListItem jobItem = {list}/>
                             ))}
                         </React.Fragment>
                     ))}
                     {isError ? " Error loading project group list" : null}
-                    {isLoading ? (
+                    {isLoading || isLoading1 ? (
                         <div className="d-flex justify-content-center">
-                            <Spinner size="md" />
+                            <Spinner size="md"/>
                         </div>
                     ) : null}
                     {hasNextPage ? (
@@ -184,7 +199,7 @@ const Jobs = () => {
                             onClick={() => fetchNextPage()}
                             disabled={isFetchingNextPage || isError || !hasNextPage}
                         >
-                            Load More {isFetchingNextPage && <Spinner size="sm" />}
+                            Load More {isFetchingNextPage && <Spinner size="sm"/>}
                         </Button>
                     ) : null}
                 </>
