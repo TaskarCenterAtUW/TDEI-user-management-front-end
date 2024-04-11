@@ -61,7 +61,7 @@ const MyDatasets = () => {
     { value: '', label: 'All' },
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },
-    { value: 'osw', label: 'Osw' },
+    { value: 'osw', label: 'OSW' },
   ];
   // Options for status type dropdown
   const statusOptions = [
@@ -105,7 +105,7 @@ const MyDatasets = () => {
       <Form noValidate>
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <div className="row" style={{ marginBottom: "15px" }}>
-            <div className="col-md-3">
+            <div className="col-md-3 d-flex align-items-center justify-content-center">
               <Form.Control
                 className={style.customFormControl}
                 aria-label="Text input with dropdown button"
@@ -116,10 +116,10 @@ const MyDatasets = () => {
                 }}
               />
             </div>
-            <div className="col-md-1 d-flex align-items-center justify-content-center">
+            <div className="col-md-1 d-flex align-items-center justify-content-center mt-1">
               <Form.Label>Type</Form.Label>
             </div>
-            <div className="col-md-2">
+            <div className="col-md-2 d-flex align-items-center justify-content-center">
               <Select
                 isSearchable={false}
                 defaultValue={{ label: "All", value: "" }}
@@ -131,10 +131,10 @@ const MyDatasets = () => {
                 styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
               />
             </div>
-            <div className="col-md-1 d-flex align-items-center">
+            <div className="col-md-1 d-flex align-items-center justify-content-center mt-1">
               <Form.Label>Status</Form.Label>
             </div>
-            <div className="col-md-2 ">
+            <div className="col-md-2 d-flex align-items-center justify-content-center">
               <Select
                 isSearchable={false}
                 defaultValue={{ label: "All", value: "" }}
@@ -143,10 +143,10 @@ const MyDatasets = () => {
                 components={{
                   IndicatorSeparator: () => null
                 }}
-                styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
+                styles={{ container: (provided) => ({ ...provided, width: '100%' }) }}
               />
             </div>
-            <div className="col-md-2 offset-md-1 align-items-center justify-content-center">
+            <div className="col-md-2 offset-md-1 d-flex justify-content-end">
               <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false}/>
             </div>
           </div>

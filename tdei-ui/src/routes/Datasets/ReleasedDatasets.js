@@ -63,7 +63,7 @@ const ReleasedDatasets = () => {
     { value: '', label: 'All' },
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },
-    { value: 'osw', label: 'Osw' },
+    { value: 'osw', label: 'OSW' },
   ];
 
   // Event handler for selecting action button on a dataset
@@ -99,7 +99,7 @@ const ReleasedDatasets = () => {
     <div>
       <Form noValidate>
         <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
-          <Col md={3}>
+          <Col md={3} className='col-md-2 d-flex align-items-center'>
             <Form.Control
               className={style.customFormControl}
               aria-label="Text input with dropdown button"
@@ -110,10 +110,10 @@ const ReleasedDatasets = () => {
               }}
             />
           </Col>
-          <Col md={1} className="d-flex align-items-center justify-content-center">
+          <Col md={1} className="col-md-1 d-flex align-items-center justify-content-center mt-1">
             <Form.Label>Type</Form.Label>
           </Col>
-          <Col md={2}>
+          <Col md={2} className='col-md-2 d-flex align-items-center'>
             <Select
               isSearchable={false}
               defaultValue={{ label: "All", value: "" }}
@@ -125,7 +125,7 @@ const ReleasedDatasets = () => {
               styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
             />
           </Col>
-          <Col md={{ span: 2, offset: 3 }}>
+          <Col className='className="col-md-2 offset-md-4 d-flex justify-content-end"'>
             <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={true}/>
           </Col>
         </Row>

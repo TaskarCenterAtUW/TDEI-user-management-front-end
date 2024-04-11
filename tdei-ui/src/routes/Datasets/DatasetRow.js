@@ -40,7 +40,7 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
                     </div>
                 </Col>
                 <Col>
-                    {type}
+                    {type == "Osw" ? "OSW" : type}
                 </Col>
                 <Col>
                     {collectionDate}
