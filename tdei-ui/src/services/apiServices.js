@@ -234,6 +234,18 @@ export async function postCreateStation(data) {
   const res = await axios.post(`${url}/station`, data);
   return res.data;
 }
+export async function postCreateJob(data) {
+  const formData = new FormData();
+  formData.append('dataset', data[1]);
+
+  const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log('Response: ', response)
+  return response.data;
+}
 export async function postUploadDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
