@@ -60,6 +60,11 @@ export const POC_SIDE_NAV = [
     to:"/datasets",
     icon: datasetIcon
   },
+  {
+    linkName: "Jobs",
+    to: "/jobs",
+    icon: jobsIcon
+  }
 ];
 
 export const POC = "poc";

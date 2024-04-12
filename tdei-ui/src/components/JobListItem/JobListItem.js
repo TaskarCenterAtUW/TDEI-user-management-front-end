@@ -79,7 +79,7 @@ class JobListItem extends React.Component {
                     {jobItem.message && (
                         <div>
                             <Typography>
-                                {`${jobItem.message.slice(0, 70)}...`}
+                                {jobItem.message.length > 70 ? `${jobItem.message.slice(0, 70)}...` : `${jobItem.message}`}
                             </Typography>
                             {jobItem.message.length > 70 &&
                                 <Button style={{color: '#0969DA'}} onClick={this.toggleShowMore}

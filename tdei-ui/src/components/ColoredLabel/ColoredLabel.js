@@ -14,7 +14,7 @@ class ColoredLabel extends React.Component {
         };
 
         return (
-            <label>
+            <label style={{fontSize : 14}}>
                 <span style={dotStyle}></span>
                 {labelText}
             </label>
