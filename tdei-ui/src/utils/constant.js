@@ -28,11 +28,6 @@ export const ADMIN_SIDE_NAV = [
     icon: servicesIcon,
   },
   {
-    linkName: "Stations",
-    to: "/stations",
-    icon: stationsIcon,
-  },
-  {
     linkName:"Datasets",
     to:"/datasets",
     icon: datasetIcon
@@ -56,11 +51,6 @@ export const POC_SIDE_NAV = [
     icon: servicesIcon,
   },
   {
-    linkName: "Stations",
-    to: "/stations",
-    icon: stationsIcon,
-  },
-  {
     linkName: "Members",
     to: "/members",
     icon: membersIcon,
@@ -70,6 +60,11 @@ export const POC_SIDE_NAV = [
     to:"/datasets",
     icon: datasetIcon
   },
+  {
+    linkName: "Jobs",
+    to: "/jobs",
+    icon: jobsIcon
+  }
 ];
 
 export const POC = "poc";

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Form, Spinner} from "react-bootstrap";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
@@ -13,6 +13,7 @@ import {debounce} from "lodash";
 import Select from "react-select";
 import {useNavigate} from "react-router-dom";
 import JobListItem from "../../components/JobListItem/JobListItem";
+import SortRefreshComponent from "../Datasets/SortRefreshComponent";
 
 const Jobs = () => {
     const {user} = useAuth();
@@ -20,6 +21,8 @@ const Jobs = () => {
     const [debounceQuery, setDebounceQuery] = React.useState("");
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const [sortedData, setSortedData] = useState([]);
+
 
     // Options for job type dropdown
     const jobTypeOptions = [
@@ -35,13 +38,20 @@ const Jobs = () => {
 
     // Options for status
     const jobStatusOptions = [
-        {value: '', label: 'ALL'},
-        {value: 'COMPLETED', label: 'COMPLETED'},
-        {value: 'FAILED', label: 'FAILED'},
-        {value: 'IN-PROGRESS', label: 'IN-PROGRESS'}
+        {value: '', label: 'All'},
+        {value: 'COMPLETED', label: 'Completed'},
+        {value: 'FAILED', label: 'Failed'},
+        {value: 'IN-PROGRESS', label: 'In-Progress'}
     ];
+
+    const jobShowOptions = [
+        {value: '', label: 'All'},
+        {value: 'me', label: 'Submitted by me'}
+    ]
+
     const [jobType, setJobType] = React.useState(jobTypeOptions[0]);
     const [jobStatus, setJobStatus] = React.useState(jobStatusOptions[0]);
+    const [jobShow, setJobShow] = React.useState(jobShowOptions[0]);
 
     const {
         data = [],
@@ -50,7 +60,16 @@ const Jobs = () => {
         fetchNextPage,
         isFetchingNextPage,
         isLoading,
+        refreshData
     } = useGetJobs(user.isAdmin, debounceQuery, jobType.value, jobStatus.value);
+
+    useEffect(() => {
+        // Check if data is available and update sortedData
+        if (data && data.pages && data.pages.length > 0) {
+            const allData = data.pages.reduce((acc, page) => [...acc, ...page.data], []);
+            setSortedData(allData);
+        }
+    }, [data]);
 
     const handleJobTypeSelect = (value) => {
         setJobType(value);
@@ -60,6 +79,10 @@ const Jobs = () => {
     const handleJobStatusSelect = (value) => {
         setJobStatus(value);
         queryClient.invalidateQueries({queryKey: [GET_JOBS]});
+    };
+
+    const handleJobShowSelect = (value) => {
+        setJobShow(value);
     };
 
     const handleSearch = (e) => {
@@ -73,6 +96,42 @@ const Jobs = () => {
 
     const handleCreate = () => {
         navigate('/CreateJob');
+    };
+
+    const handleDropdownSelect = (eventKey) => {
+        // Logic for handling dropdown selection
+        console.log('Dropdown item selected:', eventKey);
+        if (eventKey === 'status') {
+            // Sort by status in ascending order
+            const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));
+            setSortedData(sorted);
+        } else if (eventKey === 'type') {
+            // Sort by type in ascending order
+            const sorted = [...sortedData].sort((a, b) => a.data_type.localeCompare(b.data_type));
+            setSortedData(sorted);
+        } else if (eventKey === 'asc') {
+            // Sort by name in ascending order
+            const sorted = [...sortedData].sort((a, b) => {
+                if (!a.request_input.dataset_name && !b.request_input.dataset_name) {
+                    return 0; // Both are undefined, consider them equal
+                }
+                if (!a.request_input.dataset_name) {
+                    return 1; // a is undefined, move it to the end
+                }
+                if (!b.request_input.dataset_name) {
+                    return -1; // b is undefined, move it to the end
+                }
+                // Both are defined, use localeCompare
+                return a.request_input.dataset_name.localeCompare(b.request_input.dataset_name);
+
+            });
+            setSortedData(sorted);
+        }
+    };
+
+    const handleRefresh = () => {
+        // Logic for refreshing
+        refreshData();
     };
 
     return (
@@ -122,16 +181,18 @@ const Jobs = () => {
                         </div>
                         <div className={style.selectPanel}>
                             <label htmlFor="jobShowSelect" className={style.selectLabel}>Show</label>
-                            <Select id="jobShowSelect"/>
+                            <Select id="jobShowSelect"
+                                    className={style.select}
+                                    options={jobShowOptions}
+                                    value={jobShow}
+                                    onChange={handleJobShowSelect}
+                            />
                         </div>
                         <div>
-                            <button style={{height: '45px', width: '45px'}}>
-                                <img src={refreshIcon}
-                                     alt={Button}
-                                />
-                            </button>
+                            <SortRefreshComponent handleRefresh={handleRefresh}
+                                                  handleDropdownSelect={handleDropdownSelect}
+                                                  isReleasedDataset={false}/>
                         </div>
-                        <div>Sort by</div>
                     </div>
                     <div className={clsx(style.gridContainer, style.projectHeader)}>
                         <div>Input</div>
@@ -142,8 +203,8 @@ const Jobs = () => {
                     </div>
                     {data?.pages?.map((values, i) => (
                         <React.Fragment key={i}>
-                            {values?.data?.map((list) => (
-                                <JobListItem jobItem={list}/>
+                            {sortedData.map((list, index) => (
+                                <JobListItem jobItem={list} key={list.job_id}/>
                             ))}
                         </React.Fragment>
                     ))}

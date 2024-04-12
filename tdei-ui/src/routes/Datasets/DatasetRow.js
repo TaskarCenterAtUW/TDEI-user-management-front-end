@@ -5,7 +5,7 @@ import datasetRowIcon from "../../assets/img/dataset-row.svg";
 import menuOptionIcon from "../../assets/img/menu-options.svg";
 import { Link } from "react-router-dom";
 
-const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, onAction, isReleasedList, projectGroup = "" }) => {
+const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, onAction, isReleasedList, projectGroup = "", uploaded_time }) => {
     const getStatusColor = () => {
         if (isReleasedList) {
             return "#B6EDD7"
@@ -25,6 +25,11 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
         borderLeft: `12px solid ${getStatusColor()}`
     };
 
+    const updatedTime = (time) => {
+        const dateTime = new Date(time);
+        return dateTime.toLocaleString()
+    }
+
     return (
         <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
             <Row style={{ alignItems: "center", minHeight: '100px' }}>
@@ -33,9 +38,10 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
                         <div>
                             <img src={datasetRowIcon} alt="Dataset Icon" />
                         </div>
-                        <div style={{ marginLeft: '1rem' }}>
-                            <p style={{ fontWeight: 600, marginBottom: '0px' }}>{datasetName}</p>
-                            <p style={{ color: '#83879B' }}> {version}</p>
+                        <div style={{marginLeft: '1rem'}}>
+                            <p style={{fontWeight: 600, marginBottom: '0px'}}>{datasetName}</p>
+                            <p style={{color: '#83879B', marginBottom: '0px'}}> {version}</p>
+                            <p style={{fontSize: 12}}>Uploaded at: {updatedTime(uploaded_time)}</p>
                         </div>
                     </div>
                 </Col>

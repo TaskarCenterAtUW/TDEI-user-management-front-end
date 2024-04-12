@@ -1,6 +1,6 @@
 import React from "react";
 import style from "../../routes/Jobs/Jobs.module.css";
-import projectGroupIcon from "../../assets/img/icon-projectgroupIcon.svg";
+import DatasetIcon from "../../assets/img/datasetIcon.svg";
 import Typography from "@mui/material/Typography";
 import {Button} from "react-bootstrap";
 import ColoredLabel from "../ColoredLabel/ColoredLabel";
@@ -22,20 +22,6 @@ class JobListItem extends React.Component {
         });
     };
 
-    componentDidMount() {
-        console.log("Mounted")
-        if (this.state.jobId){
-            console.log("Inside")
-            axios.get(`${process.env.REACT_APP_OSM_URL}/job/download/${this.state.jobId}`)
-                .then(response => {
-                    this.setState({ data: response.data });
-                })
-                .catch(error => {
-                    this.setState({ error });
-                });
-        }
-    }
-
     handleClick = (e) => {
         // Set buttonClicked to true when the button is clicked
         const {id} = e.target;
@@ -49,6 +35,11 @@ class JobListItem extends React.Component {
                     this.setState({ error });
                 });
         })
+    };
+
+    updatedTime = (time) => {
+        const dateTime = new Date(time);
+        return dateTime.toLocaleString()
     }
 
     render() {
@@ -73,15 +64,14 @@ class JobListItem extends React.Component {
 
         return (
             <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
-                <div className={style.details}>
-                    <img
-                        src={projectGroupIcon}
-                        className={style.projectGroupIcon}
-                        alt="sitemap-solid"
-                    />
+                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                     <div>
-                        <div className={style.name}>{jobItem.request_input.dataset_name}</div>
-                        <div className={style.address}>{jobItem.download_url}</div>
+                        <img src={DatasetIcon} alt="Dataset Icon"/>
+                    </div>
+                    <div style={{marginLeft: '1rem'}}>
+                        <p style={{fontWeight: 600, marginBottom: '0px'}}>{
+                            jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name
+                        }</p>
                     </div>
                 </div>
                 <div className={style.content}>{jobItem.job_type} <br/>{jobItem.job_id}</div>
@@ -89,17 +79,19 @@ class JobListItem extends React.Component {
                     {jobItem.message && (
                         <div>
                             <Typography>
-                                {`${jobItem.message.slice(0, 70)}...`}
+                                {jobItem.message.length > 70 ? `${jobItem.message.slice(0, 70)}...` : `${jobItem.message}`}
                             </Typography>
-                            {jobItem.message.length > 70 && <Button style={{color: '#0969DA'}} onClick={this.toggleShowMore}
-                                    variant="text">
-                                {this.state.showMore ? 'Show less' : 'Show more'}
-                            </Button>}
+                            {jobItem.message.length > 70 &&
+                                <Button style={{color: '#0969DA'}} onClick={this.toggleShowMore}
+                                        variant="text">
+                                    {this.state.showMore ? 'Show less' : 'Show more'}
+                                </Button>}
                         </div>
                     )}
                 </div>
                 <div className={style.content}>
                     <ColoredLabel labelText={jobItem.status} color={getColorForLabel(jobItem.status.toLowerCase())}/>
+                    <p style={{fontSize:11}}>Updated at: {this.updatedTime(jobItem.updated_at)}</p>
                 </div>
                 <p id={jobItem.job_id} className={style.downloadLink}
                    onClick={(e) => this.handleClick(e)}>
