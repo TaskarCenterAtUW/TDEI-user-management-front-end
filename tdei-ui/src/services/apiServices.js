@@ -129,6 +129,51 @@ export async function getService(tdei_service_id, service_type,tdei_project_grou
     pageParam,
   };
 }
+export async function getJobs(tdei_project_group_id, pageParam  = 1, isAdmin, job_id, job_type, status) {
+
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+
+  if (isAdmin) {
+    params.tdei_project_group_id = null;
+  } else {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+
+  if (job_type) {
+    params.job_type = job_type;
+  }
+
+  if (job_id) {
+    params.job_id = job_id;
+  }
+
+  if (status) {
+    params.status = status;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/jobs`,
+    params: params,
+    method: "GET",
+  });
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+
+export async function getJobReport(job_id){
+  const res = await axios({
+    url: `${osmUrl}/job/download/${job_id}`,
+    method: "GET",
+  });
+  return {
+    data : res.data,
+  }
+}
 export async function getStations(searchText, tdei_project_group_id ,pageParam = 1,isAdmin) {
   const res = await axios({
     url: `${url}/station`,
@@ -189,6 +234,18 @@ export async function postCreateStation(data) {
   const res = await axios.post(`${url}/station`, data);
   return res.data;
 }
+export async function postCreateJob(data) {
+  const formData = new FormData();
+  formData.append('dataset', data[1]);
+
+  const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log('Response: ', response)
+  return response.data;
+}
 export async function postUploadDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
@@ -205,4 +262,55 @@ export async function postUploadDataset(data) {
   });
   console.log('Response:', response);
   return response.data;
+}
+export async function getDatasets(searchText,pageParam = 1,status,dataType,tdei_project_group_id) {
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+  if (status) {
+    params.status = status;
+  }
+  if (searchText) {
+    params.name = searchText;
+  }
+  if (dataType) {
+    params.data_type = dataType;
+  }
+  if (tdei_project_group_id) {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params: params,
+    method: "GET",
+  });
+  console.log("my datasets", res.data)
+  return {
+    data: res.data,
+    pageParam,
+  };
+}
+export async function getReleasedDatasets(searchText,pageParam = 1,dataType) {
+  const params = {
+    status: "Publish",
+    page_no: pageParam,
+    page_size: 10,
+  };
+  if (searchText) {
+    params.name = searchText;
+  }
+  if (dataType) {
+    params.data_type = dataType;
+  }
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params: params,
+    method: "GET",
+  });
+  console.log("released datasets", res.data)
+  return {
+    data: res.data,
+    pageParam,
+  };
 }

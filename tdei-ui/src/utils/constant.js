@@ -3,9 +3,11 @@ import servicesIcon from "../assets/img/services-icon.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
 import projectGroupIcon from "../assets/img/project-group-icon.svg"
 import membersIcon from "../assets/img/members-icon.svg";
+import datasetIcon from "../assets/img/dataset-menu-item.svg";
 import uploadDataSetIcon from "../assets/img/datasetIcon.svg"
+import jobsIcon from "../assets/img/icon_jobs.svg"
 
-export const PHONE_REGEX = 
+export const PHONE_REGEX =
 // eslint-disable-next-line
 /^(?![A-Za-z])[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/m
 
@@ -26,15 +28,15 @@ export const ADMIN_SIDE_NAV = [
     icon: servicesIcon,
   },
   {
-    linkName: "Stations",
-    to: "/stations",
-    icon: stationsIcon,
+    linkName:"Datasets",
+    to:"/datasets",
+    icon: datasetIcon
   },
   {
-    linkName: "Upload Dataset",
-    to: "/UploadDataset",
-    icon: stationsIcon,
-  }
+     linkName: "Jobs",
+     to: "/jobs",
+     icon: jobsIcon
+   }
 ];
 
 export const POC_SIDE_NAV = [
@@ -49,19 +51,19 @@ export const POC_SIDE_NAV = [
     icon: servicesIcon,
   },
   {
-    linkName: "Stations",
-    to: "/stations",
-    icon: stationsIcon,
-  },
-  {
     linkName: "Members",
     to: "/members",
     icon: membersIcon,
   },
   {
-    linkName: "Upload Dataset",
-    to: "/UploadDataset",
-    icon: stationsIcon,
+    linkName:"Datasets",
+    to:"/datasets",
+    icon: datasetIcon
+  },
+  {
+    linkName: "Jobs",
+    to: "/jobs",
+    icon: jobsIcon
   }
 ];
 

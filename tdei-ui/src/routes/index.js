@@ -11,9 +11,12 @@ import Stations from "./Stations";
 import Members from "./Members";
 import CreateUpdateStation from "./Stations/CreateUpdateStation";
 import CreateUpdateService from "./Services/CreateUpdateService";
+import CreateJobService from "./Jobs/CreateJob";
 import { useAuth } from "../hooks/useAuth";
 import NotFound from "./NotFound";
+import Datasets from "./Datasets";
 import UploadDataset from "./UploadDataset/UploadDataset";
+import Jobs from "./Jobs";
 
 const Router = () => {
   const { user } = useAuth();
@@ -30,7 +33,9 @@ const Router = () => {
               <Route path="/projectGroup" element={<ProjectGroup />} />
             )}
             <Route path="/services" element={<Services />} />
+            <Route path="/jobs" element={<Jobs/>}/>
             <Route path="/stations" element={<Stations />} />
+            <Route path="/datasets" element={<Datasets/>} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}
             <Route path="*" element={<NotFound />} />
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
@@ -38,7 +43,8 @@ const Router = () => {
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
             <Route path="/CreateUpdateService" element={<CreateUpdateService />}/>   
             <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>  
-            <Route path="/UploadDataset" element={<UploadDataset/>}/>                   
+            <Route path="/UploadDataset" element={<UploadDataset/>}/>
+            <Route path="/CreateJob" element={<CreateJobService />}/>
           </Route>
         </Route>
       </>
