@@ -93,10 +93,10 @@ class JobListItem extends React.Component {
                     <ColoredLabel labelText={jobItem.status} color={getColorForLabel(jobItem.status.toLowerCase())}/>
                     <p style={{fontSize:11}}>Updated at: {this.updatedTime(jobItem.updated_at)}</p>
                 </div>
-                <p id={jobItem.job_id} className={style.downloadLink}
+                {/* <p id={jobItem.job_id} className={style.downloadLink}
                    onClick={(e) => this.handleClick(e)}>
                     <img src={DownloadIcon} alt="Download icon"></img> Download Report
-                </p>
+                </p> */}
                 <ShowJobMessageModal
                     show={this.state.showMore}
                     onHide={() => {

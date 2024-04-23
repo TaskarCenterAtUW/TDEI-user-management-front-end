@@ -43,7 +43,7 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 25% 20% 25% 15% 15%;
+  grid-template-columns: 25% 20% 30% 25%; /* to be adjusted once action is added again*/
   grid-column-gap: 10px;
   /* min-height: 70px; */
   align-items: center;
@@ -136,4 +136,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.jobsContainer{
+  height: calc(100vh - 60px);
+  padding: 20px ;
+  background-color: #f8f8f8;
 }
