@@ -4,8 +4,9 @@ import { Badge, Col, Container, Row } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
 import menuOptionIcon from "../../assets/img/menu-options.svg";
 import { Link } from "react-router-dom";
+import { workspaceUrl } from '../../services';
 
-const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, onAction, isReleasedList, uploaded_time,tdei_dataset_id }) => {
+const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, isReleasedList, uploaded_time,tdei_dataset_id }) => {
     const getStatusColor = () => {
         if (isReleasedList) {
             return "#B6EDD7"
@@ -59,14 +60,17 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
                         </div>
                     </Col>
                 )}
-                <Col>
+                {/* <Col>
                     <Link onClick={onInspect} className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
                         <span>Inspect</span>
                     </Link>
-                </Col>
+                </Col> */}
                 {isReleasedList ? null : (
                     <Col>
-                        <img src={menuOptionIcon} alt="Menu Options" onClick={onAction} />
+                        {/* <img src={menuOptionIcon} alt="Menu Options" onClick={onAction} /> */}
+                        <a href={`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`} target="_blank" rel="noopener noreferrer" className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
+                        <span>Open in workspaces</span>
+                    </a>
                     </Col>
                 )}
             </Row>
