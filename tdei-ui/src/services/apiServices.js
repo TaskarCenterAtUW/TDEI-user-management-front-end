@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
+export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);

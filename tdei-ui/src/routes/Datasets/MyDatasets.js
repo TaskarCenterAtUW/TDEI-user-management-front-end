@@ -173,7 +173,6 @@ const MyDatasets = () => {
                 collectionDate={formatDate(list.collection_date)}
                 status={list.status}
                 onInspect={onInspect}
-                onAction={onAction}
                 isReleasedList={false}
                 uploaded_time={list.uploaded_timestamp}
                 tdei_dataset_id= {list.tdei_dataset_id}
