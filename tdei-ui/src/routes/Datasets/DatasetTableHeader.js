@@ -18,9 +18,9 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                 {!isReleasedDataList && <Col>
                     Status
                 </Col>}
-                <Col>
+                {/* <Col>
                     View
-                </Col>
+                </Col> */}
                 {!isReleasedDataList && <Col>
                     Action
                 </Col>}

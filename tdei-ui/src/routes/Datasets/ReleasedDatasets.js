@@ -151,7 +151,6 @@ const ReleasedDatasets = () => {
                 collectionDate={formatDate(list.collection_date)}
                 status={list.status}
                 onInspect={onInspect} 
-                onAction={onAction}
                 isReleasedList={true}
                 tdei_dataset_id={list.tdei_dataset_id}
               />
