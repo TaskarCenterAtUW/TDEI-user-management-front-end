@@ -153,7 +153,7 @@ const ReleasedDatasets = () => {
                 onInspect={onInspect} 
                 onAction={onAction}
                 isReleasedList={true}
-                projectGroup={list.tdei_project_group_id}
+                tdei_dataset_id={list.tdei_dataset_id}
               />
             ))}
           </React.Fragment>

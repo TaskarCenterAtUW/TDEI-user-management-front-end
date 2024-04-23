@@ -175,8 +175,8 @@ const MyDatasets = () => {
                 onInspect={onInspect}
                 onAction={onAction}
                 isReleasedList={false}
-                projectGroup={list.tdei_project_group_id}
                 uploaded_time={list.uploaded_timestamp}
+                tdei_dataset_id= {list.tdei_dataset_id}
               />
             ))}
           </React.Fragment>
