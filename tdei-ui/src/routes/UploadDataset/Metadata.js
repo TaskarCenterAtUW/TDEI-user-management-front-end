@@ -1,6 +1,8 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import Dropzone from '../../components/DropZone/Dropzone';
+import MetaDataForm from './MetaDataForm/MetaDataForm';
+import style from './MetaDataForm/MetaDataForm.module.css'
 
 // Functional component Metadata
 const Metadata = ({ selectedData, onSelectedFileChange }) => {
@@ -17,11 +19,15 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
         color: '#162848',
         marginBottom: "15px"
       }}>
-       Attach metadata file<span style={{ color: 'red' }}> *</span>
+        Attach metadata file<span style={{ color: 'red' }}> *</span>
       </Typography>
       <Dropzone onDrop={onDrop} accept={{
         'application/json': ['.json']
       }} format={".json"} selectedFile={selectedData} />
+      <div className={style.dottedLine}>
+        <span className={style.dottedText}>OR</span>
+      </div>
+      <MetaDataForm />
     </div>
   );
 };

@@ -1,0 +1,29 @@
+
+.boldText {
+    font-weight: 600;
+}
+.dottedLine {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px dashed #DDDDDD;
+    text-align: center;
+    position: relative;
+    margin-top: 10px;
+}
+
+.dottedText {
+    background: #F5F5F5;
+    position: relative;
+    top: 50%;
+    transform: translateY(50%);
+    font: normal normal 900 14px/16px Lato;
+    color: #83879B;
+    opacity: 1;
+    border-radius: 50%;
+    height: 30px;
+    width: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
