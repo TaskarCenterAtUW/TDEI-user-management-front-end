@@ -33,17 +33,24 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
 
     return (
         <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
-            <Row style={{ alignItems: "center", minHeight: '110px' }}>
-                <Col md={6}>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <div>
+            <Row className={style.datasetCard}>
+                <Col md={5}>
+                    <div className="d-flex align-items-center">
+                        <div className="">
                             <img src={datasetRowIcon} alt="Dataset Icon" />
                         </div>
-                        <div style={{marginLeft: '1rem'}}>
-                            <p style={{fontWeight: 600, marginBottom: '0px',marginTop: '10px'}}>{datasetName}</p>
-                            <p style={{color: '#83879B', marginBottom: '0px'}}> {version}</p>
-                            <p style={{color: '#83879B', marginBottom: '0px',fontSize: 12}}> <span style={{color: 'black'}}> id:</span> {tdei_dataset_id}</p>
-                            <p style={{fontSize: 12,color: '#83879B'}}><span style={{color: 'black'}}> Uploaded at:</span> {updatedTime(uploaded_time)}</p>
+                        <div className={style.infoBlock}>
+                            <div className="d-flex align-items-center mb-2">
+                                <span className={style.datasetTitle}>{datasetName} </span>
+                            </div>
+                            <div className={style.datasetSecondaryInfoBlock}>
+                                <span className=""><b>Uploaded at : </b> {updatedTime(uploaded_time)}</span>
+                                <span className={style.verticalSeparator}></span>
+                                <span className={style.version}>{version}</span>
+                            </div>
+                            <div className={style.datasetSecondaryInfoBlock}>
+                                <span className=""><b>Id : </b> {tdei_dataset_id}</span>
+                            </div>
                         </div>
                     </div>
                 </Col>

@@ -165,42 +165,44 @@ const Jobs = () => {
             <Container>
                 <>
                     <div className={style.searchPanel}>
-                        <Form.Control
-                            type="text"
-                            placeholder="Search Job Id"
-                            onChange={(e) => {
-                                setQuery(e.target.value);
-                                debouncedHandleSearch(e);
-                            }}
-                        />
-                        <div className={style.selectPanel}>
-                            <label htmlFor="jobTypeSelect" className={style.selectLabel}>Job Type</label>
-                            <Select id="jobTypeSelect"
-                                className={style.select}
-                                options={jobTypeOptions}
-                                value={jobType}
-                                onChange={handleJobTypeSelect}
+                        <div className="d-flex">
+                            <Form.Control
+                                type="text"
+                                placeholder="Search Job Id"
+                                onChange={(e) => {
+                                    setQuery(e.target.value);
+                                    debouncedHandleSearch(e);
+                                }}
                             />
+                            <div className={style.selectPanel}>
+                                <label htmlFor="jobTypeSelect" className={style.selectLabel}>Job Type</label>
+                                <Select id="jobTypeSelect"
+                                    className={style.select}
+                                    options={jobTypeOptions}
+                                    value={jobType}
+                                    onChange={handleJobTypeSelect}
+                                />
+                            </div>
+                            <div className={style.selectPanel}>
+                                <label htmlFor="jobStatusSelect" className={style.selectLabel}>Status</label>
+                                <Select id="jobStatusSelect"
+                                    className={style.select}
+                                    options={jobStatusOptions}
+                                    value={jobStatus}
+                                    onChange={handleJobStatusSelect}
+                                />
+                            </div>
+                            <div className={style.selectPanel}>
+                                <label htmlFor="jobShowSelect" className={style.selectLabel}>Show</label>
+                                <Select id="jobShowSelect"
+                                    className={style.select}
+                                    options={jobShowOptions}
+                                    value={jobShow}
+                                    onChange={handleJobShowSelect}
+                                />
+                            </div>
                         </div>
-                        <div className={style.selectPanel}>
-                            <label htmlFor="jobStatusSelect" className={style.selectLabel}>Status</label>
-                            <Select id="jobStatusSelect"
-                                className={style.select}
-                                options={jobStatusOptions}
-                                value={jobStatus}
-                                onChange={handleJobStatusSelect}
-                            />
-                        </div>
-                        <div className={style.selectPanel}>
-                            <label htmlFor="jobShowSelect" className={style.selectLabel}>Show</label>
-                            <Select id="jobShowSelect"
-                                className={style.select}
-                                options={jobShowOptions}
-                                value={jobShow}
-                                onChange={handleJobShowSelect}
-                            />
-                        </div>
-                        <div>
+                        <div className="d-flex">
                             <SortRefreshComponent handleRefresh={handleRefresh}
                                 handleDropdownSelect={handleDropdownSelect}
                                 isReleasedDataset={false} />

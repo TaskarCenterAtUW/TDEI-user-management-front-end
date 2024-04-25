@@ -98,37 +98,45 @@ const ReleasedDatasets = () => {
   return (
     <div>
       <Form noValidate>
-        <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
-          <Col md={3} className='col-md-2 d-flex align-items-center'>
-            <Form.Control
-              className={style.customFormControl}
-              aria-label="Text input with dropdown button"
-              placeholder="Search Dataset"
-              onChange={(e) => {
-                setQuery(e.target.value);
-                debouncedHandleSearch(e);
-              }}
-            />
-          </Col>
-          <Col md={1} className="col-md-1 d-flex align-items-center justify-content-center mt-1">
-            <Form.Label>Type</Form.Label>
-          </Col>
-          <Col md={2} className='col-md-2 d-flex align-items-center'>
-            <Select
-              isSearchable={false}
-              defaultValue={{ label: "All", value: "" }}
-              onChange={handleSelectedDataType}
-              options={options}
-              components={{
-                IndicatorSeparator: () => null
-              }}
-              styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
-            />
-          </Col>
-          <Col className='className="col-md-2 offset-md-4 d-flex justify-content-end"'>
-            <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={true}/>
-          </Col>
-        </Row>
+        <div className='my-4'>
+          <div className="d-flex justify-content-between">
+
+            <div className='d-flex'>
+              <div className={style.filterSection}>
+                <Form.Control
+                  className={style.customFormControl}
+                  aria-label="Text input with dropdown button"
+                  placeholder="Search Dataset"
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    debouncedHandleSearch(e);
+                  }}
+                />
+              </div>
+              <div className={style.filterSection}>
+                  <div className={style.filterLabel}>Type</div>
+                  <div className={style.filterField}>
+                    <Select
+                      isSearchable={false}
+                      defaultValue={{ label: "All", value: "" }}
+                      onChange={handleSelectedDataType}
+                      options={options}
+                      components={{
+                        IndicatorSeparator: () => null
+                      }}
+                      styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
+                    />
+                  </div>
+              </div>
+              
+            </div>
+            
+            <div className='d-flex align-items-center'>
+                <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={true}/>
+            </div>
+
+          </div>
+        </div>
 
         <DatasetTableHeader isReleasedDataList={true}/>
         {data?.pages?.map((values, i) => (
