@@ -238,6 +238,16 @@ export async function postCreateStation(data) {
 export async function postCreateJob(data) {
   const formData = new FormData();
   formData.append('dataset', data[1]);
+  if (data[0].includes("osw/convert")) {
+    if (data[1].path.includes(".zip")) {
+      formData.append('source', 'osw');
+      formData.append('target', 'osm');
+    } else {
+      formData.append('source', 'osm');
+      formData.append('target', 'osw');
+    }
+  }
+
 
   const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
     headers: {

@@ -19,6 +19,8 @@ const CreateJobService = () => {
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [showToast, setToast] = useState(false);
+    const [allowedFormat, setAllowedFormat] = useState({
+        'application/zip': ['.zip']})
 
     const jobTypeOptions = [
         {value: 'osw-validate', label: 'OSW - Validate'},
@@ -50,6 +52,15 @@ const CreateJobService = () => {
 
     function handleJobTypeSelect(type) {
         setJobType(type)
+        if (type.value === 'osw-convert'){
+            setAllowedFormat({
+                'application/zip': ['.zip'], 'application/pbf' : ['.pbf'], 'application/xml' : ['.xml']
+            })
+        }else {
+            setAllowedFormat({
+                'application/zip': ['.zip']
+            })
+        }
     }
 
     const handlePop = () => {
@@ -64,6 +75,8 @@ const CreateJobService = () => {
     const handleClose = () => {
         setToast(false);
     };
+
+    const allExtensions = Object.values(allowedFormat).flat();
 
     const handleCreate = () => {
         let urlPath = ""
@@ -111,9 +124,7 @@ const CreateJobService = () => {
 
                             <div className={style.formItems}>
                                 <p>Attach data file</p>
-                                <Dropzone onDrop={onDrop} accept={{
-                                    'application/zip': ['.zip']
-                                }} format={".zip"}/>
+                                <Dropzone onDrop={onDrop} accept={allowedFormat} format={allExtensions.join(', ')}/>
                             </div>
                         </form>
                     </div>
