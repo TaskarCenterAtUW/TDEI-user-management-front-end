@@ -124,6 +124,8 @@ body {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
+  padding: 10px 0px;
+  margin-right: 15px;
 }
 
 .nav-tabs .nav-link:hover{
