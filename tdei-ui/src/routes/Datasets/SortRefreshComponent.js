@@ -12,11 +12,11 @@ const SortRefreshComponent = ({ handleRefresh, handleDropdownSelect, isReleasedD
         <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
       </IconButton>
       <div className={style.divider}></div>
-      <div className="row align-items-center ml-2">
-        <div className="col-md-auto">
+      <div className="d-flex align-items-center">
+        <div className="me-2">
           <Form.Label className="mb-0">Sort by</Form.Label>
         </div>
-        <div className="col-md-auto">
+        <div className="">
           <Dropdown onSelect={handleDropdownSelect}>
             <Dropdown.Toggle id="dropdown-basic" className={style.dropdownToggle}>
               <img src={sort} className={style.noDataIcon} alt="sort" />

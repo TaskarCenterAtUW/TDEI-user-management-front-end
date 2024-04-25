@@ -1,6 +1,7 @@
 import React from "react";
 import style from "../../routes/Jobs/Jobs.module.css";
-import DatasetIcon from "../../assets/img/datasetIcon.svg";
+import DatasetIcon from "../../assets/img/icon-job-dataset.svg";
+import fileIcon from "../../assets/img/icon-job-file.svg";
 import Typography from "@mui/material/Typography";
 import {Button} from "react-bootstrap";
 import ColoredLabel from "../ColoredLabel/ColoredLabel";
@@ -64,34 +65,46 @@ class JobListItem extends React.Component {
 
         return (
             <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
-                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                    <div>
-                        <img src={DatasetIcon} alt="Dataset Icon"/>
-                    </div>
-                    <div style={{marginLeft: '1rem'}}>
-                        <p style={{fontWeight: 600, marginBottom: '0px'}}>{
-                            jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name
-                        }</p>
-                    </div>
+                <div className="d-flex">
+                    {jobItem.request_input.dataset_name ? ( 
+                       <div className="d-flex align-items-center">
+                            <img className={style.datasetFileIconSize} src={DatasetIcon} alt="Dataset Icon"/> 
+                            <div className={style.datasetFileName}>{jobItem.request_input.dataset_name}</div>
+                        </div>
+                    ) : (
+                        <div className="d-flex align-items-center">
+                            <img className={style.datasetFileIconSize} src={fileIcon} alt="Dataset Icon"/> 
+                            <div className={style.datasetFileName}>{jobItem.request_input.file_upload_name}</div>
+                        </div>
+                    )}
                 </div>
-                <div className={style.content}>{jobItem.job_type} <br/>{jobItem.job_id}</div>
+
+                <div className={style.content}>
+                    {jobItem.job_type} <br/>
+                    <span className={style.jobIdLabel}>Job Id - {jobItem.job_id}</span>
+                </div>
                 <div className={style.content}>
                     {jobItem.message && (
-                        <div>
-                            <Typography>
+                        <>
+                            <div className={style.errorMessageContent}>
                                 {jobItem.message.length > 70 ? `${jobItem.message.slice(0, 70)}...` : `${jobItem.message}`}
-                            </Typography>
-                            {jobItem.message.length > 70 &&
-                                <Button style={{color: '#0969DA'}} onClick={this.toggleShowMore}
-                                        variant="text">
-                                    {this.state.showMore ? 'Show less' : 'Show more'}
-                                </Button>}
-                        </div>
+                            </div>
+                            <div>
+                                {jobItem.message.length > 70 &&
+                                    <Button className={style.showMoreButton} onClick={this.toggleShowMore}
+                                            variant="text">
+                                        {this.state.showMore ? 'Show less' : 'Show more'}
+                                    </Button>}
+                            </div>
+                        </>
+                    )}
+                    {!jobItem.message && (
+                        <div className={style.noMessageFount}>Job is in progress...</div>
                     )}
                 </div>
                 <div className={style.content}>
                     <ColoredLabel labelText={jobItem.status} color={getColorForLabel(jobItem.status.toLowerCase())}/>
-                    <p style={{fontSize:11}}>Updated at: {this.updatedTime(jobItem.updated_at)}</p>
+                    <div className={style.updatedInfo}>Updated at : {this.updatedTime(jobItem.updated_at)}</div>
                 </div>
                 {/* <p id={jobItem.job_id} className={style.downloadLink}
                    onClick={(e) => this.handleClick(e)}>
