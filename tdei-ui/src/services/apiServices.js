@@ -253,8 +253,6 @@ export async function postUploadDataset(data) {
   formData.append('tdei_service_id', data[0].tdei_service_id);
   formData.append('dataset', data[1]);
   formData.append('metadata', data[2]);
-  console.log('service type')
-  console.log(data[0].service_type)
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
