@@ -104,8 +104,7 @@ const UploadDataset = () => {
             content="Find the status of the job in jobs page."
             onClick={() => {
               setShowSuccessModal(false);
-              // TODO: navigation to be changed when jobs list UI is available.
-              navigate('../', { replace: true });
+              navigate('../jobs', { replace: true });
             }}
             btnlabel="Go to Jobs page"
             isSuccess = {true}
