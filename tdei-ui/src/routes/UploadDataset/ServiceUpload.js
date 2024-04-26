@@ -32,15 +32,18 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
 
   // Event handler for selecting service type from dropdown
   const handleSelect = (value) => {
+    
     queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
     setServiceType(value.value);
   };
   // Event handler for selecting a service
   const handleSelectedService = (list) => {
   setSelectedService(list);
+  console.log(list)
   onSelectedServiceChange({
     tdei_project_group_id: list.tdei_project_group_id,
-    tdei_service_id: list.tdei_service_id
+    tdei_service_id: list.tdei_service_id,
+    service_type: list.service_type
   });
   };
   // Event handler for searching services

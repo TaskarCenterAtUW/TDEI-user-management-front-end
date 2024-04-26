@@ -99,7 +99,11 @@ class JobListItem extends React.Component {
                         </>
                     )}
                     {!jobItem.message && (
-                        <div className={style.noMessageFount}>Job is in progress...</div>
+                        
+
+                        <div className={jobItem.status.toLowerCase() !== 'completed'?style.noMessageFount:style.content}>
+                            {jobItem.status.toLowerCase() === 'completed'? 'Job completed': 'Job is in progress'}
+                            </div>
                     )}
                 </div>
                 <div className={style.content}>
