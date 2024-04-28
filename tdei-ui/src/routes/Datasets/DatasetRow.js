@@ -35,8 +35,8 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
         <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
             <Row className={style.datasetCard}>
                 <Col md={5}>
-                    <div className="d-flex align-items-center">
-                        <div className="">
+                    <div className="d-flex align-items-center flex-wrap">
+                        <div className="me-3">
                             <img src={datasetRowIcon} alt="Dataset Icon" />
                         </div>
                         <div className={style.infoBlock}>

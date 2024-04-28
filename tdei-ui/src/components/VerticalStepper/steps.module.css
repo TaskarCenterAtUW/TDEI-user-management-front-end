@@ -1,0 +1,60 @@
+.stepsBlock {
+    border-right: 1px solid #CCCCCC;
+    height: 100%;
+    padding: 25px 25px;
+}
+.stepsTabContainer {
+    height: calc(100vh - 220px);
+    overflow: auto;
+    padding: 35px 35px;
+}
+.uploadDatasetStepsLayout {
+    width: 100%;
+    border-top: 1px solid;
+    border-color: #ccc;
+}
+.uploadDatasetStepsFooterBlock {
+    width: 100%;
+    border-top: 1px solid;
+    border-color: #ccc;
+}
+.buttonSecondaryCustomised {
+    border: 1px solid #83879B !important;
+    font-weight: 600 !important;
+    color: #162848 !important;
+    text-transform: unset !important;
+}
+.buttonOutlineCustomised {
+    border: 1px solid #4DA9AD !important;
+    font-weight: 600 !important;
+    color: #4DA9AD !important;
+    text-transform: unset !important;
+    margin-right: 10px !important;
+    padding: 5px 8px !important;
+}
+.textUnset {
+    text-transform: unset !important;
+}
+.footerButtonBlock {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.stepTimelineTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #83879B;
+    font-family: "Lato", sans-serif;
+}
+[class*='Mui-active'], [class*='Mui-completed'] {
+    .stepTimelineTitle {
+        color: #162848 !important;
+    }
+}
+.stepTimelineSubTitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: #83879B;
+    font-family: "Lato", sans-serif;
+}

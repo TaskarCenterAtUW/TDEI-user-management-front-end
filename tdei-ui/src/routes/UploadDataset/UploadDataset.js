@@ -90,8 +90,8 @@ const UploadDataset = () => {
   }
   return (
     <div className={style.layout}>
-      <Container className="d-flex align-items-center mt-2">
-        <div className="page-header-title">Upload Dataset</div>
+      <Container>
+        <div className={style.uploadWidgetTitle}>Upload Dataset</div>
         <VerticalStepper 
         stepsData={stepsData} 
         onStepsComplete={onStepsComplete} 

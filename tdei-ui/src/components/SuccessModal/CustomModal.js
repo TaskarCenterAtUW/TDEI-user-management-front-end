@@ -10,7 +10,7 @@ const CustomModal = (props) => {
     <div>
       <Modal
         {...props}
-        size="sm"
+        size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
