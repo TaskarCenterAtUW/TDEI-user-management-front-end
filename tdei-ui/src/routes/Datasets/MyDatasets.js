@@ -103,10 +103,10 @@ const MyDatasets = () => {
   return (
     <div>
       <Form noValidate>
-        <div className='my-4'>
-          <div className="d-flex justify-content-between">
+        <div className='mt-4 mb-3'>
+          <div className="d-flex justify-content-between flex-wrap">
 
-            <div className='d-flex'>
+            <div className='d-flex mb-2'>
               <div className={style.filterSection}>
                 <Form.Control
                   className={style.customFormControl}
@@ -150,7 +150,7 @@ const MyDatasets = () => {
               
             </div>
 
-            <div className='d-flex align-items-center'>
+            <div className='d-flex align-items-center mb-2'>
                 <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false}/>
             </div>
 

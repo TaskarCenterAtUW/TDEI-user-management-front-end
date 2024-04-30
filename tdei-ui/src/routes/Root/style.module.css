@@ -20,11 +20,14 @@
   margin-right: 10px;
 }
 .navigationBlock {
-  width: 250px;
+  /* width: 250px; */
   z-index: 10;
+  min-height: calc(100vh - 60px);
+  box-shadow: 2px 0px 6px #22222226;
 }
 .contentBlock {
   width: 100%;
+  min-width: 0;
 }
 .loaderCenter {
   width: 100%;

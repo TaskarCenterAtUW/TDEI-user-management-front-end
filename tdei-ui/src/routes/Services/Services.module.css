@@ -118,7 +118,7 @@ input {
   color: #83879b !important;
 }
 .layout {
-  height: calc(100vh - 60px);
+  height: 100%;
   padding: 20px;
   background-color: #f8f8f8;
 }
@@ -128,4 +128,12 @@ input {
 }
 .customFormControl {
   max-width: 300px; 
+}
+.stepComponentTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+.selectServiceFilter {
+  margin-left: 10px;
+  width: 220px;
 }

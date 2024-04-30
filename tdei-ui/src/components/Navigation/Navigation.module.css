@@ -1,7 +1,6 @@
 .container {
-  box-shadow: 2px 0px 6px #22222226;
-  height: calc(100vh - 60px);
-  padding: 9px;
+  padding: 10px;
+  width: 15rem;
 }
 .menuItems {
   border-bottom: 1px solid #2f366112;
