@@ -37,10 +37,10 @@ const UserHeader = ({ roles }) => {
           <div className={style.userName}>{`Welcome back, ${user.name} !`}</div>
           {user.isAdmin ? null : (
             <div className={style.roleText}>
-              Project Group : {selectedProjectGroup.name}
+              <b>Project Group : </b>{selectedProjectGroup.name}
             </div>
           )}
-          <div className={style.roleText}>Roles : {role}</div>
+          <div className={style.roleText}><b>Roles : </b>{role}</div>
           {user.isAdmin ? null :  <ClipboardCopy copyText={selectedProjectGroup.tdei_project_group_id} copyTitle={"Project Id"} />}
         </>
       ) : (

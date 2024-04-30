@@ -8,7 +8,7 @@ import CreateService from "../../components/CreateService/CreateService";
 import { useAuth } from "../../hooks/useAuth";
 import { debounce } from "lodash";
 import useGetServices from "../../hooks/service/useGetServices";
-import serviceIcon from "../../assets/img/services-icon.svg";
+import serviceIcon from "../../assets/img/icon-service-new.svg";
 import useDeleteService from "../../hooks/service/useDeleteService";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
@@ -135,7 +135,7 @@ const Services = () => {
       <Container>
         <>
           <InputGroup className="mb-3">
-          <DropdownButton onSelect={handleSelect} variant="outline-secondary"
+          <DropdownButton onSelect={handleSelect} variant="outline-secondary customBorderColor"
               title={serviceType ? toPascalCase(serviceType) : 'Select Service Type'}
               id="input-group-dropdown-2"
               align="end" className= {style.dropdownButton}>
@@ -169,6 +169,7 @@ const Services = () => {
                 <ListingBlock
                   id={list.tdei_service_id}
                   name={list.service_name}
+                  type={list.service_type}
                   icon={serviceIcon}
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}
@@ -213,22 +214,22 @@ const Services = () => {
     ));
 };
 
-export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
+export const ListingBlock = ({ id, name, type, icon, handleDelete, handleEdit }) => {
   const isUserPoc = useIsPoc();
   const { user } = useAuth();
 
   return (
     <div className={style.block} key={id}>
       <div className={style.names}>
-        <div className={style.imgBlock}>
-          <img src={icon} alt="icon" />
-        </div>
+        <img src={icon} className="me-3" alt="icon" />
         <div>
-          <div className="tdei-bold-name">{name}</div>
+          <div className={style.serviceName} title={name}>{name}</div>
           <div>
             <ClipboardCopy copyText={id} copyTitle={"Id"} />
           </div>
         </div>
+        {/* <span className={style.verticalSeparator}></span>
+        <div className={style.serviceType}>{type}</div> */}
       </div>
       {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
         <Button

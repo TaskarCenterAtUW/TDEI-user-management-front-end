@@ -211,7 +211,9 @@
   font-weight: 600 !important;
   color: #162848 !important;
   text-transform: unset !important;
+  font-family: "Lato", sans-serif !important;
 }
 .textUnset {
   text-transform: unset !important;
+  font-family: "Lato", sans-serif !important;
 }

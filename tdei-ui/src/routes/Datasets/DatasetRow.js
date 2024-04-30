@@ -23,7 +23,7 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
     };
     // Inline style for the left border based on status color
     const leftBorderStyle = {
-        borderLeft: `12px solid ${getStatusColor()}`
+        borderLeft: `8px solid ${getStatusColor()}`
     };
 
     const updatedTime = (time) => {

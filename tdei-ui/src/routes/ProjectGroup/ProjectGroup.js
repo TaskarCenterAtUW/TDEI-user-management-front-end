@@ -149,49 +149,53 @@ const ProjectGroup = () => {
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.map((list) => (
-                <div className={style.gridContainer} key={list.tdei_project_group_id}>
-                  <div className={style.details}>
-                    <img
-                      src={projectgroupIcon}
-                      className={style.projectGroupIcon}
-                      alt="sitemap-solid"
-                    />
+                <div className={style.projectGroupBlock} key={list.tdei_project_group_id}>
+                  <div className={style.gridContainer} >
+                    <div className={style.details}>
+                      <img
+                        src={projectgroupIcon}
+                        className={style.projectGroupIcon}
+                        alt="sitemap-solid"
+                      />
+                      <div>
+                        <div className={style.name} title={list.project_group_name}>{list.project_group_name}</div>
+                        <div className={style.address}>{list.address}</div>
+                      </div>
+                    </div>
+                    <div className={style.content}>{list.url}</div>
+                    <div className={style.content}>{list.phone}</div>
                     <div>
-                      <div className={style.name}>{list.project_group_name}</div>
-                      <div className={style.address}>{list.address}</div>
+                      <DisplayList list={list} handlePoc={handlePoc} />
+                    </div>
+                    <div className={style.actionItem}>
+                      <Dropdown align="end">
+                        <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
+                        <Dropdown.Menu align="end">
+                          <Dropdown.Item
+                            id={list.tdei_project_group_id}
+                            onClick={handlePoc}
+                          >
+                            Manage POC
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            id={list.tdei_project_group_id}
+                            onClick={handleEdit}
+                          >
+                            Edit Project Group
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            id={list.tdei_project_group_id}
+                            onClick={handleDelete}
+                          >
+                            Delete Project Group
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
                   </div>
-                  <div className={style.content}>{list.url}</div>
-                  <div className={style.content}>{list.phone}</div>
-                  <div>
-                    <DisplayList list={list} handlePoc={handlePoc} />
+                  <div className={style.projectIdBlock}>
+                    <ClipboardCopy copyText={list.tdei_project_group_id} copyTitle={"Project Id"} />
                   </div>
-                  <div className={style.actionItem}>
-                    <Dropdown align="end">
-                      <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
-                      <Dropdown.Menu align="end">
-                        <Dropdown.Item
-                          id={list.tdei_project_group_id}
-                          onClick={handlePoc}
-                        >
-                          Manage POC
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          id={list.tdei_project_group_id}
-                          onClick={handleEdit}
-                        >
-                          Edit Project Group
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          id={list.tdei_project_group_id}
-                          onClick={handleDelete}
-                        >
-                          Delete Project Group
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                  <ClipboardCopy copyText={list.tdei_project_group_id} copyTitle={"Project Id"} />
                 </div>
               ))}
             </React.Fragment>
@@ -243,7 +247,7 @@ const ProjectGroup = () => {
 };
 
 export const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
-  <button onClick={onClick} ref={ref} className="btn btn-link">
+  <button onClick={onClick} ref={ref} className={`btn btn-link ${style.actionButton}`}>
     <img src={menuVertical} className={style.menuVertical} alt="menu-verical" />
     {children}
   </button>
