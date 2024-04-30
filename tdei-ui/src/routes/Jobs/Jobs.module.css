@@ -9,17 +9,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 15px;
+  margin-bottom: 1.5rem;
 }
 
 .searchPanel input {
   width: 200px;
+  margin-right: 20px;
 }
 
 .selectPanel {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  margin-right: 20px;
 }
 
 .selectPanel > *:not(:last-child) {
@@ -47,10 +48,10 @@
   grid-column-gap: 10px;
   /* min-height: 70px; */
   align-items: center;
-  border: 1px solid #dddddd;
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 15px;
+  border-bottom: 1px solid #dddddd;
+  border-radius: 0px;
+  padding: 10px;
+  margin-bottom: 10px;
   font-size: 14px;
 }
 
@@ -141,4 +142,46 @@
   height: calc(100vh - 60px);
   padding: 20px ;
   background-color: #f8f8f8;
+}
+
+.datasetFileName {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.datasetFileIconSize {
+  height: 16px;
+  margin-right: 8px;
+}
+.errorMessageContent {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.showMoreButton {
+  padding: 5px 0px;
+  font-size: 14px;
+  color: #0969DA;
+  font-weight: 700;
+}
+.noMessageFount {
+  color: #83879B;
+}
+.updatedInfo {
+  font-size: 14px;
+  color: #83879B;
+}
+.jobIdLabel {
+  font-size: 14px;
+  color: #83879B;
 }

@@ -6,7 +6,7 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
     return (
         <Container className={style.datasetsTableHeaderRow} fluid>
             <Row>
-                <Col md={6}>
+                <Col md={5}>
                     Dataset Name
                 </Col>
                 <Col>

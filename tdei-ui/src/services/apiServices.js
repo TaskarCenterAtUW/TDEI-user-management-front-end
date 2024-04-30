@@ -256,7 +256,13 @@ export async function postUploadDataset(data) {
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
-  const response = await axios.post(`${osmUrl}/osw/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
+  // get the end point based on the service_type
+  var file_end_point = ''
+  var service_type = data[0].service_type
+  if (service_type === 'flex'){file_end_point = 'gtfs-flex'}
+  else if(service_type === 'pathways'){file_end_point = 'gtfs-pathways'}
+  else {file_end_point = 'osw'}
+  const response = await axios.post(`${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

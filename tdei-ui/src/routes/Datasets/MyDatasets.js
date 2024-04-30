@@ -103,52 +103,57 @@ const MyDatasets = () => {
   return (
     <div>
       <Form noValidate>
-        <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-          <div className="row" style={{ marginBottom: "15px" }}>
-            <div className="col-md-3 d-flex align-items-center justify-content-center">
-              <Form.Control
-                className={style.customFormControl}
-                aria-label="Text input with dropdown button"
-                placeholder="Search Dataset"
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  debouncedHandleSearch(e);
-                }}
-              />
+        <div className='my-4'>
+          <div className="d-flex justify-content-between">
+
+            <div className='d-flex'>
+              <div className={style.filterSection}>
+                <Form.Control
+                  className={style.customFormControl}
+                  aria-label="Text input with dropdown button"
+                  placeholder="Search Dataset"
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    debouncedHandleSearch(e);
+                  }}
+                />
+              </div>
+              <div className={style.filterSection}>
+                <div className={style.filterLabel}>Type</div>
+                <div className={style.filterField}>
+                  <Select
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "" }}
+                    onChange={handleSelectedDataType}
+                    options={options}
+                    components={{
+                      IndicatorSeparator: () => null
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <div className={style.filterSection}>
+                <div className={style.filterLabel}>Status</div>
+                <div className={style.filterField}>
+                  <Select
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "" }}
+                    onChange={handleSelectedStatus}
+                    options={statusOptions}
+                    components={{
+                      IndicatorSeparator: () => null
+                    }}
+                  />
+                </div>
+              </div>
+              
             </div>
-            <div className="col-md-1 d-flex align-items-center justify-content-center mt-1">
-              <Form.Label>Type</Form.Label>
+
+            <div className='d-flex align-items-center'>
+                <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false}/>
             </div>
-            <div className="col-md-2 d-flex align-items-center justify-content-center">
-              <Select
-                isSearchable={false}
-                defaultValue={{ label: "All", value: "" }}
-                onChange={handleSelectedDataType}
-                options={options}
-                components={{
-                  IndicatorSeparator: () => null
-                }}
-                styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
-              />
-            </div>
-            <div className="col-md-1 d-flex align-items-center justify-content-center mt-1">
-              <Form.Label>Status</Form.Label>
-            </div>
-            <div className="col-md-2 d-flex align-items-center justify-content-center">
-              <Select
-                isSearchable={false}
-                defaultValue={{ label: "All", value: "" }}
-                onChange={handleSelectedStatus}
-                options={statusOptions}
-                components={{
-                  IndicatorSeparator: () => null
-                }}
-                styles={{ container: (provided) => ({ ...provided, width: '100%' }) }}
-              />
-            </div>
-            <div className="col-md-2 offset-md-1 d-flex justify-content-end">
-              <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false}/>
-            </div>
+
           </div>
         </div>
         <DatasetTableHeader isReleasedDataList={false} />

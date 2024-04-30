@@ -3,10 +3,10 @@
     flex-direction: row;
     align-items:center;
     justify-content: space-between;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 0px;
     background-color: #f8f8f8;
 }
 .datasetsTabsHeaderContainer{
@@ -50,6 +50,43 @@
     align-items: center;
     padding-left:1.2rem; 
     border-left: 12px solid #B6EDD7 ;
+    .datasetCard {
+      align-items: center;
+      padding: 20px 0px;
+    }
+    .infoBlock {
+      margin-left: 15px;
+    }
+    .datasetTitle {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 22px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .datasetSecondaryInfoBlock {
+      font-size: 14px;
+      color: #83879B;
+      display: flex;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+    .verticalSeparator {
+      height: 16px;
+      display: inline-block;
+      border-right: 1.5px solid #ccc;
+      margin: 0px 12px;
+    }
+    .version {
+      text-transform: uppercase;
+      background-color: #eeeeee;
+      border-radius: 4px;
+      padding: 0px 6px;
+      color: #333;
+    }
 }
 .smallMargin{
     margin-left: 5px;
@@ -76,7 +113,7 @@
     font-size: 14px;
   }
   .customFormControl {
-    max-width: 300px; 
+    width: 220px; 
   }
   .statusContainer{
     padding: 10px;
@@ -119,6 +156,8 @@
   background-color: transparent !important; 
   border: none !important; 
   padding: 0 !important; 
+  display: flex;
+  align-items: center;
 }
 
 .dropdownToggle::after {
@@ -135,6 +174,15 @@
 .divider {
   border-left: 1px solid #CED4DA;
   height: 30px;
-  margin: 10px;
+  margin: 0px 15px;
 }
 
+.filterSection {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+.filterField {
+  width: 220px;
+  margin-left: 10px;
+}

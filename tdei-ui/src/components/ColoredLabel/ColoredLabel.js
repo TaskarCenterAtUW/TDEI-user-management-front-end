@@ -5,19 +5,25 @@ class ColoredLabel extends React.Component {
         const {labelText, color} = this.props;
 
         const dotStyle = {
-            height: '10px',
-            width: '10px',
+            height: '14px',
+            width: '14px',
             borderRadius: '50%',
             display: 'inline-block',
-            marginRight: '5px', // Adjust spacing as needed
+            marginRight: '8px', // Adjust spacing as needed
             backgroundColor: color // Use the color prop directly
         };
+        const statusLabel = {
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '14px',
+            fontWeight: '600'
+        }
 
         return (
-            <label style={{fontSize : 14}}>
+            <div style={statusLabel}>
                 <span style={dotStyle}></span>
                 {labelText}
-            </label>
+            </div>
         );
     }
 }
