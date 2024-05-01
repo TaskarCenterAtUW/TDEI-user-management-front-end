@@ -16,6 +16,7 @@ import { Icon, List } from '@mui/material';
 import { Grid, Button, Container, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../ToastMessage/ToastMessage';
+import style from "./steps.module.css";
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -256,10 +257,10 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   }
   // Rendering the vertical stepper component
   return (
-    <Box sx={{ width: '100%', borderTop: 1, marginTop: "10px", borderColor: "grey.300" }}>
+    <Box className={style.uploadDatasetStepsLayout}>
       <Grid container spacing={0} columns={15}>
         <Grid item xs={4}>
-          <Box sx={{ borderRight: 1, height: "100%", borderColor: "grey.300" }}>
+          <Box className={style.stepsBlock}>
             <Stepper nonLinear activeStep={activeStep} orientation='vertical' sx={{
               '& .MuiStepConnector-line': {
                 minHeight: '50px',
@@ -273,16 +274,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
               {stepsData.map((step, index) => (
                 <Step key={index} completed={completed[index]}>
                   <StepLabel StepIconComponent={ColorlibStepIcon}>
-                    <Typography variant="h6" sx={{
-                      font: 'normal normal bold 16px/20px Lato',
-                      color: '#162848'
-                    }}>{step.title}</Typography>
-                    <Typography variant="subtitle2" sx={{
-                      font: 'normal normal medium 10px/12px Lato',
-                      color: '#83879B'
-                    }}>
-                      {step.subtitle}
-                    </Typography>
+                    <div className={style.stepTimelineTitle}>{step.title}</div>
+                    <div className={style.stepTimelineSubTitle}>{step.subtitle}</div>
                   </StepLabel>
                 </Step>
               ))}
@@ -292,18 +285,16 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
         <Grid item xs={11}>
           <Grid container >
             <Grid item xs={12}>
-              <Container style={{ height: 500, overflow: 'auto', margin: "20px" }}>
+              <Container className={style.stepsTabContainer}>
                 <SelectedComponent {...componentProps} />
               </Container>
             </Grid>
             <Grid item xs={12}>
-              <Box sx={{ width: '100%', borderTop: 1, borderColor: "grey.300" }}>
+              <Box className={style.uploadDatasetStepsFooterBlock}>
                 <React.Fragment>
-                  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', pt: 2 }}>
+                  <Box className={style.footerButtonBlock}>
                     <Button
-                      variant="ouline-secondary"
-                      className="tdei-secondary-button"
-                      sx={{ border: "1px solid #83879B", marginLeft: "20px" }}
+                      className={style.buttonSecondaryCustomised}
                       onClick={() => navigate(-1)}
                     >
                       Cancel
@@ -312,13 +303,13 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
                     {activeStep === 0 ? (
                       <Box></Box>
                     ) : (<Button
-                      sx={{ border: "1px solid #4DA9AD", color: "#4DA9AD", marginRight: 1 }}
+                      className={style.buttonOutlineCustomised}
                       onClick={handleBack}
                       startIcon={<ChevronLeftIcon />}
                     >
                       Prev
                     </Button>)}
-                    <Button className="tdei-primary-button" onClick={handleNext} endIcon={isLastStep() ? <div></div> : <ChevronRightIcon />} >
+                    <Button className={`tdei-primary-button ${style.textUnset}`} onClick={handleNext} endIcon={isLastStep() ? <div></div> : <ChevronRightIcon />} >
                       {isLastStep() ? 'Submit' : 'Next'}
                     </Button>
                     <ToastMessage showToast={showToast} toastMessage={errorMessage} onClose={handleClose} isSuccess={false} />

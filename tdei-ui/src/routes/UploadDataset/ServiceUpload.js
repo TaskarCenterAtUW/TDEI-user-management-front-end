@@ -64,18 +64,15 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
 
   return (
     <div>
-      <div style={{ marginBottom: "15px" }}>
-        <Typography variant="h6" sx={{
-          font: 'normal normal bold 16px/18px Lato',
-          color: '#162848'
-        }}>
+      <div className='mb-3'>
+        <div className={style.stepComponentTitle}>
           Select Service<span style={{ color: 'red' }}> *</span>
-        </Typography>
+        </div>
       </div>
       <>
         <Form noValidate>
-          <div className="row" style={{ marginBottom: "15px" }}>
-            <div className="col-md-4 pr-1">
+          <div className="d-flex align-items-center mb-3">
+            <div className="d-flex align-items-center me-4">
               <Form.Control
                 className={style.customFormControl}
                 aria-label="Text input with dropdown button"
@@ -86,22 +83,24 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
                 }}
               />
             </div>
-            <div className="col-md-1 d-flex align-items-end justify-content-center">
-              <Form.Label>Type</Form.Label>
+            <div className="d-flex align-items-center">
+              <div>Type</div>
+              <div className={style.selectServiceFilter}>
+                <Select
+                  isSearchable={false}
+                  defaultValue={{ label: "All", value: "" }}
+                  onChange={handleSelect}
+                  options={options}
+                  components={{
+                    IndicatorSeparator: () => null
+                  }}
+                  styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
+                />
+              </div>
             </div>
-            <div className="col-md-4 pr-1">
-              <Select
-                isSearchable={false}
-                defaultValue={{ label: "All", value: "" }}
-                onChange={handleSelect}
-                options={options}
-                components={{
-                  IndicatorSeparator: () => null
-                }}
-                styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
-              />
-            </div>
+            
           </div>
+
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.length === 0 ? (

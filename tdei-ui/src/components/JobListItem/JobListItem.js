@@ -124,6 +124,7 @@ class JobListItem extends React.Component {
                         type: `${jobItem.job_type}`,
                         job_id: `${jobItem.job_id}`,
                         message: `${jobItem.message}`,
+                        fileName: jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name
                     }}
                 />
             </div>

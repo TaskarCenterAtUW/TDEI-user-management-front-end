@@ -56,18 +56,18 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
                 <input {...getInputProps()} />
                 <div>
                     {isDragActive ? (
-                        <p>
+                        <div className={style.dropFilesTitle}>
                             Release to drop the files here
-                        </p>
+                        </div>
                     ) : (
                         <div>
                             <img src={uploadIcon} style={{ height: 20, marginBottom: "10px" }} />
-                            <p className={style.title}>
+                            <div className={style.title}>
                                 Drop files here or click to upload.
-                            </p>
-                            <p className={style.subtile}>
+                            </div>
+                            <div className={style.subtile}>
                                 Allowed format {format}
-                            </p>
+                            </div>
                         </div>
                     )}
                 </div>

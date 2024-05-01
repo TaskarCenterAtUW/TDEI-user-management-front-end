@@ -67,7 +67,7 @@ const CreateJobService = () => {
 
     const handleCreate = () => {
         let urlPath = ""
-        switch (jobType.value) {
+        switch (jobType?.value) {
             case "osw-validate":
                 urlPath = "osw/validate";
                 break;
@@ -90,22 +90,18 @@ const CreateJobService = () => {
 
     return (
         <Layout>
-            <Container>
+            <div className={style.createJobContainer}>
                 <>
-                    <div className={style.header}>
-                        <div className={style.title}>
-                            <div className="page-header-title">Create New Job</div>
-                        </div>
-                    </div>
+                    <div className={style.createJobTitle}>Create New Job</div>
                     <div className={style.divider}></div>
                     <div className={style.rectangleBox}>
                         <form className={style.form}>
                             <div className={style.formItems}>
                                 <p>Job Type</p>
-                                <Select className={style.select}
-                                        options={jobTypeOptions}
-                                        placeholder="Select a Job type"
-                                        onChange={handleJobTypeSelect}
+                                <Select className={style.createJobSelectType}
+                                    options={jobTypeOptions}
+                                    placeholder="Select a Job type"
+                                    onChange={handleJobTypeSelect}
                                 />
                             </div>
 
@@ -119,9 +115,9 @@ const CreateJobService = () => {
                     </div>
                     <div className={style.divider}></div>
                     <div className={style.buttonContainer}>
-                        <Button style={{color: 'grey', borderColor: 'grey'}} variant="outlined"
+                        <Button className={style.buttonSecondaryCustomised}
                                 onClick={handlePop}>Cancel</Button>
-                        <Button className="tdei-primary-button" variant="contained"
+                        <Button className={`tdei-primary-button ${style.textUnset}`}
                                 onClick={handleCreate}>Create</Button>
                     </div>
 
@@ -159,7 +155,7 @@ const CreateJobService = () => {
                         />
                     )}
                 </>
-            </Container>
+            </div>
         </Layout>
     );
 };
