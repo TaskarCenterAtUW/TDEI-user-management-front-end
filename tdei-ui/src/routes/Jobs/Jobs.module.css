@@ -41,6 +41,7 @@
 .projectHeader {
   background-color: #f8f8f8;
   font-weight: bold;
+  padding: 10px 10px !important;
 }
 
 .gridContainer {
@@ -51,8 +52,8 @@
   align-items: center;
   border-bottom: 1px solid #dddddd;
   border-radius: 0px;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 0px 10px 15px 10px;
+  margin-bottom: 15px;
   font-size: 14px;
 }
 
@@ -211,7 +212,9 @@
   font-weight: 600 !important;
   color: #162848 !important;
   text-transform: unset !important;
+  font-family: "Lato", sans-serif !important;
 }
 .textUnset {
   text-transform: unset !important;
+  font-family: "Lato", sans-serif !important;
 }
