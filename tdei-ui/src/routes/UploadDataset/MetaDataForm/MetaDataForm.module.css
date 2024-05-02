@@ -27,3 +27,7 @@
     align-items: center;
     justify-content: center;
 }
+  .selectDropdown {
+    margin-left: 10px;
+    width: 220px;
+  }
