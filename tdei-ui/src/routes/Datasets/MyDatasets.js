@@ -12,6 +12,8 @@ import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
+import usePublishDataset from '../../hooks/datasets/usePublishDataset';
+import useDeactivateDataset from '../../hooks/datasets/useDeactivateDataset';
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
@@ -20,6 +22,7 @@ const MyDatasets = () => {
   const [dataType, setDataType] = React.useState("");
   const [status, setStatus] = React.useState("All");
   const [sortedData, setSortedData] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
 
   const {
     data = [],
@@ -69,14 +72,38 @@ const MyDatasets = () => {
     { value: 'Publish', label: 'Released' },
     { value: 'Pre-Release', label: 'Pre-Release' },
   ];
+  const onSuccess = (data) => {
+    console.log("suucessfull", data);
+    queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
+  };
+  const onError = (err) => {
+    console.error("error message", err);
+  };
+  const { mutate } = usePublishDataset({ onSuccess, onError });
+
+  const { mutate: deactivateDataset } =
+  useDeactivateDataset({ onSuccess, onError });
+
+  const handlePublishDataset = (value) => {
+    mutate(value);
+  };
+
+  const handleDeactivate = (value) => {
+    deactivateDataset(value);
+  };
 
   // Event handler for selecting action button on a dataset
   const onInspect = () => {
 
   };
   // Event handler for selecting action button on a dataset
-  const onAction = () => {
-
+  const onAction = (eventKey,tdei_dataset_id) => {
+    console.log("dataset id ->",tdei_dataset_id)
+    if (eventKey === 'released') {
+      console.log("event key dataset current action!!", eventKey)
+    } else {
+      console.log("event key dataset current action!!", eventKey)
+    }
   };
   const handleRefresh = () => {
     // Logic for refreshing
@@ -178,6 +205,7 @@ const MyDatasets = () => {
                 collectionDate={formatDate(list.collection_date)}
                 status={list.status}
                 onInspect={onInspect}
+                onAction={onAction}
                 isReleasedList={false}
                 uploaded_time={list.uploaded_timestamp}
                 tdei_dataset_id= {list.tdei_dataset_id}

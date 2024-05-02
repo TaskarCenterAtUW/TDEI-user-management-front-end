@@ -321,3 +321,19 @@ export async function getReleasedDatasets(searchText,pageParam = 1,dataType) {
     pageParam,
   };
 }
+export async function postPublishDataset(data) {
+  var file_end_point = ''
+  var service_type = data[0].service_type
+  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
+  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
+  else { file_end_point = 'osw' }
+  const res = await axios.post(`${osmUrl}/${file_end_point}/publish/${data[0].tdei_dataset_id}`, data);
+  console.log('Response:', res);
+  return res.data;
+}
+
+export async function deleteDataset(tdei_dataset_id){
+  //https://tdei-api-dev.azurewebsites.net/api/v1/dataset/123
+  const res = await axios.put(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
+  return res.data;
+}

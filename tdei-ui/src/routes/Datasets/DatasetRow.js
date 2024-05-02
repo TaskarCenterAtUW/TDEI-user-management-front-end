@@ -1,12 +1,11 @@
 import React from "react";
 import style from "./Datasets.module.css";
-import { Badge, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
-import menuOptionIcon from "../../assets/img/menu-options.svg";
-import { Link } from "react-router-dom";
 import { workspaceUrl } from '../../services';
+import DatasetsActions from "./DatasetsActions";
 
-const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, isReleasedList, uploaded_time,tdei_dataset_id }) => {
+const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, onAction, isReleasedList, uploaded_time,tdei_dataset_id }) => {
     const getStatusColor = () => {
         if (isReleasedList) {
             return "#B6EDD7"
@@ -30,6 +29,15 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
         const dateTime = new Date(time);
         return dateTime.toLocaleString()
     }
+    const handleDropdownSelect = (eventKey) => {
+        // Logic for handling dropdown selection
+        console.log('Dropdown item selected:', eventKey);
+        if (eventKey === 'openInWorkspace') {
+            window.open(`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`, '_blank')?.focus()
+        } else {
+            onAction(eventKey,tdei_dataset_id)
+        }
+      };
 
     return (
         <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
@@ -74,10 +82,7 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
                 </Col> */}
                 {isReleasedList ? null : (
                     <Col>
-                        {/* <img src={menuOptionIcon} alt="Menu Options" onClick={onAction} /> */}
-                        <a href={`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`} target="_blank" rel="noopener noreferrer" className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
-                        <span>Open in workspaces</span>
-                    </a>
+                        <DatasetsActions status={status} onAction={handleDropdownSelect}/>
                     </Col>
                 )}
             </Row>
