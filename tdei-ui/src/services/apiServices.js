@@ -96,16 +96,19 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id,pageParam = 1, isAdmin,service_type) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type) {
+  const params = {
+    searchText,
+    page_no: pageParam,
+    page_size: 10,
+    tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
+  };
+  if (service_type !== "") {
+    params.service_type = service_type;
+  }
   const res = await axios({
     url: `${url}/service`,
-    params: {
-      searchText,
-      page_no: pageParam,
-      page_size: 10,
-      tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
-      service_type
-    },
+    params,
     method: "GET",
   });
   return {
