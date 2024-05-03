@@ -35,7 +35,7 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
         if (eventKey === 'openInWorkspace') {
             window.open(`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`, '_blank')?.focus()
         } else {
-            onAction(eventKey,tdei_dataset_id)
+            onAction(eventKey,tdei_dataset_id,type,datasetName)
         }
       };
 

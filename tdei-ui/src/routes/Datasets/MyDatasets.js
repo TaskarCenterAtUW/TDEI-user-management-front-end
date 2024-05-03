@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
-import DatasetsActions from "./DatasetsActions";
 import { useQueryClient } from 'react-query';
 import useGetDatasets from '../../hooks/service/useGetDatasets';
-import { GET_DATASETS } from '../../utils';
+import { GET_DATASETS, PUBLISH_DATASETS } from '../../utils';
 import { debounce } from "lodash";
-import { Button, Form, Spinner, Col, Row } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap";
 import style from "./Datasets.module.css"
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
@@ -14,125 +13,126 @@ import { toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import usePublishDataset from '../../hooks/datasets/usePublishDataset';
 import useDeactivateDataset from '../../hooks/datasets/useDeactivateDataset';
+import CustomModal from '../../components/SuccessModal/CustomModal';
+import ResponseToast from '../../components/ToastMessage/ResponseToast';
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
-  const [, setQuery] = React.useState("");
-  const [debounceQuery, setDebounceQuery] = React.useState("");
-  const [dataType, setDataType] = React.useState("");
-  const [status, setStatus] = React.useState("All");
+  const [query, setQuery] = useState("");
+  const [debounceQuery, setDebounceQuery] = useState("");
+  const [dataType, setDataType] = useState("");
+  const [status, setStatus] = useState("All");
   const [sortedData, setSortedData] = useState([]);
-  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
-
-  const {
-    data = [],
-    isError,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    isLoading,
-    refreshData
-  } = useGetDatasets(debounceQuery, status, dataType);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedDatasetId, setSelectedDatasetId] = useState("");
+  const [selectedServiceType, setSelectedServiceType] = useState("");
+  const [selectedDatasetName, setSelectedDatasetName] = useState("");
+  const [open, setOpen] = useState(false);
+  const [eventKey, setEventKey] = useState("");
+  const [operationResult, setOperationResult] = useState("");
+  const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(debounceQuery, status, dataType);
 
   useEffect(() => {
-    // Check if data is available and update sortedData
     if (data && data.pages && data.pages.length > 0) {
       const allData = data.pages.reduce((acc, page) => [...acc, ...page.data], []);
       setSortedData(allData);
     }
   }, [data]);
-  // Event handler for selecting data type from dropdown
+
   const handleSelectedDataType = (value) => {
     queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
     setDataType(value.value);
   };
-  // Event handler for selecting status from dropdown
+
   const handleSelectedStatus = (list) => {
     setStatus(list.value);
   };
-  // Event handler for searching services
+
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
   };
-  // Debounced event handler for searching services
-  const debouncedHandleSearch = React.useMemo(
-    () => debounce(handleSearch, 300),
-    []
-  );
-  // Options for data type dropdown
+
+  const debouncedHandleSearch = debounce(handleSearch, 300);
+
   const options = [
     { value: '', label: 'All' },
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },
     { value: 'osw', label: 'OSW' },
   ];
-  // Options for status type dropdown
+
   const statusOptions = [
     { value: 'All', label: 'All' },
     { value: 'Publish', label: 'Released' },
     { value: 'Pre-Release', label: 'Pre-Release' },
   ];
+
   const onSuccess = (data) => {
-    console.log("suucessfull", data);
+    console.log("successfull", data);
+    setOperationResult("success");
+    setShowSuccessModal(false);
+    handleToast();
     queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
   };
+
   const onError = (err) => {
     console.error("error message", err);
-  };
-  const { mutate } = usePublishDataset({ onSuccess, onError });
-
-  const { mutate: deactivateDataset } =
-  useDeactivateDataset({ onSuccess, onError });
-
-  const handlePublishDataset = (value) => {
-    mutate(value);
+    setShowSuccessModal(false);
+    handleToast();
+    setOperationResult("error");
   };
 
-  const handleDeactivate = (value) => {
-    deactivateDataset(value);
+  const { isLoading: isPublishing, mutate } = usePublishDataset({ onSuccess, onError });
+  const { mutate: deactivateDataset,isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
+
+  const handlePublishDataset = () => {
+    mutate({ service_type: selectedServiceType, tdei_dataset_id: selectedDatasetId });
   };
 
-  // Event handler for selecting action button on a dataset
-  const onInspect = () => {
+  const handleDeactivate = () => {
+    deactivateDataset(selectedDatasetId);
+  };
 
+  const onAction = (eventKey, tdei_dataset_id, service_type, datasetName) => {
+    console.log("dataset id ->", tdei_dataset_id);
+    setSelectedDatasetName(datasetName);
+    setSelectedDatasetId(tdei_dataset_id);
+    setSelectedServiceType(service_type);
+    setEventKey(eventKey);
+    setShowSuccessModal(true);
   };
-  // Event handler for selecting action button on a dataset
-  const onAction = (eventKey,tdei_dataset_id) => {
-    console.log("dataset id ->",tdei_dataset_id)
-    if (eventKey === 'released') {
-      console.log("event key dataset current action!!", eventKey)
-    } else {
-      console.log("event key dataset current action!!", eventKey)
-    }
-  };
+
   const handleRefresh = () => {
-    // Logic for refreshing
     refreshData();
   };
 
   const handleDropdownSelect = (eventKey) => {
-    // Logic for handling dropdown selection
     console.log('Dropdown item selected:', eventKey);
     if (eventKey === 'status') {
-      // Sort by status in ascending order
       const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));
       setSortedData(sorted);
     } else if (eventKey === 'type') {
-      // Sort by type in ascending order
       const sorted = [...sortedData].sort((a, b) => a.data_type.localeCompare(b.data_type));
       setSortedData(sorted);
     } else if (eventKey === 'asc') {
-      // Sort by name in ascending order
       const sorted = [...sortedData].sort((a, b) => a.name.localeCompare(b.name));
       setSortedData(sorted);
     }
   };
+
+  const handleToast = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div>
       <Form noValidate>
         <div className='mt-4 mb-3'>
           <div className="d-flex justify-content-between flex-wrap">
-
             <div className='d-flex mb-2'>
               <div className={style.filterSection}>
                 <Form.Control
@@ -159,7 +159,6 @@ const MyDatasets = () => {
                   />
                 </div>
               </div>
-              
               <div className={style.filterSection}>
                 <div className={style.filterLabel}>Status</div>
                 <div className={style.filterField}>
@@ -174,13 +173,10 @@ const MyDatasets = () => {
                   />
                 </div>
               </div>
-              
             </div>
-
             <div className='d-flex align-items-center mb-2'>
-                <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false}/>
+              <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false} />
             </div>
-
           </div>
         </div>
         <DatasetTableHeader isReleasedDataList={false} />
@@ -204,11 +200,11 @@ const MyDatasets = () => {
                 type={toPascalCase(list.data_type)}
                 collectionDate={formatDate(list.collection_date)}
                 status={list.status}
-                onInspect={onInspect}
+                // onInspect={onInspect}
                 onAction={onAction}
                 isReleasedList={false}
                 uploaded_time={list.uploaded_timestamp}
-                tdei_dataset_id= {list.tdei_dataset_id}
+                tdei_dataset_id={list.tdei_dataset_id}
               />
             ))}
           </React.Fragment>
@@ -228,6 +224,23 @@ const MyDatasets = () => {
             Load More {isFetchingNextPage && <Spinner size="sm" />}
           </Button>
         ) : null}
+        <CustomModal
+          show={showSuccessModal}
+          message={eventKey === 'release' ? `Are you sure you want to release dataset ${selectedDatasetName}?` : `Are you sure you want to deactivate dataset ${selectedDatasetName}?`}
+          content={eventKey === 'release' ? "Release job will take around 4 to 6 hours. You can find the status in the jobs page." : "Deactivation will remove the dataset from the system."}
+          handler={eventKey === 'release' ? handlePublishDataset : handleDeactivate}
+          btnlabel={eventKey === 'release' ? "Release" : "Deactivate"}
+          modaltype={eventKey === 'release' ? "release" : "deactivate"}
+          onHide={() => setShowSuccessModal(false)}
+          title={eventKey === 'release' ? "Release Dataset" : "Deactivate Dataset"}
+          isLoading = {isPublishing || isDeletingDataset}
+        />
+        <ResponseToast
+          showtoast={open}
+          handleClose={handleClose}
+          type={operationResult === "success" ? "success" : "error"}
+          message={eventKey === 'release' ? (operationResult === "success" ? "Success! Dataset release job has been initiated." : "Error! Failed to initiate dataset release job.") : (operationResult === "success" ? "Success! Dataset has been deactivated." : "Error! Failed to deactivate dataset.")}
+        />
       </Form>
     </div>
   );

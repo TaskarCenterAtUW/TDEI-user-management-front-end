@@ -102,12 +102,13 @@ const UploadDataset = () => {
             show={showSuccessModal}
             message="Dataset upload job has been accepted!"
             content="Find the status of the job in jobs page."
-            onClick={() => {
+            handler={() => {
               setShowSuccessModal(false);
               navigate('../jobs', { replace: true });
             }}
             btnlabel="Go to Jobs page"
-            isSuccess = {true}
+            modaltype = {"success"}
+            title= "Success"
           />
         )}
         {loading && (
@@ -123,11 +124,12 @@ const UploadDataset = () => {
             show={showToast}
             message="Dataset Upload Failed!"
             content={errorMessage}
-            onClick={() => {
+            handler={() => {
               handleClose()            
             }}
             btnlabel="Dismiss"
-            isSuccess = {false}
+            modaltype = {"error"}
+            title= "Error"
           />
         )}
       </Container>
