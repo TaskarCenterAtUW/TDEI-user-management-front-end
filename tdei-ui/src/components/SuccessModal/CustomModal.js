@@ -57,7 +57,7 @@ const CustomModal = (props) => {
           </div>
         </Modal.Body>
         <Modal.Footer className={props.modaltype === "success" || props.modaltype === "error" ? style.footerStyle : ''}>
-        {props.modaltype !== "success" || props.modaltype !== "error" ? (
+        {props.modaltype != "success" && props.modaltype != "error" ? (
             <Button
               onClick={props.onHide}
               variant="outline-secondary"

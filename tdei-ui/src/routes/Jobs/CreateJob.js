@@ -139,7 +139,7 @@ const CreateJobService = () => {
                                 navigate('/jobs', { replace: true });
                             }}
                             btnlabel="Go to Jobs page"
-                            modaltype = {"success"}
+                            modaltype = "success"
                             title= "Success"
                         />
                     )}
@@ -150,7 +150,7 @@ const CreateJobService = () => {
                             content={errorMessage}
                             handler={handleClose}
                             btnlabel="Dismiss"
-                            modaltype = {"error"}
+                            modaltype = "error"
                             title= "Error"
                         />
                     )}

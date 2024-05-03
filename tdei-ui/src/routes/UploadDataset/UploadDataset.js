@@ -107,7 +107,7 @@ const UploadDataset = () => {
               navigate('../jobs', { replace: true });
             }}
             btnlabel="Go to Jobs page"
-            modaltype = {"success"}
+            modaltype = "success"
             title= "Success"
           />
         )}
@@ -128,7 +128,7 @@ const UploadDataset = () => {
               handleClose()            
             }}
             btnlabel="Dismiss"
-            modaltype = {"error"}
+            modaltype = "error"
             title= "Error"
           />
         )}
