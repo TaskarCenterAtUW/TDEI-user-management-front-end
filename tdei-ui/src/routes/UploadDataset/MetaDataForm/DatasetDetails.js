@@ -5,6 +5,9 @@ import Container from "../../../components/Container/Container";
 import Select from 'react-select';
 import style from "./MetaDataForm.module.css";
 import DatePicker from "../../../components/DatePicker/DatePicker";
+import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
+import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
+import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 
 const DatasetDetails = () => {
   const { values, setFieldValue } = useFormikContext();
@@ -25,28 +28,11 @@ const DatasetDetails = () => {
   const handleDataSourceSelect = (value) => {
     setDataSource(value.value);
   };
-  const datasetTypeOptions = [
-    { value: 'flex', label: 'Flex' },
-    { value: 'pathways', label: 'Pathways' },
-    { value: 'osw', label: 'Osw' },
-  ];
-  const collectedMethodOptions = [
-    { value: 'manual', label: 'Manual' },
-    { value: 'transform', label: 'Transform' },
-    { value: 'generated', label: 'Generated' },
-    { value: 'av', label: 'AV' },
-    { value: 'others', label: 'Others' }
-  ];
-  const dataSourceOptions = [
-    { value: 'TDEI Tool', label: 'TDEI Tool' },
-    { value: 'Third Party', label: 'Third Party' },
-    { value: 'In House', label: 'In House' },
-  ];
   var link = <a href={'https://geojson.io/'} target="_blank" rel="noreferrer">geojson.io</a>;
   return (
-    <div>
+    <div style={{ padding: '5px', marginRight:"20px" }}>
       <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
-        <Form.Group className="col-5" controlId="datasetName" style={{ marginRight: '40px' }}>
+        <Form.Group className="col-6" controlId="datasetName" style={{ marginRight: '40px' }}>
           <Form.Label>Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
           <Form.Control
             type="text"
@@ -55,7 +41,7 @@ const DatasetDetails = () => {
           />
           <ErrorMessage name="datasetName" component="div" />
         </Form.Group>
-        <Form.Group className="col-5" controlId="datasetVersion">
+        <Form.Group className="col-6" controlId="datasetVersion">
           <Form.Label>Dataset Version<span style={{ color: 'red' }}> *</span></Form.Label>
           <Form.Control
             type="text"
@@ -66,22 +52,11 @@ const DatasetDetails = () => {
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-        <Form.Group className="col-4" controlId="datasetType">
+        <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
           <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
-          <div className={style.selectDropdown}>
-            <Select
-              isSearchable={false}
-              defaultValue={{ label: "All", value: "" }}
-              onChange={handleDatasetTypeSelect}
-              options={datasetTypeOptions}
-              components={{
-                IndicatorSeparator: () => null
-              }}
-              styles={{ container: (provided) => ({ ...provided, width: '100%' }) }}
-            />
-          </div>
+          <Field component={DataTypeDropdownForm} name="dataType" />
         </Form.Group>
-        <Form.Group className="col-3" controlId="collectedBy" style={{ marginRight: '40px' }}>
+        <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
           <Form.Label>Collected By</Form.Label>
           <Form.Control
             type="text"
@@ -95,36 +70,14 @@ const DatasetDetails = () => {
           <DatePicker label={"Select Collection Date"} />
         </Form.Group>
       </div>
-      <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-        <Form.Group className="col-4" controlId="datasetType">
+      <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
+        <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
           <Form.Label>Collected Method</Form.Label>
-          <div className={style.selectDropdown}>
-            <Select
-              placeholder="Select Method"
-              isSearchable={false}
-              onChange={handleCollectedMethodSelect}
-              options={collectedMethodOptions}
-              components={{
-                IndicatorSeparator: () => null
-              }}
-              styles={{ container: (provided) => ({ ...provided, width: '100%' }) }}
-            />
-          </div>
+          <Field component={CollectedMethodDropdownForm} name="dataSource" />
         </Form.Group>
-        <Form.Group className="col-4" controlId="collectedBy">
+        <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
           <Form.Label>Data Source</Form.Label>
-          <div className={style.selectDropdown}>
-            <Select
-              placeholder="Select Source"
-              isSearchable={false}
-              onChange={handleDataSourceSelect}
-              options={dataSourceOptions}
-              components={{
-                IndicatorSeparator: () => null
-              }}
-              styles={{ container: (provided) => ({ ...provided, width: '100%' }) }}
-            />
-          </div>
+          <Field component={DataSourceDropdownForm} name="dataType" />
         </Form.Group>
         <Form.Group className="col-4" controlId="datasetVersion">
           <Form.Label>Schema Version</Form.Label>
@@ -137,7 +90,7 @@ const DatasetDetails = () => {
 
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-        <Form.Group className="col-3" controlId="datasetVersion" style={{ marginRight: '40px' }}>
+        <Form.Group className="col-4" controlId="datasetVersion" style={{ marginRight: '20px' }}>
           <Form.Label>TDEI Service Id<span style={{ color: 'red' }}> *</span></Form.Label>
           <Form.Control
             type="text"
@@ -145,7 +98,7 @@ const DatasetDetails = () => {
             name="schemaVersion"
           />
         </Form.Group>
-        <Form.Group className="col-4" controlId="collectedBy">
+        <Form.Group className="col-4" controlId="collectedBy"  style={{ marginRight: '20px' }}>
           <Form.Label>Valid From</Form.Label>
           <DatePicker label={"Select Starting Date"} />
         </Form.Group>

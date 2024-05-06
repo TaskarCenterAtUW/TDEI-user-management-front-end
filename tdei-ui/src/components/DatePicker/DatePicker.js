@@ -11,6 +11,7 @@ export default function DatePicker({label}) {
         sx={{
             "& .MuiInputBase-input": {
               height: "5px",
+              width:"200px"
             },
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
