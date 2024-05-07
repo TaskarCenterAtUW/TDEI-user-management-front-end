@@ -156,7 +156,7 @@ const ReleasedDatasets = () => {
                 datasetName={list.name}
                 version={list.version}
                 type={toPascalCase(list.data_type)} 
-                collectionDate={formatDate(list.collection_date)}
+                serviceName={list.service.name}
                 status={list.status}
                 onInspect={onInspect} 
                 isReleasedList={true}

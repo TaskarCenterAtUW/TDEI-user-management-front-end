@@ -5,7 +5,7 @@ import datasetRowIcon from "../../assets/img/dataset-row.svg";
 import { workspaceUrl } from '../../services';
 import DatasetsActions from "./DatasetsActions";
 
-const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, onAction, isReleasedList, uploaded_time,tdei_dataset_id }) => {
+const DatasetRow = ({ datasetName, version, type, serviceName, status, onInspect, onAction, isReleasedList, uploaded_time,tdei_dataset_id }) => {
     const getStatusColor = () => {
         if (isReleasedList) {
             return "#B6EDD7"
@@ -66,7 +66,7 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
                     {type == "Osw" ? "OSW" : type}
                 </Col>
                 <Col>
-                    {collectionDate}
+                    {serviceName}
                 </Col>
                 {isReleasedList ? null : (
                     <Col>
