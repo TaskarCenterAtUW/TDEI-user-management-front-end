@@ -37,7 +37,7 @@ const Services = () => {
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
-  const [serviceType, setServiceType] = React.useState("flex");
+  const [serviceType, setServiceType] = React.useState("all");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
@@ -97,10 +97,10 @@ const Services = () => {
     mutate({ tdei_service_id, status: false, tdei_project_group_id });
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = (id,type) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    navigate('/service/edit/' + id + "/" + serviceType);
+    navigate('/service/edit/' + id + "/" + type);
   };
 
   const handleCreate = () => {
@@ -136,9 +136,10 @@ const Services = () => {
         <>
           <InputGroup className="mb-3">
           <DropdownButton onSelect={handleSelect} variant="outline-secondary customBorderColor"
-              title={serviceType ? toPascalCase(serviceType) : 'Select Service Type'}
+              title={serviceType ? toPascalCase(serviceType) : ''}
               id="input-group-dropdown-2"
               align="end" className= {style.dropdownButton}>
+              <Dropdown.Item eventKey="">All</Dropdown.Item>
               <Dropdown.Item eventKey="flex">Flex</Dropdown.Item>
               <Dropdown.Item eventKey="pathways">Pathways</Dropdown.Item>
               <Dropdown.Item eventKey="osw">Osw</Dropdown.Item>
@@ -224,17 +225,18 @@ export const ListingBlock = ({ id, name, type, icon, handleDelete, handleEdit })
         <img src={icon} className="me-3" alt="icon" />
         <div>
           <div className={style.serviceName} title={name}>{name}</div>
-          <div>
+          <div className="d-flex align-items-center mt-2">
             <ClipboardCopy copyText={id} copyTitle={"Id"} />
+            <span className={style.verticalSeparator}></span>
+        <div className={style.serviceType}>{type}</div>
           </div>
         </div>
-        {/* <span className={style.verticalSeparator}></span>
-        <div className={style.serviceType}>{type}</div> */}
+        
       </div>
       {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
         <Button
           className={style.editButton}
-          onClick={() => handleEdit(id)}
+          onClick={() => handleEdit(id,type)}
           variant="link"
         >
           <img src={iconEdit} alt="edit-icon" />

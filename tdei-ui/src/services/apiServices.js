@@ -96,16 +96,19 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id,pageParam = 1, isAdmin,service_type) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type) {
+  const params = {
+    searchText,
+    page_no: pageParam,
+    page_size: 10,
+    tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
+  };
+  if (service_type !== "") {
+    params.service_type = service_type;
+  }
   const res = await axios({
     url: `${url}/service`,
-    params: {
-      searchText,
-      page_no: pageParam,
-      page_size: 10,
-      tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
-      service_type
-    },
+    params,
     method: "GET",
   });
   return {
@@ -320,4 +323,20 @@ export async function getReleasedDatasets(searchText,pageParam = 1,dataType) {
     data: res.data,
     pageParam,
   };
+}
+export async function postPublishDataset(data) {
+  var file_end_point = ''
+  var service_type = data.service_type.toLowerCase();
+  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
+  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
+  else { file_end_point = 'osw' }
+  const res = await axios.post(`${osmUrl}/${file_end_point}/publish/${data.tdei_dataset_id}`, data);
+  console.log('Response:', res.data);
+  return res.data;
+}
+
+export async function deleteDataset(tdei_dataset_id){
+  const res = await axios.delete(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
+  console.log('Response:', res.data);
+  return res.data;
 }

@@ -76,7 +76,7 @@
   text-transform: capitalize;
 }
 .verticalSeparator {
-    height: 40px;
+    height: 20px;
     border-right: 1px solid #CCCCCC;
     margin: 0px 25px;
 }
