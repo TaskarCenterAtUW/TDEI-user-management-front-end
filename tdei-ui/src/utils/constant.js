@@ -1,9 +1,9 @@
 import dashboardIcon from "../assets/img/dashboard-icon.svg";
-import servicesIcon from "../assets/img/services-icon.svg";
+import servicesIcon from "../assets/img/services-icon-menu.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
 import projectGroupIcon from "../assets/img/project-group-icon.svg"
 import membersIcon from "../assets/img/members-icon.svg";
-import datasetIcon from "../assets/img/dataset-menu-item.svg";
+import datasetIcon from "../assets/img/dataset-icon-menu.svg";
 import uploadDataSetIcon from "../assets/img/datasetIcon.svg"
 import jobsIcon from "../assets/img/icon_jobs.svg"
 

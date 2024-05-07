@@ -23,6 +23,7 @@
     font-weight: 600 !important;
     color: #162848 !important;
     text-transform: unset !important;
+    font-family: "Lato", sans-serif !important;
 }
 .buttonOutlineCustomised {
     border: 1px solid #4DA9AD !important;
@@ -31,9 +32,11 @@
     text-transform: unset !important;
     margin-right: 10px !important;
     padding: 5px 8px !important;
+    font-family: "Lato", sans-serif !important;
 }
 .textUnset {
     text-transform: unset !important;
+    font-family: "Lato", sans-serif !important;
 }
 .footerButtonBlock {
     padding: 15px 20px;

@@ -1,69 +1,23 @@
-// Actions that can be done on a dataset table are put up here.
+import React from 'react';
+import { Dropdown } from 'react-bootstrap';
+import style from "./Datasets.module.css";
+import menuOptionIcon from "../../assets/img/menu-options.svg";
 
-import { Button, Col, Container, InputGroup, Row } from "react-bootstrap"
-import { Form } from "react-bootstrap";
-
-import { BsSearch,BsArrowCounterclockwise ,BsSortDown } from "react-icons/bs";
-
-const DatasetsActions = () => {
-    return (
-        <Container fluid>
-            <Row>
-                <Col>
-                    <InputGroup className="mb-3">
-
-                        <Form.Control
-                            placeholder="Search Datasets"
-                            aria-label="Search Datasets"
-                            aria-describedby="basic-addon1"
-
-                        />
-                        <InputGroup.Text id="basic-addon1">
-                            <BsSearch />
-                        </InputGroup.Text>
-
-
-                    </InputGroup>
-
-
-                </Col>
-                <Col>
-                    <Row>
-                        <Col>
-                            Type
-                        </Col>
-                        <Col>
-                            <Form.Select aria-label="Type selection">
-                                <option>All </option>
-                                <option value="flex">Flex</option>
-                                <option value="pathways">Pathways</option>
-                                <option value="osw">OSW</option>
-                            </Form.Select>
-                        </Col>
-                    </Row>
-                </Col>
-                <Col>
-                </Col>
-                <Col>
-                {/* <Row>
-                    <Col>
-                    <Button variant="secondary">
-                    <BsArrowCounterclockwise />
-                </Button>
-                    </Col>
-                    
-                    <Col>
-                    Sort by
-                    </Col>
-                    <Col>
-                    <BsSortDown />
-                    </Col>
-                </Row> */}
-               
-                </Col>
-            </Row>
-        </Container>
-    )
-}
+const DatasetsActions = ({ status, onAction }) => {
+  return (
+    <div>
+          <Dropdown onSelect={onAction}>
+            <Dropdown.Toggle id="dropdown-basic" className={style.dropdownToggle}>
+            <img className={style.menuOptionIcon} src={menuOptionIcon} alt="Menu Options" />
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item eventKey="openInWorkspace">Open in workspaces</Dropdown.Item>
+              <Dropdown.Item disabled={status ==  "Publish" ? true : false } eventKey="release">Release</Dropdown.Item>
+              <Dropdown.Item disabled={status ==  "Publish" ? false : true } eventKey="deactivate">Deactivate</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+  );
+};
 
 export default DatasetsActions;

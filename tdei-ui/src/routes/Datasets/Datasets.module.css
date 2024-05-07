@@ -32,7 +32,7 @@
 
 .datasetsTableHeaderRow{
     background-color: #F8F8F8;
-    padding:0.8rem;
+    padding: 10px 15px;
     color: #162848;
     font-size: 16px;
     font-weight: bold;
@@ -185,4 +185,18 @@
 .filterField {
   width: 220px;
   margin-left: 10px;
+}
+.menuOptionIcon {
+  display: inline-block;
+  transition: background-color 0.25s;
+  height: 2em;
+  width: 2em;
+  padding: 0.25em;
+  border-radius: 50%;
+}
+
+.menuOptionIcon:hover {
+  border-radius: 50%;
+  background-color: #eeeeee;
+  cursor: pointer;
 }

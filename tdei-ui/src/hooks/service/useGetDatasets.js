@@ -27,7 +27,6 @@ function useGetDatasets(searchText = "", status = "All", dataType) {
   useEffect(() => {
     refreshData();
   }, [searchText, status, dataType]);
-  console.log("my datasets hook", data)
   return { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData };
 }
 

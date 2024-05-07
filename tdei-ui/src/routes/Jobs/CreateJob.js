@@ -134,12 +134,13 @@ const CreateJobService = () => {
                             show={showSuccessModal}
                             message="Job has been created!"
                             content="Find the status of the job in jobs page."
-                            onClick={() => {
+                            handler={() => {
                                 setShowSuccessModal(false);
                                 navigate('/jobs', { replace: true });
                             }}
                             btnlabel="Go to Jobs page"
-                            isSuccess = {true}
+                            modaltype = "success"
+                            title= "Success"
                         />
                     )}
                     {showToast && (
@@ -147,11 +148,10 @@ const CreateJobService = () => {
                             show={showToast}
                             message="Dataset Upload Failed!"
                             content={errorMessage}
-                            onClick={() => {
-                                handleClose()
-                            }}
+                            handler={handleClose}
                             btnlabel="Dismiss"
-                            isSuccess = {false}
+                            modaltype = "error"
+                            title= "Error"
                         />
                     )}
                 </>

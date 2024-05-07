@@ -31,11 +31,12 @@
 
 .block {
   background: #ffffff;
-  /* box-shadow: 0px 1px 6px #65656529; */
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  padding: 15px 15px;
-  margin-bottom: 20px;
+  border: 1px solid #e5e5e5;
+  border-left: 8px solid #88c8e8;
+  box-shadow: 0px 1px 5px 0px #33333312;
+  border-radius: 6px;
+  padding: 20px 25px;
+  margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -55,6 +56,29 @@
 .names {
   display: flex;
   align-items: center;
+}
+
+.serviceName {
+  color: #162848;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.serviceType {
+  font-size: 16px;
+  font-weight: 500;
+  color: #162848;
+  text-transform: capitalize;
+}
+.verticalSeparator {
+    height: 20px;
+    border-right: 1px solid #CCCCCC;
+    margin: 0px 25px;
 }
 
 .imgBlock img {
@@ -114,13 +138,17 @@
   color: #83879b;
   margin-left: 5px;
 }
-input {
+/* input {
   color: #83879b !important;
-}
+} */
 .layout {
   height: 100%;
   padding: 20px;
   background-color: #f8f8f8;
+
+  :global .customBorderColor {
+      border-color: #dee2e6;
+  }
 }
 .dropdownButton {
   color: #2f3661 !important;

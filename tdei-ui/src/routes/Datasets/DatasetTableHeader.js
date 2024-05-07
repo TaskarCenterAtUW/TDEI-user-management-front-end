@@ -13,7 +13,7 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                     Type
                 </Col>
                 <Col>
-                    Collection Date
+                Service Name
                 </Col>
                 {!isReleasedDataList && <Col>
                     Status
