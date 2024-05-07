@@ -4,8 +4,8 @@ import CustomDropdown from '../../../../components/ProjectGroupList/CustomDropdo
 const CollectedMethodDropdownForm = ({ field, form }) => {
   const collectedMethodOptions = ['manual','transform','generated','AV', 'others'];
 
-  const handleChange = (dataType) => {
-    form.setFieldValue(field.name, dataType);
+  const handleChange = (collectedMethod) => {
+    form.setFieldValue(field.name, collectedMethod);
   };
   return (
     <CustomDropdown
