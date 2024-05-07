@@ -34,8 +34,8 @@ const Maintenance = () => {
         />
         <ErrorMessage name="datasetName" component="div" />
       </Form.Group>
-      <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-      <Form.Group className="col-4" controlId="collectedBy"  style={{ marginRight: '20px' }}>
+      <div className="d-flex align-items-center" style={{ marginTop: '10px', marginRight:"20px" }}>
+        <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
           <Form.Label>Updated Date</Form.Label>
           <DatePicker label={"Select Last Updated Date"} />
         </Form.Group>
@@ -57,7 +57,7 @@ const Maintenance = () => {
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-      <Form.Group className="col-6" controlId="fundingDetails" style={{ marginRight: '40px' }}>
+        <Form.Group className="col-6" controlId="fundingDetails" style={{ marginRight: '40px' }}>
           <Form.Label>Funding Details</Form.Label>
           <Form.Control
             type="text"
@@ -66,15 +66,14 @@ const Maintenance = () => {
           />
           <ErrorMessage name="fundingDetails" component="div" />
         </Form.Group>
-      <Form.Group className="col-3" controlId="allowCrowdContribution">
-      <Form.Label>Maintenance Funded</Form.Label>
-        <RowRadioButtonsGroup
-          radioList={radioList}
-          onRadioSelected={handMaintenanceFundedChange} />
-      </Form.Group>
+        <Form.Group className="col-3" controlId="allowCrowdContribution">
+          <Form.Label>Maintenance Funded</Form.Label>
+          <RowRadioButtonsGroup
+            radioList={radioList}
+            onRadioSelected={handMaintenanceFundedChange} />
+        </Form.Group>
       </div>
-       
-      </div>
+    </div>
   );
 };
 

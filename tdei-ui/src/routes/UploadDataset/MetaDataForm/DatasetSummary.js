@@ -16,7 +16,7 @@ const DatasetSummary = () => {
 
   return (
     <div style={{ padding: '5px', marginRight: "20px" }}>
-      <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
+      <div className="d-flex align-items-center" style={{ marginTop: '20px', marginRight:"20px" }}>
         <Form.Group className="col-6" controlId="collectionName" style={{ marginRight: '40px' }}>
           <Form.Label>Collection Name</Form.Label>
           <Form.Control
@@ -35,7 +35,7 @@ const DatasetSummary = () => {
           <ErrorMessage name="datasetVersion" component="div" />
         </Form.Group>
       </div>
-      <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
+      <div className="d-flex align-items-center" style={{ marginTop: '10px', marginRight:"20px" }}>
         <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
           <Form.Label>Country</Form.Label>
           <Field component={CountriesDropdown} name="dataType" />
@@ -59,7 +59,7 @@ const DatasetSummary = () => {
           <ErrorMessage name="region" component="div" />
         </Form.Group>
       </div>
-      <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
+      <div className="d-flex align-items-center" style={{ marginTop: '20px',  marginRight:"20px" }}>
         <Form.Group className="col-6" controlId="keyLimitationsOfDataset" style={{ marginRight: '40px' }}>
           <Form.Label>Key limitations of the dataset</Form.Label>
           <Form.Control
