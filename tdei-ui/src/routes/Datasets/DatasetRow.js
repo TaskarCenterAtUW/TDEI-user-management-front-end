@@ -49,7 +49,7 @@ const DatasetRow = ({ datasetName, version, type, serviceName, status, onInspect
                         </div>
                         <div className={style.infoBlock}>
                             <div className="d-flex align-items-center mb-2">
-                                <span className={style.datasetTitle}>{datasetName} </span>
+                                <span className={style.datasetTitle} title={datasetName} tabIndex={0}>{datasetName} </span>
                             </div>
                             <div className={style.datasetSecondaryInfoBlock}>
                                 <span className=""><b>Uploaded at : </b> {updatedTime(uploaded_time)}</span>
@@ -63,13 +63,13 @@ const DatasetRow = ({ datasetName, version, type, serviceName, status, onInspect
                     </div>
                 </Col>
                 <Col>
-                    {type == "Osw" ? "OSW" : type}
+                    <div className={style.serviceName} title={serviceName} tabIndex={0}>{serviceName}</div>
                 </Col>
                 <Col>
-                    {serviceName}
+                    <div className="" tabIndex={0}>{type == "Osw" ? "OSW" : type}</div>
                 </Col>
                 {isReleasedList ? null : (
-                    <Col>
+                    <Col className="d-flex justify-content-center">
                         <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }}>
                             {status ==  "Publish" ? "Released" : status}
                         </div>

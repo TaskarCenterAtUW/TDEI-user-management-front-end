@@ -96,9 +96,10 @@
 .showMore {
   margin-top: 5px;
   cursor: pointer;
-  /* text-decoration: none; */
+  text-decoration: none;
   font-size: 14px;
-  color: #c65d03;
+  font-weight: 700;
+  color: #0969DA;
 }
 
 .noDataIcon {
