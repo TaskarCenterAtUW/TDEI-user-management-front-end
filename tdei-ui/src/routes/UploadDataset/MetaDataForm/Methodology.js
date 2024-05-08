@@ -62,8 +62,8 @@ const Methodology = () => {
             radioList={radioList}
             onRadioSelected={handleDataCollectedByPeople} />
         </Form.Group>
-        <Form.Group className="col-4" controlId="dataCollectedByPeople">
-          <Form.Label>Data Collected By People Funded</Form.Label>
+        <Form.Group className="col-4" controlId="dataCapturedAutomatically">
+          <Form.Label>Data Captured Automatically</Form.Label>
           <RowRadioButtonsGroup
             radioList={radioList}
             onRadioSelected={handleDataCaptured} />
@@ -75,7 +75,7 @@ const Methodology = () => {
           <Form.Control
             type="text"
             placeholder="Enter Data Collectors"
-            name="datasetCollectors"
+            name="dataCollectors"
           />
         </Form.Group>
         <Form.Group className="col-4" controlId="automatedCollection" style={{ marginRight: '20px' }}>

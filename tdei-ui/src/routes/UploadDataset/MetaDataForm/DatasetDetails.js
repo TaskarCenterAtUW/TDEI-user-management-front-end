@@ -54,7 +54,7 @@ const DatasetDetails = () => {
       <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
         <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
           <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
-          <Field component={DataTypeDropdownForm} name="dataType" />
+          <Field component={DataTypeDropdownForm} name="datasetType" />
         </Form.Group>
         <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
           <Form.Label>Collected By</Form.Label>
@@ -65,21 +65,21 @@ const DatasetDetails = () => {
           />
           <ErrorMessage name="collectedBy" component="div" />
         </Form.Group>
-        <Form.Group className="col-4" controlId="collectedBy">
+        <Form.Group className="col-4" controlId="collectionDate">
           <Form.Label>Collection Date</Form.Label>
           <DatePicker label={"Select Collection Date"} />
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
-        <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
+        <Form.Group className="col-4" controlId="collectionMethod" style={{ marginRight: '20px' }}>
           <Form.Label>Collected Method</Form.Label>
-          <Field component={CollectedMethodDropdownForm} name="dataSource" />
+          <Field component={CollectedMethodDropdownForm} name="collectionMethod" />
         </Form.Group>
-        <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
+        <Form.Group className="col-4" controlId="dataSource" style={{ marginRight: '20px' }}>
           <Form.Label>Data Source</Form.Label>
-          <Field component={DataSourceDropdownForm} name="dataType" />
+          <Field component={DataSourceDropdownForm} name="dataSource" />
         </Form.Group>
-        <Form.Group className="col-4" controlId="datasetVersion">
+        <Form.Group className="col-4" controlId="schemaVersion">
           <Form.Label>Schema Version</Form.Label>
           <Form.Control
             type="text"
@@ -90,19 +90,19 @@ const DatasetDetails = () => {
 
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-        <Form.Group className="col-4" controlId="datasetVersion" style={{ marginRight: '20px' }}>
+        <Form.Group className="col-4" controlId="tdeiServiceId" style={{ marginRight: '20px' }}>
           <Form.Label>TDEI Service Id<span style={{ color: 'red' }}> *</span></Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter Schema Version"
-            name="schemaVersion"
+            placeholder="Enter TDEI Service Id"
+            name="tdeiServiceId"
           />
         </Form.Group>
-        <Form.Group className="col-4" controlId="collectedBy"  style={{ marginRight: '20px' }}>
+        <Form.Group className="col-4" controlId="validFrom"  style={{ marginRight: '20px' }}>
           <Form.Label>Valid From</Form.Label>
           <DatePicker label={"Select Starting Date"} />
         </Form.Group>
-        <Form.Group className="col-4" controlId="collectedBy">
+        <Form.Group className="col-4" controlId="validTo">
           <Form.Label>Valid To</Form.Label>
           <DatePicker label={"Select Expiry Date"} />
         </Form.Group>
@@ -114,7 +114,7 @@ const DatasetDetails = () => {
           <Form.Control
             as="textarea"
             type="text"
-            name="polygon"
+            name="datasetArea"
             // onChange={handleTextareaChange}
             // onBlur={handleBlur}
             rows={10}
@@ -128,7 +128,7 @@ const DatasetDetails = () => {
           <Form.Control
             as="textarea"
             type="text"
-            name="polygon"
+            name="description"
             // onChange={handleTextareaChange}
             // onBlur={handleBlur}
             rows={5}
@@ -143,7 +143,7 @@ const DatasetDetails = () => {
           <Form.Control
             as="textarea"
             type="text"
-            name="polygon"
+            name="customMetadata"
             // onChange={handleTextareaChange}
             // onBlur={handleBlur}
             rows={5}

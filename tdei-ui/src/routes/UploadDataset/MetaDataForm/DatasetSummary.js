@@ -32,13 +32,13 @@ const DatasetSummary = () => {
             placeholder="Enter Department Name"
             name="departmentName"
           />
-          <ErrorMessage name="datasetVersion" component="div" />
+          <ErrorMessage name="departmentName" component="div" />
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '10px', marginRight:"20px" }}>
-        <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
+        <Form.Group className="col-4" controlId="country" style={{ marginRight: '20px' }}>
           <Form.Label>Country</Form.Label>
-          <Field component={CountriesDropdown} name="dataType" />
+          <Field component={CountriesDropdown} name="country" />
         </Form.Group>
         <Form.Group className="col-4" controlId="region" style={{ marginRight: '20px' }}>
           <Form.Label>Region</Form.Label>
@@ -56,7 +56,6 @@ const DatasetSummary = () => {
             placeholder="Enter City"
             name="city"
           />
-          <ErrorMessage name="region" component="div" />
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '20px',  marginRight:"20px" }}>

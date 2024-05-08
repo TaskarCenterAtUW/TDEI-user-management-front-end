@@ -28,14 +28,14 @@ const DatasetProvenance = () => {
   };
   return (
     <div style={{ padding: '5px', marginRight: "20px" }}>
-      <Form.Group className="col-6" controlId="datasetName" style={{ marginRight: '40px' }}>
+      <Form.Group className="col-6" controlId="datasetFullName" style={{ marginRight: '40px' }}>
         <Form.Label>Full Dataset Name</Form.Label>
         <Form.Control
           type="text"
           placeholder="Enter Full Dataset Name"
-          name="datasetName"
+          name="datasetFullName"
         />
-        <ErrorMessage name="datasetName" component="div" />
+        <ErrorMessage name="datasetFullName" component="div" />
       </Form.Group>
       <div style={{ marginTop: '10px' }}>
         <Form.Label>Other Published Locations</Form.Label>
@@ -90,7 +90,7 @@ const DatasetProvenance = () => {
           />
           </div>
         </div>
-        <Form.Group className="col-6" controlId="updateFrequency" style={{ marginTop: '10px' }}>
+        <Form.Group className="col-6" controlId="locationInaccuracyFactors" style={{ marginTop: '10px' }}>
           <Form.Label>Location Inaccuracy Factors</Form.Label>
           <Form.Control
             type="text"

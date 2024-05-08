@@ -25,17 +25,17 @@ const Maintenance = () => {
   };
   return (
     <div style={{ padding: '5px', marginRight: "20px" }}>
-      <Form.Group className="col-6" controlId="datasetName" style={{ marginRight: '40px' }}>
+      <Form.Group className="col-6" controlId="officialMaintainer" style={{ marginRight: '40px' }}>
         <Form.Label>Official Maintainer</Form.Label>
         <Form.Control
           type="text"
           placeholder="Enter Official Maintainer"
-          name="datasetName"
+          name="officialMaintainer"
         />
-        <ErrorMessage name="datasetName" component="div" />
+        <ErrorMessage name="officialMaintainer" component="div" />
       </Form.Group>
       <div className="d-flex align-items-center" style={{ marginTop: '10px', marginRight:"20px" }}>
-        <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
+        <Form.Group className="col-4" controlId="updatedDate" style={{ marginRight: '20px' }}>
           <Form.Label>Updated Date</Form.Label>
           <DatePicker label={"Select Last Updated Date"} />
         </Form.Group>
@@ -64,7 +64,7 @@ const Maintenance = () => {
             placeholder="Enter Funding Details"
             name="fundingDetails"
           />
-          <ErrorMessage name="fundingDetails" component="div" />
+          <ErrorMessage name="maintenanceFunded" component="div" />
         </Form.Group>
         <Form.Group className="col-3" controlId="allowCrowdContribution">
           <Form.Label>Maintenance Funded</Form.Label>
