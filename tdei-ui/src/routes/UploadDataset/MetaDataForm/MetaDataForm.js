@@ -12,26 +12,52 @@ import Methodology from "./Methodology";
 
 const MetaDataForm = () => {
     const [key, setKey] = useState('datasetDetails');
+    const [formData, setFormData] = useState({
+        name: '',
+        version: '',
+        datasetType: '',
+        tdeiServiceId: '',
+        collectionDate: '',
+        validFrom:'',
+        validTo:'',
+        customMetadata:'',
+        description:'',
+        datasetArea:'',
+        collectionMethod:'',
+        dataSource:''
+    });
 
     const validationSchema = Yup.object().shape({
-        datasetName: Yup.string().required('Dataset Name is required'),
-        datasetVersion: Yup.string().required('Dataset Version is required'),
+        name: Yup.string().required('Dataset Name is required'),
+        version: Yup.string().required('Dataset Version is required'),
         datasetType: Yup.string().required('Dataset Type is required'),
         tdeiServiceId: Yup.string().required('TDEI Service Id is required')
     });
+    const handleFormSubmit = (values) => {
+        setFormData(values);
+        console.log(values);
+    };
     return (
         <div>
             <div style={{ paddingTop: "20px" }}>
                 <div>
                     <Formik
                         initialValues={{
-                            datasetName: '',
-                            description: '',
+                            name: '',
+                            version: '',
+                            datasetType: '',
+                            tdeiServiceId: '',
+                            collectionDate: '',
+                            validFrom:'',
+                            validTo:'',
+                            customMetadata:'',
+                            description:'',
+                            datasetArea:'',
+                            collectionMethod:'',
+                            dataSource:''
                         }}
                         validationSchema={validationSchema}
-                        onSubmit={(values) => {
-                            console.log(values);
-                        }}
+                        onSubmit={handleFormSubmit}
                     >
                         {() => (
                             <Form>
@@ -41,7 +67,7 @@ const MetaDataForm = () => {
                                     className="mb-2"
                                 >
                                     <Tab eventKey="datasetDetails" title={<span className={style.boldText}> Dataset Details</span>}>
-                                        <DatasetDetails />
+                                        <DatasetDetails formData={formData} setFormData={setFormData}  />
                                     </Tab>
                                     <Tab eventKey="dataProvenance" title={<span className={style.boldText}> Data Provenance</span>}>
                                         <DatasetProvenance />

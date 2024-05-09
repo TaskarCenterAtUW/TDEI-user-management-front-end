@@ -4,7 +4,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-export default function DatePicker({label}) {
+export default function DatePicker({label, fieldName, selectedDate, onChange }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DesktopDatePicker  
@@ -30,7 +30,12 @@ export default function DatePicker({label}) {
               fontSize: '16px', 
             },
           }} 
+          selected={selectedDate}
           slotProps={{ textField: { placeholder: label} }}
+          onChange={(date) => {
+            const dateString = new Date(date).toISOString()
+            onChange(fieldName, dateString)
+          }}
           />
     </LocalizationProvider>
   );

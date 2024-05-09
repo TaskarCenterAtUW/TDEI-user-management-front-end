@@ -9,18 +9,51 @@ import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
 import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
 import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 
-const DatasetDetails = () => {
+const DatasetDetails = ({ formData, setFormData }) => {
   const { values, setFieldValue } = useFormikContext();
   const [datasetType, setDatasetType] = React.useState("");
   const [collectedMethod, setCollectedMethod] = React.useState("");
   const [dataSource, setDataSource] = React.useState("");
+  const [collectionDate, setCollectionDate] = React.useState(new Date());
+  const [validFrom, setValidFromDate] = React.useState(new Date());
+  const [validTo, setValidToDate] = React.useState(new Date());
+  //  const [geoJson, setGeoJson] = useState(JSON.stringify(GEOJSON, null, 2));
+
+  // Event handler for selecting date from date picker
+  const handleDateSelect = (fieldName, date) => {
+    if (fieldName === 'collectionDate') {
+      setCollectionDate(date);
+    } else if (fieldName === 'validFrom') {
+      setValidFromDate(date);
+    } else if (fieldName === 'validTo') {
+      setValidToDate(date);
+    }
+    setFormData(prevData => ({
+      ...prevData,
+      [fieldName]: date 
+    }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFieldValue(name, value);
-  };
-  // Event handler for selecting dataset type from dropdown
-  const handleDatasetTypeSelect = (value) => {
-    setDatasetType(value.value);
+    setFormData(prevData => ({
+        ...prevData,
+        [name]: value
+    }));
+};
+  // Event handler for selecting dataset type, collected method, and data source
+  const handleDropdownSelect = (fieldName, selectedOption) => {
+    if (fieldName === 'datasetType') {
+      setDatasetType(selectedOption);
+    } else if (fieldName === 'collectionMethod') {
+      setCollectedMethod(selectedOption);
+    } else if (fieldName === 'dataSource') {
+      setDataSource(selectedOption);
+    }
+    setFormData(prevData => ({
+      ...prevData,
+      [fieldName]: selectedOption
+    }));
   };
   const handleCollectedMethodSelect = (value) => {
     setCollectedMethod(value.value);
@@ -32,29 +65,31 @@ const DatasetDetails = () => {
   return (
     <div style={{ padding: '5px', marginRight:"20px" }}>
       <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
-        <Form.Group className="col-6" controlId="datasetName" style={{ marginRight: '40px' }}>
+        <Form.Group className="col-6" controlId="name" style={{ marginRight: '40px' }}>
           <Form.Label>Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter Dataset Name"
-            name="datasetName"
+            name="name"
+            onChange={handleChange}
           />
-          <ErrorMessage name="datasetName" component="div" />
+          <ErrorMessage name="name" component="div" />
         </Form.Group>
-        <Form.Group className="col-6" controlId="datasetVersion">
+        <Form.Group className="col-6" controlId="version">
           <Form.Label>Dataset Version<span style={{ color: 'red' }}> *</span></Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter Dataset Version"
-            name="datasetVersion"
+            name="version"
+            onChange={handleChange}
           />
-          <ErrorMessage name="datasetVersion" component="div" />
+          <ErrorMessage name="version" component="div" />
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
         <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
           <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
-          <Field component={DataTypeDropdownForm} name="datasetType" />
+          <Field component={DataTypeDropdownForm} name="datasetType" onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)}/>
         </Form.Group>
         <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
           <Form.Label>Collected By</Form.Label>
@@ -67,17 +102,17 @@ const DatasetDetails = () => {
         </Form.Group>
         <Form.Group className="col-4" controlId="collectionDate">
           <Form.Label>Collection Date</Form.Label>
-          <DatePicker label={"Select Collection Date"} />
+          <DatePicker label={"Select Collection Date"} selectedDate={collectionDate} fieldName="collectionDate" onChange={handleDateSelect}/>
         </Form.Group>
       </div>
       <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
         <Form.Group className="col-4" controlId="collectionMethod" style={{ marginRight: '20px' }}>
           <Form.Label>Collected Method</Form.Label>
-          <Field component={CollectedMethodDropdownForm} name="collectionMethod" />
+          <Field component={CollectedMethodDropdownForm} name="collectionMethod" onChange={(selectedOption) => handleDropdownSelect('collectionMethod', selectedOption)}/>
         </Form.Group>
         <Form.Group className="col-4" controlId="dataSource" style={{ marginRight: '20px' }}>
           <Form.Label>Data Source</Form.Label>
-          <Field component={DataSourceDropdownForm} name="dataSource" />
+          <Field component={DataSourceDropdownForm} name="dataSource" onChange={(selectedOption) => handleDropdownSelect('dataSource', selectedOption)}/>
         </Form.Group>
         <Form.Group className="col-4" controlId="schemaVersion">
           <Form.Label>Schema Version</Form.Label>
@@ -85,6 +120,7 @@ const DatasetDetails = () => {
             type="text"
             placeholder="Enter Schema Version"
             name="schemaVersion"
+            onChange={handleChange}
           />
         </Form.Group>
 
@@ -96,15 +132,16 @@ const DatasetDetails = () => {
             type="text"
             placeholder="Enter TDEI Service Id"
             name="tdeiServiceId"
+            onChange={handleChange}
           />
         </Form.Group>
         <Form.Group className="col-4" controlId="validFrom"  style={{ marginRight: '20px' }}>
           <Form.Label>Valid From</Form.Label>
-          <DatePicker label={"Select Starting Date"} />
+          <DatePicker label={"Select Starting Date"} selectedDate={validFrom}  fieldName="validFrom" onChange={handleDateSelect}/>
         </Form.Group>
         <Form.Group className="col-4" controlId="validTo">
           <Form.Label>Valid To</Form.Label>
-          <DatePicker label={"Select Expiry Date"} />
+          <DatePicker label={"Select Expiry Date"} fieldName="validTo" selectedDate={validTo} onChange={handleDateSelect}/>
         </Form.Group>
       </div>
       <div style={{ marginTop: '10px' }}>
@@ -115,7 +152,7 @@ const DatasetDetails = () => {
             as="textarea"
             type="text"
             name="datasetArea"
-            // onChange={handleTextareaChange}
+            onChange={handleChange}
             // onBlur={handleBlur}
             rows={10}
           // value={geoJson}
@@ -129,7 +166,7 @@ const DatasetDetails = () => {
             as="textarea"
             type="text"
             name="description"
-            // onChange={handleTextareaChange}
+            onChange={handleChange}
             // onBlur={handleBlur}
             rows={5}
             placeholder="Enter Description"
@@ -144,7 +181,7 @@ const DatasetDetails = () => {
             as="textarea"
             type="text"
             name="customMetadata"
-            // onChange={handleTextareaChange}
+            onChange={handleChange}
             // onBlur={handleBlur}
             rows={5}
           // value={geoJson}
