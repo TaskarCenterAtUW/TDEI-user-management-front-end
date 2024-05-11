@@ -158,12 +158,12 @@ const ProjectGroup = () => {
                         alt="sitemap-solid"
                       />
                       <div>
-                        <div className={style.name} title={list.project_group_name}>{list.project_group_name}</div>
-                        <div className={style.address}>{list.address}</div>
+                        <div className={style.name} title={list.project_group_name} tabIndex={0}>{list.project_group_name}</div>
+                        <div className={style.address} tabIndex={0}>{list.address}</div>
                       </div>
                     </div>
-                    <div className={style.content}>{list.url}</div>
-                    <div className={style.content}>{list.phone}</div>
+                    <div className={style.content} tabIndex={0}>{list.url}</div>
+                    <div className={style.content} tabIndex={0}>{list.phone}</div>
                     <div>
                       <DisplayList list={list} handlePoc={handlePoc} />
                     </div>
@@ -260,7 +260,7 @@ const DisplayList = ({ list, handlePoc }) => {
       {poc.length ? (
         <div className={style.pocList}>
           <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
-          <div className={style.content}>{getUserName(poc[0])}</div>
+          <div className={style.content} tabIndex={0}>{getUserName(poc[0])}</div>
           {poc.length > 1 ? (
             <OverlayTrigger
               trigger={["hover", "focus"]}
@@ -289,7 +289,7 @@ const DisplayList = ({ list, handlePoc }) => {
                 </Popover>
               }
             >
-              <div className={style.overlayList}>{`,+${poc.length - 1}`}</div>
+              <div className={style.overlayList} tabIndex={0}>{`,+${poc.length - 1}`}</div>
             </OverlayTrigger>
           ) : null}
         </div>

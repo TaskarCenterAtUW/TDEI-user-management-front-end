@@ -49,7 +49,9 @@ function ClipboardCopy({ copyText, copyTitle }) {
     <div className="d-flex align-items-center">
       <div className={style.textStyle}><b>{copyTitle} : </b> {copyText}</div>
         <CopyToClipboard text={copyText} onCopy={() => handleCopyClick()}>
-          <img src={userIcon} className={style.copyIcon} />
+          <Button variant="link d-flex p-0">
+            <img src={userIcon} className={style.copyIcon} alt="Copy Id" />
+          </Button>
         </CopyToClipboard>
         {isCopied ? (
           <div className={style.copiedInfo}>Copied!</div>
