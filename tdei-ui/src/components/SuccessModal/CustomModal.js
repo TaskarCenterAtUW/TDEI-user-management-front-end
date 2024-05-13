@@ -13,7 +13,7 @@ const CustomModal = (props) => {
   let contentColor;
   switch (props.modaltype) {
     case "success":
-      iconComponent = <img src={successIcon} alt="success-icon" style={{ width: '35px', height: '35px' }}/>;
+      iconComponent = <img src={successIcon} alt="success-icon" className={style.modalHeaderIcon}/>;
       titleColor = "#59C3C8";
       contentColor = '';
       break;
@@ -23,12 +23,12 @@ const CustomModal = (props) => {
       contentColor = '#FFD2D4';
       break;
     case "release":
-      iconComponent = <img src={datasetReleaseIcon} alt="release-icon" style={{ width: '35px', height: '35px' }}/>;
+      iconComponent = <img src={datasetReleaseIcon} alt="release-icon" className={style.modalHeaderIcon}/>;
       titleColor = "#162848";
       contentColor = '';
       break;
     case "deactivate":
-      iconComponent = <img src={datasetDeleteIcon} alt="deactivate-icon" style={{ width: '35px', height: '35px' }}/>;
+      iconComponent = <img src={datasetDeleteIcon} alt="deactivate-icon" className={style.modalHeaderIcon}/>;
       titleColor = "#162848";
       contentColor = '';
       break;
@@ -48,9 +48,9 @@ const CustomModal = (props) => {
       >
         <Modal.Body>
           <div className={style.customSuccessModal}>
-          {iconComponent}
+            {iconComponent}
             <div className={style.title} style={{ color: titleColor }}>
-            {props.title}
+              {props.title}
             </div>
             <div className={style.customMessage}>{props.message}</div>
             <div className={style.content} style={{ backgroundColor: contentColor}}>{props.content}</div>

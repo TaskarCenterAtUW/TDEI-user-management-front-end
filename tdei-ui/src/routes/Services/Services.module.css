@@ -30,16 +30,10 @@
 }
 
 .block {
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-left: 8px solid #88c8e8;
-  box-shadow: 0px 1px 5px 0px #33333312;
-  border-radius: 6px;
-  padding: 20px 25px;
-  margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px 25px;
 }
 
 .imgBlock {
@@ -58,11 +52,26 @@
   align-items: center;
 }
 
+.serviceDetailsContainer {
+  border: 1px solid #ddd;
+  box-shadow: 0px 1px 6px #33333314;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border-left: 8px solid #88c8e8;
+}
+
+.serviceIdBlock {
+  border-top: 1px dashed #ddd;
+  padding: 8px 25px;
+  background-color: #fbfbfb;
+  border-radius: 0px 0px 5px 5px;
+}
+
 .serviceName {
   color: #162848;
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -70,10 +79,19 @@
   text-overflow: ellipsis;
 }
 .serviceType {
-  font-size: 16px;
-  font-weight: 500;
-  color: #162848;
+  font-size: 14px;
+  font-weight: 400;
   text-transform: capitalize;
+  margin-bottom: 6px;
+  background-color: #f2f2f2;
+  display: inline-block;
+  padding: 0px 8px;
+  border-radius: 4px;
+  color: #333;
+}
+.serviceTypeIcon {
+  height: 55px;
+  margin-right: 15px;
 }
 .verticalSeparator {
     height: 20px;
@@ -111,7 +129,7 @@
 .editButton:active,
 .editButton:focus-visible {
   color: #42526e !important;
-  background: #f5f5f5 !important;
+  background: #e5e5e5 !important;
 }
 .deleteButton {
   display: flex;
@@ -125,7 +143,7 @@
 .deleteButton:active,
 .deleteButton:focus-visible {
   color: #c65d03 !important;
-  background: #f5f5f5 !important;
+  background: #e5e5e5 !important;
 }
 .btnText {
   margin-left: 5px;

@@ -10,18 +10,18 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                     Dataset Name
                 </Col>
                 <Col>
+                    Service Name
+                </Col >
+                <Col>
                     Type
                 </Col>
-                <Col>
-                Service Name
-                </Col>
-                {!isReleasedDataList && <Col>
+                {!isReleasedDataList && <Col className="d-flex justify-content-center">
                     Status
                 </Col>}
                 {/* <Col>
                     View
                 </Col> */}
-                {!isReleasedDataList && <Col>
+                {!isReleasedDataList && <Col className="d-flex justify-content-center">
                     Action
                 </Col>}
             </Row>

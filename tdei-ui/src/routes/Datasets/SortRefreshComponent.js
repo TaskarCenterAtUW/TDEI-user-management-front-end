@@ -18,7 +18,7 @@ const SortRefreshComponent = ({ handleRefresh, handleDropdownSelect, isReleasedD
         </div>
         <div className="">
           <Dropdown onSelect={handleDropdownSelect}>
-            <Dropdown.Toggle id="dropdown-basic" className={style.dropdownToggle}>
+            <Dropdown.Toggle id="dropdown-basic" className={style.dropdownToggleSort}>
               <img src={sort} className={style.noDataIcon} alt="sort" />
             </Dropdown.Toggle>
             <Dropdown.Menu>
