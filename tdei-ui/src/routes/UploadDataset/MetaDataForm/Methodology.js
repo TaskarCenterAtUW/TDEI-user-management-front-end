@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Field, ErrorMessage, useFormikContext } from "formik";
+import { Formik,Field, ErrorMessage, useFormikContext } from "formik";
 import { Modal, Button, Form } from "react-bootstrap";
 import Container from "../../../components/Container/Container";
 import Select from 'react-select';
@@ -10,8 +10,8 @@ import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
 import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 
-const Methodology = () => {
-  const { values, setFieldValue } = useFormikContext();
+const Methodology = ({ formData, updateFormData }) => {
+  // const { values, setFieldValue } = useFormikContext();
   const [dataCollectedByPeople, setDataCollectedByPeople] = useState('');
   const [dataCaptured, setDataCaptured] = useState('');
   const [preprocessingDoc, setPreprocessingDoc] = useState('');
@@ -34,6 +34,8 @@ const Methodology = () => {
     { value: 'no', label: 'No' },
   ];
   return (
+    <Formik initialValues={formData} onSubmit={values => console.log(values)} >
+    {() => (
     <div style={{ padding: '5px', marginRight:"20px" }}>
       <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
         <Form.Group className="col-6" controlId="pointDataCollection" style={{ marginRight: '20px' }}>
@@ -162,6 +164,8 @@ const Methodology = () => {
         </Form.Group>
       </div>
     </div>
+    )}
+</Formik>
   );
 };
 

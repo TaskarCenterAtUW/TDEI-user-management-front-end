@@ -1,20 +1,22 @@
 import React from "react";
-import { Field, ErrorMessage, useFormikContext } from "formik";
+import { Formik,Field, ErrorMessage, useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import CountriesDropdown from "./DropdownComponents/Countries";
 
-const DatasetSummary = () => {
-  const { values, setFieldValue } = useFormikContext();
+const DatasetSummary = ({ formData, updateFormData }) => {
+  // const { values, setFieldValue } = useFormikContext();
   const [country, setCountry] = React.useState("");
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFieldValue(name, value);
+    // setFieldValue(name, value);
   };
   const handleCountrySelect = (value) => {
     setCountry(value.value);
   };
 
   return (
+    <Formik initialValues={formData} onSubmit={values => console.log(values)} >
+    {() => (
     <div style={{ padding: '5px', marginRight: "20px" }}>
       <div className="d-flex align-items-center" style={{ marginTop: '20px', marginRight:"20px" }}>
         <Form.Group className="col-6" controlId="collectionName" style={{ marginRight: '40px' }}>
@@ -78,6 +80,8 @@ const DatasetSummary = () => {
         </Form.Group>
       </div>
     </div>
+)}
+</Formik>
   );
 };
 

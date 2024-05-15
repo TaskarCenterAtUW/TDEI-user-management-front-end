@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Field, ErrorMessage, useFormikContext } from "formik";
+import { Formik,Field, ErrorMessage, useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 import DatePicker from '../../../components/DatePicker/DatePicker';
 
-const Maintenance = () => {
-  const { values, setFieldValue } = useFormikContext();
+const Maintenance = ({ formData, updateFormData }) => {
+  // const { values, setFieldValue } = useFormikContext();
   const [datasetType, setDatasetType] = React.useState("");
   const [collectedMethod, setCollectedMethod] = React.useState("");
   const [dataSource, setDataSource] = React.useState("");
@@ -21,9 +21,11 @@ const Maintenance = () => {
   ];
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFieldValue(name, value);
+    // setFieldValue(name, value);
   };
   return (
+    <Formik initialValues={formData} onSubmit={values => console.log(values)} >
+    {() => (
     <div style={{ padding: '5px', marginRight: "20px" }}>
       <Form.Group className="col-6" controlId="officialMaintainer" style={{ marginRight: '40px' }}>
         <Form.Label>Official Maintainer</Form.Label>
@@ -74,6 +76,8 @@ const Maintenance = () => {
         </Form.Group>
       </div>
     </div>
+    )}
+</Formik>
   );
 };
 

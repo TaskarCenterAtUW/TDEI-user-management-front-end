@@ -12,6 +12,11 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
     console.log(selectedFile);
     onSelectedFileChange(selectedFile);
   };
+  const handleUpdateFormData = (formData) => {
+  // Check if formData is empty or if selectedData exists
+  const hasFile = !!(selectedData || Object.values(formData).some(value => !!value));
+  onSelectedFileChange(formData);
+  };
   return (
     <div>
       <Typography variant="h6" sx={{
@@ -27,7 +32,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>
-      <MetaDataForm />
+      <MetaDataForm selectedData={selectedData} onUpdateFormData={handleUpdateFormData}/>
     </div>
   );
 };
