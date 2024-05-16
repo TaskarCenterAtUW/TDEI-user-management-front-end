@@ -4,39 +4,41 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-export default function DatePicker({label, fieldName, selectedDate, onChange }) {
+export default function DatePicker({ label, fieldName, selectedDate, onChange }) {
+  const parsedDate = selectedDate ? new Date(selectedDate) : null;
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DesktopDatePicker  
+      <DesktopDatePicker  
         sx={{
-            "& .MuiInputBase-input": {
-              height: "5px",
-              width:"200px"
+          "& .MuiInputBase-input": {
+            height: "5px",
+            width:"200px"
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#E0E0E0',
             },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: '#E0E0E0',
-              },
-              '&:hover fieldset': {
-                borderColor: '#E0E0E0',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#4382F7',
-              },
+            '&:hover fieldset': {
+              borderColor: '#E0E0E0',
             },
-            '& .MuiInputBase-input::placeholder': {
-              color: 'black', 
-              fontFamily: 'Arial',  
-              fontSize: '16px', 
+            '&.Mui-focused fieldset': {
+              borderColor: '#4382F7',
             },
-          }} 
-          selected={selectedDate}
-          slotProps={{ textField: { placeholder: label} }}
-          onChange={(date) => {
-            const dateString = new Date(date).toISOString()
-            onChange(fieldName, dateString)
-          }}
-          />
+          },
+          '& .MuiInputBase-input::placeholder': {
+            color: 'black', 
+            fontFamily: 'Arial',  
+            fontSize: '16px', 
+          },
+        }} 
+        value={dayjs(parsedDate)}
+        slotProps={{ textField: { placeholder: label} }}
+        onChange={(date) => {
+          const dateString = date ? date.toISOString() : null;
+          onChange(fieldName, dateString);
+        }}
+      />
     </LocalizationProvider>
   );
 }

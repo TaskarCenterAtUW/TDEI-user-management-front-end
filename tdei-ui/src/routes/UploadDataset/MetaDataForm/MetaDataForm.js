@@ -24,7 +24,8 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             description: '',
             datasetArea: '',
             collectionMethod: '',
-            dataSource: ''
+            dataSource: '',
+            schemaVersion: ''
         },
         dataProvenance: {
             datasetFullName: '',
@@ -48,15 +49,17 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                     name: selectedData.datasetDetails.name || formData.datasetDetails.name,
                     version: selectedData.datasetDetails.version || formData.datasetDetails.version,
                     datasetType: selectedData.datasetDetails.type || formData.datasetDetails.datasetType,
-                    tdeiServiceId: selectedData.datasetDetails.serviceId || formData.datasetDetails.tdeiServiceId,
+                    tdeiServiceId: selectedData.datasetDetails.tdeiServiceId || formData.datasetDetails.tdeiServiceId,
                     collectionDate: selectedData.datasetDetails.collectionDate || formData.datasetDetails.collectionDate,
                     validFrom: selectedData.datasetDetails.validFrom || formData.datasetDetails.validFrom,
                     validTo: selectedData.datasetDetails.validTo || formData.datasetDetails.validTo,
                     customMetadata: selectedData.datasetDetails.customMetadata || formData.datasetDetails.customMetadata,
                     description: selectedData.datasetDetails.description || formData.datasetDetails.description,
-                    datasetArea: selectedData.datasetDetails.area || GEOJSON,
+                    datasetArea: selectedData.datasetDetails.datasetArea || formData.datasetDetails.datasetArea,
                     collectionMethod: selectedData.datasetDetails.collectionMethod || formData.datasetDetails.collectionMethod,
-                    dataSource: selectedData.datasetDetails.source || formData.datasetDetails.source
+                    dataSource: selectedData.datasetDetails.source || formData.datasetDetails.source,
+                    schemaVersion: selectedData.datasetDetails.schemaVersion || formData.datasetDetails.schemaVersion,
+                    collectedBy: selectedData.datasetDetails.collectedBy || formData.datasetDetails.collectedBy
                 },
                 dataProvenance: {
                     datasetFullName: selectedData.dataProvenance.fullName || formData.datasetDetails.fullName,

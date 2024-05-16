@@ -57,7 +57,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   handleChange(e);
                 }}
                 value={formData.name}
-                isInvalid={errors.name }
+                isInvalid={errors.name && touched.name}
                 onBlur={handleBlur}
               />
                 {/* <ErrorMessage name="name" component="div" /> */}
@@ -69,8 +69,9 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Dataset Version"
                 name="version"
-                value={values.version}
+                value={formData.version}
                 isInvalid={errors.version && touched.version}
+                onBlur={handleBlur}
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
@@ -83,7 +84,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
               <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
-              value={values.datasetType} 
+              value={formData.datasetType} 
               component={DataTypeDropdownForm} name="datasetType" onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)} />
             </Form.Group>
             <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
@@ -92,7 +93,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Collected By Name"
                 name="collectedBy"
-                value={values.collectedBy}
+                value={formData.collectedBy}
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
@@ -102,14 +103,13 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             </Form.Group>
             <Form.Group className="col-4" controlId="collectionDate">
               <Form.Label>Collection Date</Form.Label>
-              <DatePicker label={"Select Collection Date"} selectedDate={values.collectionDate} fieldName="collectionDate" onChange={handleDateSelect} />
+              <DatePicker label={"Select Collection Date"} selectedDate={formData.collectionDate} fieldName="collectionDate" onChange={handleDateSelect} />
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
             <Form.Group className="col-4" controlId="collectionMethod" style={{ marginRight: '20px' }}>
               <Form.Label>Collected Method</Form.Label>
               <Field 
-              // value={values.collectionMethod} 
               component={CollectedMethodDropdownForm} name="collectionMethod" onChange={(selectedOption) => handleDropdownSelect('collectionMethod', selectedOption)} />
             </Form.Group>
             <Form.Group className="col-4" controlId="dataSource" style={{ marginRight: '20px' }}>
@@ -122,6 +122,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Schema Version"
                 name="schemaVersion"
+                value={formData.schemaVersion}
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
@@ -141,15 +142,18 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
+                onBlur={handleBlur}
+                isInvalid={errors.tdeiServiceId && touched.tdeiServiceId}
+                value={formData.tdeiServiceId}
               />
             </Form.Group>
             <Form.Group className="col-4" controlId="validFrom" style={{ marginRight: '20px' }}>
               <Form.Label>Valid From</Form.Label>
-              <DatePicker label={"Select Starting Date"} selectedDate={validFrom} fieldName="validFrom" onChange={handleDateSelect} />
+              <DatePicker label={"Select Starting Date"} selectedDate={formData.validFrom} fieldName="validFrom" onChange={handleDateSelect} />
             </Form.Group>
             <Form.Group className="col-4" controlId="validTo">
               <Form.Label>Valid To</Form.Label>
-              <DatePicker label={"Select Expiry Date"} fieldName="validTo" selectedDate={validTo} onChange={handleDateSelect} />
+              <DatePicker label={"Select Expiry Date"} fieldName="validTo" selectedDate={formData.validTo} onChange={handleDateSelect} />
             </Form.Group>
           </div>
           <div style={{ marginTop: '10px' }}>
@@ -164,8 +168,8 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
-                // onBlur={handleBlur}
                 rows={10}
+                value={formData.datasetArea}
               />
             </div>
           </div>
@@ -180,9 +184,9 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
-                // onBlur={handleBlur}
                 rows={5}
                 placeholder="Enter Description"
+                value={formData.description}
               />
             </div>
           </div>
@@ -197,7 +201,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
-                // onBlur={handleBlur}
+                value={formData.customMetadata}
                 rows={5}
               />
             </div>
