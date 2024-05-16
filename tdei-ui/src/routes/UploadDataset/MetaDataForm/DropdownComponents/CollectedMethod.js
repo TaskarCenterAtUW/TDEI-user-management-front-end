@@ -1,7 +1,7 @@
 import React from 'react';
 import CustomDropdown from '../../../../components/ProjectGroupList/CustomDropdown';
 
-const CollectedMethodDropdownForm = ({ field, form, onChange }) => {
+const CollectedMethodDropdownForm = ({ field, form, onChange,formDataCollectionMethod }) => {
   const collectedMethodOptions = ['manual','transform','generated','AV', 'others'];
 
   const handleChange = (collectedMethod) => {
@@ -15,6 +15,7 @@ const CollectedMethodDropdownForm = ({ field, form, onChange }) => {
       onChange={handleChange}
       field={field}
       form={form}
+      defaultValue={formDataCollectionMethod}
     />
   );
 };

@@ -48,7 +48,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                 datasetDetails: {
                     name: selectedData.datasetDetails.name || formData.datasetDetails.name,
                     version: selectedData.datasetDetails.version || formData.datasetDetails.version,
-                    datasetType: selectedData.datasetDetails.type || formData.datasetDetails.datasetType,
+                    datasetType: selectedData.datasetDetails.datasetType || formData.datasetDetails.datasetType,
                     tdeiServiceId: selectedData.datasetDetails.tdeiServiceId || formData.datasetDetails.tdeiServiceId,
                     collectionDate: selectedData.datasetDetails.collectionDate || formData.datasetDetails.collectionDate,
                     validFrom: selectedData.datasetDetails.validFrom || formData.datasetDetails.validFrom,
@@ -57,7 +57,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                     description: selectedData.datasetDetails.description || formData.datasetDetails.description,
                     datasetArea: selectedData.datasetDetails.datasetArea || formData.datasetDetails.datasetArea,
                     collectionMethod: selectedData.datasetDetails.collectionMethod || formData.datasetDetails.collectionMethod,
-                    dataSource: selectedData.datasetDetails.source || formData.datasetDetails.source,
+                    dataSource: selectedData.datasetDetails.dataSource || formData.datasetDetails.dataSource,
                     schemaVersion: selectedData.datasetDetails.schemaVersion || formData.datasetDetails.schemaVersion,
                     collectedBy: selectedData.datasetDetails.collectedBy || formData.datasetDetails.collectedBy
                 },

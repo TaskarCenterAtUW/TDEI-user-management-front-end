@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 export default function DatePicker({ label, fieldName, selectedDate, onChange }) {
-  const parsedDate = selectedDate ? new Date(selectedDate) : null;
+  const parsedDate = selectedDate ? new Date(selectedDate) : '';
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -32,7 +32,7 @@ export default function DatePicker({ label, fieldName, selectedDate, onChange })
             fontSize: '16px', 
           },
         }} 
-        value={dayjs(parsedDate)}
+        value={parsedDate ? dayjs(parsedDate) : null}
         slotProps={{ textField: { placeholder: label} }}
         onChange={(date) => {
           const dateString = date ? date.toISOString() : null;

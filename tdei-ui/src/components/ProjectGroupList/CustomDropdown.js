@@ -17,11 +17,15 @@ const CustomDropdown = ({
   onChange,
   field,
   form,
+  defaultValue
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
   const inputRef = useRef();
 
+  useEffect(() => {
+    setSelectedValue(defaultValue ? defaultValue : '');
+  }, [defaultValue]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -38,6 +42,7 @@ const CustomDropdown = ({
       window.removeEventListener("click", handler);
     };
   });
+
   const handleInputClick = (e) => {
     if (showMenu) {
       form.setFieldTouched(field.name);
@@ -64,7 +69,6 @@ const CustomDropdown = ({
     return selectedValue === option;
   };
 
-
   return (
     <>
       <div
@@ -78,7 +82,9 @@ const CustomDropdown = ({
           onClick={handleInputClick}
           className={style.dropdownInput}
         >
-          <div className={style.dropdownSelectedValue}>{getDisplay() == "osw" ? "OSW" : toPascalCase(getDisplay())}</div>
+          <div className={style.dropdownSelectedValue}>
+            {getDisplay() == "osw" ? "OSW" : toPascalCase(getDisplay())}
+          </div>
           <div className={style.dropdownTools}>
             <div className={style.dropdownTool}>
               <Icon />
@@ -91,7 +97,6 @@ const CustomDropdown = ({
               {options.map((option, index) => {
                 if (options.length === index + 1) {
                   return (
-                    // eslint-disable-next-line
                     <a
                       href="#"
                       onClick={() => onItemClick(option)}
@@ -106,7 +111,6 @@ const CustomDropdown = ({
                   );
                 } else {
                   return (
-                    // eslint-disable-next-line
                     <a
                       href="#"
                       onClick={() => onItemClick(option)}

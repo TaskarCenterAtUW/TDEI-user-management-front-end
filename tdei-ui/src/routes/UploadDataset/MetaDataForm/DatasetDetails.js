@@ -84,7 +84,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
               <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
-              value={formData.datasetType} 
+              formDataDatasetType={formData.datasetType}
               component={DataTypeDropdownForm} name="datasetType" onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)} />
             </Form.Group>
             <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
@@ -110,11 +110,12 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             <Form.Group className="col-4" controlId="collectionMethod" style={{ marginRight: '20px' }}>
               <Form.Label>Collected Method</Form.Label>
               <Field 
+              formDataCollectionMethod={formData.collectionMethod}
               component={CollectedMethodDropdownForm} name="collectionMethod" onChange={(selectedOption) => handleDropdownSelect('collectionMethod', selectedOption)} />
             </Form.Group>
             <Form.Group className="col-4" controlId="dataSource" style={{ marginRight: '20px' }}>
               <Form.Label>Data Source</Form.Label>
-              <Field component={DataSourceDropdownForm} name="dataSource" onChange={(selectedOption) => handleDropdownSelect('dataSource', selectedOption)} />
+              <Field formDataDataSource={formData.dataSource}  component={DataSourceDropdownForm} name="dataSource" onChange={(selectedOption) => handleDropdownSelect('dataSource', selectedOption)} />
             </Form.Group>
             <Form.Group className="col-4" controlId="schemaVersion">
               <Form.Label>Schema Version</Form.Label>

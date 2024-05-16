@@ -1,7 +1,7 @@
 import React from 'react';
 import CustomDropdown from '../../../../components/ProjectGroupList/CustomDropdown';
 
-const DataTypeDropdownForm = ({ field, form, onChange }) => {
+const DataTypeDropdownForm = ({ field, form, onChange, formDataDatasetType}) => {
   if (!field || !field.name) {
     console.error("Field object is missing or does not have a 'name' property.");
     return null;
@@ -19,6 +19,7 @@ const DataTypeDropdownForm = ({ field, form, onChange }) => {
       onChange={handleChange}
       field={field}
       form={form}
+      defaultValue={formDataDatasetType}
     />
   );
 };
