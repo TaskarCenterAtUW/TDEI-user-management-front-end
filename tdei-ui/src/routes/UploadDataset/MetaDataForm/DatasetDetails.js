@@ -36,12 +36,12 @@ const DatasetDetails = ({ formData, updateFormData }) => {
   };
   var link = <a href={'https://geojson.io/'} target="_blank" rel="noreferrer">geojson.io</a>;
   return (
+    // <div></div>
     <Formik
       initialValues={formData}
       validationSchema={validationSchema}
       validateOnChange={true}
       validateOnBlur={true}
-      onSubmit={(values) => console.log(values)}
     >
       {({ values, errors, touched ,handleChange,handleBlur}) => (
         <div style={{ padding: '5px', marginRight: "20px" }}>
