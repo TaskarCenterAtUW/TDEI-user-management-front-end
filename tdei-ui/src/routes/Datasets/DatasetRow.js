@@ -4,6 +4,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
 import { workspaceUrl } from '../../services';
 import DatasetsActions from "./DatasetsActions";
+import ClipboardCopy from "../Services/ClipBoardCopy";
 
 const DatasetRow = ({ datasetName, version, type, serviceName, status, onInspect, onAction, isReleasedList, uploaded_time,tdei_dataset_id }) => {
     const getStatusColor = () => {
@@ -49,28 +50,25 @@ const DatasetRow = ({ datasetName, version, type, serviceName, status, onInspect
                         </div>
                         <div className={style.infoBlock}>
                             <div className="d-flex align-items-center mb-2">
-                                <span className={style.datasetTitle}>{datasetName} </span>
+                                <span className={style.datasetTitle} title={datasetName} tabIndex={0}>{datasetName} </span>
                             </div>
                             <div className={style.datasetSecondaryInfoBlock}>
                                 <span className=""><b>Uploaded at : </b> {updatedTime(uploaded_time)}</span>
                                 <span className={style.verticalSeparator}></span>
                                 <span className={style.version}>{version}</span>
                             </div>
-                            <div className={style.datasetSecondaryInfoBlock}>
-                                <span className=""><b>Id : </b> {tdei_dataset_id}</span>
-                            </div>
                         </div>
                     </div>
                 </Col>
                 <Col>
-                    {type == "Osw" ? "OSW" : type}
+                    <div className={style.serviceName} title={serviceName} tabIndex={0}>{serviceName}</div>
                 </Col>
                 <Col>
-                    {serviceName}
+                    <div className="" tabIndex={0}>{type == "Osw" ? "OSW" : type}</div>
                 </Col>
                 {isReleasedList ? null : (
-                    <Col>
-                        <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }}>
+                    <Col className="d-flex justify-content-center">
+                        <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }} tabIndex={0}>
                             {status ==  "Publish" ? "Released" : status}
                         </div>
                     </Col>
@@ -86,6 +84,9 @@ const DatasetRow = ({ datasetName, version, type, serviceName, status, onInspect
                     </Col>
                 )}
             </Row>
+            <div className={style.datasetIdBlock}>
+                <ClipboardCopy copyText={tdei_dataset_id} copyTitle={"Id"} />
+            </div>
         </Container>
     )
 }

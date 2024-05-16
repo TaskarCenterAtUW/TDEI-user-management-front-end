@@ -9,6 +9,9 @@ import { useAuth } from "../../hooks/useAuth";
 import { debounce } from "lodash";
 import useGetServices from "../../hooks/service/useGetServices";
 import serviceIcon from "../../assets/img/icon-service-new.svg";
+import iconFlex from "../../assets/img/flexType.svg";
+import iconPathway from "../../assets/img/pathwayType.svg";
+import iconOsw from "../../assets/img/oswType.svg";
 import useDeleteService from "../../hooks/service/useDeleteService";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
@@ -219,38 +222,53 @@ export const ListingBlock = ({ id, name, type, icon, handleDelete, handleEdit })
   const isUserPoc = useIsPoc();
   const { user } = useAuth();
 
+  const getServiceTypeIcon = () => {
+    if (type === 'flex') {
+      return iconFlex
+    }
+    if (type === 'pathways') {
+      return iconPathway
+    }
+    if (type === 'osw') {
+      return iconOsw
+    }
+    return
+  }
+
+  const serviceTypeIcon = getServiceTypeIcon()
+
   return (
-    <div className={style.block} key={id}>
-      <div className={style.names}>
-        <img src={icon} className="me-3" alt="icon" />
-        <div>
-          <div className={style.serviceName} title={name}>{name}</div>
-          <div className="d-flex align-items-center mt-2">
-            <ClipboardCopy copyText={id} copyTitle={"Id"} />
-            <span className={style.verticalSeparator}></span>
-        <div className={style.serviceType}>{type}</div>
-          </div>
+    <div className={style.serviceDetailsContainer}>
+      <div className={style.block} key={id}>
+        <div className={style.names}>
+          <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="icon" />
+          <div>
+              <div className={style.serviceType} tabIndex={0}>{type}</div>
+              <div className={style.serviceName} title={name} tabIndex={0}>{name}</div>
+          </div> 
         </div>
-        
+        {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
+          <Button
+            className={style.editButton}
+            onClick={() => handleEdit(id,type)}
+            variant="link"
+          >
+            <img src={iconEdit} alt="edit-icon" />
+            <div className={style.btnText}>Edit</div>
+          </Button>
+          <Button
+            className={style.deleteButton}
+            onClick={() => handleDelete(id)}
+            variant="link"
+          >
+            <img src={iconDelete} alt="delete-icon" />
+            <div className={style.btnText}>Delete</div>
+          </Button>
+        </div>) : null}
       </div>
-      {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
-        <Button
-          className={style.editButton}
-          onClick={() => handleEdit(id,type)}
-          variant="link"
-        >
-          <img src={iconEdit} alt="edit-icon" />
-          <div className={style.btnText}>Edit</div>
-        </Button>
-        <Button
-          className={style.deleteButton}
-          onClick={() => handleDelete(id)}
-          variant="link"
-        >
-          <img src={iconDelete} alt="delete-icon" />
-          <div className={style.btnText}>Delete</div>
-        </Button>
-      </div>) : null}
+      <div className={style.serviceIdBlock}>
+        <ClipboardCopy copyText={id} copyTitle={"Id"} />
+      </div>
     </div>
   );
 };
