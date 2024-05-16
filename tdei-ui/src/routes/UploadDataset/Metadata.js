@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback}  from 'react';
 import Typography from '@mui/material/Typography';
 import Dropzone from '../../components/DropZone/Dropzone';
 import MetaDataForm from './MetaDataForm/MetaDataForm';
@@ -12,11 +12,11 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
     console.log(selectedFile);
     onSelectedFileChange(selectedFile);
   };
-  const handleUpdateFormData = (formData) => {
-  // Check if formData is empty or if selectedData exists
-  const hasFile = !!(selectedData || Object.values(formData).some(value => !!value));
-  onSelectedFileChange(formData);
-  };
+  const handleUpdateFormData = useCallback((formData) => {
+    // Check if formData is empty or if selectedData exists
+    const hasFile = !!(selectedData || Object.values(formData).some(value => !!value));
+    onSelectedFileChange(formData);
+    },[]) 
   return (
     <div>
       <Typography variant="h6" sx={{

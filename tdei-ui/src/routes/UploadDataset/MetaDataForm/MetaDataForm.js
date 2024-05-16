@@ -22,7 +22,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             validTo: '',
             customMetadata: '',
             description: '',
-            datasetArea: GEOJSON,
+            datasetArea: '',
             collectionMethod: '',
             dataSource: ''
         },
@@ -45,27 +45,27 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             // Initialize formData with selectedData details
             setFormData({
                 datasetDetails: {
-                    name: selectedData.name || formData.datasetDetails.name,
-                    version: selectedData.version || formData.datasetDetails.version,
-                    datasetType: selectedData.type || formData.datasetDetails.datasetType,
-                    tdeiServiceId: selectedData.serviceId || formData.datasetDetails.tdeiServiceId,
-                    collectionDate: selectedData.collectionDate || formData.datasetDetails.collectionDate,
-                    validFrom: selectedData.validFrom || formData.datasetDetails.validFrom,
-                    validTo: selectedData.validTo || formData.datasetDetails.validTo,
-                    customMetadata: selectedData.customMetadata || formData.datasetDetails.customMetadata,
-                    description: selectedData.description || formData.datasetDetails.description,
-                    datasetArea: selectedData.area || GEOJSON,
-                    collectionMethod: selectedData.collectionMethod || formData.datasetDetails.collectionMethod,
-                    dataSource: selectedData.source || formData.datasetDetails.source
+                    name: selectedData.datasetDetails.name || formData.datasetDetails.name,
+                    version: selectedData.datasetDetails.version || formData.datasetDetails.version,
+                    datasetType: selectedData.datasetDetails.type || formData.datasetDetails.datasetType,
+                    tdeiServiceId: selectedData.datasetDetails.serviceId || formData.datasetDetails.tdeiServiceId,
+                    collectionDate: selectedData.datasetDetails.collectionDate || formData.datasetDetails.collectionDate,
+                    validFrom: selectedData.datasetDetails.validFrom || formData.datasetDetails.validFrom,
+                    validTo: selectedData.datasetDetails.validTo || formData.datasetDetails.validTo,
+                    customMetadata: selectedData.datasetDetails.customMetadata || formData.datasetDetails.customMetadata,
+                    description: selectedData.datasetDetails.description || formData.datasetDetails.description,
+                    datasetArea: selectedData.datasetDetails.area || GEOJSON,
+                    collectionMethod: selectedData.datasetDetails.collectionMethod || formData.datasetDetails.collectionMethod,
+                    dataSource: selectedData.datasetDetails.source || formData.datasetDetails.source
                 },
                 dataProvenance: {
-                    datasetFullName: selectedData.fullName || formData.datasetDetails.fullName,
-                    otherPublishedLocations: selectedData.otherLocations || formData.datasetDetails.otherLocations,
-                    updateFrequency: selectedData.updateFrequency || formData.datasetDetails.updateFrequency,
-                    schemaValidationRun: selectedData.schemaValidation || formData.datasetDetails.schemaValidation,
-                    allowCrowdContribution: selectedData.allowContribution || formData.datasetDetails.allowContribution,
-                    schemaValidationRunDesc: selectedData.schemaValidationDescription || formData.datasetDetails.schemaValidationDescription,
-                    locationInaccuracyFactors: selectedData.locationInaccuracy || formData.datasetDetails.locationInaccuracy
+                    datasetFullName: selectedData.dataProvenance.fullName || formData.datasetDetails.fullName,
+                    otherPublishedLocations: selectedData.dataProvenance.otherLocations || formData.datasetDetails.otherLocations,
+                    updateFrequency: selectedData.dataProvenance.updateFrequency || formData.datasetDetails.updateFrequency,
+                    schemaValidationRun: selectedData.dataProvenance.schemaValidation || formData.datasetDetails.schemaValidation,
+                    allowCrowdContribution: selectedData.dataProvenance.allowContribution || formData.datasetDetails.allowContribution,
+                    schemaValidationRunDesc: selectedData.dataProvenance.schemaValidationDescription || formData.datasetDetails.schemaValidationDescription,
+                    locationInaccuracyFactors: selectedData.dataProvenance.locationInaccuracy || formData.datasetDetails.locationInaccuracy
                 },
                 datasetSummary: {},
                 maintenance: {},

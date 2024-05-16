@@ -18,7 +18,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
     updateFormData({ [fieldName]: date });
   };
 
-  const handleChange = (e) => {
+  const handleFieldChange = (e) => {
     const { name, value } = e.target;
     updateFormData({ [name]: value });
   };
@@ -40,9 +40,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
       initialValues={formData}
       validationSchema={validationSchema}
       validateOnChange={true}
+      validateOnBlur={true}
       onSubmit={(values) => console.log(values)}
     >
-      {({ values, errors, touched }) => (
+      {({ values, errors, touched ,handleChange,handleBlur}) => (
         <div style={{ padding: '5px', marginRight: "20px" }}>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
             <Form.Group className="col-6" controlId="name" style={{ marginRight: '40px' }}>
@@ -51,10 +52,15 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Dataset Name"
                 name="name"
-                onChange={handleChange}
-                // value={values.name}
-                isInvalid={errors.name && touched.name}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
+                value={formData.name}
+                isInvalid={errors.name }
+                onBlur={handleBlur}
               />
+                {/* <ErrorMessage name="name" component="div" /> */}
               <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="col-6" controlId="version">
@@ -63,9 +69,12 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Dataset Version"
                 name="version"
-                // value={values.version}
+                value={values.version}
                 isInvalid={errors.version && touched.version}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
               />
               <Form.Control.Feedback type="invalid">{errors.version}</Form.Control.Feedback>
             </Form.Group>
@@ -74,7 +83,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
               <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
-              // value={values.datasetType} 
+              value={values.datasetType} 
               component={DataTypeDropdownForm} name="datasetType" onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)} />
             </Form.Group>
             <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
@@ -83,7 +92,11 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Collected By Name"
                 name="collectedBy"
-                // value={values.collectedBy}
+                value={values.collectedBy}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
               />
               <ErrorMessage name="collectedBy" component="div" />
             </Form.Group>
@@ -109,7 +122,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter Schema Version"
                 name="schemaVersion"
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
               />
             </Form.Group>
 
@@ -121,7 +137,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 type="text"
                 placeholder="Enter TDEI Service Id"
                 name="tdeiServiceId"
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
               />
             </Form.Group>
             <Form.Group className="col-4" controlId="validFrom" style={{ marginRight: '20px' }}>
@@ -141,7 +160,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 as="textarea"
                 type="text"
                 name="datasetArea"
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
                 // onBlur={handleBlur}
                 rows={10}
               />
@@ -154,7 +176,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 as="textarea"
                 type="text"
                 name="description"
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
                 // onBlur={handleBlur}
                 rows={5}
                 placeholder="Enter Description"
@@ -168,7 +193,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 as="textarea"
                 type="text"
                 name="customMetadata"
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleFieldChange(e)
+                  handleChange(e);
+                }}
                 // onBlur={handleBlur}
                 rows={5}
               />
