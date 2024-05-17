@@ -43,7 +43,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
       validateOnChange={true}
       validateOnBlur={true}
     >
-      {({ values, errors, touched ,handleChange,handleBlur}) => (
+      {({ errors, touched ,handleChange,handleBlur}) => (
         <div style={{ padding: '5px', marginRight: "20px" }}>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
             <Form.Group className="col-6" controlId="name" style={{ marginRight: '40px' }}>

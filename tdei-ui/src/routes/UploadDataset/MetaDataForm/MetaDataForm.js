@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { debounce } from 'lodash';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import style from "./MetaDataForm.module.css";
@@ -39,9 +40,11 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
         datasetSummary: {},
         maintenance: {},
         methodology: {}
-
     });
-    React.useEffect(() => {
+
+    const debouncedUpdateFormData = useCallback(debounce(onUpdateFormData, 300), [onUpdateFormData]);
+
+    useEffect(() => {
         if (selectedData) {
             // Initialize formData with selectedData details
             setFormData({
@@ -77,9 +80,9 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
         }
     }, [selectedData]);
 
-    React.useEffect(() => {
-        onUpdateFormData(formData);
-    }, [formData, onUpdateFormData]);
+    useEffect(() => {
+        debouncedUpdateFormData(formData);
+    }, [formData, debouncedUpdateFormData]);
 
     return (
         <div>
