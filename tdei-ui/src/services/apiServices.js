@@ -255,11 +255,34 @@ export async function postUploadDataset(data) {
   formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
   formData.append('tdei_service_id', data[0].tdei_service_id);
   formData.append('dataset', data[1]);
-  formData.append('metadata', data[2]);
+  if (data[2] instanceof File) {
+    formData.append('metadata', data[2]);
+  } else {
+    const metadata = { ...data[2].datasetDetails };
+    // Parse datasetArea and customMetadata fields
+    try {
+      metadata.dataset_area = JSON.parse(metadata.dataset_area);
+    } catch (e) {
+      console.error("Failed to parse datasetArea: ", e);
+      metadata.dataset_area = {};
+    }
+    try {
+      metadata.custom_metadata = JSON.parse(metadata.custom_metadata);
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+      metadata.custom_metadata = {};
+    }
+    // Convert the metadata object to a JSON string
+    const jsonString = JSON.stringify(metadata, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    // Create a File from the Blob
+    const file = new File([blob], 'metadata.json', { type: 'application/json' });
+    formData.append('metadata', file);
+  }
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
-  // get the end point based on the service_type
+ // get the end point based on the service_type
   var file_end_point = ''
   var service_type = data[0].service_type
   if (service_type === 'flex'){file_end_point = 'gtfs-flex'}

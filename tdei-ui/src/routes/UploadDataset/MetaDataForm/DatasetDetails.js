@@ -1,19 +1,13 @@
 import React from "react";
 import { Formik, Field, ErrorMessage } from "formik";
-import { Modal, Button, Form } from "react-bootstrap";
+import {Form} from "react-bootstrap";
 import DatePicker from "../../../components/DatePicker/DatePicker";
 import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
 import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
 import DataSourceDropdownForm from "./DropdownComponents/DataSource";
-import { GEOJSON } from "../../../utils";
 import * as Yup from "yup";
 
 const DatasetDetails = ({ formData, updateFormData }) => {
-  const [collectionDate, setCollectionDate] = React.useState(new Date());
-  const [validFrom, setValidFromDate] = React.useState(new Date());
-  const [validTo, setValidToDate] = React.useState(new Date());
-  const [geoJson, setGeoJson] = React.useState(JSON.stringify(GEOJSON, null, 2));
-
   const handleDateSelect = (fieldName, date) => {
     updateFormData({ [fieldName]: date });
   };
@@ -26,7 +20,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Dataset Name is required'),
     version: Yup.string().required('Dataset Version is required'),
-    datasetType: Yup.string().required('Dataset Type is required'),
+    dataset_type: Yup.string().required('Dataset Type is required'),
     tdeiServiceId: Yup.string().required('TDEI Service Id is required')
   });
 
@@ -80,60 +74,60 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-            <Form.Group className="col-4 form-group-custom" controlId="datasetType">
+            <Form.Group className="col-4 form-group-custom" controlId="dataset_type">
               <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
-                formDataDatasetType={formData.datasetType}
+                formDataDatasetType={formData.dataset_type}
                 component={DataTypeDropdownForm} 
-                name="datasetType" 
-                onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)} 
+                name="dataset_type" 
+                onChange={(selectedOption) => handleDropdownSelect('dataset_type', selectedOption)} 
               />
             </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="collectedBy">
+            <Form.Group className="col-4 form-group-custom" controlId="collected_by">
               <Form.Label>Collected By</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter Collected By Name"
-                name="collectedBy"
-                value={formData.collectedBy}
+                name="collected_by"
+                value={formData.collected_by}
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
               />
-              <ErrorMessage name="collectedBy" component="div" />
+              <ErrorMessage name="collected_by" component="div" />
             </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="collectionDate">
+            <Form.Group className="col-4 form-group-custom" controlId="collection_date">
               <Form.Label>Collection Date</Form.Label>
-              <DatePicker label={"Select Collection Date"} selectedDate={formData.collectionDate} fieldName="collectionDate" onChange={handleDateSelect} />
+              <DatePicker label={"Select Collection Date"} selectedDate={formData.collection_date} fieldName="collection_date" onChange={handleDateSelect} />
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
-            <Form.Group className="col-4 form-group-custom" controlId="collectionMethod">
+            <Form.Group className="col-4 form-group-custom" controlId="collection_method">
               <Form.Label>Collected Method</Form.Label>
               <Field 
-                formDataCollectionMethod={formData.collectionMethod}
+                formDataCollectionMethod={formData.collection_method}
                 component={CollectedMethodDropdownForm} 
-                name="collectionMethod" 
-                onChange={(selectedOption) => handleDropdownSelect('collectionMethod', selectedOption)} 
+                name="collection_method" 
+                onChange={(selectedOption) => handleDropdownSelect('collection_method', selectedOption)} 
               />
             </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="dataSource">
+            <Form.Group className="col-4 form-group-custom" controlId="data_source">
               <Form.Label>Data Source</Form.Label>
               <Field 
-                formDataDataSource={formData.dataSource}  
+                formDataDataSource={formData.data_source}  
                 component={DataSourceDropdownForm} 
-                name="dataSource" 
-                onChange={(selectedOption) => handleDropdownSelect('dataSource', selectedOption)} 
+                name="data_source" 
+                onChange={(selectedOption) => handleDropdownSelect('data_source', selectedOption)} 
               />
             </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="schemaVersion">
+            <Form.Group className="col-4 form-group-custom" controlId="schema_version">
               <Form.Label>Schema Version</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter Schema Version"
-                name="schemaVersion"
-                value={formData.schemaVersion}
+                name="schema_version"
+                value={formData.schema_version}
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
@@ -158,13 +152,13 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               />
               <Form.Control.Feedback type="invalid">{errors.tdeiServiceId}</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="validFrom">
+            <Form.Group className="col-4 form-group-custom" controlId="valid_from">
               <Form.Label>Valid From</Form.Label>
-              <DatePicker label={"Select Starting Date"} selectedDate={formData.validFrom} fieldName="validFrom" onChange={handleDateSelect} />
+              <DatePicker label={"Select Starting Date"} selectedDate={formData.valid_from} fieldName="valid_from" onChange={handleDateSelect} />
             </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="validTo">
+            <Form.Group className="col-4 form-group-custom" controlId="valid_to">
               <Form.Label>Valid To</Form.Label>
-              <DatePicker label={"Select Expiry Date"} fieldName="validTo" selectedDate={formData.validTo} onChange={handleDateSelect} />
+              <DatePicker label={"Select Expiry Date"} fieldName="valid_to" selectedDate={formData.valid_to} onChange={handleDateSelect} />
             </Form.Group>
           </div>
           <div style={{ marginTop: '10px' }}>
@@ -174,13 +168,13 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               <Form.Control
                 as="textarea"
                 type="text"
-                name="datasetArea"
+                name="dataset_area"
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
                 rows={10}
-                value={formData.datasetArea}
+                value={formData.dataset_area}
               />
             </div>
           </div>
@@ -207,12 +201,12 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               <Form.Control
                 as="textarea"
                 type="text"
-                name="customMetadata"
+                name="custom_metadata"
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
-                value={formData.customMetadata}
+                value={formData.custom_metadata}
                 rows={5}
               />
             </div>
