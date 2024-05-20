@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
+import { Formik, Field, ErrorMessage } from "formik";
 import { Modal, Button, Form } from "react-bootstrap";
 import DatePicker from "../../../components/DatePicker/DatePicker";
 import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
@@ -13,7 +13,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
   const [validFrom, setValidFromDate] = React.useState(new Date());
   const [validTo, setValidToDate] = React.useState(new Date());
   const [geoJson, setGeoJson] = React.useState(JSON.stringify(GEOJSON, null, 2));
-  // Event handler for selecting date from date picker
+
   const handleDateSelect = (fieldName, date) => {
     updateFormData({ [fieldName]: date });
   };
@@ -30,23 +30,23 @@ const DatasetDetails = ({ formData, updateFormData }) => {
     tdeiServiceId: Yup.string().required('TDEI Service Id is required')
   });
 
-  // Event handler for selecting dataset type, collected method, and data source
   const handleDropdownSelect = (fieldName, selectedOption) => {
     updateFormData({ [fieldName]: selectedOption });
   };
+
   var link = <a href={'https://geojson.io/'} target="_blank" rel="noreferrer">geojson.io</a>;
+
   return (
-    // <div></div>
     <Formik
       initialValues={formData}
       validationSchema={validationSchema}
       validateOnChange={true}
       validateOnBlur={true}
     >
-      {({ errors, touched ,handleChange,handleBlur}) => (
+      {({ errors, touched, handleChange, handleBlur }) => (
         <div style={{ padding: '5px', marginRight: "20px" }}>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
-            <Form.Group className="col-6" controlId="name" style={{ marginRight: '40px' }}>
+            <Form.Group className="col-6 form-group-custom" controlId="name">
               <Form.Label>Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
               <Form.Control
                 type="text"
@@ -60,10 +60,9 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 isInvalid={errors.name && touched.name}
                 onBlur={handleBlur}
               />
-                {/* <ErrorMessage name="name" component="div" /> */}
               <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="col-6" controlId="version">
+            <Form.Group className="col-6 form-group-custom" controlId="version">
               <Form.Label>Dataset Version<span style={{ color: 'red' }}> *</span></Form.Label>
               <Form.Control
                 type="text"
@@ -81,13 +80,16 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-            <Form.Group className="col-4" controlId="datasetType" style={{ marginRight: '20px' }}>
+            <Form.Group className="col-4 form-group-custom" controlId="datasetType">
               <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
-              formDataDatasetType={formData.datasetType}
-              component={DataTypeDropdownForm} name="datasetType" onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)} />
+                formDataDatasetType={formData.datasetType}
+                component={DataTypeDropdownForm} 
+                name="datasetType" 
+                onChange={(selectedOption) => handleDropdownSelect('datasetType', selectedOption)} 
+              />
             </Form.Group>
-            <Form.Group className="col-4" controlId="collectedBy" style={{ marginRight: '20px' }}>
+            <Form.Group className="col-4 form-group-custom" controlId="collectedBy">
               <Form.Label>Collected By</Form.Label>
               <Form.Control
                 type="text"
@@ -101,23 +103,31 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               />
               <ErrorMessage name="collectedBy" component="div" />
             </Form.Group>
-            <Form.Group className="col-4" controlId="collectionDate">
+            <Form.Group className="col-4 form-group-custom" controlId="collectionDate">
               <Form.Label>Collection Date</Form.Label>
               <DatePicker label={"Select Collection Date"} selectedDate={formData.collectionDate} fieldName="collectionDate" onChange={handleDateSelect} />
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
-            <Form.Group className="col-4" controlId="collectionMethod" style={{ marginRight: '20px' }}>
+            <Form.Group className="col-4 form-group-custom" controlId="collectionMethod">
               <Form.Label>Collected Method</Form.Label>
               <Field 
-              formDataCollectionMethod={formData.collectionMethod}
-              component={CollectedMethodDropdownForm} name="collectionMethod" onChange={(selectedOption) => handleDropdownSelect('collectionMethod', selectedOption)} />
+                formDataCollectionMethod={formData.collectionMethod}
+                component={CollectedMethodDropdownForm} 
+                name="collectionMethod" 
+                onChange={(selectedOption) => handleDropdownSelect('collectionMethod', selectedOption)} 
+              />
             </Form.Group>
-            <Form.Group className="col-4" controlId="dataSource" style={{ marginRight: '20px' }}>
+            <Form.Group className="col-4 form-group-custom" controlId="dataSource">
               <Form.Label>Data Source</Form.Label>
-              <Field formDataDataSource={formData.dataSource}  component={DataSourceDropdownForm} name="dataSource" onChange={(selectedOption) => handleDropdownSelect('dataSource', selectedOption)} />
+              <Field 
+                formDataDataSource={formData.dataSource}  
+                component={DataSourceDropdownForm} 
+                name="dataSource" 
+                onChange={(selectedOption) => handleDropdownSelect('dataSource', selectedOption)} 
+              />
             </Form.Group>
-            <Form.Group className="col-4" controlId="schemaVersion">
+            <Form.Group className="col-4 form-group-custom" controlId="schemaVersion">
               <Form.Label>Schema Version</Form.Label>
               <Form.Control
                 type="text"
@@ -130,10 +140,9 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 }}
               />
             </Form.Group>
-
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-            <Form.Group className="col-4" controlId="tdeiServiceId" style={{ marginRight: '20px' }}>
+            <Form.Group className="col-4 form-group-custom" controlId="tdeiServiceId">
               <Form.Label>TDEI Service Id<span style={{ color: 'red' }}> *</span></Form.Label>
               <Form.Control
                 type="text"
@@ -147,12 +156,13 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 isInvalid={errors.tdeiServiceId && touched.tdeiServiceId}
                 value={formData.tdeiServiceId}
               />
+              <Form.Control.Feedback type="invalid">{errors.tdeiServiceId}</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="col-4" controlId="validFrom" style={{ marginRight: '20px' }}>
+            <Form.Group className="col-4 form-group-custom" controlId="validFrom">
               <Form.Label>Valid From</Form.Label>
               <DatePicker label={"Select Starting Date"} selectedDate={formData.validFrom} fieldName="validFrom" onChange={handleDateSelect} />
             </Form.Group>
-            <Form.Group className="col-4" controlId="validTo">
+            <Form.Group className="col-4 form-group-custom" controlId="validTo">
               <Form.Label>Valid To</Form.Label>
               <DatePicker label={"Select Expiry Date"} fieldName="validTo" selectedDate={formData.validTo} onChange={handleDateSelect} />
             </Form.Group>
