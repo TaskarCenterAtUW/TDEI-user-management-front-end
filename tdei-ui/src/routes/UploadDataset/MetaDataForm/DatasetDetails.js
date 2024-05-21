@@ -20,8 +20,8 @@ const DatasetDetails = ({ formData, updateFormData }) => {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Dataset Name is required'),
     version: Yup.string().required('Dataset Version is required'),
-    dataset_type: Yup.string().required('Dataset Type is required'),
-    tdeiServiceId: Yup.string().required('TDEI Service Id is required')
+    // dataset_type: Yup.string().required('Dataset Type is required'),
+    // tdeiServiceId: Yup.string().required('TDEI Service Id is required')
   });
 
   const handleDropdownSelect = (fieldName, selectedOption) => {
@@ -74,7 +74,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-            <Form.Group className="col-4 form-group-custom" controlId="dataset_type">
+            {/* <Form.Group className="col-4 form-group-custom" controlId="dataset_type">
               <Form.Label>Dataset Type<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
                 formDataDatasetType={formData.dataset_type}
@@ -82,7 +82,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 name="dataset_type" 
                 onChange={(selectedOption) => handleDropdownSelect('dataset_type', selectedOption)} 
               />
-            </Form.Group>
+            </Form.Group> */}
             <Form.Group className="col-4 form-group-custom" controlId="collected_by">
               <Form.Label>Collected By</Form.Label>
               <Form.Control
@@ -136,7 +136,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
             </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-            <Form.Group className="col-4 form-group-custom" controlId="tdeiServiceId">
+            {/* <Form.Group className="col-4 form-group-custom" controlId="tdeiServiceId">
               <Form.Label>TDEI Service Id<span style={{ color: 'red' }}> *</span></Form.Label>
               <Form.Control
                 type="text"
@@ -151,15 +151,15 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 value={formData.tdeiServiceId}
               />
               <Form.Control.Feedback type="invalid">{errors.tdeiServiceId}</Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="col-4 form-group-custom" controlId="valid_from">
+            </Form.Group> */}
+            {/* <Form.Group className="col-4 form-group-custom" controlId="valid_from">
               <Form.Label>Valid From</Form.Label>
               <DatePicker label={"Select Starting Date"} selectedDate={formData.valid_from} fieldName="valid_from" onChange={handleDateSelect} />
             </Form.Group>
             <Form.Group className="col-4 form-group-custom" controlId="valid_to">
               <Form.Label>Valid To</Form.Label>
               <DatePicker label={"Select Expiry Date"} fieldName="valid_to" selectedDate={formData.valid_to} onChange={handleDateSelect} />
-            </Form.Group>
+            </Form.Group> */}
           </div>
           <div style={{ marginTop: '10px' }}>
             <Form.Label>Dataset Area</Form.Label>
@@ -195,7 +195,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               />
             </div>
           </div>
-          <div style={{ marginTop: '10px' }}>
+          {/* <div style={{ marginTop: '10px' }}>
             <Form.Label>Custom Metadata</Form.Label>
             <div className="jsonContent">
               <Form.Control
@@ -210,7 +210,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 rows={5}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       )}
     </Formik>

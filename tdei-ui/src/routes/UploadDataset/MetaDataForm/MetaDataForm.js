@@ -16,12 +16,12 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
         datasetDetails: {
             name: '',
             version: '',
-            dataset_type: '',
-            tdeiServiceId: '',
+            // dataset_type: '',
+            // tdeiServiceId: '',
             collection_date: '',
-            valid_from: '',
-            valid_to: '',
-            custom_metadata: '',
+            // valid_from: '',
+            // valid_to: '',
+            // custom_metadata: '',
             description: '',
             dataset_area: '',
             collection_method: '',
@@ -46,18 +46,18 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
     const debouncedUpdateFormData = useCallback(debounce(onUpdateFormData, 300), [onUpdateFormData]);
 
     useEffect(() => {
-        if (selectedData) {
+        if (selectedData && !(selectedData instanceof File)) {
             // Initialize formData with selectedData details
             setFormData({
                 datasetDetails: {
                     name: selectedData.datasetDetails.name || formData.datasetDetails.name,
                     version: selectedData.datasetDetails.version || formData.datasetDetails.version,
-                    dataset_type: selectedData.datasetDetails.dataset_type || formData.datasetDetails.dataset_type,
-                    tdeiServiceId: selectedData.datasetDetails.tdeiServiceId || formData.datasetDetails.tdeiServiceId,
+                    // dataset_type: selectedData.datasetDetails.dataset_type || formData.datasetDetails.dataset_type,
+                    // tdeiServiceId: selectedData.datasetDetails.tdeiServiceId || formData.datasetDetails.tdeiServiceId,
                     collection_date: selectedData.datasetDetails.collection_date || formData.datasetDetails.collection_date,
-                    valid_from: selectedData.datasetDetails.valid_from || formData.datasetDetails.valid_from,
-                    valid_to: selectedData.datasetDetails.valid_to || formData.datasetDetails.valid_to,
-                    custom_metadata: selectedData.datasetDetails.custom_metadata || formData.datasetDetails.custom_metadata,
+                    // valid_from: selectedData.datasetDetails.valid_from || formData.datasetDetails.valid_from,
+                    // valid_to: selectedData.datasetDetails.valid_to || formData.datasetDetails.valid_to,
+                    // custom_metadata: selectedData.datasetDetails.custom_metadata || formData.datasetDetails.custom_metadata,
                     description: selectedData.datasetDetails.description || formData.datasetDetails.description,
                     dataset_area: selectedData.datasetDetails.dataset_area || formData.datasetDetails.dataset_area,
                     collection_method: selectedData.datasetDetails.collection_method || formData.datasetDetails.collection_method,
@@ -82,9 +82,18 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
     }, [selectedData]);
 
     useEffect(() => {
-        debouncedUpdateFormData(formData);
-    }, [formData, debouncedUpdateFormData]);
+        onUpdateFormData(formData);
+    }, [formData,onUpdateFormData]);
 
+    const handleUpdateFormData = (section, values) => {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          [section]: {
+            ...prevFormData[section],
+            ...values,
+          },
+        }));
+      };
     return (
         <div>
             <div style={{ paddingTop: "20px" }}>
@@ -97,19 +106,19 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                         className="mb-2"
                     >
                         <Tab eventKey="datasetDetails" title={<span className={style.boldText}> Dataset Details</span>}>
-                            <DatasetDetails formData={formData.datasetDetails} updateFormData={(values) => setFormData({ ...formData, datasetDetails: { ...formData.datasetDetails, ...values } })} />
+                        <DatasetDetails formData={formData.datasetDetails} updateFormData={(values) => handleUpdateFormData('datasetDetails', values)} />
                         </Tab>
                         <Tab eventKey="dataProvenance" title={<span className={style.boldText}> Data Provenance</span>}>
-                            <DatasetProvenance formData={formData.dataProvenance} updateFormData={(values) => setFormData({ ...formData, dataProvenance: { ...formData.dataProvenance, ...values } })} />
+                        <DatasetProvenance formData={formData.dataProvenance} updateFormData={(values) => handleUpdateFormData('dataProvenance', values)} />
                         </Tab>
                         <Tab eventKey="datasetSummary" title={<span className={style.boldText}> Dataset Summary</span>}>
-                            <DatasetSummary formData={formData.datasetSummary} updateFormData={(values) => setFormData({ ...formData, datasetSummary: { ...formData.datasetSummary, ...values } })} />
+                        <DatasetSummary formData={formData.datasetSummary} updateFormData={(values) => handleUpdateFormData('datasetSummary', values)} />
                         </Tab>
                         <Tab eventKey="maintenance" title={<span className={style.boldText}> Maintenance</span>}>
-                            <Maintenance formData={formData.maintenance} updateFormData={(values) => setFormData({ ...formData, maintenance: { ...formData.maintenance, ...values } })} />
+                        <Maintenance formData={formData.maintenance} updateFormData={(values) => handleUpdateFormData('maintenance', values)} />
                         </Tab>
                         <Tab eventKey="methodology" title={<span className={style.boldText}> Methodology</span>}>
-                            <Methodology formData={formData.methodology} updateFormData={(values) => setFormData({ ...formData, methodology: { ...formData.methodology, ...values } })} />
+                        <Methodology formData={formData.methodology} updateFormData={(values) => handleUpdateFormData('methodology', values)} />
                         </Tab>
                     </Tabs>
                 </div>

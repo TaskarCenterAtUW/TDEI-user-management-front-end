@@ -1,25 +1,23 @@
-import React, {useCallback}  from 'react';
+import React, { useCallback } from 'react';
 import Typography from '@mui/material/Typography';
 import Dropzone from '../../components/DropZone/Dropzone';
 import MetaDataForm from './MetaDataForm/MetaDataForm';
-import style from './MetaDataForm/MetaDataForm.module.css'
+import style from './MetaDataForm/MetaDataForm.module.css';
 
-// Functional component Metadata
 const Metadata = ({ selectedData, onSelectedFileChange }) => {
-  // Function to handle file drop
   const onDrop = (files) => {
     const selectedFile = files[0];
     console.log(selectedFile);
     onSelectedFileChange(selectedFile);
   };
+
   const handleUpdateFormData = useCallback((formData) => {
-    // Check if formData is empty or if selectedData exists
-    if(selectedData instanceof File){
+    if (selectedData instanceof File) {
       return;
     }
-    const hasFile = !!(selectedData || Object.values(formData).some(value => !!value));
     onSelectedFileChange(formData);
-    },[selectedData]) 
+  }, [selectedData, onSelectedFileChange]);
+
   return (
     <div>
       <Typography variant="h6" sx={{
@@ -29,9 +27,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
       }}>
         Attach metadata file<span style={{ color: 'red' }}> *</span>
       </Typography>
-      <Dropzone onDrop={onDrop} accept={{
-        'application/json': ['.json']
-      }} format={".json"} selectedFile={selectedData} />
+      <Dropzone onDrop={onDrop} accept={{ 'application/json': ['.json'] }} format={".json"} selectedFile={selectedData} />
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>

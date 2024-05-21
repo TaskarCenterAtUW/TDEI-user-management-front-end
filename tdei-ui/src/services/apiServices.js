@@ -275,14 +275,13 @@ export async function postUploadDataset(data) {
     // Convert the metadata object to a JSON string
     const jsonString = JSON.stringify(metadata, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
-    // Create a File from the Blob
     const file = new File([blob], 'metadata.json', { type: 'application/json' });
     formData.append('metadata', file);
   }
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
- // get the end point based on the service_type
+ //get the end point based on the service_type
   var file_end_point = ''
   var service_type = data[0].service_type
   if (service_type === 'flex'){file_end_point = 'gtfs-flex'}

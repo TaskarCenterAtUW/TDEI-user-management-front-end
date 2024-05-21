@@ -2,8 +2,8 @@ import React from 'react';
 import CustomDropdown from '../../../../components/ProjectGroupList/CustomDropdown';
 
 const DataSourceDropdownForm = ({ field, form, onChange,formDataDataSource }) => {
-  const options = ['TDEI Tool','Third Party','In House'];
-
+  const options = ['TDEITools','3rdParty','InHouse'];
+ 
   const handleChange = (dataSource) => {
     form.setFieldValue(field.name, dataSource);
     onChange(dataSource);

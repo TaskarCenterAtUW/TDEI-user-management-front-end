@@ -91,6 +91,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   const [previousSelectedData, setPreviousSelectedData] = React.useState({});
   const [showToast, setToast] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [metaDataErrorMsg, setMetaDataErrorMsg] = React.useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -171,7 +172,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       }
     } else { 
       //to display toast message
-      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? "Please attach metadata file!!" : "Please select a service! ")
+      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? metaDataErrorMsg : "Please select a service! ")
       setToast(true);
     }
   };
@@ -224,11 +225,54 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
 
   // Validation function for the third step (Metadata)
   const validateMetadata = () => {
-    if (selectedData[activeStep] != null) {
-      return true
+    const metadata = selectedData[activeStep];
+  
+    // Check if metadata is selected
+    if (!metadata) {
+      setMetaDataErrorMsg("Please attach metadata file!!");
+      return false;
     }
-    return false;
-  };
+    // If metadata is a file, return true
+    if (metadata instanceof File) {
+      return true;
+    }
+    // Validate dataset details
+    const { datasetDetails } = metadata;
+    if (!datasetDetails) {
+      setMetaDataErrorMsg("Metadata details are missing!");
+      return false;
+    }
+    const { name, version } = datasetDetails;
+    if (!name) {
+      setMetaDataErrorMsg("Dataset Name is required");
+      return false;
+    }
+    if (!version) {
+      setMetaDataErrorMsg("Dataset Version is required");
+      return false;
+    }
+    return true;
+  };  
+  // const validateMetadata = () => {
+  //   if (selectedData[activeStep] != null) {
+  //     if(selectedData[activeStep] instanceof File){
+  //       return true
+  //     }else{
+  //       if(selectedData[activeStep].datasetDetails){
+  //         if(selectedData[activeStep].datasetDetails.name == ""){
+  //           setMetaDataErrorMsg("Dataset Name is required")
+  //         }else if(selectedData[activeStep].datasetDetails.version == "") {
+  //           setMetaDataErrorMsg("Dataset Version is required")
+  //         }
+  //         return false
+  //       }else{
+  //         return true
+  //       }
+  //     }
+  //   }
+  //   setMetaDataErrorMsg("Please attach metadata file!!")
+  //   return false;
+  // };
 
   // Validation function for the fourth step (Changeset)
   const validateChangeset = () => {
