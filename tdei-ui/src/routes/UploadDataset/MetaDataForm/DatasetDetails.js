@@ -1,6 +1,6 @@
 import React from "react";
 import { Formik, Field, ErrorMessage } from "formik";
-import {Form} from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import DatePicker from "../../../components/DatePicker/DatePicker";
 import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
 import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
@@ -22,6 +22,10 @@ const DatasetDetails = ({ formData, updateFormData }) => {
     version: Yup.string().required('Dataset Version is required'),
     // dataset_type: Yup.string().required('Dataset Type is required'),
     // tdeiServiceId: Yup.string().required('TDEI Service Id is required')
+    collected_by: Yup.string().required('Collected By is required'),
+    collection_date: Yup.string().required('Collection Date is required').nullable(),
+    data_source: Yup.string().required('Data Source is required'),
+    schema_version: Yup.string().required('Schema Version is required')
   });
 
   const handleDropdownSelect = (fieldName, selectedOption) => {
@@ -37,7 +41,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
       validateOnChange={true}
       validateOnBlur={true}
     >
-      {({ errors, touched, handleChange, handleBlur }) => (
+      {({ errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched }) => (
         <div style={{ padding: '5px', marginRight: "20px" }}>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
             <Form.Group className="col-6 form-group-custom" controlId="name">
@@ -84,23 +88,36 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               />
             </Form.Group> */}
             <Form.Group className="col-4 form-group-custom" controlId="collected_by">
-              <Form.Label>Collected By</Form.Label>
+              <Form.Label>Collected By<span style={{ color: 'red' }}> *</span></Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter Collected By Name"
                 name="collected_by"
                 value={formData.collected_by}
+                onBlur={handleBlur}
+                isInvalid={errors.collected_by && touched.collected_by}
                 onChange={(e) => {
                   handleFieldChange(e)
                   handleChange(e);
                 }}
               />
-              <ErrorMessage name="collected_by" component="div" />
+              <Form.Control.Feedback type="invalid">{errors.collected_by}</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="col-4 form-group-custom" controlId="collection_date">
-              <Form.Label>Collection Date</Form.Label>
-              <DatePicker label={"Select Collection Date"} selectedDate={formData.collection_date} fieldName="collection_date" onChange={handleDateSelect} />
-            </Form.Group>
+                <Form.Label>Collection Date<span style={{ color: 'red' }}> *</span></Form.Label>
+                <Field
+                  name="collection_date"
+                  component={DatePicker}
+                  label="Select Collection Date"
+                  dateValue={formData.collection_date}
+                  onChange={(date) => {
+                    handleDateSelect('collection_date', date);
+                    setFieldTouched('collection_date', true,false);
+                  }}
+                  onBlur={handleBlur}
+                />
+                <ErrorMessage name="collection_date" component="div" className="invalid-feedback d-block" />
+              </Form.Group>
           </div>
           <div className="d-flex align-items-center" style={{ marginTop: '20px' }}>
             <Form.Group className="col-4 form-group-custom" controlId="collection_method">
@@ -113,7 +130,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               />
             </Form.Group>
             <Form.Group className="col-4 form-group-custom" controlId="data_source">
-              <Form.Label>Data Source</Form.Label>
+              <Form.Label>Data Source<span style={{ color: 'red' }}> *</span></Form.Label>
               <Field 
                 formDataDataSource={formData.data_source}  
                 component={DataSourceDropdownForm} 

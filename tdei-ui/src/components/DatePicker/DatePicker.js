@@ -1,19 +1,48 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-export default function DatePicker({ label, fieldName, selectedDate, onChange }) {
-  const parsedDate = selectedDate ? new Date(selectedDate) : '';
+const DatePicker = ({ field, form, label, onChange, dateValue }) => {
+  const { name } = field;
+  const { setFieldValue, setFieldTouched, touched, errors } = form;
+  const [isOpen, setIsOpen] = useState(false);
+  const parsedDate = dateValue ? new Date(dateValue) : '';
 
+  const handleOpen = () => {
+    setIsOpen(true);
+    setFieldValue(name, parsedDate);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    if (!dateValue) {
+      setFieldValue(name, '');
+      setFieldTouched(name, true);
+    }
+  };
+
+  const handleChange = (date) => {
+    const dateString = date ? date.toISOString() : null;
+    setFieldValue(name, dateString);
+    setFieldTouched(name, true);
+    onChange(dateString);
+  };
+
+  useEffect(() => {
+    if (dateValue) {
+      setFieldTouched(name, false);
+    }
+  }, [dateValue, setFieldTouched, name]);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DesktopDatePicker  
+      <DesktopDatePicker
         sx={{
           "& .MuiInputBase-input": {
             height: "5px",
-            width:"200px"
+            width: "200px"
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
@@ -27,18 +56,25 @@ export default function DatePicker({ label, fieldName, selectedDate, onChange })
             },
           },
           '& .MuiInputBase-input::placeholder': {
-            color: 'black', 
-            fontFamily: 'Arial',  
-            fontSize: '16px', 
+            color: 'black',
+            fontFamily: 'Arial',
+            fontSize: '16px',
           },
-        }} 
-        value={parsedDate ? dayjs(parsedDate) : null}
-        slotProps={{ textField: { placeholder: label} }}
-        onChange={(date) => {
-          const dateString = date ? date.toISOString() : null;
-          onChange(fieldName, dateString);
         }}
+        open={isOpen}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        value={parsedDate ? dayjs(parsedDate) : null}
+        slotProps={{
+          textField: {
+            placeholder: label,
+            error: form.touched[name] && !!form.errors[name],
+            onBlur: () => setFieldTouched(name, true),
+          }
+        }}
+        onChange={handleChange}
       />
     </LocalizationProvider>
   );
-}
+};
+export default DatePicker;

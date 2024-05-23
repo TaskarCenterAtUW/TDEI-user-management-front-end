@@ -37,10 +37,10 @@ const Maintenance = ({ formData, updateFormData }) => {
         <ErrorMessage name="officialMaintainer" component="div" />
       </Form.Group>
       <div className="d-flex align-items-center" style={{ marginTop: '10px', marginRight:"20px" }}>
-        <Form.Group className="col-4" controlId="updatedDate" style={{ marginRight: '20px' }}>
+        {/* <Form.Group className="col-4" controlId="updatedDate" style={{ marginRight: '20px' }}>
           <Form.Label>Updated Date</Form.Label>
           <DatePicker label={"Select Last Updated Date"} />
-        </Form.Group>
+        </Form.Group> */}
         <Form.Group className="col-4" controlId="updateFrequency" style={{ marginRight: '20px' }}>
           <Form.Label>Update Frequency</Form.Label>
           <Form.Control
