@@ -137,17 +137,21 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   // Function to handle next button click
   const handleNext = () => {
     let isValid = false;
-
+    let errorMessage = "";
+  
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
         isValid = validateServiceUpload();
+        if (!isValid) errorMessage = "Please select a service!";
         break;
       case 1:
         isValid = validateDataFile();
+        if (!isValid) errorMessage = "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file";
         break;
       case 2:
-        isValid = validateMetadata();
+        errorMessage = validateMetadata();
+        isValid = errorMessage === null;
         break;
       case 3:
         isValid = validateChangeset();
@@ -155,24 +159,22 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       default:
         isValid = true;
     }
-
     // Proceed to next step if validation passes
     if (isValid) {
-      const newCompleted = completed;
+      const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        console.log(isLastStep())
-        onStepsComplete(selectedData)
+        onStepsComplete(selectedData);
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;
         setCompleted(newCompleted);
-        // To store selected data for the current step
+        // Store selected data for the current step
         updatePreviousSelectedData(activeStep, selectedData[activeStep]);
       }
-    } else { 
-      //to display toast message
-      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? metaDataErrorMsg : "Please select a service! ")
+    } else {
+      // Display toast message
+      setErrorMessage(errorMessage);
       setToast(true);
     }
   };
@@ -226,54 +228,31 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   // Validation function for the third step (Metadata)
   const validateMetadata = () => {
     const metadata = selectedData[activeStep];
-  
-    // Check if metadata is selected
     if (!metadata) {
-      setMetaDataErrorMsg("Please attach metadata file!!");
-      return false;
+      return "Please attach metadata file!!";
     }
-    // If metadata is a file, return true
-    if (metadata instanceof File) {
-      return true;
+  
+    if (!(metadata instanceof File)) {
+      const { datasetDetails } = metadata;
+      if (!datasetDetails) {
+        return "Metadata details are missing!";
+      }
+  
+      const requiredFields = [
+        { field: 'name', message: 'Dataset Name is required' },
+        { field: 'version', message: 'Dataset Version is required' },
+        { field: 'collected_by', message: 'Collected By is required' },
+        { field: 'collection_date', message: 'Collection Date is required' },
+        { field: 'data_source', message: 'Data Source is required' }
+      ];
+      for (const { field, message } of requiredFields) {
+        if (!datasetDetails[field]) {
+          return message;
+        }
+      }
     }
-    // Validate dataset details
-    const { datasetDetails } = metadata;
-    if (!datasetDetails) {
-      setMetaDataErrorMsg("Metadata details are missing!");
-      return false;
-    }
-    const { name, version } = datasetDetails;
-    if (!name) {
-      setMetaDataErrorMsg("Dataset Name is required");
-      return false;
-    }
-    if (!version) {
-      setMetaDataErrorMsg("Dataset Version is required");
-      return false;
-    }
-    return true;
+    return null;
   };  
-  // const validateMetadata = () => {
-  //   if (selectedData[activeStep] != null) {
-  //     if(selectedData[activeStep] instanceof File){
-  //       return true
-  //     }else{
-  //       if(selectedData[activeStep].datasetDetails){
-  //         if(selectedData[activeStep].datasetDetails.name == ""){
-  //           setMetaDataErrorMsg("Dataset Name is required")
-  //         }else if(selectedData[activeStep].datasetDetails.version == "") {
-  //           setMetaDataErrorMsg("Dataset Version is required")
-  //         }
-  //         return false
-  //       }else{
-  //         return true
-  //       }
-  //     }
-  //   }
-  //   setMetaDataErrorMsg("Please attach metadata file!!")
-  //   return false;
-  // };
-
   // Validation function for the fourth step (Changeset)
   const validateChangeset = () => {
     return true;
