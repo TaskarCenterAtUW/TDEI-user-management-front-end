@@ -7,7 +7,7 @@ import FormLabel from '@mui/material/FormLabel';
 
 export default function RowRadioButtonsGroup({radioList, onRadioSelected }) {
   return (
-    <FormControl>
+    <FormControl sx={{width:"100%"}}>
       <RadioGroup
         row
         aria-labelledby="radio-buttons-group-label"

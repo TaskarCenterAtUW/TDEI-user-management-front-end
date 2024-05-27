@@ -43,7 +43,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
       {({ errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched }) => (
         <div className="container">
           <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-md-6 column-style"> {/* Use col-md-6 for half-width columns on medium+ screens */}
+            <div className="col-md-6 column-style">
               <Form.Group controlId="name">
                 <Form.Label>Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
