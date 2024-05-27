@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formik,Field, ErrorMessage, useFormikContext } from "formik";
+import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 import DatePicker from '../../../components/DatePicker/DatePicker';
@@ -15,6 +15,9 @@ const Maintenance = ({ formData, updateFormData }) => {
   const handMaintenanceFundedChange = (value) => {
     setMaintenanceFunded(value);
   };
+  const handleDateSelect = (fieldName, date) => {
+    updateFormData({ [fieldName]: date });
+  };
   const radioList = [
     { value: 'yes', label: 'Yes' },
     { value: 'no', label: 'No' },
@@ -25,59 +28,72 @@ const Maintenance = ({ formData, updateFormData }) => {
   };
   return (
     <Formik initialValues={formData} onSubmit={values => console.log(values)} >
-    {() => (
-    <div style={{ padding: '5px', marginRight: "20px" }}>
-      <Form.Group className="col-6" controlId="officialMaintainer" style={{ marginRight: '40px' }}>
-        <Form.Label>Official Maintainer</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter Official Maintainer"
-          name="officialMaintainer"
-        />
-        <ErrorMessage name="officialMaintainer" component="div" />
-      </Form.Group>
-      <div className="d-flex align-items-center" style={{ marginTop: '10px', marginRight:"20px" }}>
-        {/* <Form.Group className="col-4" controlId="updatedDate" style={{ marginRight: '20px' }}>
-          <Form.Label>Updated Date</Form.Label>
-          <DatePicker label={"Select Last Updated Date"} />
-        </Form.Group> */}
-        <Form.Group className="col-4" controlId="updateFrequency" style={{ marginRight: '20px' }}>
-          <Form.Label>Update Frequency</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Update Frequency"
-            name="updateFrequency"
-          />
-        </Form.Group>
-        <Form.Group className="col-4" controlId="authorizationChain" style={{ marginRight: '20px' }}>
-          <Form.Label>Authorization Chain</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Authorization Chain"
-            name="authorizationChain"
-          />
-        </Form.Group>
-      </div>
-      <div className="d-flex align-items-center" style={{ marginTop: '10px' }}>
-        <Form.Group className="col-6" controlId="fundingDetails" style={{ marginRight: '40px' }}>
-          <Form.Label>Funding Details</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Funding Details"
-            name="fundingDetails"
-          />
-          <ErrorMessage name="maintenanceFunded" component="div" />
-        </Form.Group>
-        <Form.Group className="col-3" controlId="allowCrowdContribution">
-          <Form.Label>Maintenance Funded</Form.Label>
-          <RowRadioButtonsGroup
-            radioList={radioList}
-            onRadioSelected={handMaintenanceFundedChange} />
-        </Form.Group>
-      </div>
-    </div>
-    )}
-</Formik>
+      {({ errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched }) => (
+         <div className="container">
+         <div className="row" style={{ marginTop: '20px' }}>
+           <div className="col-md-6 column-style">
+          <Form.Group controlId="officialMaintainer">
+            <Form.Label>Official Maintainer</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Official Maintainer"
+              name="officialMaintainer"
+            />
+            <ErrorMessage name="officialMaintainer" component="div" />
+          </Form.Group>
+            <Form.Group controlId="lastUpdated" style={{ marginTop: '15px' }}>
+              <Form.Label>Last Updated</Form.Label>
+              <Field
+                name="lastUpdated"
+                component={DatePicker}
+                label="Last Updated Date"
+                dateValue={formData.lastUpdated}
+                onChange={(date) => {
+                  handleDateSelect('lastUpdated', date);
+                  setFieldTouched('lastUpdated', true, false);
+                }}
+                onBlur={handleBlur}
+              />
+              <ErrorMessage name="lastUpdated" component="div" className="invalid-feedback d-block" />
+            </Form.Group>
+            <Form.Group controlId="updateFrequency" style={{ marginTop: '15px' }}>
+              <Form.Label>Update Frequency</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Update Frequency"
+                name="updateFrequency"
+              />
+            </Form.Group>
+            </div>
+            <div className="col-md-6 column-style" >
+            <Form.Group controlId="authorizationChain" style={{ marginTop: '15px' }}>
+              <Form.Label>Authorization Chain</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Authorization Chain"
+                name="authorizationChain"
+              />
+            </Form.Group>
+            <Form.Group  controlId="allowCrowdContribution" style={{ marginTop: '15px' }}>
+              <Form.Label>Maintenance Funded</Form.Label>
+              <RowRadioButtonsGroup
+                radioList={radioList}
+                onRadioSelected={handMaintenanceFundedChange} />
+            </Form.Group>
+            <Form.Group  controlId="fundingDetails" style={{ marginTop: '15px' }}>
+              <Form.Label>Funding Details</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Funding Details"
+                name="fundingDetails"
+              />
+              <ErrorMessage name="maintenanceFunded" component="div" />
+            </Form.Group>
+          </div>
+        </div>
+        </div>
+      )}
+    </Formik>
   );
 };
 
