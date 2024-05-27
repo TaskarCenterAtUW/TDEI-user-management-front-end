@@ -42,7 +42,7 @@ const DatePicker = ({ field, form, label, onChange, dateValue }) => {
         sx={{
           "& .MuiInputBase-input": {
             height: "5px",
-            width: "200px"
+            width: "20vw"
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
