@@ -55,7 +55,26 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             maintenance_funded:'',
             funding_details:''
         },
-        methodology: {}
+        methodology: {
+            point_data_collection_device : '',
+            node_locations_and_attributes_editing_software: '',
+            data_collected_by_people:'',
+            data_collectors:'',
+            data_captured_automatically:'',
+            automated_collection:'',
+            data_collectors_organization:'',
+            data_collector_compensation:'',
+            preprocessing_location:'',
+            preprocessing_by:'',
+            preprocessing_steps:'',
+            data_collection_preprocessing_documentation:'',
+            documentation_uri:'',
+            validation_process_exists:'',
+            validation_process_description:'',
+            validation_conducted_by:'',
+            excluded_data:'',
+            excluded_data_reason:''
+        }
     });
 
     const debouncedUpdateFormData = useCallback(debounce(onUpdateFormData, 300), [onUpdateFormData]);
@@ -106,7 +125,24 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                     funding_details: selectedData.maintenance.funding_details || formData.maintenance.funding_details,
                 },
                 methodology: {
-                    
+                    point_data_collection_device: selectedData.methodology.point_data_collection_device || formData.methodology.point_data_collection_device,
+                    node_locations_and_attributes_editing_software: selectedData.methodology.node_locations_and_attributes_editing_software || formData.methodology.node_locations_and_attributes_editing_software,
+                    data_collected_by_people: selectedData.methodology.data_collected_by_people || formData.methodology.data_collected_by_people,
+                    data_collectors: selectedData.methodology.data_collectors || formData.methodology.data_collectors,
+                    data_captured_automatically: selectedData.methodology.data_captured_automatically || formData.methodology.data_captured_automatically,
+                    automated_collection: selectedData.methodology.automated_collection || formData.methodology.automated_collection,
+                    data_collectors_organization: selectedData.methodology.data_collectors_organization || formData.methodology.data_collectors_organization,
+                    data_collector_compensation: selectedData.methodology.data_collector_compensation || formData.methodology.data_collector_compensation,
+                    preprocessing_location: selectedData.methodology.preprocessing_location || formData.methodology.preprocessing_location,
+                    preprocessing_by: selectedData.methodology.preprocessing_by || formData.methodology.preprocessing_by,
+                    preprocessing_steps: selectedData.methodology.preprocessing_steps || formData.methodology.preprocessing_steps,
+                    data_collection_preprocessing_documentation: selectedData.methodology.data_collection_preprocessing_documentation || formData.methodology.data_collection_preprocessing_documentation,
+                    documentation_uri: selectedData.methodology.documentation_uri || formData.methodology.documentation_uri,
+                    validation_process_exists: selectedData.methodology.validation_process_exists || formData.methodology.validation_process_exists,
+                    validation_process_description: selectedData.methodology.validation_process_description || formData.methodology.validation_process_description,
+                    validation_conducted_by: selectedData.methodology.validation_conducted_by || formData.methodology.validation_conducted_by,
+                    excluded_data: selectedData.methodology.excluded_data || formData.methodology.excluded_data,
+                    excluded_data_reason: selectedData.methodology.excluded_data_reason || formData.methodology.excluded_data_reason,
                 }
             });
         }
