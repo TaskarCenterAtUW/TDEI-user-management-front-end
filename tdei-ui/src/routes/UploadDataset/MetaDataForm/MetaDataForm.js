@@ -37,7 +37,16 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             schema_validation_run_description: '',
             location_inaccuracy_factors: '',
         },
-        datasetSummary: {},
+        datasetSummary: {
+            collection_name:'',
+            department_name:'',
+            city:'',
+            region:'',
+            county:'',
+            key_limitations_of_the_dataset:'',
+            challenges:''
+
+        },
         maintenance: {},
         methodology: {}
     });
@@ -64,15 +73,23 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                     collected_by: selectedData.datasetDetails.collected_by || formData.datasetDetails.collected_by
                 },
                 dataProvenance: {
-                    full_dataset_name: selectedData.dataProvenance.full_dataset_name || formData.datasetDetails.full_dataset_name,
-                    other_published_locations: selectedData.dataProvenance.other_published_locations || formData.datasetDetails.other_published_locations,
-                    dataset_update_frequency_months: selectedData.dataProvenance.dataset_update_frequency_months || formData.datasetDetails.dataset_update_frequency_months,
-                    schema_validation_run: selectedData.dataProvenance.schema_validation_run || formData.datasetDetails.schema_validation_run,
-                    allow_crowd_contributions: selectedData.dataProvenance.allow_crowd_contributions || formData.datasetDetails.allow_crowd_contributions,
-                    schema_validation_run_description: selectedData.dataProvenance.schema_validation_run_description || formData.datasetDetails.schema_validation_run_description,
-                    location_inaccuracy_factors: selectedData.dataProvenance.location_inaccuracy_factors || formData.datasetDetails.location_inaccuracy_factors
+                    full_dataset_name: selectedData.dataProvenance.full_dataset_name || formData.dataProvenance.full_dataset_name,
+                    other_published_locations: selectedData.dataProvenance.other_published_locations || formData.dataProvenance.other_published_locations,
+                    dataset_update_frequency_months: selectedData.dataProvenance.dataset_update_frequency_months || formData.dataProvenance.dataset_update_frequency_months,
+                    schema_validation_run: selectedData.dataProvenance.schema_validation_run || formData.dataProvenance.schema_validation_run,
+                    allow_crowd_contributions: selectedData.dataProvenance.allow_crowd_contributions || formData.dataProvenance.allow_crowd_contributions,
+                    schema_validation_run_description: selectedData.dataProvenance.schema_validation_run_description || formData.dataProvenance.schema_validation_run_description,
+                    location_inaccuracy_factors: selectedData.dataProvenance.location_inaccuracy_factors || formData.dataProvenance.location_inaccuracy_factors
                 },
-                datasetSummary: {},
+                datasetSummary: {
+                    collection_name: selectedData.datasetSummary.collection_name || formData.datasetSummary.collection_name,
+                    department_name: selectedData.datasetSummary.department_name || formData.datasetSummary.department_name,
+                    city:selectedData.datasetSummary.city || formData.datasetSummary.city,
+                    region:selectedData.datasetSummary.region || formData.datasetSummary.region,
+                    county:selectedData.datasetSummary.county || formData.datasetSummary.county,
+                    key_limitations_of_the_dataset:selectedData.datasetSummary.key_limitations_of_the_dataset || formData.datasetSummary.key_limitations_of_the_dataset,
+                    challenges:selectedData.datasetSummary.challenges || formData.datasetSummary.challenges,
+                },
                 maintenance: {},
                 methodology: {}
             });
