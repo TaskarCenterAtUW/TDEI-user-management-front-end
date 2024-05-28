@@ -20,8 +20,8 @@ const Maintenance = ({ formData, updateFormData }) => {
     updateFormData({ [fieldName]: date });
   };
   const radioList = [
-    { value: 'yes', label: 'Yes' },
-    { value: 'no', label: 'No' },
+    { value: 'true', label: 'Yes' },
+    { value: 'false', label: 'No' },
   ];
   const handleChange = (e) => {
     const { name, value } = e.target;

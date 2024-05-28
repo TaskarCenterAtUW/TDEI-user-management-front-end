@@ -30,8 +30,8 @@ const Methodology = ({ formData, updateFormData }) => {
     setValidProcessExists(value);
   };
   const radioList = [
-    { value: 'yes', label: 'Yes' },
-    { value: 'no', label: 'No' },
+    { value: 'true', label: 'Yes' },
+    { value: 'false', label: 'No' },
   ];
   return (
     <Formik initialValues={formData} onSubmit={values => console.log(values)} >

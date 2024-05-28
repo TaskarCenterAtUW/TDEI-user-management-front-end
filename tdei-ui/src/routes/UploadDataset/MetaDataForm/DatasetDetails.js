@@ -91,7 +91,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 />
                 <Form.Control.Feedback type="invalid">{errors.version}</Form.Control.Feedback>
               </Form.Group>
-              {/* <Form.Group controlId="derived_from_dataset_id" style={{ marginTop: '10px' }}>
+              <Form.Group controlId="derived_from_dataset_id" style={{ marginTop: '10px' }}>
                 <Form.Label>Derived from Dataset Id<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
                   type="text"
@@ -105,7 +105,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   value={formData.derived_from_dataset_id}
                 />
                 <Form.Control.Feedback type="invalid">{errors.derived_from_dataset_id}</Form.Control.Feedback>
-              </Form.Group> */}
+              </Form.Group>
               <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
                 <Form.Label>Schema Version</Form.Label>
                 <Form.Control
@@ -152,7 +152,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 />
                 <ErrorMessage name="collection_date" component="div" className="invalid-feedback d-block" />
               </Form.Group>
-              {/* <Form.Group controlId="valid_from" style={{ marginTop: '15px' }}>
+              <Form.Group controlId="valid_from" style={{ marginTop: '15px' }}>
                 <Form.Label>Valid From</Form.Label>
                 <Field
                   name="valid_from"
@@ -181,7 +181,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   onBlur={handleBlur}
                 />
                 <ErrorMessage name="valid_to" component="div" className="invalid-feedback d-block" />
-              </Form.Group> */}
+              </Form.Group>
               <Form.Group controlId="collection_method" style={{ marginTop: '10px' }}>
                 <Form.Label>Collected Method</Form.Label>
                 <Field 
@@ -220,7 +220,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               />
             </div>
           </div>
-          {/* <div id="custom_metadata" className="section-style">
+          <div id="custom_metadata" className="section-style">
             <Form.Label>Custom Metadata</Form.Label>
             <div className="jsonContent">
               <Form.Control
@@ -235,7 +235,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 rows={5}
               />
             </div>
-          </div> */}
+          </div>
         </div>
         </div>
       )}

@@ -3,15 +3,15 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 
-export default function RowRadioButtonsGroup({radioList, onRadioSelected }) {
+export default function RowRadioButtonsGroup({ radioList, selectedValue, onRadioSelected }) {
   return (
-    <FormControl sx={{width:"100%"}}>
+    <FormControl sx={{ width: "100%" }}>
       <RadioGroup
         row
         aria-labelledby="radio-buttons-group-label"
         name="radio-buttons-group"
+        value={selectedValue || ''}
         onChange={(event) => onRadioSelected(event.target.value)}
       >
         {radioList.map((radio, index) => (
