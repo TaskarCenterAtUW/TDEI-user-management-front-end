@@ -6,8 +6,6 @@ import DatePicker from '../../../components/DatePicker/DatePicker';
 import ChipInput from '../../../components/ChipInput/ChipInput';
 
 const Maintenance = ({ formData, updateFormData }) => {
-  const [selectedSchemaValidationRun, setSchemaValidationRun] = useState('');
-  const [maintenanceFunded, setMaintenanceFunded] = useState('');
 
  // Event handler for radio button selection
  const handleRadioSelect = (fieldName, selectedValue) => {

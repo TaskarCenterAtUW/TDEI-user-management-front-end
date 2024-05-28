@@ -233,8 +233,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     }
   
     if (!(metadata instanceof File)) {
-      const { datasetDetails } = metadata;
-      if (!datasetDetails) {
+      const { dataset_detail } = metadata;
+      if (!dataset_detail) {
         return "Metadata details are missing!";
       }
   
@@ -246,7 +246,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
         { field: 'data_source', message: 'Data Source is required' }
       ];
       for (const { field, message } of requiredFields) {
-        if (!datasetDetails[field]) {
+        if (!dataset_detail[field]) {
           return message;
         }
       }

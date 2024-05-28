@@ -11,9 +11,9 @@ import Methodology from "./Methodology";
 import { GEOJSON } from "../../../utils";
 
 const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
-    const [key, setKey] = useState('datasetDetails');
+    const [key, setKey] = useState('dataset_detail');
     const [formData, setFormData] = useState({
-        datasetDetails: {
+        dataset_detail: {
             name: '',
             version: '',
             derived_from_dataset_id: '',
@@ -28,7 +28,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             schema_version: '',
             collected_by:''
         },
-        dataProvenance: {
+        data_provenance: {
             full_dataset_name: '',
             other_published_locations: '',
             dataset_update_frequency_months: '',
@@ -37,7 +37,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             schema_validation_run_description: '',
             location_inaccuracy_factors: '',
         },
-        datasetSummary: {
+        dataset_summary: {
             collection_name:'',
             department_name:'',
             city:'',
@@ -83,38 +83,38 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
         if (selectedData && !(selectedData instanceof File)) {
             // Initialize formData with selectedData details
             setFormData({
-                datasetDetails: {
-                    name: selectedData.datasetDetails.name || formData.datasetDetails.name,
-                    version: selectedData.datasetDetails.version || formData.datasetDetails.version,
-                    derived_from_dataset_id: selectedData.datasetDetails.derived_from_dataset_id || formData.datasetDetails.derived_from_dataset_id,
-                    collection_date: selectedData.datasetDetails.collection_date || formData.datasetDetails.collection_date,
-                    valid_from: selectedData.datasetDetails.valid_from || formData.datasetDetails.valid_from,
-                    valid_to: selectedData.datasetDetails.valid_to || formData.datasetDetails.valid_to,
-                    custom_metadata: selectedData.datasetDetails.custom_metadata || formData.datasetDetails.custom_metadata,
-                    description: selectedData.datasetDetails.description || formData.datasetDetails.description,
-                    dataset_area: selectedData.datasetDetails.dataset_area || formData.datasetDetails.dataset_area,
-                    collection_method: selectedData.datasetDetails.collection_method || formData.datasetDetails.collection_method,
-                    data_source: selectedData.datasetDetails.data_source || formData.datasetDetails.data_source,
-                    schema_version: selectedData.datasetDetails.schema_version || formData.datasetDetails.schema_version,
-                    collected_by: selectedData.datasetDetails.collected_by || formData.datasetDetails.collected_by
+                dataset_detail: {
+                    name: selectedData.dataset_detail.name || formData.dataset_detail.name,
+                    version: selectedData.dataset_detail.version || formData.dataset_detail.version,
+                    derived_from_dataset_id: selectedData.dataset_detail.derived_from_dataset_id || formData.dataset_detail.derived_from_dataset_id,
+                    collection_date: selectedData.dataset_detail.collection_date || formData.dataset_detail.collection_date,
+                    valid_from: selectedData.dataset_detail.valid_from || formData.dataset_detail.valid_from,
+                    valid_to: selectedData.dataset_detail.valid_to || formData.dataset_detail.valid_to,
+                    custom_metadata: selectedData.dataset_detail.custom_metadata || formData.dataset_detail.custom_metadata,
+                    description: selectedData.dataset_detail.description || formData.dataset_detail.description,
+                    dataset_area: selectedData.dataset_detail.dataset_area || formData.dataset_detail.dataset_area,
+                    collection_method: selectedData.dataset_detail.collection_method || formData.dataset_detail.collection_method,
+                    data_source: selectedData.dataset_detail.data_source || formData.dataset_detail.data_source,
+                    schema_version: selectedData.dataset_detail.schema_version || formData.dataset_detail.schema_version,
+                    collected_by: selectedData.dataset_detail.collected_by || formData.dataset_detail.collected_by
                 },
-                dataProvenance: {
-                    full_dataset_name: selectedData.dataProvenance.full_dataset_name || formData.dataProvenance.full_dataset_name,
-                    other_published_locations: selectedData.dataProvenance.other_published_locations || formData.dataProvenance.other_published_locations,
-                    dataset_update_frequency_months: selectedData.dataProvenance.dataset_update_frequency_months || formData.dataProvenance.dataset_update_frequency_months,
-                    schema_validation_run: selectedData.dataProvenance.schema_validation_run || formData.dataProvenance.schema_validation_run,
-                    allow_crowd_contributions: selectedData.dataProvenance.allow_crowd_contributions || formData.dataProvenance.allow_crowd_contributions,
-                    schema_validation_run_description: selectedData.dataProvenance.schema_validation_run_description || formData.dataProvenance.schema_validation_run_description,
-                    location_inaccuracy_factors: selectedData.dataProvenance.location_inaccuracy_factors || formData.dataProvenance.location_inaccuracy_factors
+                data_provenance: {
+                    full_dataset_name: selectedData.data_provenance.full_dataset_name || formData.data_provenance.full_dataset_name,
+                    other_published_locations: selectedData.data_provenance.other_published_locations || formData.data_provenance.other_published_locations,
+                    dataset_update_frequency_months: selectedData.data_provenance.dataset_update_frequency_months || formData.data_provenance.dataset_update_frequency_months,
+                    schema_validation_run: selectedData.data_provenance.schema_validation_run || formData.data_provenance.schema_validation_run,
+                    allow_crowd_contributions: selectedData.data_provenance.allow_crowd_contributions || formData.data_provenance.allow_crowd_contributions,
+                    schema_validation_run_description: selectedData.data_provenance.schema_validation_run_description || formData.data_provenance.schema_validation_run_description,
+                    location_inaccuracy_factors: selectedData.data_provenance.location_inaccuracy_factors || formData.data_provenance.location_inaccuracy_factors
                 },
-                datasetSummary: {
-                    collection_name: selectedData.datasetSummary.collection_name || formData.datasetSummary.collection_name,
-                    department_name: selectedData.datasetSummary.department_name || formData.datasetSummary.department_name,
-                    city:selectedData.datasetSummary.city || formData.datasetSummary.city,
-                    region:selectedData.datasetSummary.region || formData.datasetSummary.region,
-                    county:selectedData.datasetSummary.county || formData.datasetSummary.county,
-                    key_limitations_of_the_dataset:selectedData.datasetSummary.key_limitations_of_the_dataset || formData.datasetSummary.key_limitations_of_the_dataset,
-                    challenges:selectedData.datasetSummary.challenges || formData.datasetSummary.challenges,
+                dataset_summary: {
+                    collection_name: selectedData.dataset_summary.collection_name || formData.dataset_summary.collection_name,
+                    department_name: selectedData.dataset_summary.department_name || formData.dataset_summary.department_name,
+                    city:selectedData.dataset_summary.city || formData.dataset_summary.city,
+                    region:selectedData.dataset_summary.region || formData.dataset_summary.region,
+                    county:selectedData.dataset_summary.county || formData.dataset_summary.county,
+                    key_limitations_of_the_dataset:selectedData.dataset_summary.key_limitations_of_the_dataset || formData.dataset_summary.key_limitations_of_the_dataset,
+                    challenges:selectedData.dataset_summary.challenges || formData.dataset_summary.challenges,
                 },
                 maintenance: {
                     official_maintainer: selectedData.maintenance.official_maintainer || formData.maintenance.official_maintainer,
@@ -172,14 +172,14 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                         }}
                         className="mb-2"
                     >
-                        <Tab eventKey="datasetDetails" title={<span className={style.boldText}> Dataset Details</span>}>
-                        <DatasetDetails formData={formData.datasetDetails} updateFormData={(values) => handleUpdateFormData('datasetDetails', values)} />
+                        <Tab eventKey="dataset_detail" title={<span className={style.boldText}> Dataset Details</span>}>
+                        <DatasetDetails formData={formData.dataset_detail} updateFormData={(values) => handleUpdateFormData('dataset_detail', values)} />
                         </Tab>
-                        <Tab eventKey="dataProvenance" title={<span className={style.boldText}> Data Provenance</span>}>
-                        <DatasetProvenance formData={formData.dataProvenance} updateFormData={(values) => handleUpdateFormData('dataProvenance', values)} />
+                        <Tab eventKey="data_provenance" title={<span className={style.boldText}> Data Provenance</span>}>
+                        <DatasetProvenance formData={formData.data_provenance} updateFormData={(values) => handleUpdateFormData('data_provenance', values)} />
                         </Tab>
-                        <Tab eventKey="datasetSummary" title={<span className={style.boldText}> Dataset Summary</span>}>
-                        <DatasetSummary formData={formData.datasetSummary} updateFormData={(values) => handleUpdateFormData('datasetSummary', values)} />
+                        <Tab eventKey="dataset_summary" title={<span className={style.boldText}> Dataset Summary</span>}>
+                        <DatasetSummary formData={formData.dataset_summary} updateFormData={(values) => handleUpdateFormData('dataset_summary', values)} />
                         </Tab>
                         <Tab eventKey="maintenance" title={<span className={style.boldText}> Maintenance</span>}>
                         <Maintenance formData={formData.maintenance} updateFormData={(values) => handleUpdateFormData('maintenance', values)} />

@@ -209,6 +209,19 @@ const handleFieldChange = (e) => {
                   }}
                   />
               </Form.Group>
+              <Form.Group controlId="validation_process_description" style={{ marginTop: '20px' }}>
+                <Form.Label>Validation Process Description</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Details"
+                  name="validation_process_description"
+                  value={formData.validation_process_description}
+                  onChange={(e) => {
+                    handleFieldChange(e);
+                    handleChange(e);
+                  }}
+                />
+              </Form.Group>
               <Form.Group controlId="validation_conducted_by" style={{ marginTop: '20px' }}>
                 <Form.Label>Validation Conducted By</Form.Label>
                 <Form.Control
