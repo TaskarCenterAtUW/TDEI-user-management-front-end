@@ -3,6 +3,7 @@ import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 import DatePicker from '../../../components/DatePicker/DatePicker';
+import ChipInput from '../../../components/ChipInput/ChipInput';
 
 const Maintenance = ({ formData, updateFormData }) => {
   // const { values, setFieldValue } = useFormikContext();
@@ -34,11 +35,7 @@ const Maintenance = ({ formData, updateFormData }) => {
            <div className="col-md-6 column-style">
           <Form.Group controlId="officialMaintainer">
             <Form.Label>Official Maintainer</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Official Maintainer"
-              name="officialMaintainer"
-            />
+              <ChipInput />
             <ErrorMessage name="officialMaintainer" component="div" />
           </Form.Group>
             <Form.Group controlId="lastUpdated" style={{ marginTop: '15px' }}>
