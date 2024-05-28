@@ -47,7 +47,14 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             challenges:''
 
         },
-        maintenance: {},
+        maintenance: {
+            official_maintainer:[],
+            last_updated:'',
+            update_frequency:'',
+            authorization_chain:'',
+            maintenance_funded:'',
+            funding_details:''
+        },
         methodology: {}
     });
 
@@ -90,8 +97,17 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                     key_limitations_of_the_dataset:selectedData.datasetSummary.key_limitations_of_the_dataset || formData.datasetSummary.key_limitations_of_the_dataset,
                     challenges:selectedData.datasetSummary.challenges || formData.datasetSummary.challenges,
                 },
-                maintenance: {},
-                methodology: {}
+                maintenance: {
+                    official_maintainer: selectedData.maintenance.official_maintainer || formData.maintenance.official_maintainer,
+                    last_updated: selectedData.maintenance.last_updated || formData.maintenance.last_updated,
+                    update_frequency: selectedData.maintenance.update_frequency || formData.maintenance.update_frequency,
+                    authorization_chain: selectedData.maintenance.authorization_chain || formData.maintenance.authorization_chain,
+                    maintenance_funded: selectedData.maintenance.maintenance_funded || formData.maintenance.maintenance_funded,
+                    funding_details: selectedData.maintenance.funding_details || formData.maintenance.funding_details,
+                },
+                methodology: {
+                    
+                }
             });
         }
     }, [selectedData]);
