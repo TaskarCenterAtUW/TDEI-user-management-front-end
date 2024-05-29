@@ -11,7 +11,7 @@ export default function RowRadioButtonsGroup({ radioList, selectedValue, onRadio
         row
         aria-labelledby="radio-buttons-group-label"
         name="radio-buttons-group"
-        value={selectedValue || ''}
+        value={selectedValue || null}
         onChange={(event) => onRadioSelected(event.target.value)}
       >
         {radioList.map((radio, index) => (

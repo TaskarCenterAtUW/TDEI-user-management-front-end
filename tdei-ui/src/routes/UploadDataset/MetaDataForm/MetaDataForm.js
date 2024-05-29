@@ -58,7 +58,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
         methodology: {
             point_data_collection_device : '',
             node_locations_and_attributes_editing_software: '',
-            data_collected_by_people:'',
+            data_collected_by_people:null,
             data_collectors:'',
             data_captured_automatically:'',
             automated_collection:'',

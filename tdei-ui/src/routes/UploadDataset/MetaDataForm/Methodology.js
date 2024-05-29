@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import { Modal, Button, Form } from "react-bootstrap";
-import Container from "../../../components/Container/Container";
-import Select from 'react-select';
-import style from "./MetaDataForm.module.css";
-import DatePicker from "../../../components/DatePicker/DatePicker";
-import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
-import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
-import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 
 const Methodology = ({ formData, updateFormData }) => {
@@ -22,8 +15,8 @@ const handleFieldChange = (e) => {
 };
 
   const radioList = [
-    { value: 'true', label: 'Yes' },
-    { value: 'false', label: 'No' },
+    { value: true, label: 'Yes' },
+    { value: false, label: 'No' },
   ];
   return (
     <Formik initialValues={formData} onSubmit={values => console.log(values)} >

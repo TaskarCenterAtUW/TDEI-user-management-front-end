@@ -17,8 +17,8 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
   };
 
   const radioList = [
-    { value: 'true', label: 'Yes' },
-    { value: 'false', label: 'No' },
+    { value: true, label: 'Yes' },
+    { value: false, label: 'No' },
   ];
 
   return (

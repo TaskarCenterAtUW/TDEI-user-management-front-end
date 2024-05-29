@@ -4,6 +4,16 @@ export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
+const flattenMetadata = (metadata) => {
+  return {
+      ...metadata.dataset_detail,
+      ...metadata.data_provenance,
+      ...metadata.dataset_summary,
+      ...metadata.maintenance,
+      ...metadata.methodology
+  };
+};
+
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);
   return res.data;
@@ -361,4 +371,49 @@ export async function deleteDataset(tdei_dataset_id){
   const res = await axios.delete(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
   console.log('Response:', res.data);
   return res.data;
+}
+
+export async function editMetadata(data) {
+  const formData = new FormData();
+  if (data.metadata instanceof File) {
+    formData.append('file', data.metadata[1]);
+  } else {
+    let metadata = data.metadata;
+    // Parse datasetArea and customMetadata fields
+    try {
+      metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+    } catch (e) {
+      console.error("Failed to parse datasetArea: ", e);
+    }
+    try {
+      metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+    }
+    // Helper function to recursively replace empty strings with null
+    function replaceEmptyStringsWithNull(obj) {
+      for (const key in obj) {
+        if (obj[key] === "") {
+          obj[key] = null;
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+          replaceEmptyStringsWithNull(obj[key]);
+        }
+      }
+    }
+    // Replace empty strings with null
+    replaceEmptyStringsWithNull(metadata);
+    // Convert the metadata object to a JSON string
+    const jsonString = JSON.stringify(metadata, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const file = new File([blob], 'metadata.json', { type: 'application/json' });
+    formData.append('file', file);
+  }
+  // Get the endpoint based on the service_type
+  const response = await axios.put(`${osmUrl}/metadata/${data.tdei_dataset_id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log('Response:', response);
+  return response.data;
 }
