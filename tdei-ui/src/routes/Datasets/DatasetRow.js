@@ -52,7 +52,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                         </div>
                         <div className={style.infoBlock}>
                             <div className="d-flex align-items-center mb-2">
-                                <span className={style.datasetTitle} title={data_provenance.full_dataset_name} tabIndex={0}>{data_provenance.full_dataset_name} </span>
+                                <span className={style.datasetTitle} title={metadata.dataset_detail.name} tabIndex={0}>{metadata.dataset_detail.name} </span>
                             </div>
                             <div className={style.datasetSecondaryInfoBlock}>
                                 <span className=""><b>Uploaded at : </b> {updatedTime(uploaded_timestamp)}</span>
