@@ -11,13 +11,13 @@ export default function RowRadioButtonsGroup({ radioList, selectedValue, onRadio
         row
         aria-labelledby="radio-buttons-group-label"
         name="radio-buttons-group"
-        value={selectedValue || null}
-        onChange={(event) => onRadioSelected(event.target.value)}
+        value={String(selectedValue)}
+        onChange={(event) => onRadioSelected(event.target.value === 'true')}
       >
         {radioList.map((radio, index) => (
           <FormControlLabel
             key={index}
-            value={radio.value}
+            value={String(radio.value)}
             control={<Radio />}
             label={radio.label}
             disabled={radio.disabled}

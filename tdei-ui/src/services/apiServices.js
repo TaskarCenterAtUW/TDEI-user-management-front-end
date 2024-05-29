@@ -268,16 +268,16 @@ export async function postUploadDataset(data) {
   if (data[2] instanceof File) {
     formData.append('metadata', data[2]);
   } else {
-    const metadata = { ...data[2].datasetDetails };
+    const metadata = { ...data[2] };
     // Parse datasetArea and customMetadata fields
     try {
-      metadata.dataset_area = JSON.parse(metadata.dataset_area);
+      metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
     } catch (e) {
       console.error("Failed to parse datasetArea: ", e);
       metadata.dataset_area = {};
     }
     try {
-      metadata.custom_metadata = JSON.parse(metadata.custom_metadata);
+      metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
       metadata.custom_metadata = {};

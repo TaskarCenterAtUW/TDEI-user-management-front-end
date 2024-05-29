@@ -13,67 +13,66 @@ import { GEOJSON } from "../../../utils";
 const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
     const [key, setKey] = useState('dataset_detail');
     const [formData, setFormData] = useState({
-        dataset_detail: {
-            name: '',
-            version: '',
-            derived_from_dataset_id: '',
-            collection_date: '',
-            valid_from: '',
-            valid_to: '',
-            custom_metadata: '',
-            description: '',
-            dataset_area: '',
-            collection_method: '',
-            data_source: '',
-            schema_version: '',
-            collected_by:''
+        "dataset_detail": {
+            "name": null,
+            "version": null,
+            "derived_from_dataset_id": null,
+            "collection_date": null,
+            "valid_from": null,
+            "valid_to": null,
+            "custom_metadata": null,
+            "description": null,
+            "dataset_area": null,
+            "collection_method": null,
+            "data_source": null,
+            "schema_version": null,
+            "collected_by": null
         },
-        data_provenance: {
-            full_dataset_name: '',
-            other_published_locations: '',
-            dataset_update_frequency_months: '',
-            schema_validation_run: '',
-            allow_crowd_contributions: '',
-            schema_validation_run_description: '',
-            location_inaccuracy_factors: '',
+        "data_provenance": {
+            "full_dataset_name": null,
+            "other_published_locations": null,
+            "dataset_update_frequency_months": null,
+            "schema_validation_run": null,
+            "allow_crowd_contributions": null,
+            "schema_validation_run_description": null,
+            "location_inaccuracy_factors": null
         },
-        dataset_summary: {
-            collection_name:'',
-            department_name:'',
-            city:'',
-            region:'',
-            county:'',
-            key_limitations_of_the_dataset:'',
-            challenges:''
-
+        "dataset_summary": {
+            "collection_name": null,
+            "department_name": null,
+            "city": null,
+            "region": null,
+            "county": null,
+            "key_limitations_of_the_dataset": null,
+            "challenges": null
         },
-        maintenance: {
-            official_maintainer:[],
-            last_updated:'',
-            update_frequency:'',
-            authorization_chain:'',
-            maintenance_funded:'',
-            funding_details:''
+        "maintenance": {
+            "official_maintainer": [],
+            "last_updated": null,
+            "update_frequency": null,
+            "authorization_chain": null,
+            "maintenance_funded": null,
+            "funding_details": null
         },
-        methodology: {
-            point_data_collection_device : '',
-            node_locations_and_attributes_editing_software: '',
-            data_collected_by_people:null,
-            data_collectors:'',
-            data_captured_automatically:'',
-            automated_collection:'',
-            data_collectors_organization:'',
-            data_collector_compensation:'',
-            preprocessing_location:'',
-            preprocessing_by:'',
-            preprocessing_steps:'',
-            data_collection_preprocessing_documentation:'',
-            documentation_uri:'',
-            validation_process_exists:'',
-            validation_process_description:'',
-            validation_conducted_by:'',
-            excluded_data:'',
-            excluded_data_reason:''
+        "methodology": {
+            "point_data_collection_device": null,
+            "node_locations_and_attributes_editing_software": null,
+            "data_collected_by_people": null,
+            "data_collectors": null,
+            "data_captured_automatically": null,
+            "automated_collection": null,
+            "data_collectors_organization": null,
+            "data_collector_compensation": null,
+            "preprocessing_location": null,
+            "preprocessing_by": null,
+            "preprocessing_steps": null,
+            "data_collection_preprocessing_documentation": null,
+            "documentation_uri": null,
+            "validation_process_exists": null,
+            "validation_process_description": null,
+            "validation_conducted_by": null,
+            "excluded_data": null,
+            "excluded_data_reason": null
         }
     });
 

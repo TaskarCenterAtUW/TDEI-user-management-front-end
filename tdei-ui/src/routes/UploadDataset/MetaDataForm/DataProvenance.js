@@ -7,8 +7,9 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
 
   // Event handler for input field change
   const handleFieldChange = (e) => {
-    const { name, value } = e.target;
-    updateFormData({ [name]: value });
+    const { name, value, type } = e.target;
+    const newValue = type === 'number' ? parseInt(value, 10) : value;
+    updateFormData({ [name]: newValue });
   };
 
   // Event handler for radio button selection
@@ -62,7 +63,7 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
               <Form.Group controlId="dataset_update_frequency_months">
                 <Form.Label>Dataset Update Frequency Months</Form.Label>
                 <Form.Control
-                  type="text"
+                  type="number"
                   placeholder="Enter Update Frequency"
                   name="dataset_update_frequency_months"
                   value={formData.dataset_update_frequency_months}
