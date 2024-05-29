@@ -145,13 +145,23 @@ export default function EditMetadata() {
 
     useEffect(() => {
         if (dataset) {
-            setSelectedData(dataset.metadata);
+            const parsedDataset = {
+                ...dataset.metadata,
+                dataset_detail: {
+                    ...dataset.metadata.dataset_detail,
+                    custom_metadata:  dataset.metadata.dataset_detail.custom_metadata ? JSON.stringify(dataset.metadata.dataset_detail.custom_metadata, null, 2) : null,
+                    dataset_area: dataset.metadata.dataset_detail.dataset_area ? JSON.stringify(dataset.metadata.dataset_detail.dataset_area, null, 2) : null
+                }
+            };
+            setSelectedData(parsedDataset);
         }
     }, [dataset]);
+
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
     const [loading, setLoading] = useState(false); // Track loading state
     const [showToast, setToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [error, setError] = useState("");
 
     const onSuccess = (data) => {
         setLoading(false);
@@ -163,7 +173,7 @@ export default function EditMetadata() {
         setLoading(false);
         console.error("error message", err);
         setToast(true);
-        setErrorMessage(err.data)
+        setError(err.data)
     };
     const { isLoading, mutate } = useEditMetadata({ onSuccess, onError });
     const handleClose = () => {
@@ -277,7 +287,7 @@ export default function EditMetadata() {
                         <CustomModal
                             show={showToast}
                             message="Edit metadata Failed!"
-                            content={errorMessage}
+                            content={error}
                             handler={() => {
                                 setShowSuccessModal(false);
                             }}
