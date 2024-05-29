@@ -190,7 +190,7 @@ export default function EditMetadata() {
         if (!metadata) {
             return "Please attach metadata file!";
         }
-
+        if (!(metadata instanceof File)) {
         const { dataset_detail } = metadata;
         if (!dataset_detail) {
             return "Metadata details are missing!";
@@ -208,6 +208,7 @@ export default function EditMetadata() {
                 return message;
             }
         }
+    }
         return null;
     };
 

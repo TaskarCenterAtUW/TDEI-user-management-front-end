@@ -376,7 +376,7 @@ export async function deleteDataset(tdei_dataset_id){
 export async function editMetadata(data) {
   const formData = new FormData();
   if (data.metadata instanceof File) {
-    formData.append('file', data.metadata[1]);
+    formData.append('file', data.metadata);
   } else {
     let metadata = data.metadata;
     // Parse datasetArea and customMetadata fields
