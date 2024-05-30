@@ -31,9 +31,23 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
 
     const updatedTime = (time) => {
         const dateTime = new Date(time);
-        return dateTime.toLocaleString();
+        
+        const optionsDate = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        const optionsTime = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        const formattedDate = dateTime.toLocaleDateString('en-US', optionsDate);
+        const formattedTime = dateTime.toLocaleTimeString('en-US', optionsTime);
+        
+        return `${formattedDate}, ${formattedTime}`;
     };
-
     const handleDropdownSelect = (eventKey) => {
         if (eventKey === 'openInWorkspace') {
             window.open(`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`, '_blank')?.focus();

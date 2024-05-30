@@ -152,9 +152,12 @@ const ReleasedDatasets = () => {
               </div>
             ) : null}
              {sortedData.map((list, index) => (
-              <DatasetRow 
-              dataset={list}
-              />
+               <DatasetRow 
+               key={index}
+               dataset={list}
+               onAction={onAction}
+               isReleasedList={true}
+               />
             ))}
           </React.Fragment>
         ))}
