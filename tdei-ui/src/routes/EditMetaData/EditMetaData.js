@@ -16,6 +16,7 @@ import Metadata from '../UploadDataset/Metadata';
 import useEditMetadata from '../../hooks/datasets/useEditMetadata';
 import { EDIT_META_DATA } from '../../utils';
 import CustomModal from '../../components/SuccessModal/CustomModal';
+import { GET_DATASETS } from '../../utils';
 
 const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
     position: 'relative',
@@ -167,7 +168,7 @@ export default function EditMetadata() {
     const onSuccess = (data) => {
         setLoading(false);
         console.log("sucessfully edited", data);
-        queryClient.invalidateQueries({ queryKey: [EDIT_META_DATA] });
+        queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
         setShowSuccessModal(true);
     };
     const onError = (err) => {
