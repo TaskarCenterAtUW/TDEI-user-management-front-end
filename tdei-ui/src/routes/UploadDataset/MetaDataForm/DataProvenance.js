@@ -45,7 +45,7 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
           <div className="row" style={{ marginTop: '20px' }}>
             <div className="col-md-6 column-style">
               <Form.Group controlId="full_dataset_name">
-                <Form.Label>Full Dataset Name</Form.Label>
+                <Form.Label>Full Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter Full Dataset Name"

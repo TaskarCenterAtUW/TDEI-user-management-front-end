@@ -243,7 +243,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
         { field: 'version', message: 'Dataset Version is required' },
         { field: 'collected_by', message: 'Collected By is required' },
         { field: 'collection_date', message: 'Collection Date is required' },
-        { field: 'data_source', message: 'Data Source is required' }
+        { field: 'data_source', message: 'Data Source is required' },
+        { field: 'schema_version', message: 'Schema Version is required' }
       ];
       for (const { field, message } of requiredFields) {
         if (!dataset_detail[field]) {

@@ -107,17 +107,20 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 <Form.Control.Feedback type="invalid">{errors.derived_from_dataset_id}</Form.Control.Feedback>
               </Form.Group>
               <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
-                <Form.Label>Schema Version</Form.Label>
+                <Form.Label>Schema Version<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter Schema Version"
                   name="schema_version"
+                  isInvalid={errors.schema_version && touched.schema_version}
+                  onBlur={handleBlur}
                   value={formData.schema_version}
                   onChange={(e) => {
                     handleFieldChange(e);
                     handleChange(e);
                   }}
                 />
+                <Form.Control.Feedback type="invalid">{errors.schema_version}</Form.Control.Feedback>
               </Form.Group>
             </div>
             <div className="col-md-6 column-style"> {/* Use col-md-6 for half-width columns on medium+ screens */}

@@ -47,7 +47,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
             "challenges": ""
         },
         "maintenance": {
-            "official_maintainer": [],
+            "official_maintainer": null,
             "last_updated": "",
             "update_frequency": "",
             "authorization_chain": "",

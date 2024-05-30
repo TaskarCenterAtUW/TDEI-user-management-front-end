@@ -114,7 +114,7 @@ export default function EditMetadata() {
             "challenges": ""
         },
         "maintenance": {
-            "official_maintainer": [],
+            "official_maintainer": null,
             "last_updated": "",
             "update_frequency": "",
             "authorization_chain": "",
@@ -213,7 +213,8 @@ export default function EditMetadata() {
                 { field: 'version', message: 'Dataset Version is required' },
                 { field: 'collected_by', message: 'Collected By is required' },
                 { field: 'collection_date', message: 'Collection Date is required' },
-                { field: 'data_source', message: 'Data Source is required' }
+                { field: 'data_source', message: 'Data Source is required' },
+                { field: 'schema_version', message: 'Schema Version is required' }
             ];
             for (const { field, message } of requiredFields) {
                 if (!dataset_detail[field]) {
@@ -230,7 +231,7 @@ export default function EditMetadata() {
     return (
         <div className={style.layout}>
             <Container>
-                <div className={style.uploadWidgetTitle}>Update Metadata -</div>
+                <div className={style.uploadWidgetTitle}>Update Metadata - {selectedData.dataset_detail != null ? selectedData.dataset_detail.name :"" }</div>
                 <Box className={style.uploadDatasetStepsLayout}>
                     <Grid container spacing={0} columns={15}>
                         <Grid item xs={4}>
