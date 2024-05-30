@@ -293,7 +293,7 @@ export default function EditMetadata() {
                             message="Edit metadata Failed!"
                             content={error}
                             handler={() => {
-                                setShowSuccessModal(false);
+                                setShowErrorModal(false);
                             }}
                             btnlabel="Dismiss"
                             modaltype="error"

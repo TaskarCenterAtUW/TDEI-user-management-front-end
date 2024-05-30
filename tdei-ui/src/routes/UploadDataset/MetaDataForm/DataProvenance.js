@@ -9,9 +9,16 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
   // Event handler for input field change
   const handleFieldChange = (e) => {
     const { name, value, type } = e.target;
-    const newValue = type === 'number' ? parseInt(value, 10) : value;
+    let newValue;
+    
+    if (type === 'number') {
+      newValue = value === '' ? '' : parseInt(value, 10);
+    } else {
+      newValue = value;
+    }
+    
     updateFormData({ [name]: newValue });
-  };
+  };  
 
   // Event handler for radio button selection
   const handleRadioSelect = (fieldName, selectedValue) => {

@@ -89,7 +89,7 @@ const MetaDataForm = ({ selectedData , onUpdateFormData }) => {
                     collection_date: selectedData.dataset_detail.collection_date || formData.dataset_detail.collection_date,
                     valid_from: selectedData.dataset_detail.valid_from || formData.dataset_detail.valid_from,
                     valid_to: selectedData.dataset_detail.valid_to || formData.dataset_detail.valid_to,
-                    // custom_metadata: selectedData.dataset_detail.custom_metadata || formData.dataset_detail.custom_metadata,
+                    custom_metadata: selectedData.dataset_detail.custom_metadata || formData.dataset_detail.custom_metadata,
                     description: selectedData.dataset_detail.description || formData.dataset_detail.description,
                     dataset_area: selectedData.dataset_detail.dataset_area || formData.dataset_detail.dataset_area,
                     collection_method: selectedData.dataset_detail.collection_method || formData.dataset_detail.collection_method,
