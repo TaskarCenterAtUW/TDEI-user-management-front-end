@@ -152,16 +152,12 @@ const ReleasedDatasets = () => {
               </div>
             ) : null}
              {sortedData.map((list, index) => (
-              <DatasetRow 
-                datasetName={list.name}
-                version={list.version}
-                type={toPascalCase(list.data_type)} 
-                serviceName={list.service.name}
-                status={list.status}
-                onInspect={onInspect} 
-                isReleasedList={true}
-                tdei_dataset_id={list.tdei_dataset_id}
-              />
+               <DatasetRow 
+               key={index}
+               dataset={list}
+               onAction={onAction}
+               isReleasedList={true}
+               />
             ))}
           </React.Fragment>
         ))}

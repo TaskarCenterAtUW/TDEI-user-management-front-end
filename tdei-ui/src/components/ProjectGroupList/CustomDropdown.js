@@ -17,11 +17,21 @@ const CustomDropdown = ({
   onChange,
   field,
   form,
+  defaultValue
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
   const inputRef = useRef();
 
+  const optionDisplayMap = {
+    'TDEITools': 'TDEI Tools',
+    '3rdParty': 'Third Party',
+    'InHouse': 'In House'
+  };
+
+  useEffect(() => {
+    setSelectedValue(defaultValue ? defaultValue : '');
+  }, [defaultValue]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -38,6 +48,7 @@ const CustomDropdown = ({
       window.removeEventListener("click", handler);
     };
   });
+
   const handleInputClick = (e) => {
     if (showMenu) {
       form.setFieldTouched(field.name);
@@ -49,7 +60,7 @@ const CustomDropdown = ({
     if (!selectedValue || selectedValue.length === 0) {
       return placeHolder;
     }
-    return selectedValue;
+    return optionDisplayMap[selectedValue] || selectedValue;
   };
 
   const onItemClick = (option) => {
@@ -64,7 +75,6 @@ const CustomDropdown = ({
     return selectedValue === option;
   };
 
-
   return (
     <>
       <div
@@ -78,7 +88,9 @@ const CustomDropdown = ({
           onClick={handleInputClick}
           className={style.dropdownInput}
         >
-          <div className={style.dropdownSelectedValue}>{getDisplay() == "osw" ? "OSW" : toPascalCase(getDisplay())}</div>
+          <div className={style.dropdownSelectedValue}>
+            {getDisplay() == "osw" ? "OSW" : toPascalCase(getDisplay())}
+          </div>
           <div className={style.dropdownTools}>
             <div className={style.dropdownTool}>
               <Icon />
@@ -88,39 +100,19 @@ const CustomDropdown = ({
         {showMenu && (
           <div className={style.dropdownMenu}>
             <div className={style.listContainer}>
-              {options.map((option, index) => {
-                if (options.length === index + 1) {
-                  return (
-                    // eslint-disable-next-line
-                    <a
-                      href="#"
-                      onClick={() => onItemClick(option)}
-                      key={option}
-                      className={clsx(style.dropdownItem, [
-                        isSelected(option) && style.selected,
-                      ])}
-                      tabIndex="0"
-                    >
-                      {option == "osw" ? "OSW" : toPascalCase(option)}
-                    </a>
-                  );
-                } else {
-                  return (
-                    // eslint-disable-next-line
-                    <a
-                      href="#"
-                      onClick={() => onItemClick(option)}
-                      key={option}
-                      className={clsx(style.dropdownItem, [
-                        isSelected(option) && style.selected,
-                      ])}
-                      tabIndex="0"
-                    >
-                      {option == "osw" ? "OSW" : toPascalCase(option)}
-                    </a>
-                  );
-                }
-              })}
+              {options.map((option) => (
+                <a
+                  href="#"
+                  onClick={() => onItemClick(option)}
+                  key={option}
+                  className={clsx(style.dropdownItem, {
+                    [style.selected]: isSelected(option),
+                  })}
+                  tabIndex="0"
+                >
+                  {optionDisplayMap[option] || (option == "osw" ? "OSW" : toPascalCase(option))}
+                </a>
+              ))}
             </div>
           </div>
         )}

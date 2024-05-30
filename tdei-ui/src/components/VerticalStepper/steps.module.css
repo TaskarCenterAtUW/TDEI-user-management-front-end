@@ -61,3 +61,18 @@
     color: #83879B;
     font-family: "Lato", sans-serif;
 }
+.layout {
+    height: 100%;
+    padding: 10px;
+    background-color: #f8f8f8;
+
+    .uploadWidgetTitle {
+      font-size: 18px;
+      font-weight: 700;
+      padding: 15px 30px;
+    }
+
+    [class*='Container_container'] {
+      padding: 0px;
+    }
+  }

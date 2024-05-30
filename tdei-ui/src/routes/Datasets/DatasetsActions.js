@@ -23,6 +23,9 @@ const DatasetsActions = ({ status, onAction }) => {
               <Dropdown.Item disabled={status ==  "Publish" ? false : true } eventKey="deactivate" className={style.itemRow}>
                 <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
               </Dropdown.Item>
+              <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
+                <img src={deactivateIcon} className={style.itemIcon} alt="" />Edit Metadata
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>

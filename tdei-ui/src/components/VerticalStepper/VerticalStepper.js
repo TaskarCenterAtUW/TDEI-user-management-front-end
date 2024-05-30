@@ -91,6 +91,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   const [previousSelectedData, setPreviousSelectedData] = React.useState({});
   const [showToast, setToast] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [metaDataErrorMsg, setMetaDataErrorMsg] = React.useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -136,17 +137,21 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   // Function to handle next button click
   const handleNext = () => {
     let isValid = false;
-
+    let errorMessage = "";
+  
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
         isValid = validateServiceUpload();
+        if (!isValid) errorMessage = "Please select a service!";
         break;
       case 1:
         isValid = validateDataFile();
+        if (!isValid) errorMessage = "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file";
         break;
       case 2:
-        isValid = validateMetadata();
+        errorMessage = validateMetadata();
+        isValid = errorMessage === null;
         break;
       case 3:
         isValid = validateChangeset();
@@ -154,24 +159,22 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       default:
         isValid = true;
     }
-
     // Proceed to next step if validation passes
     if (isValid) {
-      const newCompleted = completed;
+      const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        console.log(isLastStep())
-        onStepsComplete(selectedData)
+        onStepsComplete(selectedData);
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;
         setCompleted(newCompleted);
-        // To store selected data for the current step
+        // Store selected data for the current step
         updatePreviousSelectedData(activeStep, selectedData[activeStep]);
       }
-    } else { 
-      //to display toast message
-      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? "Please attach metadata file!!" : "Please select a service! ")
+    } else {
+      // Display toast message
+      setErrorMessage(errorMessage);
       setToast(true);
     }
   };
@@ -224,12 +227,36 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
 
   // Validation function for the third step (Metadata)
   const validateMetadata = () => {
-    if (selectedData[activeStep] != null) {
-      return true
+    const metadata = selectedData[activeStep];
+    if (!metadata) {
+      return "Please attach metadata file!!";
     }
-    return false;
-  };
-
+  
+    if (!(metadata instanceof File)) {
+      const { dataset_detail, data_provenance } = metadata;
+      if (!dataset_detail) {
+        return "Metadata details are missing!";
+      }
+  
+      const requiredFields = [
+        { field: 'name', message: 'Dataset Name is required' },
+        { field: 'version', message: 'Dataset Version is required' },
+        { field: 'collected_by', message: 'Collected By is required' },
+        { field: 'collection_date', message: 'Collection Date is required' },
+        { field: 'data_source', message: 'Data Source is required' },
+        { field: 'schema_version', message: 'Schema Version is required' }
+      ];
+      for (const { field, message } of requiredFields) {
+        if (!dataset_detail[field]) {
+          return message;
+        }
+      }
+      if (!data_provenance || !data_provenance.full_dataset_name) {
+        return "Full Dataset Name in Data Provenance is required";
+      }
+    }
+    return null;
+  };  
   // Validation function for the fourth step (Changeset)
   const validateChangeset = () => {
     return true;
