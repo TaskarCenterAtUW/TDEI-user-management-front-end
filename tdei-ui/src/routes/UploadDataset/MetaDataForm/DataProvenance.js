@@ -2,6 +2,7 @@ import React from 'react';
 import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
+import * as Yup from "yup";
 
 const DatasetProvenance = ({ formData, updateFormData }) => {
 
@@ -21,10 +22,18 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
     { value: true, label: 'Yes' },
     { value: false, label: 'No' },
   ];
+  const validationSchema = Yup.object().shape({
+    full_dataset_name: Yup.string().required('Dataset Full Name is required'),
+  });
 
   return (
-    <Formik initialValues={formData} onSubmit={values => console.log(values)} >
-      {({ handleChange }) => (
+    <Formik
+      initialValues={formData}
+      onSubmit={values => console.log(values)}
+      validationSchema={validationSchema}
+      validateOnChange={true}
+      validateOnBlur={true} >
+      {({ errors, touched, handleChange, handleBlur }) => (
         <div className="container">
           <div className="row" style={{ marginTop: '20px' }}>
             <div className="col-md-6 column-style">
@@ -39,8 +48,10 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                     handleFieldChange(e);
                     handleChange(e);
                   }}
+                  isInvalid={errors.full_dataset_name && touched.full_dataset_name}
+                  onBlur={handleBlur}
                 />
-                <ErrorMessage name="full_dataset_name" component="div" />
+                <Form.Control.Feedback type="invalid">{errors.full_dataset_name}</Form.Control.Feedback>
               </Form.Group>
               <div style={{ marginTop: '10px' }}>
                 <Form.Label>Other Published Locations</Form.Label>

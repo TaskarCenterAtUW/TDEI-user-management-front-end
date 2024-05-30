@@ -6,13 +6,23 @@ export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
 const flattenMetadata = (metadata) => {
   return {
-      ...metadata.dataset_detail,
-      ...metadata.data_provenance,
-      ...metadata.dataset_summary,
-      ...metadata.maintenance,
-      ...metadata.methodology
+    ...metadata.dataset_detail,
+    ...metadata.data_provenance,
+    ...metadata.dataset_summary,
+    ...metadata.maintenance,
+    ...metadata.methodology
   };
 };
+// Helper function to recursively replace empty strings with null
+function replaceEmptyStringsWithNull(obj) {
+  for (const key in obj) {
+    if (obj[key] === "") {
+      obj[key] = null;
+    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+      replaceEmptyStringsWithNull(obj[key]);
+    }
+  }
+}
 
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);
@@ -126,7 +136,7 @@ export async function getServices(searchText, tdei_project_group_id, pageParam =
     pageParam,
   };
 }
-export async function getService(tdei_service_id, service_type,tdei_project_group_id, pageParam = 1) {
+export async function getService(tdei_service_id, service_type, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/service`,
     params: {
@@ -143,7 +153,7 @@ export async function getService(tdei_service_id, service_type,tdei_project_grou
     pageParam,
   };
 }
-export async function getJobs(tdei_project_group_id, pageParam  = 1, isAdmin, job_id, job_type, status) {
+export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status) {
 
   const params = {
     page_no: pageParam,
@@ -179,16 +189,16 @@ export async function getJobs(tdei_project_group_id, pageParam  = 1, isAdmin, jo
   };
 }
 
-export async function getJobReport(job_id){
+export async function getJobReport(job_id) {
   const res = await axios({
     url: `${osmUrl}/job/download/${job_id}`,
     method: "GET",
   });
   return {
-    data : res.data,
+    data: res.data,
   }
 }
-export async function getStations(searchText, tdei_project_group_id ,pageParam = 1,isAdmin) {
+export async function getStations(searchText, tdei_project_group_id, pageParam = 1, isAdmin) {
   const res = await axios({
     url: `${url}/station`,
     params: {
@@ -204,7 +214,7 @@ export async function getStations(searchText, tdei_project_group_id ,pageParam =
     pageParam,
   };
 }
-export async function getStation(tdei_station_id, tdei_project_group_id ,pageParam = 1) {
+export async function getStation(tdei_station_id, tdei_project_group_id, pageParam = 1) {
   const res = await axios({
     url: `${url}/station`,
     params: {
@@ -271,16 +281,26 @@ export async function postUploadDataset(data) {
     const metadata = { ...data[2] };
     // Parse datasetArea and customMetadata fields
     try {
-      metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
-    } catch (e) {
-      console.error("Failed to parse datasetArea: ", e);
-      metadata.dataset_area = {};
-    }
-    try {
-      metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      if (typeof metadata.dataset_detail.dataset_area === 'string') {
+        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+      }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
-      metadata.custom_metadata = {};
+      metadata.dataset_detail.dataset_area = null;
+    }
+    try {
+      if (typeof metadata.dataset_detail.custom_metadata === 'string') {
+        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      } else {
+        metadata.dataset_detail.custom_metadata = null;
+      }
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.custom_metadata = null;
+    }
+    replaceEmptyStringsWithNull(metadata);
+    if (Array.isArray(metadata.maintenance.official_maintainer) && metadata.maintenance.official_maintainer.length === 0) {
+      metadata.maintenance.official_maintainer = null;
     }
     // Convert the metadata object to a JSON string
     const jsonString = JSON.stringify(metadata, null, 2);
@@ -291,12 +311,12 @@ export async function postUploadDataset(data) {
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
- //get the end point based on the service_type
+  //get the end point based on the service_type
   var file_end_point = ''
   var service_type = data[0].service_type
-  if (service_type === 'flex'){file_end_point = 'gtfs-flex'}
-  else if(service_type === 'pathways'){file_end_point = 'gtfs-pathways'}
-  else {file_end_point = 'osw'}
+  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
+  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
+  else { file_end_point = 'osw' }
   const response = await axios.post(`${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -305,7 +325,7 @@ export async function postUploadDataset(data) {
   console.log('Response:', response);
   return response.data;
 }
-export async function getDatasets(searchText,pageParam = 1,status,dataType,tdei_project_group_id) {
+export async function getDatasets(searchText, pageParam = 1, status, dataType, tdei_project_group_id) {
   const params = {
     page_no: pageParam,
     page_size: 10,
@@ -333,7 +353,7 @@ export async function getDatasets(searchText,pageParam = 1,status,dataType,tdei_
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText,pageParam = 1,dataType) {
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
   const params = {
     status: "Publish",
     page_no: pageParam,
@@ -367,7 +387,7 @@ export async function postPublishDataset(data) {
   return res.data;
 }
 
-export async function deleteDataset(tdei_dataset_id){
+export async function deleteDataset(tdei_dataset_id) {
   const res = await axios.delete(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
   console.log('Response:', res.data);
   return res.data;
@@ -389,16 +409,6 @@ export async function editMetadata(data) {
       metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
-    }
-    // Helper function to recursively replace empty strings with null
-    function replaceEmptyStringsWithNull(obj) {
-      for (const key in obj) {
-        if (obj[key] === "") {
-          obj[key] = null;
-        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-          replaceEmptyStringsWithNull(obj[key]);
-        }
-      }
     }
     // Replace empty strings with null
     replaceEmptyStringsWithNull(metadata);

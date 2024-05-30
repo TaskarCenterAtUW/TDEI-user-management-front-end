@@ -233,7 +233,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     }
   
     if (!(metadata instanceof File)) {
-      const { dataset_detail } = metadata;
+      const { dataset_detail, data_provenance } = metadata;
       if (!dataset_detail) {
         return "Metadata details are missing!";
       }
@@ -249,6 +249,9 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
         if (!dataset_detail[field]) {
           return message;
         }
+      }
+      if (!data_provenance || !data_provenance.full_dataset_name) {
+        return "Full Dataset Name in Data Provenance is required";
       }
     }
     return null;

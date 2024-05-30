@@ -80,65 +80,65 @@ export default function EditMetadata() {
     const [completed, setCompleted] = useState({});
     const [selectedData, setSelectedData] = useState({
         "dataset_detail": {
-            "name": '',
-            "version": '',
-            "derived_from_dataset_id": null,
-            "collection_date": null,
-            "valid_from": null,
-            "valid_to": null,
-            "custom_metadata": null,
-            "description": null,
-            "dataset_area": null,
-            "collection_method": null,
-            "data_source": null,
-            "schema_version": null,
-            "collected_by": null
+            "name": "",
+            "version": "",
+            "derived_from_dataset_id": "",
+            "collection_date": "",
+            "valid_from": "",
+            "valid_to": "",
+            "custom_metadata": "",
+            "description": "",
+            "dataset_area": "",
+            "collection_method": "",
+            "data_source": "",
+            "schema_version": "",
+            "collected_by": ""
         },
         "data_provenance": {
-            "full_dataset_name": null,
-            "other_published_locations": null,
-            "dataset_update_frequency_months": null,
+            "full_dataset_name": "",
+            "other_published_locations": "",
+            "dataset_update_frequency_months": "",
             "schema_validation_run": null,
             "allow_crowd_contributions": null,
-            "schema_validation_run_description": null,
-            "location_inaccuracy_factors": null
+            "schema_validation_run_description": "",
+            "location_inaccuracy_factors": ""
         },
         "dataset_summary": {
-            "collection_name": null,
-            "department_name": null,
-            "city": null,
-            "region": null,
-            "county": null,
-            "key_limitations_of_the_dataset": null,
-            "challenges": null
+            "collection_name": "",
+            "department_name": "",
+            "city": "",
+            "region": "",
+            "county": "",
+            "key_limitations_of_the_dataset": "",
+            "challenges": ""
         },
         "maintenance": {
             "official_maintainer": [],
-            "last_updated": null,
-            "update_frequency": null,
-            "authorization_chain": null,
+            "last_updated": "",
+            "update_frequency": "",
+            "authorization_chain": "",
             "maintenance_funded": null,
-            "funding_details": null
+            "funding_details": ""
         },
         "methodology": {
-            "point_data_collection_device": null,
-            "node_locations_and_attributes_editing_software": null,
+            "point_data_collection_device": "",
+            "node_locations_and_attributes_editing_software": "",
             "data_collected_by_people": null,
-            "data_collectors": null,
+            "data_collectors": "",
             "data_captured_automatically": null,
-            "automated_collection": null,
-            "data_collectors_organization": null,
-            "data_collector_compensation": null,
-            "preprocessing_location": null,
-            "preprocessing_by": null,
-            "preprocessing_steps": null,
+            "automated_collection": "",
+            "data_collectors_organization": "",
+            "data_collector_compensation": "",
+            "preprocessing_location": "",
+            "preprocessing_by": "",
+            "preprocessing_steps": "",
             "data_collection_preprocessing_documentation": null,
-            "documentation_uri": null,
+            "documentation_uri": "",
             "validation_process_exists": null,
-            "validation_process_description": null,
-            "validation_conducted_by": null,
-            "excluded_data": null,
-            "excluded_data_reason": null
+            "validation_process_description": "",
+            "validation_conducted_by": "",
+            "excluded_data": "",
+            "excluded_data_reason": ""
         }
     }
     );
@@ -149,7 +149,7 @@ export default function EditMetadata() {
                 ...dataset.metadata,
                 dataset_detail: {
                     ...dataset.metadata.dataset_detail,
-                    custom_metadata:  dataset.metadata.dataset_detail.custom_metadata ? JSON.stringify(dataset.metadata.dataset_detail.custom_metadata, null, 2) : null,
+                    custom_metadata: dataset.metadata.dataset_detail.custom_metadata ? JSON.stringify(dataset.metadata.dataset_detail.custom_metadata, null, 2) : null,
                     dataset_area: dataset.metadata.dataset_detail.dataset_area ? JSON.stringify(dataset.metadata.dataset_detail.dataset_area, null, 2) : null
                 }
             };
@@ -158,6 +158,7 @@ export default function EditMetadata() {
     }, [dataset]);
 
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+    const [showErrorModal, setShowErrorModal] = React.useState(false);
     const [loading, setLoading] = useState(false); // Track loading state
     const [showToast, setToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -172,7 +173,7 @@ export default function EditMetadata() {
     const onError = (err) => {
         setLoading(false);
         console.error("error message", err);
-        setToast(true);
+        setShowErrorModal(true);
         setError(err.data)
     };
     const { isLoading, mutate } = useEditMetadata({ onSuccess, onError });
@@ -201,24 +202,27 @@ export default function EditMetadata() {
             return "Please attach metadata file!";
         }
         if (!(metadata instanceof File)) {
-        const { dataset_detail } = metadata;
-        if (!dataset_detail) {
-            return "Metadata details are missing!";
-        }
-
-        const requiredFields = [
-            { field: 'name', message: 'Dataset Name is required' },
-            { field: 'version', message: 'Dataset Version is required' },
-            { field: 'collected_by', message: 'Collected By is required' },
-            { field: 'collection_date', message: 'Collection Date is required' },
-            { field: 'data_source', message: 'Data Source is required' }
-        ];
-        for (const { field, message } of requiredFields) {
-            if (!dataset_detail[field]) {
-                return message;
+            const { dataset_detail, data_provenance } = metadata;
+            if (!dataset_detail) {
+                return "Metadata details are missing!";
             }
+
+            const requiredFields = [
+                { field: 'name', message: 'Dataset Name is required' },
+                { field: 'version', message: 'Dataset Version is required' },
+                { field: 'collected_by', message: 'Collected By is required' },
+                { field: 'collection_date', message: 'Collection Date is required' },
+                { field: 'data_source', message: 'Data Source is required' }
+            ];
+            for (const { field, message } of requiredFields) {
+                if (!dataset_detail[field]) {
+                    return message;
+                }
+            }
+            if (!data_provenance || !data_provenance.full_dataset_name) {
+                return "Full Dataset Name in Data Provenance is required";
+              }
         }
-    }
         return null;
     };
 
@@ -283,9 +287,9 @@ export default function EditMetadata() {
                             title="Success"
                         />
                     )}
-                    {showToast && (
+                    {showErrorModal && (
                         <CustomModal
-                            show={showToast}
+                            show={showErrorModal}
                             message="Edit metadata Failed!"
                             content={error}
                             handler={() => {

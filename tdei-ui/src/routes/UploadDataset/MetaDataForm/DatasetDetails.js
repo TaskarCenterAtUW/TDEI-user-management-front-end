@@ -92,7 +92,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 <Form.Control.Feedback type="invalid">{errors.version}</Form.Control.Feedback>
               </Form.Group>
               <Form.Group controlId="derived_from_dataset_id" style={{ marginTop: '10px' }}>
-                <Form.Label>Derived from Dataset Id<span style={{ color: 'red' }}> *</span></Form.Label>
+                <Form.Label>Derived from Dataset Id</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter Derived Dataset Id"
