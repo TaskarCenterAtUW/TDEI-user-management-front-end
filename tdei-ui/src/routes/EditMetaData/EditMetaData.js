@@ -143,70 +143,6 @@ export default function EditMetadata() {
         }
     }
     );
-    const [currentData, setCurrentData] = useState({
-        "dataset_detail": {
-            "name": "",
-            "version": "",
-            "derived_from_dataset_id": "",
-            "collection_date": "",
-            "valid_from": "",
-            "valid_to": "",
-            "custom_metadata": "",
-            "description": "",
-            "dataset_area": "",
-            "collection_method": "",
-            "data_source": "",
-            "schema_version": "",
-            "collected_by": ""
-        },
-        "data_provenance": {
-            "full_dataset_name": "",
-            "other_published_locations": "",
-            "dataset_update_frequency_months": "",
-            "schema_validation_run": null,
-            "allow_crowd_contributions": null,
-            "schema_validation_run_description": "",
-            "location_inaccuracy_factors": ""
-        },
-        "dataset_summary": {
-            "collection_name": "",
-            "department_name": "",
-            "city": "",
-            "region": "",
-            "county": "",
-            "key_limitations_of_the_dataset": "",
-            "challenges": ""
-        },
-        "maintenance": {
-            "official_maintainer": null,
-            "last_updated": "",
-            "update_frequency": "",
-            "authorization_chain": "",
-            "maintenance_funded": null,
-            "funding_details": ""
-        },
-        "methodology": {
-            "point_data_collection_device": "",
-            "node_locations_and_attributes_editing_software": "",
-            "data_collected_by_people": null,
-            "data_collectors": "",
-            "data_captured_automatically": null,
-            "automated_collection": "",
-            "data_collectors_organization": "",
-            "data_collector_compensation": "",
-            "preprocessing_location": "",
-            "preprocessing_by": "",
-            "preprocessing_steps": "",
-            "data_collection_preprocessing_documentation": null,
-            "documentation_uri": "",
-            "validation_process_exists": null,
-            "validation_process_description": "",
-            "validation_conducted_by": "",
-            "excluded_data": "",
-            "excluded_data_reason": ""
-        }
-    }
-    );
 
     useEffect(() => {
         if (dataset) {
@@ -218,7 +154,7 @@ export default function EditMetadata() {
                     dataset_area: dataset.metadata.dataset_detail.dataset_area ? JSON.stringify(dataset.metadata.dataset_detail.dataset_area, null, 2) : ""
                 }
             };
-            setCurrentData(parsedDataset);
+            setSelectedData(parsedDataset);
         }
     }, [dataset]);
 
@@ -314,7 +250,7 @@ export default function EditMetadata() {
                             <Grid container>
                                 <Grid item xs={12}>
                                     <div className={style.stepsTabContainer}>
-                                        <Metadata onSelectedFileChange={handleSelectedDataChange} selectedData={currentData} />
+                                        <Metadata onSelectedFileChange={handleSelectedDataChange} selectedData={selectedData} />
                                     </div>
                                 </Grid>
                                 <Grid item xs={12}>
