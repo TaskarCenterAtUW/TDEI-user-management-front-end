@@ -1,26 +1,43 @@
-import React from 'react';
-import CustomDropdown from '../../../../components/ProjectGroupList/CustomDropdown';
+import React, { useState, useEffect } from 'react';
+import FormControl from '@mui/material/FormControl';
+import Select from 'react-select';
 
-const DataTypeDropdownForm = ({ field, form, onChange, formDataDatasetType}) => {
-  if (!field || !field.name) {
-    console.error("Field object is missing or does not have a 'name' property.");
-    return null;
-  }
-  const options = ["flex", "pathways", "osw"];
+const DataTypeDropdownForm = ({ field, form, onChange, formDataDatasetType }) => {
 
-  const handleChange = (dataType) => {
+  const options = [
+    { value: 'flex', label: 'flex' },
+    { value: 'pathways', label: 'pathways' },
+    { value: 'osw', label: 'osw' },
+  ];
+  
+  const [currentValue, setCurrentValue] = useState(null);
+
+  useEffect(() => {
+    if (formDataDatasetType) {
+      const selectedOption = options.find(option => option.value === formDataDatasetType);
+      setCurrentValue(selectedOption);
+    }
+  }, [formDataDatasetType]);
+
+  const handleChange = (selectedOption) => {
+    const dataType = selectedOption ? selectedOption.value : '';
     form.setFieldValue(field.name, dataType);
     onChange(dataType);
+    setCurrentValue(selectedOption);
   };
   return (
-    <CustomDropdown
-      placeHolder="Data Type"
-      options={options}
-      onChange={handleChange}
-      field={field}
-      form={form}
-      defaultValue={formDataDatasetType}
-    />
+    <div>
+      <FormControl fullWidth>
+        <Select
+          isSearchable={false}
+          value={currentValue}
+          onChange={handleChange}
+          options={options}
+          components={{
+            IndicatorSeparator: () => null
+          }} />
+      </FormControl>
+    </div>
   );
 };
 

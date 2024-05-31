@@ -1,22 +1,45 @@
-import React from 'react';
-import CustomDropdown from '../../../../components/ProjectGroupList/CustomDropdown';
+import React, { useState, useEffect } from 'react';
+import FormControl from '@mui/material/FormControl';
+import Select from 'react-select';
 
-const CollectedMethodDropdownForm = ({ field, form, onChange,formDataCollectionMethod }) => {
-  const collectedMethodOptions = ['manual','transform','generated','AV', 'others'];
+const CollectedMethodDropdownForm = ({ field, form, onChange, formDataCollectionMethod }) => {
+  const collectedMethodOptions = [
+    { value: 'manual', label: 'Manual' },
+    { value: 'transform', label: 'Transform' },
+    { value: 'generated', label: 'Generated' },
+    { value: 'AV', label: 'AV' },
+    { value: 'others', label: 'Others' },
+  ];
+  
+  const [currentValue, setCurrentValue] = useState(null);
 
-  const handleChange = (collectedMethod) => {
+  useEffect(() => {
+    if (formDataCollectionMethod) {
+      const selectedOption = collectedMethodOptions.find(option => option.value === formDataCollectionMethod);
+      setCurrentValue(selectedOption);
+    }
+  }, [formDataCollectionMethod]);
+
+  const handleChange = (selectedOption) => {
+    const collectedMethod = selectedOption ? selectedOption.value : '';
     form.setFieldValue(field.name, collectedMethod);
     onChange(collectedMethod);
+    setCurrentValue(selectedOption);
   };
+
   return (
-    <CustomDropdown
-      placeHolder="Select Method"
-      options={collectedMethodOptions}
-      onChange={handleChange}
-      field={field}
-      form={form}
-      defaultValue={formDataCollectionMethod}
-    />
+    <div>
+      <FormControl fullWidth>
+        <Select
+          isSearchable={false}
+          value={currentValue}
+          onChange={handleChange}
+          options={collectedMethodOptions}
+          components={{
+            IndicatorSeparator: () => null
+          }} />
+      </FormControl>
+    </div>
   );
 };
 

@@ -71,8 +71,8 @@ ColorlibStepIcon.propTypes = {
     completed: PropTypes.bool,
     icon: PropTypes.node,
 };
-
 export default function EditMetadata() {
+    
     const location = useLocation();
     const navigate = useNavigate();
     const dataset = location.state?.dataset;
@@ -150,8 +150,8 @@ export default function EditMetadata() {
                 ...dataset.metadata,
                 dataset_detail: {
                     ...dataset.metadata.dataset_detail,
-                    custom_metadata: dataset.metadata.dataset_detail.custom_metadata ? JSON.stringify(dataset.metadata.dataset_detail.custom_metadata, null, 2) : null,
-                    dataset_area: dataset.metadata.dataset_detail.dataset_area ? JSON.stringify(dataset.metadata.dataset_detail.dataset_area, null, 2) : null
+                    custom_metadata: dataset.metadata.dataset_detail.custom_metadata ? JSON.stringify(dataset.metadata.dataset_detail.custom_metadata, null, 2) : "",
+                    dataset_area: dataset.metadata.dataset_detail.dataset_area ? JSON.stringify(dataset.metadata.dataset_detail.dataset_area, null, 2) : ""
                 }
             };
             setSelectedData(parsedDataset);
