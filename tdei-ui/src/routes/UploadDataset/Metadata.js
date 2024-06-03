@@ -16,7 +16,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
       return;
     }
     onSelectedFileChange(formData);
-  }, [selectedData, onSelectedFileChange]);
+  }, [onSelectedFileChange]);
 
   return (
     <div>
