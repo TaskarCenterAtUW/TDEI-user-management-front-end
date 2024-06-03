@@ -16,6 +16,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
       return;
     }
     onSelectedFileChange(formData);
+    // eslint-disable-next-line
   }, [onSelectedFileChange]);
 
   return (
