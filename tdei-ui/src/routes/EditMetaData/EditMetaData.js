@@ -231,7 +231,7 @@ export default function EditMetadata() {
     return (
         <div className={style.layout}>
             <Container>
-                <div className={style.uploadWidgetTitle}>Update Metadata - {selectedData.dataset_detail != null ? selectedData.dataset_detail.name :"" }</div>
+            <div className={style.uploadWidgetTitle}>Update Metadata - {selectedData && selectedData.dataset_detail && selectedData.dataset_detail.name}</div>
                 <Box className={style.uploadDatasetStepsLayout}>
                     <Grid container spacing={0} columns={15}>
                         <Grid item xs={4}>
