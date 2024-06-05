@@ -12,7 +12,7 @@ const DatasetsActions = ({ status, onAction }) => {
   const isPocUser = useIsPoc();
   const { user } = useAuth();
   
-  const isDeactivateDisabled = status === "Publish" || (!isPocUser && !user?.isAdmin);
+  const canDeactivate = isPocUser || user?.isAdmin;
 
   return (
     <div className={style.dropdownContainer}>
@@ -27,7 +27,7 @@ const DatasetsActions = ({ status, onAction }) => {
           <Dropdown.Item disabled={status === "Publish" ? true : false} eventKey="release" className={style.itemRow}>
             <img src={releaseIcon} className={style.itemIcon} alt="" />Release
           </Dropdown.Item>
-          <Dropdown.Item disabled={isDeactivateDisabled} eventKey="deactivate" className={style.itemRow}>
+          <Dropdown.Item disabled={!canDeactivate} eventKey="deactivate" className={style.itemRow}>
             <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
           </Dropdown.Item>
           <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
