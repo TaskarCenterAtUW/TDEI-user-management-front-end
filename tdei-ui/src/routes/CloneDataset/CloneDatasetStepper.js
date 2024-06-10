@@ -20,7 +20,7 @@ export const ServiceIcon = () => (
   <Icon sx={{ alignItems: "center", display: "flex" }}>
     <img src={serviceUpload} height={20} width={20} color='white' style={{ width: "100%", height: "70%" }} />
   </Icon>
-)
+);
 
 // Styled components for customized step icons in the stepper
 const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
@@ -45,7 +45,6 @@ const OutlineCircle = styled('div')(({ ownerState }) => ({
 
 const InnerCircle = styled('div')(({ theme, ownerState }) => ({
   backgroundColor: ownerState.completed || ownerState.active ? '#59C3C8' : (theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc'),
-  zIndex: 1,
   zIndex: 1,
   color: '#fff',
   width: 35,
@@ -81,15 +80,98 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
+CloneDatasetStepper.propTypes = {
+  stepsData: PropTypes.array.isRequired,
+  onStepsComplete: PropTypes.func.isRequired,
+  currentStep: PropTypes.number.isRequired,
+  dataset: PropTypes.object.isRequired,
+};
+
 // Main CloneDatasetStepper component
-export default function CloneDatasetStepper({ stepsData, onStepsComplete, currentStep }) {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [completed, setCompleted] = React.useState({});
-  const [selectedData, setSelectedData] = React.useState({});
-  const [previousSelectedData, setPreviousSelectedData] = React.useState({});
-  const [showToast, setToast] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+export default function CloneDatasetStepper({ stepsData, onStepsComplete, currentStep, dataset }) {
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState({});
+  const [selectedData, setSelectedData] = useState({});
+  const [previousSelectedData, setPreviousSelectedData] = useState({});
+  const [showToast, setToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (dataset && dataset.service && dataset.service.tdei_service_id) {
+      setSelectedData(prevData => ({
+        ...prevData,
+        0: {
+          tdei_project_group_id: dataset.project_group.tdei_project_group_id,
+          tdei_service_id: dataset.service.tdei_service_id,
+          service_type: dataset.data_type
+        },
+        1:{
+            "dataset_detail": {
+                "name": "",
+                "version": "",
+                "derived_from_dataset_id": dataset.derived_from_dataset_id,
+                "collection_date": "",
+                "valid_from": "",
+                "valid_to": "",
+                "custom_metadata": "",
+                "description": "",
+                "dataset_area": "",
+                "collection_method": "",
+                "data_source": "",
+                "schema_version": "",
+                "collected_by": ""
+            },
+            "data_provenance": {
+                "full_dataset_name": "",
+                "other_published_locations": "",
+                "dataset_update_frequency_months": "",
+                "schema_validation_run": null,
+                "allow_crowd_contributions": null,
+                "schema_validation_run_description": "",
+                "location_inaccuracy_factors": ""
+            },
+            "dataset_summary": {
+                "collection_name": "",
+                "department_name": "",
+                "city": "",
+                "region": "",
+                "county": "",
+                "key_limitations_of_the_dataset": "",
+                "challenges": ""
+            },
+            "maintenance": {
+                "official_maintainer": null,
+                "last_updated": "",
+                "update_frequency": "",
+                "authorization_chain": "",
+                "maintenance_funded": null,
+                "funding_details": ""
+            },
+            "methodology": {
+                "point_data_collection_device": "",
+                "node_locations_and_attributes_editing_software": "",
+                "data_collected_by_people": null,
+                "data_collectors": "",
+                "data_captured_automatically": null,
+                "automated_collection": "",
+                "data_collectors_organization": "",
+                "data_collector_compensation": "",
+                "preprocessing_location": "",
+                "preprocessing_by": "",
+                "preprocessing_steps": "",
+                "data_collection_preprocessing_documentation": null,
+                "documentation_uri": "",
+                "validation_process_exists": null,
+                "validation_process_description": "",
+                "validation_conducted_by": "",
+                "excluded_data": "",
+                "excluded_data_reason": ""
+            }
+        }
+      }));
+    }
+  }, [dataset]);
 
   useEffect(() => {
     if (currentStep === 0) {

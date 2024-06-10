@@ -427,3 +427,55 @@ export async function editMetadata(data) {
   console.log('Response:', response);
   return response.data;
 }
+
+export async function cloneDataset(data) {
+  const formData = new FormData();
+  formData.append('tdei_project_group_id', data.selectedData[0].tdei_project_group_id);
+  formData.append('tdei_service_id', data.selectedData[0].tdei_service_id);
+  formData.append('tdei_dataset_id', data.tdei_dataset_id);
+  if (data.selectedData[1] instanceof File) {
+    formData.append('metadata', data.selectedData[1]);
+  } else {
+    const metadata = { ...data.selectedData[1]};
+    // Parse datasetArea and customMetadata fields
+    try {
+      if (typeof metadata.dataset_detail.dataset_area === 'string') {
+        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+      }
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.dataset_area = null;
+    }
+    try {
+      if (typeof metadata.dataset_detail.custom_metadata === 'string') {
+        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      } else {
+        metadata.dataset_detail.custom_metadata = null;
+      }
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.custom_metadata = null;
+    }
+    replaceEmptyStringsWithNull(metadata);
+    if (Array.isArray(metadata.maintenance.official_maintainer) && metadata.maintenance.official_maintainer.length === 0) {
+      metadata.maintenance.official_maintainer = null;
+    }
+    // Convert the metadata object to a JSON string
+    const jsonString = JSON.stringify(metadata, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const file = new File([blob], 'metadata.json', { type: 'application/json' });
+    
+    formData.append('file', file);
+  }
+  // if (data.selectedData[2] != null) {
+  //   formData.append('changeset', data[2]);
+  // }
+
+  const response = await axios.post(`${osmUrl}/dataset/clone/${data.tdei_dataset_id}/${data.selectedData[0].tdei_project_group_id}/${data.selectedData[0].tdei_service_id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log('Response:', response);
+  return response.data;
+}

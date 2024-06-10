@@ -4,8 +4,8 @@ import ServiceUpload from '../UploadDataset/ServiceUpload';
 import Metadata from '../UploadDataset/Metadata';
 import Changeset from '../UploadDataset/Changeset';
 import useUploadDataset from "../../hooks/useUploadDataset";
-import { useNavigate } from 'react-router-dom';
-import { POST_DATASET } from "../../utils/react-query-constant";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { GET_DATASETS } from '../../utils';
 import { useQueryClient } from "react-query";
 import CustomModal from '../../components/SuccessModal/CustomModal';
 import { Spinner } from "react-bootstrap";
@@ -13,7 +13,10 @@ import style from "../../routes/UploadDataset/UploadDataset.module.css";
 import { useAuth } from '../../hooks/useAuth';
 import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
 import CloneDatasetStepper from './CloneDatasetStepper';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+// import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import cloneFileImage from "../../assets/img/clone-file-img.svg";
+import useCloneDataset from '../../hooks/datasets/useCloneDataset';
+
 
 // Array of steps data for the vertical stepper
 const stepsData = [
@@ -26,18 +29,14 @@ const stepsData = [
         title: 'Metadata File',
         subtitle: 'Attach metadata file (.json)',
         component: Metadata,
-    },
-    {
-        title: 'Changeset',
-        subtitle: 'Attach changeset file (.txt)',
-        component: Changeset,
-    },
+    }
 ];
 
 // Functional component CloneDataset
 const CloneDataset = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const location = useLocation();
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
     const [loading, setLoading] = useState(false); // Track loading state
     const [errorMessage, setErrorMessage] = useState("");
@@ -45,11 +44,12 @@ const CloneDataset = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const { user } = useAuth();
     const isDataGenerator = useIsDatasetsAccessible();
+    const dataset = location.state?.dataset;
 
     const onSuccess = (data) => {
         setLoading(false);
         console.log("successfully created", data);
-        queryClient.invalidateQueries({ queryKey: [POST_DATASET] });
+        queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
         setShowSuccessModal(true);
     };
 
@@ -68,10 +68,11 @@ const CloneDataset = () => {
     };
 
     // Using useUploadDataset hook to get mutate function
-    const { isLoading, mutate } = useUploadDataset({ onSuccess, onError });
-    const onStepsComplete = (uploadData) => {
-        console.log(uploadData);
-        mutate(uploadData);
+    const { isLoading, mutate } = useCloneDataset({ onSuccess, onError });
+    const onStepsComplete = (cloneDataset) => {
+        console.log(cloneDataset);
+        const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, selectedData: cloneDataset };
+        mutate(dataToMutate);
         setLoading(true)
     };
 
@@ -92,25 +93,26 @@ const CloneDataset = () => {
                 <div className={style.uploadWidgetTitle}>
                     <span className={style.cloneDatasetTitle}>Clone Dataset</span>
                     <span className={style.content}>
-                        <ContentCopyIcon className={style.icon} />
-                        <span>Data file cloning from <span className={style.description}>Lorem Ipsum dummy service dataset</span></span>
+                        <img src={cloneFileImage} className={style.icon} alt="" />
+                        <span>Data file cloning from <span className={style.description}>{dataset && dataset.metadata.dataset_detail.name}</span></span>
                     </span>
                 </div>
                 <CloneDatasetStepper
                     stepsData={stepsData}
                     onStepsComplete={onStepsComplete}
                     currentStep={currentStep}
+                    dataset={dataset}
                 />
                 {showSuccessModal && (
                     <CustomModal
                         show={showSuccessModal}
                         message="Dataset clone job has been accepted!"
-                        content="Find the status of the job in jobs page."
+                        content="Find cloned dataset in datasets page."
                         handler={() => {
                             setShowSuccessModal(false);
-                            navigate('../jobs', { replace: true });
+                            navigate('../datasets', { replace: true });
                         }}
-                        btnlabel="Go to Jobs page"
+                        btnlabel="Go to datasets page"
                         modaltype="success"
                         title="Success"
                     />

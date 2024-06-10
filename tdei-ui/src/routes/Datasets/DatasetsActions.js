@@ -6,6 +6,8 @@ import releaseIcon from "../../assets/img/action-release.svg";
 import deactivateIcon from "../../assets/img/action-deactivate.svg";
 import openConsoleIcon from "../../assets/img/action-open-console.svg";
 import useIsPoc from "../../hooks/useIsPoc";
+import cloneImg from "../../assets/img/clone-img.svg";
+import editImage from "../../assets/img/edit-img.svg";
 import { useAuth } from "../../hooks/useAuth";
 
 const DatasetsActions = ({ status, onAction }) => {
@@ -31,10 +33,10 @@ const DatasetsActions = ({ status, onAction }) => {
             <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
           </Dropdown.Item>
           <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
-            <img src={deactivateIcon} className={style.itemIcon} alt="" />Edit Metadata
+            <img src={editImage} className={style.itemIcon} alt="" />Edit Metadata
           </Dropdown.Item>
           <Dropdown.Item eventKey="cloneDataset" className={style.itemRow}>
-            <img src={openConsoleIcon} className={style.itemIcon} alt="" />Clone Dataset
+            <img src={cloneImg} className={style.itemIcon} alt="" />Clone Dataset
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
