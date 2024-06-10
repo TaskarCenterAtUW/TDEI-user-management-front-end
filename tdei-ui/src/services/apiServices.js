@@ -434,7 +434,7 @@ export async function cloneDataset(data) {
   formData.append('tdei_service_id', data.selectedData[0].tdei_service_id);
   formData.append('tdei_dataset_id', data.tdei_dataset_id);
   if (data.selectedData[1] instanceof File) {
-    formData.append('metadata', data.selectedData[1]);
+    formData.append('file', data.selectedData[1]);
   } else {
     const metadata = { ...data.selectedData[1]};
     // Parse datasetArea and customMetadata fields
