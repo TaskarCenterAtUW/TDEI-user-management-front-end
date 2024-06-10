@@ -8,7 +8,10 @@ import CreateService from "../../components/CreateService/CreateService";
 import { useAuth } from "../../hooks/useAuth";
 import { debounce } from "lodash";
 import useGetServices from "../../hooks/service/useGetServices";
-import serviceIcon from "../../assets/img/services-icon.svg";
+import serviceIcon from "../../assets/img/icon-service-new.svg";
+import iconFlex from "../../assets/img/flexType.svg";
+import iconPathway from "../../assets/img/pathwayType.svg";
+import iconOsw from "../../assets/img/oswType.svg";
 import useDeleteService from "../../hooks/service/useDeleteService";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
@@ -37,7 +40,7 @@ const Services = () => {
   const { user } = useAuth();
   const [, setQuery] = React.useState("");
   const [debounceQuery, setDebounceQuery] = React.useState("");
-  const [serviceType, setServiceType] = React.useState("flex");
+  const [serviceType, setServiceType] = React.useState("all");
   const [selectedData, setSelectedData] = React.useState({});
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
@@ -97,10 +100,10 @@ const Services = () => {
     mutate({ tdei_service_id, status: false, tdei_project_group_id });
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = (id,type) => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    navigate('/service/edit/' + id + "/" + serviceType);
+    navigate('/service/edit/' + id + "/" + type);
   };
 
   const handleCreate = () => {
@@ -135,10 +138,11 @@ const Services = () => {
       <Container>
         <>
           <InputGroup className="mb-3">
-          <DropdownButton onSelect={handleSelect} variant="outline-secondary"
-              title={serviceType ? toPascalCase(serviceType) : 'Select Service Type'}
+          <DropdownButton onSelect={handleSelect} variant="outline-secondary customBorderColor"
+              title={serviceType ? toPascalCase(serviceType) : ''}
               id="input-group-dropdown-2"
               align="end" className= {style.dropdownButton}>
+              <Dropdown.Item eventKey="">All</Dropdown.Item>
               <Dropdown.Item eventKey="flex">Flex</Dropdown.Item>
               <Dropdown.Item eventKey="pathways">Pathways</Dropdown.Item>
               <Dropdown.Item eventKey="osw">Osw</Dropdown.Item>
@@ -169,6 +173,7 @@ const Services = () => {
                 <ListingBlock
                   id={list.tdei_service_id}
                   name={list.service_name}
+                  type={list.service_type}
                   icon={serviceIcon}
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}
@@ -213,41 +218,57 @@ const Services = () => {
     ));
 };
 
-export const ListingBlock = ({ id, name, icon, handleDelete, handleEdit }) => {
+export const ListingBlock = ({ id, name, type, icon, handleDelete, handleEdit }) => {
   const isUserPoc = useIsPoc();
   const { user } = useAuth();
 
+  const getServiceTypeIcon = () => {
+    if (type === 'flex') {
+      return iconFlex
+    }
+    if (type === 'pathways') {
+      return iconPathway
+    }
+    if (type === 'osw') {
+      return iconOsw
+    }
+    return
+  }
+
+  const serviceTypeIcon = getServiceTypeIcon()
+
   return (
-    <div className={style.block} key={id}>
-      <div className={style.names}>
-        <div className={style.imgBlock}>
-          <img src={icon} alt="icon" />
-        </div>
-        <div>
-          <div className="tdei-bold-name">{name}</div>
+    <div className={style.serviceDetailsContainer}>
+      <div className={style.block} key={id}>
+        <div className={style.names}>
+          <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="icon" />
           <div>
-            <ClipboardCopy copyText={id} copyTitle={"Id"} />
-          </div>
+              <div className={style.serviceType} tabIndex={0}>{type}</div>
+              <div className={style.serviceName} title={name} tabIndex={0}>{name}</div>
+          </div> 
         </div>
+        {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
+          <Button
+            className={style.editButton}
+            onClick={() => handleEdit(id,type)}
+            variant="link"
+          >
+            <img src={iconEdit} alt="edit-icon" />
+            <div className={style.btnText}>Edit</div>
+          </Button>
+          <Button
+            className={style.deleteButton}
+            onClick={() => handleDelete(id)}
+            variant="link"
+          >
+            <img src={iconDelete} alt="delete-icon" />
+            <div className={style.btnText}>Delete</div>
+          </Button>
+        </div>) : null}
       </div>
-      {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
-        <Button
-          className={style.editButton}
-          onClick={() => handleEdit(id)}
-          variant="link"
-        >
-          <img src={iconEdit} alt="edit-icon" />
-          <div className={style.btnText}>Edit</div>
-        </Button>
-        <Button
-          className={style.deleteButton}
-          onClick={() => handleDelete(id)}
-          variant="link"
-        >
-          <img src={iconDelete} alt="delete-icon" />
-          <div className={style.btnText}>Delete</div>
-        </Button>
-      </div>) : null}
+      <div className={style.serviceIdBlock}>
+        <ClipboardCopy copyText={id} copyTitle={"Id"} />
+      </div>
     </div>
   );
 };

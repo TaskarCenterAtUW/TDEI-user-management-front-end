@@ -9,6 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 1.5rem;
 }
 
@@ -24,7 +25,7 @@
 }
 
 .selectPanel > *:not(:last-child) {
-  margin-right: 20px; /* Adjust as needed */
+  margin-right: 10px; /* Adjust as needed */
 }
 
 /* The last item should not have a margin to avoid extra space at the end */
@@ -40,6 +41,7 @@
 .projectHeader {
   background-color: #f8f8f8;
   font-weight: bold;
+  padding: 10px 10px !important;
 }
 
 .gridContainer {
@@ -50,8 +52,8 @@
   align-items: center;
   border-bottom: 1px solid #dddddd;
   border-radius: 0px;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 0px 10px 15px 10px;
+  margin-bottom: 15px;
   font-size: 14px;
 }
 
@@ -78,7 +80,12 @@
   background: #F4F9FC;
   margin: auto; /* Center the box horizontally */
   border: 1px solid #DDDDDD;
-  padding: 20px;
+  padding: 20px 10px;
+  border-radius: 10px;
+
+  [class*='Dropzone_dropzone']{
+    background-color: #ffffff;
+  }
 }
 
 .form {
@@ -97,8 +104,7 @@
 .divider {
   width: 100%; /* Adjust the width as needed */
   border-bottom: 1px solid #ccc; /* Adjust color and style as needed */
-  padding-bottom: 20px;
-  margin-bottom: 20px;/* Set bottom margin */
+  margin: 20px 0px;
 }
 .buttonContainer {
   display: flex;
@@ -139,7 +145,7 @@
   transform: translate(-50%, -50%);
 }
 .jobsContainer{
-  height: calc(100vh - 60px);
+  height: 100%;
   padding: 20px ;
   background-color: #f8f8f8;
 }
@@ -184,4 +190,31 @@
 .jobIdLabel {
   font-size: 14px;
   color: #83879B;
+}
+.createJobContainer {
+  padding: 20px;
+  box-shadow: 0px 1px 6px #22222226;
+  border-radius: 5px;
+  background-color: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.createJobTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+.createJobSelectType {
+  width: 50%;
+}
+.buttonSecondaryCustomised {
+  border: 1px solid #83879B !important;
+  font-weight: 600 !important;
+  color: #162848 !important;
+  text-transform: unset !important;
+  font-family: "Lato", sans-serif !important;
+}
+.textUnset {
+  text-transform: unset !important;
+  font-family: "Lato", sans-serif !important;
 }

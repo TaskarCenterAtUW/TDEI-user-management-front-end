@@ -57,16 +57,17 @@
 .details {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
 }
 
 .icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: #83879b;
+  background-color: #6cb7dc;
   margin-right: 15px;
 }
 
@@ -95,9 +96,10 @@
 .showMore {
   margin-top: 5px;
   cursor: pointer;
-  /* text-decoration: none; */
+  text-decoration: none;
   font-size: 14px;
-  color: #c65d03;
+  font-weight: 700;
+  color: #0969DA;
 }
 
 .noDataIcon {

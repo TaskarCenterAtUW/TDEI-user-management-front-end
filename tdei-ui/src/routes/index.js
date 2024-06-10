@@ -17,6 +17,7 @@ import NotFound from "./NotFound";
 import Datasets from "./Datasets";
 import UploadDataset from "./UploadDataset/UploadDataset";
 import Jobs from "./Jobs";
+import EditMetadata from "./EditMetaData/EditMetaData";
 
 const Router = () => {
   const { user } = useAuth();
@@ -45,6 +46,7 @@ const Router = () => {
             <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>  
             <Route path="/UploadDataset" element={<UploadDataset/>}/>
             <Route path="/CreateJob" element={<CreateJobService />}/>
+            <Route path="/EditMetadata" element={<EditMetadata />}/>
           </Route>
         </Route>
       </>

@@ -165,7 +165,7 @@ const Jobs = () => {
             <Container>
                 <>
                     <div className={style.searchPanel}>
-                        <div className="d-flex">
+                        <div className="d-flex flex-wrap">
                             <Form.Control
                                 type="text"
                                 placeholder="Search Job Id"

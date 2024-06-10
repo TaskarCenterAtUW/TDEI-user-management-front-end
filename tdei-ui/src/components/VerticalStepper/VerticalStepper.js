@@ -16,6 +16,7 @@ import { Icon, List } from '@mui/material';
 import { Grid, Button, Container, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../ToastMessage/ToastMessage';
+import style from "./steps.module.css";
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -90,6 +91,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   const [previousSelectedData, setPreviousSelectedData] = React.useState({});
   const [showToast, setToast] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [metaDataErrorMsg, setMetaDataErrorMsg] = React.useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,17 +137,21 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   // Function to handle next button click
   const handleNext = () => {
     let isValid = false;
-
+    let errorMessage = "";
+  
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
         isValid = validateServiceUpload();
+        if (!isValid) errorMessage = "Please select a service!";
         break;
       case 1:
         isValid = validateDataFile();
+        if (!isValid) errorMessage = "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file";
         break;
       case 2:
-        isValid = validateMetadata();
+        errorMessage = validateMetadata();
+        isValid = errorMessage === null;
         break;
       case 3:
         isValid = validateChangeset();
@@ -153,24 +159,22 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       default:
         isValid = true;
     }
-
     // Proceed to next step if validation passes
     if (isValid) {
-      const newCompleted = completed;
+      const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        console.log(isLastStep())
-        onStepsComplete(selectedData)
+        onStepsComplete(selectedData);
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;
         setCompleted(newCompleted);
-        // To store selected data for the current step
+        // Store selected data for the current step
         updatePreviousSelectedData(activeStep, selectedData[activeStep]);
       }
-    } else { 
-      //to display toast message
-      setErrorMessage( activeStep == 1 ? "Dataset zip file is required to upload a dataset. Please upload a dataset.zip file": activeStep == 2 ? "Please attach metadata file!!" : "Please select a service! ")
+    } else {
+      // Display toast message
+      setErrorMessage(errorMessage);
       setToast(true);
     }
   };
@@ -223,12 +227,36 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
 
   // Validation function for the third step (Metadata)
   const validateMetadata = () => {
-    if (selectedData[activeStep] != null) {
-      return true
+    const metadata = selectedData[activeStep];
+    if (!metadata) {
+      return "Please attach metadata file!!";
     }
-    return false;
-  };
-
+  
+    if (!(metadata instanceof File)) {
+      const { dataset_detail, data_provenance } = metadata;
+      if (!dataset_detail) {
+        return "Metadata details are missing!";
+      }
+  
+      const requiredFields = [
+        { field: 'name', message: 'Dataset Name is required' },
+        { field: 'version', message: 'Dataset Version is required' },
+        { field: 'collected_by', message: 'Collected By is required' },
+        { field: 'collection_date', message: 'Collection Date is required' },
+        { field: 'data_source', message: 'Data Source is required' },
+        { field: 'schema_version', message: 'Schema Version is required' }
+      ];
+      for (const { field, message } of requiredFields) {
+        if (!dataset_detail[field]) {
+          return message;
+        }
+      }
+      if (!data_provenance || !data_provenance.full_dataset_name) {
+        return "Full Dataset Name in Data Provenance is required";
+      }
+    }
+    return null;
+  };  
   // Validation function for the fourth step (Changeset)
   const validateChangeset = () => {
     return true;
@@ -256,10 +284,10 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   }
   // Rendering the vertical stepper component
   return (
-    <Box sx={{ width: '100%', borderTop: 1, marginTop: "10px", borderColor: "grey.300" }}>
+    <Box className={style.uploadDatasetStepsLayout}>
       <Grid container spacing={0} columns={15}>
         <Grid item xs={4}>
-          <Box sx={{ borderRight: 1, height: "100%", borderColor: "grey.300" }}>
+          <Box className={style.stepsBlock}>
             <Stepper nonLinear activeStep={activeStep} orientation='vertical' sx={{
               '& .MuiStepConnector-line': {
                 minHeight: '50px',
@@ -273,16 +301,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
               {stepsData.map((step, index) => (
                 <Step key={index} completed={completed[index]}>
                   <StepLabel StepIconComponent={ColorlibStepIcon}>
-                    <Typography variant="h6" sx={{
-                      font: 'normal normal bold 16px/20px Lato',
-                      color: '#162848'
-                    }}>{step.title}</Typography>
-                    <Typography variant="subtitle2" sx={{
-                      font: 'normal normal medium 10px/12px Lato',
-                      color: '#83879B'
-                    }}>
-                      {step.subtitle}
-                    </Typography>
+                    <div className={style.stepTimelineTitle}>{step.title}</div>
+                    <div className={style.stepTimelineSubTitle}>{step.subtitle}</div>
                   </StepLabel>
                 </Step>
               ))}
@@ -292,18 +312,16 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
         <Grid item xs={11}>
           <Grid container >
             <Grid item xs={12}>
-              <Container style={{ height: 500, overflow: 'auto', margin: "20px" }}>
+              <Container className={style.stepsTabContainer}>
                 <SelectedComponent {...componentProps} />
               </Container>
             </Grid>
             <Grid item xs={12}>
-              <Box sx={{ width: '100%', borderTop: 1, borderColor: "grey.300" }}>
+              <Box className={style.uploadDatasetStepsFooterBlock}>
                 <React.Fragment>
-                  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', pt: 2 }}>
+                  <Box className={style.footerButtonBlock}>
                     <Button
-                      variant="ouline-secondary"
-                      className="tdei-secondary-button"
-                      sx={{ border: "1px solid #83879B", marginLeft: "20px" }}
+                      className={style.buttonSecondaryCustomised}
                       onClick={() => navigate(-1)}
                     >
                       Cancel
@@ -312,13 +330,13 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
                     {activeStep === 0 ? (
                       <Box></Box>
                     ) : (<Button
-                      sx={{ border: "1px solid #4DA9AD", color: "#4DA9AD", marginRight: 1 }}
+                      className={style.buttonOutlineCustomised}
                       onClick={handleBack}
                       startIcon={<ChevronLeftIcon />}
                     >
                       Prev
                     </Button>)}
-                    <Button className="tdei-primary-button" onClick={handleNext} endIcon={isLastStep() ? <div></div> : <ChevronRightIcon />} >
+                    <Button className={`tdei-primary-button ${style.textUnset}`} onClick={handleNext} endIcon={isLastStep() ? <div></div> : <ChevronRightIcon />} >
                       {isLastStep() ? 'Submit' : 'Next'}
                     </Button>
                     <ToastMessage showToast={showToast} toastMessage={errorMessage} onClose={handleClose} isSuccess={false} />

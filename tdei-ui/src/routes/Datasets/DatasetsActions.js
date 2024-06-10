@@ -1,69 +1,42 @@
-// Actions that can be done on a dataset table are put up here.
+import React from 'react';
+import { Dropdown } from 'react-bootstrap';
+import style from "./Datasets.module.css";
+import menuOptionIcon from "../../assets/img/menu-options.svg";
+import releaseIcon from "../../assets/img/action-release.svg";
+import deactivateIcon from "../../assets/img/action-deactivate.svg";
+import openConsoleIcon from "../../assets/img/action-open-console.svg";
+import useIsPoc from "../../hooks/useIsPoc";
+import { useAuth } from "../../hooks/useAuth";
 
-import { Button, Col, Container, InputGroup, Row } from "react-bootstrap"
-import { Form } from "react-bootstrap";
+const DatasetsActions = ({ status, onAction }) => {
+  const isPocUser = useIsPoc();
+  const { user } = useAuth();
+  
+  const canDeactivate = isPocUser || user?.isAdmin;
 
-import { BsSearch,BsArrowCounterclockwise ,BsSortDown } from "react-icons/bs";
-
-const DatasetsActions = () => {
-    return (
-        <Container fluid>
-            <Row>
-                <Col>
-                    <InputGroup className="mb-3">
-
-                        <Form.Control
-                            placeholder="Search Datasets"
-                            aria-label="Search Datasets"
-                            aria-describedby="basic-addon1"
-
-                        />
-                        <InputGroup.Text id="basic-addon1">
-                            <BsSearch />
-                        </InputGroup.Text>
-
-
-                    </InputGroup>
-
-
-                </Col>
-                <Col>
-                    <Row>
-                        <Col>
-                            Type
-                        </Col>
-                        <Col>
-                            <Form.Select aria-label="Type selection">
-                                <option>All </option>
-                                <option value="flex">Flex</option>
-                                <option value="pathways">Pathways</option>
-                                <option value="osw">OSW</option>
-                            </Form.Select>
-                        </Col>
-                    </Row>
-                </Col>
-                <Col>
-                </Col>
-                <Col>
-                {/* <Row>
-                    <Col>
-                    <Button variant="secondary">
-                    <BsArrowCounterclockwise />
-                </Button>
-                    </Col>
-                    
-                    <Col>
-                    Sort by
-                    </Col>
-                    <Col>
-                    <BsSortDown />
-                    </Col>
-                </Row> */}
-               
-                </Col>
-            </Row>
-        </Container>
-    )
-}
+  return (
+    <div className={style.dropdownContainer}>
+      <Dropdown onSelect={onAction}>
+        <Dropdown.Toggle id="dropdown-basic" variant='btn btn-link' className={`${style.dropdownToggle}`}>
+          <img src={menuOptionIcon} className={style.moreActionIcon} alt="Menu Options" />
+        </Dropdown.Toggle>
+        <Dropdown.Menu className={style.dropdownCard}>
+          <Dropdown.Item eventKey="openInWorkspace" className={style.itemRow}>
+            <img src={openConsoleIcon} className={style.itemIcon} alt="" />Open in workspaces
+          </Dropdown.Item>
+          <Dropdown.Item disabled={status === "Publish" ? true : false} eventKey="release" className={style.itemRow}>
+            <img src={releaseIcon} className={style.itemIcon} alt="" />Release
+          </Dropdown.Item>
+          <Dropdown.Item disabled={!canDeactivate} eventKey="deactivate" className={style.itemRow}>
+            <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
+          </Dropdown.Item>
+          <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
+            <img src={deactivateIcon} className={style.itemIcon} alt="" />Edit Metadata
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </div>
+  );
+};
 
 export default DatasetsActions;

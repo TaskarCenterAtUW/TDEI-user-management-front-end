@@ -18,36 +18,37 @@ const ShowJobMessageModal = (props) => {
             <Modal.Body>
                 <Form>
                     <Form.Group as={Row}>
-                        <Col sm={4} className="d-flex align-items-baseline">
-                            <Form.Label>Dataset / File Name</Form.Label>
+                        <Col sm={5} className="d-flex align-items-baseline">
+                            <Form.Label className="fw-bold">Dataset / File Name</Form.Label>
                         </Col>
-                        <Col sm={6}>
+                        <Col sm={7}>
                             <Form.Text>{props.message.fileName}</Form.Text>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row}>
-                        <Col sm={4} className="d-flex align-items-baseline">
-                            <Form.Label>Type</Form.Label>
+                        <Col sm={5} className="d-flex align-items-baseline">
+                            <Form.Label className="fw-bold">Type</Form.Label>
                         </Col>
-                        <Col sm={6}>
+                        <Col sm={7}>
                             <Form.Text>{props.message.type}</Form.Text>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row}>
-                        <Col sm={4} className="d-flex align-items-baseline">
-                            <Form.Label>Job Id</Form.Label>
+                        <Col sm={5} className="d-flex align-items-baseline">
+                            <Form.Label className="fw-bold">Job Id</Form.Label>
                         </Col>
-                        <Col sm={6}>
+                        <Col sm={7}>
                             <Form.Text>{props.message.job_id}</Form.Text>
                         </Col>
                     </Form.Group>
-                    <div style={{
+                    <div className="mt-2" style={{
                         maxHeight: '300px',
                         padding: '20px',
                         background: '#404040',
                         color: 'white',
                         overflowY: 'auto',
-                        overflowX: 'hidden'
+                        overflowX: 'hidden',
+                        borderRadius: '4px'
                     }}>
                         <p>{props.message.message}</p>
                     </div>

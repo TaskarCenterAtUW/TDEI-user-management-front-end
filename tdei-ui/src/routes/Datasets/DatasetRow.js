@@ -1,15 +1,18 @@
 import React from "react";
 import style from "./Datasets.module.css";
-import { Badge, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
-import menuOptionIcon from "../../assets/img/menu-options.svg";
-import { Link } from "react-router-dom";
 import { workspaceUrl } from '../../services';
+import DatasetsActions from "./DatasetsActions";
+import ClipboardCopy from "../Services/ClipBoardCopy";
 
-const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInspect, isReleasedList, uploaded_time,tdei_dataset_id }) => {
+const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
+    const { metadata, data_type, service, status, uploaded_timestamp, tdei_dataset_id } = dataset;
+    const { data_provenance, dataset_detail } = metadata;
+
     const getStatusColor = () => {
         if (isReleasedList) {
-            return "#B6EDD7"
+            return "#B6EDD7";
         } else {
             switch (status) {
                 case "Publish":
@@ -21,68 +24,82 @@ const DatasetRow = ({ datasetName, version, type, collectionDate, status, onInsp
             }
         }
     };
-    // Inline style for the left border based on status color
+
     const leftBorderStyle = {
-        borderLeft: `12px solid ${getStatusColor()}`
+        borderLeft: `8px solid ${getStatusColor()}`
     };
 
     const updatedTime = (time) => {
         const dateTime = new Date(time);
-        return dateTime.toLocaleString()
-    }
+        
+        const optionsDate = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        const optionsTime = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        const formattedDate = dateTime.toLocaleDateString('en-US', optionsDate);
+        const formattedTime = dateTime.toLocaleTimeString('en-US', optionsTime);
+        
+        return `${formattedDate}, ${formattedTime}`;
+    };
+    const handleDropdownSelect = (eventKey) => {
+        if (eventKey === 'openInWorkspace') {
+            window.open(`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`, '_blank')?.focus();
+        } else {
+            onAction(eventKey, dataset);
+        }
+    };
 
     return (
         <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
             <Row className={style.datasetCard}>
                 <Col md={5}>
-                    <div className="d-flex align-items-center">
-                        <div className="">
+                    <div className="d-flex align-items-center flex-wrap">
+                        <div className="me-3">
                             <img src={datasetRowIcon} alt="Dataset Icon" />
                         </div>
                         <div className={style.infoBlock}>
                             <div className="d-flex align-items-center mb-2">
-                                <span className={style.datasetTitle}>{datasetName} </span>
+                                <span className={style.datasetTitle} title={metadata.dataset_detail.name} tabIndex={0}>{metadata.dataset_detail.name} </span>
                             </div>
                             <div className={style.datasetSecondaryInfoBlock}>
-                                <span className=""><b>Uploaded at : </b> {updatedTime(uploaded_time)}</span>
+                                <span className=""><b>Uploaded at : </b> {updatedTime(uploaded_timestamp)}</span>
                                 <span className={style.verticalSeparator}></span>
-                                <span className={style.version}>{version}</span>
-                            </div>
-                            <div className={style.datasetSecondaryInfoBlock}>
-                                <span className=""><b>Id : </b> {tdei_dataset_id}</span>
+                                <span className={style.version}>{dataset_detail.version}</span>
                             </div>
                         </div>
                     </div>
                 </Col>
                 <Col>
-                    {type == "Osw" ? "OSW" : type}
+                    <div className={style.serviceName} title={service.name} tabIndex={0}>{service.name}</div>
                 </Col>
                 <Col>
-                    {collectionDate}
+                    <div className="" tabIndex={0}>{data_type === "Osw" ? "OSW" : data_type}</div>
                 </Col>
                 {isReleasedList ? null : (
-                    <Col>
-                        <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }}>
-                            {status ==  "Publish" ? "Released" : status}
+                    <Col className="d-flex justify-content-center">
+                        <div className={style.statusContainer} style={{ backgroundColor: getStatusColor() }} tabIndex={0}>
+                            {status === "Publish" ? "Released" : status}
                         </div>
                     </Col>
                 )}
-                {/* <Col>
-                    <Link onClick={onInspect} className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
-                        <span>Inspect</span>
-                    </Link>
-                </Col> */}
                 {isReleasedList ? null : (
                     <Col>
-                        {/* <img src={menuOptionIcon} alt="Menu Options" onClick={onAction} /> */}
-                        <a href={`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`} target="_blank" rel="noopener noreferrer" className={`${style['link-with-hover-underline']} ${style['link-inspect']}`}>
-                        <span>Open in workspaces</span>
-                    </a>
+                        <DatasetsActions status={status} onAction={handleDropdownSelect}/>
                     </Col>
                 )}
             </Row>
+            <div className={style.datasetIdBlock}>
+                <ClipboardCopy copyText={tdei_dataset_id} copyTitle={"Id"} />
+            </div>
         </Container>
-    )
+    );
 }
 
 export default DatasetRow;

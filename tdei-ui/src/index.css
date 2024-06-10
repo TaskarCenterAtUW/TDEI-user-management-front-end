@@ -20,8 +20,8 @@ body {
   background-color: #4DA9AD !important;
   border-color: #59c3c8 !important;
   color: #fff !important;
-  font-weight: 600;
-  border-radius: 4px;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
 }
 
 .tdei-primary-button:hover,
@@ -149,3 +149,51 @@ body {
   font-weight: 600;
   border-radius: 100px;
 }
+.form-group-custom {
+  position: relative;
+  min-height: 90px;
+  margin-right: 1rem;
+}
+
+.form-group-custom .form-control,
+.form-group-custom .react-datepicker-wrapper,
+.form-group-custom .react-select-container {
+  width: 100%;
+}
+
+.form-group-custom .invalid-feedback {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+.container {
+  padding: 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.column-style {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 1px 12px #0000000D;
+  border: 1px solid #EEEEEE;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 20px;
+  flex: 1;
+}
+
+.section-style {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 1px 12px #0000000D;
+  border: 1px solid #EEEEEE;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 20px;
+  margin-top: 20px;
+}
+

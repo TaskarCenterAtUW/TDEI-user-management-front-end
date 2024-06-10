@@ -11,8 +11,10 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
     const [myFiles, setMyFiles] = useState([]);
     // Effect hook to update files when selectedFile prop changes
     useEffect(() => {
-        if (selectedFile) {
+        if (selectedFile instanceof File) {
             setMyFiles([selectedFile]);
+        } else {
+            setMyFiles([]);
         }
     }, [selectedFile]);
     // Dropzone hook to manage file drop functionality
@@ -56,18 +58,18 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
                 <input {...getInputProps()} />
                 <div>
                     {isDragActive ? (
-                        <p>
+                        <div className={style.dropFilesTitle}>
                             Release to drop the files here
-                        </p>
+                        </div>
                     ) : (
                         <div>
                             <img src={uploadIcon} style={{ height: 20, marginBottom: "10px" }} />
-                            <p className={style.title}>
+                            <div className={style.title}>
                                 Drop files here or click to upload.
-                            </p>
-                            <p className={style.subtile}>
+                            </div>
+                            <div className={style.subtile}>
                                 Allowed format {format}
-                            </p>
+                            </div>
                         </div>
                     )}
                 </div>

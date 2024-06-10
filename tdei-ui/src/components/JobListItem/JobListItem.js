@@ -69,30 +69,30 @@ class JobListItem extends React.Component {
                     {jobItem.request_input.dataset_name ? ( 
                        <div className="d-flex align-items-center">
                             <img className={style.datasetFileIconSize} src={DatasetIcon} alt="Dataset Icon"/> 
-                            <div className={style.datasetFileName}>{jobItem.request_input.dataset_name}</div>
+                            <div className={style.datasetFileName} tabIndex={0}>{jobItem.request_input.dataset_name}</div>
                         </div>
                     ) : (
                         <div className="d-flex align-items-center">
                             <img className={style.datasetFileIconSize} src={fileIcon} alt="Dataset Icon"/> 
-                            <div className={style.datasetFileName}>{jobItem.request_input.file_upload_name}</div>
+                            <div className={style.datasetFileName} tabIndex={0}>{jobItem.request_input.file_upload_name}</div>
                         </div>
                     )}
                 </div>
 
-                <div className={style.content}>
+                <div className={style.content} tabIndex={0}>
                     {jobItem.job_type} <br/>
                     <span className={style.jobIdLabel}>Job Id - {jobItem.job_id}</span>
                 </div>
                 <div className={style.content}>
                     {jobItem.message && (
                         <>
-                            <div className={style.errorMessageContent}>
+                            <div className={style.errorMessageContent} tabIndex={0}>
                                 {jobItem.message.length > 70 ? `${jobItem.message.slice(0, 70)}...` : `${jobItem.message}`}
                             </div>
                             <div>
                                 {jobItem.message.length > 70 &&
                                     <Button className={style.showMoreButton} onClick={this.toggleShowMore}
-                                            variant="text">
+                                            variant="link">
                                         {this.state.showMore ? 'Show less' : 'Show more'}
                                     </Button>}
                             </div>
@@ -101,12 +101,12 @@ class JobListItem extends React.Component {
                     {!jobItem.message && (
                         
 
-                        <div className={jobItem.status.toLowerCase() !== 'completed'?style.noMessageFount:style.content}>
+                        <div className={jobItem.status.toLowerCase() !== 'completed'?style.noMessageFount:style.content} tabIndex={0}>
                             {jobItem.status.toLowerCase() === 'completed'? 'Job completed': 'Job is in progress'}
-                            </div>
+                        </div>
                     )}
                 </div>
-                <div className={style.content}>
+                <div className={style.content} tabIndex={0}>
                     <ColoredLabel labelText={jobItem.status} color={getColorForLabel(jobItem.status.toLowerCase())}/>
                     <div className={style.updatedInfo}>Updated at : {this.updatedTime(jobItem.updated_at)}</div>
                 </div>
@@ -124,6 +124,7 @@ class JobListItem extends React.Component {
                         type: `${jobItem.job_type}`,
                         job_id: `${jobItem.job_id}`,
                         message: `${jobItem.message}`,
+                        fileName: jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name
                     }}
                 />
             </div>

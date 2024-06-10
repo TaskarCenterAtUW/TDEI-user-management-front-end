@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import style from "../../components/UserHeader/UserHeader.module.css"
+import style from "./ClipBoardCopy.module.css"
+import userIcon from "../../assets/img/icon-copy-id.svg";
 ///
 /// Copy to ClipBoard Component
 ///
@@ -30,7 +31,8 @@ function ClipboardCopy({ copyText, copyTitle }) {
       });
   }
   return (
-    <div className={ copyTitle == "Id" ? style.apiKey:style.projectId}>
+    <>
+    {/* <div className={ copyTitle == "Id" ? style.apiKey:style.projectId}>
       <div style={{display: "flex"}}>
       <div  style={{ width:  copyTitle != "Id" ? "80px" : null}}>{copyTitle} : </div>
       <div className={style.maskedKey}>
@@ -42,7 +44,22 @@ function ClipboardCopy({ copyText, copyTitle }) {
         </div>
       </div>
       </div>
+    </div> */}
+
+    <div className="d-flex align-items-center">
+      <div className={style.textStyle}><b>{copyTitle} : </b> {copyText}</div>
+        <CopyToClipboard text={copyText} onCopy={() => handleCopyClick()}>
+          <Button variant="link d-flex p-0">
+            <img src={userIcon} className={style.copyIcon} alt="Copy Id" />
+          </Button>
+        </CopyToClipboard>
+        {isCopied ? (
+          <div className={style.copiedInfo}>Copied!</div>
+        ): (
+          ""
+        )}
     </div>
+    </>
   );
 }
 export default ClipboardCopy;
