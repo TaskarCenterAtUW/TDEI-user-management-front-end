@@ -106,7 +106,7 @@ const CloneDataset = () => {
                 {showSuccessModal && (
                     <CustomModal
                         show={showSuccessModal}
-                        message="Dataset clone job has been accepted!"
+                        message="Dataset clone has been accepted!"
                         content="Find cloned dataset in datasets page."
                         handler={() => {
                             setShowSuccessModal(false);
