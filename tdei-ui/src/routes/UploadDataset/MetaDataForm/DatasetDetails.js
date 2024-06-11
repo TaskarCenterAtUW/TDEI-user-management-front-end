@@ -91,21 +91,6 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 />
                 <Form.Control.Feedback type="invalid">{errors.version}</Form.Control.Feedback>
               </Form.Group>
-              <Form.Group controlId="derived_from_dataset_id" style={{ marginTop: '10px' }}>
-                <Form.Label>Derived from Dataset Id</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Derived Dataset Id"
-                  name="derived_from_dataset_id"
-                  onChange={(e) => {
-                    handleFieldChange(e);
-                    handleChange(e);
-                  }}
-                  onBlur={handleBlur}
-                  value={formData.derived_from_dataset_id}
-                />
-                <Form.Control.Feedback type="invalid">{errors.derived_from_dataset_id}</Form.Control.Feedback>
-              </Form.Group>
               <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
                 <Form.Label>Schema Version<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control

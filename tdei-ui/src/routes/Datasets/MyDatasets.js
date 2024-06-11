@@ -98,7 +98,9 @@ const MyDatasets = () => {
         setEventKey(eventKey);
         if(eventKey === 'editMetadata'){
             navigate('/EditMetadata', { state: { dataset } });
-        } else {
+        } else if(eventKey === 'cloneDataset'){
+            navigate('/CloneDataset',{ state: { dataset } });
+        }else {
             setShowSuccessModal(true);
         }
     };
