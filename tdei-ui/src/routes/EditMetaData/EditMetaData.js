@@ -83,7 +83,6 @@ export default function EditMetadata() {
         "dataset_detail": {
             "name": "",
             "version": "",
-            "derived_from_dataset_id": "",
             "collection_date": "",
             "valid_from": "",
             "valid_to": "",
@@ -150,7 +149,6 @@ export default function EditMetadata() {
                 ...dataset.metadata,
                 dataset_detail: {
                     ...dataset.metadata.dataset_detail,
-                    derived_from_dataset_id: dataset.derived_from_dataset_id ? dataset.derived_from_dataset_id :"",
                     custom_metadata: dataset.metadata.dataset_detail.custom_metadata ? JSON.stringify(dataset.metadata.dataset_detail.custom_metadata, null, 2) : "",
                     dataset_area: dataset.metadata.dataset_detail.dataset_area ? JSON.stringify(dataset.metadata.dataset_detail.dataset_area, null, 2) : ""
                 }

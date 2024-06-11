@@ -15,7 +15,6 @@ const MetaDataForm = ({ selectedData, onUpdateFormData }) => {
         "dataset_detail": {
             "name": "",
             "version": "",
-            "derived_from_dataset_id": "",
             "collection_date": "",
             "valid_from": "",
             "valid_to": "",
@@ -98,7 +97,6 @@ const MetaDataForm = ({ selectedData, onUpdateFormData }) => {
                 "dataset_detail": {
                     "name": "",
                     "version": "",
-                    "derived_from_dataset_id": "",
                     "collection_date": "",
                     "valid_from": "",
                     "valid_to": "",
