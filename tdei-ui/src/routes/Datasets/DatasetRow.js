@@ -89,11 +89,11 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                         </div>
                     </Col>
                 )}
-                {isReleasedList ? null : (
+                {/* {isReleasedList ? null : ( */}
                     <Col>
-                        <DatasetsActions status={status} onAction={handleDropdownSelect}/>
+                        <DatasetsActions status={status} onAction={handleDropdownSelect} isReleasedDataset={isReleasedList}/>
                     </Col>
-                )}
+                {/* )} */}
             </Row>
             <div className={style.datasetIdBlock}>
                 <ClipboardCopy copyText={tdei_dataset_id} copyTitle={"Id"} />
