@@ -7,6 +7,7 @@ import deactivateIcon from "../../assets/img/action-deactivate.svg";
 import openConsoleIcon from "../../assets/img/action-open-console.svg";
 import useIsPoc from "../../hooks/useIsPoc";
 import { useAuth } from "../../hooks/useAuth";
+import editImage from "../../assets/img/edit-img.svg"
 
 const DatasetsActions = ({ status, onAction }) => {
   const isPocUser = useIsPoc();
@@ -31,7 +32,7 @@ const DatasetsActions = ({ status, onAction }) => {
             <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
           </Dropdown.Item>
           <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
-            <img src={deactivateIcon} className={style.itemIcon} alt="" />Edit Metadata
+            <img src={editImage} className={style.itemIcon} alt="" />Edit Metadata
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
