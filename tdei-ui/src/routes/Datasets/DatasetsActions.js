@@ -9,7 +9,6 @@ import useIsPoc from "../../hooks/useIsPoc";
 import cloneImg from "../../assets/img/clone-img.svg";
 import editImage from "../../assets/img/edit-img.svg";
 import { useAuth } from "../../hooks/useAuth";
-import editImage from "../../assets/img/edit-img.svg"
 
 const DatasetsActions = ({ status, onAction }) => {
   const isPocUser = useIsPoc();
