@@ -72,7 +72,7 @@ ColorlibStepIcon.propTypes = {
     icon: PropTypes.node,
 };
 export default function EditMetadata() {
-    
+
     const location = useLocation();
     const navigate = useNavigate();
     const dataset = location.state?.dataset;
@@ -223,7 +223,7 @@ export default function EditMetadata() {
             }
             if (!data_provenance || !data_provenance.full_dataset_name) {
                 return "Full Dataset Name in Data Provenance is required";
-              }
+            }
         }
         return null;
     };
@@ -231,7 +231,7 @@ export default function EditMetadata() {
     return (
         <div className={style.layout}>
             <Container>
-            <div className={style.uploadWidgetTitle}>Update Metadata - {selectedData && selectedData.dataset_detail && selectedData.dataset_detail.name}</div>
+                <div className={style.uploadWidgetTitle}>Update Metadata - {dataset && dataset.metadata && dataset.metadata.dataset_detail && dataset.metadata.dataset_detail.name}</div>
                 <Box className={style.uploadDatasetStepsLayout}>
                     <Grid container spacing={0} columns={15}>
                         <Grid item xs={4}>
