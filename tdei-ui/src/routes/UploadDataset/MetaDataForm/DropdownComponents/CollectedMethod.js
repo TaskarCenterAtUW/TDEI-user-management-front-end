@@ -16,7 +16,7 @@ const CollectedMethodDropdownForm = ({ field, form, onChange, formDataCollection
   useEffect(() => {
     if (formDataCollectionMethod !== undefined && formDataCollectionMethod !== null) {
       const selectedOption = collectedMethodOptions.find(option => option.value === formDataCollectionMethod);
-      setCurrentValue(selectedOption);
+      setCurrentValue(selectedOption ?? "");
     }
   }, [formDataCollectionMethod]);
 
