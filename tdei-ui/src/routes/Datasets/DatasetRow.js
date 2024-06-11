@@ -7,7 +7,7 @@ import DatasetsActions from "./DatasetsActions";
 import ClipboardCopy from "../Services/ClipBoardCopy";
 
 const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
-    const { metadata, data_type, service, status, uploaded_timestamp, tdei_dataset_id } = dataset;
+    const { metadata, data_type, service, status, uploaded_timestamp, tdei_dataset_id, project_group } = dataset;
     const { data_provenance, dataset_detail } = metadata;
 
     const getStatusColor = () => {
@@ -76,6 +76,11 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                         </div>
                     </div>
                 </Col>
+                 {!isReleasedList ? null : (
+                 <Col>
+                    <div className={style.serviceName} title={dataset.project_group.name} tabIndex={0}>{dataset.project_group.name}</div>
+                </Col>
+                 )}
                 <Col>
                     <div className={style.serviceName} title={service.name} tabIndex={0}>{service.name}</div>
                 </Col>

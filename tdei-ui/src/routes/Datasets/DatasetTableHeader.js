@@ -9,6 +9,9 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                 <Col md={5}>
                     Dataset Name
                 </Col>
+                {isReleasedDataList && <Col>
+                    Project Group
+                </Col>}
                 <Col>
                     Service Name
                 </Col >
