@@ -36,6 +36,9 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset }) => {
           <Dropdown.Item disabled={isReleasedDataset} eventKey="editMetadata" className={style.itemRow}>
             <img src={editImage} className={style.itemIcon} alt="" />Edit Metadata
           </Dropdown.Item>
+          <Dropdown.Item disabled={isReleasedDataset} eventKey="cloneDataset" className={style.itemRow}>
+            <img src={cloneImg} className={style.itemIcon} alt="" />Clone Dataset
+          </Dropdown.Item>
           <Dropdown.Item eventKey="downLoadDataset" className={style.itemRow}>
             <img src={downloadDatasetImg} className={style.itemIcon} alt="" />Download
           </Dropdown.Item>

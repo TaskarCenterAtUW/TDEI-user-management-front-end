@@ -328,7 +328,7 @@ export async function postUploadDataset(data) {
     return response.data;
   } catch (error) {
     console.error('Error object:', error);
-    if (error.response.data) {
+    if (error.response && error.response.data) {
       console.error('Error response:', error.response);
       throw new Error(error.response.data);
     }else if (error.data) {
