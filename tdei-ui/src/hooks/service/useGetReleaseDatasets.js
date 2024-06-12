@@ -27,7 +27,6 @@ function useGetReleasedDatasets(searchText = "", dataType) {
   useEffect(() => {
     refreshData();
   }, [searchText, dataType]);
-  console.log("released datasets hook", data)
   return { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData };
 }
 

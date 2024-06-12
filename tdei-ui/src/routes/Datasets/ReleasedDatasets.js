@@ -14,6 +14,7 @@ import iconNoData from "./../../assets/img/icon-noData.svg";
 import { toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import useGetReleasedDatasets from '../../hooks/service/useGetReleaseDatasets';
+import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 
 
 const ReleasedDatasets = () => {
@@ -23,6 +24,7 @@ const ReleasedDatasets = () => {
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [dataType, setDataType] = React.useState("");
   const [sortedData, setSortedData] = useState([]);
+  const [eventKey, setEventKey] = useState("");
 
   const {
     data = [],
@@ -65,12 +67,12 @@ const ReleasedDatasets = () => {
     { value: 'pathways', label: 'Pathways' },
     { value: 'osw', label: 'OSW' },
   ];
-
+  const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
+  const handleDownloadDataset = (dataset) => {
+    downloadDataset({tdei_dataset_id : dataset.tdei_dataset_id, data_type: dataset.data_type});
+};
   // Event handler for selecting action button on a dataset
-  const onInspect = () => {};
-
-  // Event handler for selecting action button on a dataset
-  const onAction = () => {};
+  const onInspect = () => {}
 
   const handleRefresh = () => {
     // Logic for refreshing
@@ -79,7 +81,6 @@ const ReleasedDatasets = () => {
 
   const handleDropdownSelect = (eventKey) => {
     // Logic for handling dropdown selection
-    console.log('Dropdown item selected:', eventKey);
     if (eventKey === 'status') {
       // Sort by status in ascending order
       const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));
@@ -94,6 +95,12 @@ const ReleasedDatasets = () => {
       setSortedData(sorted);
     }
   };
+  const onAction = (eventKey, dataset) => {
+    setEventKey(eventKey);
+   if(eventKey === 'downLoadDataset'){
+        handleDownloadDataset(dataset)
+    }
+};
 
   return (
     <div>

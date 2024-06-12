@@ -267,14 +267,13 @@ export async function postCreateJob(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response: ', response)
   return response.data;
 }
 export async function postUploadDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
   formData.append('tdei_service_id', data[0].tdei_service_id);
-  formData.append('dataset', data[1]);
+  formData.append('dataset', data[1].file);
   if (data[2] instanceof File) {
     formData.append('metadata', data[2]);
   } else {
@@ -311,19 +310,29 @@ export async function postUploadDataset(data) {
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
-  //get the end point based on the service_type
-  var file_end_point = ''
-  var service_type = data[0].service_type
-  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
-  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
-  else { file_end_point = 'osw' }
-  const response = await axios.post(`${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  console.log('Response:', response);
-  return response.data;
+  // Get the endpoint based on the service_type
+  const service_type = data[0].service_type;
+  const file_end_point = service_type === 'flex' ? 'gtfs-flex' : (service_type === 'pathways' ? 'gtfs-pathways' : 'osw');
+  const url = data[1].derived_from_dataset_id ? 
+    `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}` :
+    `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
+  try {
+    const response = await axios.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error object:', error);
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data);
+    }else if (error.data) {
+      throw new Error(error.data);
+    } else {
+      throw new Error(error);
+    }
+  }
 }
 export async function getDatasets(searchText, pageParam = 1, status, dataType, tdei_project_group_id) {
   const params = {
@@ -347,7 +356,6 @@ export async function getDatasets(searchText, pageParam = 1, status, dataType, t
     params: params,
     method: "GET",
   });
-  console.log("my datasets", res.data)
   return {
     data: res.data,
     pageParam,
@@ -370,7 +378,6 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
     params: params,
     method: "GET",
   });
-  console.log("released datasets", res.data)
   return {
     data: res.data,
     pageParam,
@@ -383,13 +390,11 @@ export async function postPublishDataset(data) {
   else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
   else { file_end_point = 'osw' }
   const res = await axios.post(`${osmUrl}/${file_end_point}/publish/${data.tdei_dataset_id}`, data);
-  console.log('Response:', res.data);
   return res.data;
 }
 
 export async function deleteDataset(tdei_dataset_id) {
   const res = await axios.delete(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
-  console.log('Response:', res.data);
   return res.data;
 }
 
@@ -424,7 +429,6 @@ export async function editMetadata(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response:', response);
   return response.data;
 }
 
@@ -476,6 +480,28 @@ export async function cloneDataset(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response:', response);
   return response.data;
 }
+
+export async function downloadDataset(data) {
+  var file_end_point = ''
+  var service_type = data.data_type
+  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
+  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
+  else { file_end_point = 'osw' }
+  try {
+    const response = await axios.get(`${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`, {
+      responseType: 'blob'
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = urlBlob;
+    a.download = 'response.zip';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  } catch (error) {
+    console.error('There was a problem with the download operation:', error);
+  }
+};

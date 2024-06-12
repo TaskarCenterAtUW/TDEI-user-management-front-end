@@ -7,7 +7,6 @@ import style from './MetaDataForm/MetaDataForm.module.css';
 const Metadata = ({ selectedData, onSelectedFileChange }) => {
   const onDrop = (files) => {
     const selectedFile = files[0];
-    console.log(selectedFile);
     onSelectedFileChange(selectedFile);
   };
 

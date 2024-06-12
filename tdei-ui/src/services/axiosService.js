@@ -32,7 +32,7 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error.response);
+    return Promise.reject(error.response ?? error);
   }
 );
 
@@ -50,6 +50,6 @@ axios.interceptors.response.use(
         return Promise.reject(e);
       }
     }
-    return Promise.reject(err.response);
+    return Promise.reject(err.response ?? err);
   }
 );

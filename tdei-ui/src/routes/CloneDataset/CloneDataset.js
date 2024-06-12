@@ -48,7 +48,6 @@ const CloneDataset = () => {
 
     const onSuccess = (data) => {
         setLoading(false);
-        console.log("successfully created", data);
         queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
         setShowSuccessModal(true);
     };
@@ -56,7 +55,6 @@ const CloneDataset = () => {
     const handleClose = () => {
         setToast(false);
         setCurrentStep(1); // reverting to metadata step.
-        console.log(currentStep)
     };
     const onError = (err) => {
         setLoading(false);
@@ -70,7 +68,6 @@ const CloneDataset = () => {
     // Using useUploadDataset hook to get mutate function
     const { isLoading, mutate } = useCloneDataset({ onSuccess, onError });
     const onStepsComplete = (cloneDataset) => {
-        console.log(cloneDataset);
         const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, selectedData: cloneDataset };
         mutate(dataToMutate);
         setLoading(true)
