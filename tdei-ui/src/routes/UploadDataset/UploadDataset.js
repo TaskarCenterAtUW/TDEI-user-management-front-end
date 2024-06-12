@@ -60,7 +60,9 @@ const UploadDataset = () => {
 
   const handleClose = () => {
     setToast(false);
-    setCurrentStep(2); // reverting to metadata step.
+    if(errorMessage !== "Derived dataset id not found"){
+      setCurrentStep(2); // reverting to metadata step.
+    }
     console.log(currentStep)
   };
   const onError = (err) => {
@@ -69,7 +71,7 @@ const UploadDataset = () => {
     setCurrentStep(0);
     console.error("error message", err);
     setToast(true);
-    setErrorMessage(err.data)
+    setErrorMessage(err.message)
   };
   // Using useUploadDataset hook to get mutate function
   const { isLoading, mutate } = useUploadDataset({ onSuccess, onError });

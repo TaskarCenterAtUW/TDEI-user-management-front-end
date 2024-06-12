@@ -119,3 +119,28 @@
 .cloneDatasetTitle {
   margin-right: 10px;
 }
+
+.derivedDatasetTitle {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0px;
+  color: #162848;
+  opacity: 1;
+  padding: 5px;
+}
+
+.derivedDatasetSubtile {
+  font: normal normal normal 12px/17px Lato;
+  letter-spacing: 0px;
+  color: #83879B;
+  opacity: 1;
+  font-style: italic;
+}
+
+.derivedDatasetHint {
+  text-align: left;
+  font: normal normal normal 12px/17px Lato;
+  letter-spacing: 0px;
+  color: #83879B;
+  opacity: 1;
+}

@@ -32,7 +32,8 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error.response);
+    console.error('Request error:', error);
+    return Promise.reject(error.response ?? error);
   }
 );
 
@@ -41,15 +42,17 @@ axios.interceptors.response.use(
     return res;
   },
   async (err) => {
+    console.error('Response error:', err);
     if (err.response?.status === 401 && !err.config?._retry) {
       err.config._retry = true;
       try {
         await refreshRequest();
         return await axios(err.config);
       } catch (e) {
+        console.error('Refresh request failed:', e);
         return Promise.reject(e);
       }
     }
-    return Promise.reject(err.response);
+    return Promise.reject(err.response ?? err);
   }
 );

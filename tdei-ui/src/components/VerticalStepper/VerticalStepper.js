@@ -219,7 +219,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
 
   // Validation function for the second step (DataFile)
   const validateDataFile = () => {
-    if (selectedData[activeStep] != null) {
+    if (selectedData[activeStep] != null && selectedData[activeStep].file != null) {
       return true
     }
     return false;

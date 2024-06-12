@@ -274,7 +274,7 @@ export async function postUploadDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
   formData.append('tdei_service_id', data[0].tdei_service_id);
-  formData.append('dataset', data[1]);
+  formData.append('dataset', data[1].file);
   if (data[2] instanceof File) {
     formData.append('metadata', data[2]);
   } else {
@@ -311,19 +311,34 @@ export async function postUploadDataset(data) {
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
-  //get the end point based on the service_type
-  var file_end_point = ''
-  var service_type = data[0].service_type
-  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
-  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
-  else { file_end_point = 'osw' }
-  const response = await axios.post(`${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  console.log('Response:', response);
-  return response.data;
+  // Get the endpoint based on the service_type
+  const service_type = data[0].service_type;
+  const file_end_point = service_type === 'flex' ? 'gtfs-flex' : (service_type === 'pathways' ? 'gtfs-pathways' : 'osw');
+  const url = data[1].derived_from_dataset_id ? 
+    `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}` :
+    `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
+  try {
+    console.log("making the axios call");
+    const response = await axios.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('Response:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Error object:', error);
+    if (error.response.data) {
+      console.error('Error response:', error.response);
+      throw new Error(error.response.data);
+    }else if (error.data) {
+      console.error('Error data:', error.data);
+      throw new Error(error.data);
+    } else {
+      console.error('Error message:', error);
+      throw new Error(error);
+    }
+  }
 }
 export async function getDatasets(searchText, pageParam = 1, status, dataType, tdei_project_group_id) {
   const params = {
