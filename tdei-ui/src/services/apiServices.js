@@ -267,7 +267,6 @@ export async function postCreateJob(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response: ', response)
   return response.data;
 }
 export async function postUploadDataset(data) {
@@ -318,24 +317,19 @@ export async function postUploadDataset(data) {
     `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}` :
     `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
   try {
-    console.log("making the axios call");
     const response = await axios.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('Response:', response);
     return response.data;
   } catch (error) {
     console.error('Error object:', error);
     if (error.response && error.response.data) {
-      console.error('Error response:', error.response);
       throw new Error(error.response.data);
     }else if (error.data) {
-      console.error('Error data:', error.data);
       throw new Error(error.data);
     } else {
-      console.error('Error message:', error);
       throw new Error(error);
     }
   }
@@ -362,7 +356,6 @@ export async function getDatasets(searchText, pageParam = 1, status, dataType, t
     params: params,
     method: "GET",
   });
-  console.log("my datasets", res.data)
   return {
     data: res.data,
     pageParam,
@@ -385,7 +378,6 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
     params: params,
     method: "GET",
   });
-  console.log("released datasets", res.data)
   return {
     data: res.data,
     pageParam,
@@ -398,13 +390,11 @@ export async function postPublishDataset(data) {
   else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
   else { file_end_point = 'osw' }
   const res = await axios.post(`${osmUrl}/${file_end_point}/publish/${data.tdei_dataset_id}`, data);
-  console.log('Response:', res.data);
   return res.data;
 }
 
 export async function deleteDataset(tdei_dataset_id) {
   const res = await axios.delete(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
-  console.log('Response:', res.data);
   return res.data;
 }
 
@@ -439,7 +429,6 @@ export async function editMetadata(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response:', response);
   return response.data;
 }
 
@@ -491,7 +480,6 @@ export async function cloneDataset(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response:', response);
   return response.data;
 }
 

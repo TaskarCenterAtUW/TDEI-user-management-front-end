@@ -53,7 +53,6 @@ const UploadDataset = () => {
 
   const onSuccess = (data) => {
     setLoading(false);
-    console.log("sucessfully created", data);
     queryClient.invalidateQueries({ queryKey: [POST_DATASET] });
     setShowSuccessModal(true);
   };
@@ -63,20 +62,17 @@ const UploadDataset = () => {
     if(errorMessage !== "Derived dataset id not found"){
       setCurrentStep(2); // reverting to metadata step.
     }
-    console.log(currentStep)
   };
   const onError = (err) => {
     setLoading(false);
     // resetting current step
     setCurrentStep(0);
-    console.error("error message", err);
     setToast(true);
     setErrorMessage(err.message)
   };
   // Using useUploadDataset hook to get mutate function
   const { isLoading, mutate } = useUploadDataset({ onSuccess, onError });
   const onStepsComplete = (uploadData) => {
-    console.log(uploadData);
     mutate(uploadData);
     setLoading(true)
   };

@@ -69,7 +69,6 @@ const MyDatasets = () => {
     ];
 
     const onSuccess = (data) => {
-        console.log("successfull", data);
         setOperationResult("success");
         setShowSuccessModal(false);
         handleToast();

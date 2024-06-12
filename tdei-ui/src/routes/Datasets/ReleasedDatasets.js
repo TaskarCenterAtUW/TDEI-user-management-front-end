@@ -81,7 +81,6 @@ const ReleasedDatasets = () => {
 
   const handleDropdownSelect = (eventKey) => {
     // Logic for handling dropdown selection
-    console.log('Dropdown item selected:', eventKey);
     if (eventKey === 'status') {
       // Sort by status in ascending order
       const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));

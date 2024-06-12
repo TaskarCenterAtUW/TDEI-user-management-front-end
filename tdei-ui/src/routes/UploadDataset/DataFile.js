@@ -20,7 +20,6 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
   // Function to handle file drop
   const onDrop = (files) => {
     const selectedFile = files[0];
-    console.log(selectedFile);
     onSelectedFileChange({ derived_from_dataset_id: derivedDatasetId, file: selectedFile });
   };
 
