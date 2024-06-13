@@ -175,6 +175,17 @@ export default function EditMetadata() {
         console.error("error message", err);
         setShowErrorModal(true);
         setError(err.data)
+        if (selectedData) {
+            const parsedDataset = {
+                ...selectedData,
+                dataset_detail: {
+                    ...selectedData.dataset_detail,
+                    custom_metadata: selectedData.dataset_detail.custom_metadata ? JSON.stringify(selectedData.dataset_detail.custom_metadata, null, 2) : "",
+                    dataset_area: selectedData.dataset_detail.dataset_area ? JSON.stringify(selectedData.dataset_detail.dataset_area, null, 2) : ""
+                }
+            };
+            setSelectedData(parsedDataset);
+        }
     };
     const { isLoading, mutate } = useEditMetadata({ onSuccess, onError });
     const handleClose = () => {

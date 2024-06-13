@@ -237,7 +237,18 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        onStepsComplete(selectedData);
+        const finalData = {
+          ...selectedData,
+          1: {
+            ...selectedData[1],
+            dataset_detail: {
+              ...selectedData[1].dataset_detail,
+              custom_metadata: selectedData[1].dataset_detail.custom_metadata ? JSON.stringify(selectedData[1].dataset_detail.custom_metadata, null, 2) : "",
+              dataset_area: selectedData[1].dataset_detail.dataset_area ? JSON.stringify(selectedData[1].dataset_detail.dataset_area, null, 2) : ""
+            }
+          }
+        };
+        onStepsComplete(finalData);
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;

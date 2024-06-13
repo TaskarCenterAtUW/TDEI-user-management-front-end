@@ -281,7 +281,7 @@ export async function postUploadDataset(data) {
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
-        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+        metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
@@ -289,9 +289,7 @@ export async function postUploadDataset(data) {
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
-        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
-      } else {
-        metadata.dataset_detail.custom_metadata = null;
+        metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
@@ -406,12 +404,16 @@ export async function editMetadata(data) {
     let metadata = data.metadata;
     // Parse datasetArea and customMetadata fields
     try {
-      metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+      if (typeof metadata.dataset_detail.dataset_area === 'string') {
+        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+      }
     } catch (e) {
       console.error("Failed to parse datasetArea: ", e);
     }
     try {
-      metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      if (typeof metadata.dataset_detail.custom_metadata === 'string') {
+        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
     }
@@ -444,7 +446,7 @@ export async function cloneDataset(data) {
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
-        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+        metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
@@ -452,9 +454,7 @@ export async function cloneDataset(data) {
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
-        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
-      } else {
-        metadata.dataset_detail.custom_metadata = null;
+        metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
