@@ -1,7 +1,6 @@
-import React from 'react';
-import style from "./../Services/Services.module.css"
-import Typography from '@mui/material/Typography';
-import { Button, Form, Spinner, Col, Row } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import style from "./../Services/Services.module.css";
+import { Button, Form, Spinner } from "react-bootstrap";
 import { useAuth } from "../../hooks/useAuth";
 import { debounce } from "lodash";
 import useGetServices from "../../hooks/service/useGetServices";
@@ -11,14 +10,13 @@ import iconNoData from "./../../assets/img/icon-noData.svg";
 import Select from 'react-select';
 import ServicesList from './ServicesList';
 
-// Functional component for Service Upload
-const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
+const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromCloneDataset }) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [, setQuery] = React.useState("");
-  const [debounceQuery, setDebounceQuery] = React.useState("");
-  const [serviceType, setServiceType] = React.useState("");
-  const [selectedService, setSelectedService] = React.useState({});
+  const [, setQuery] = useState("");
+  const [debounceQuery, setDebounceQuery] = useState("");
+  const [serviceType, setServiceType] = useState(fromCloneDataset ? dataset.data_type : "");
+  const [selectedService, setSelectedService] = useState({});
 
   // Fetching services data using custom hook
   const {
@@ -30,12 +28,6 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
     isLoading,
   } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
-  // Event handler for selecting service type from dropdown
-  const handleSelect = (value) => {
-    
-    queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
-    setServiceType(value.value);
-  };
   // Event handler for selecting a service
   const handleSelectedService = (list) => {
   setSelectedService(list);
@@ -82,22 +74,30 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
                 }}
               />
             </div>
-            <div className="d-flex align-items-center">
-              <div>Type</div>
-              <div className={style.selectServiceFilter}>
-                <Select
-                  isSearchable={false}
-                  defaultValue={{ label: "All", value: "" }}
-                  onChange={handleSelect}
-                  options={options}
-                  components={{
-                    IndicatorSeparator: () => null
-                  }}
-                  styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
-                />
+            {!fromCloneDataset && (
+              <div className="d-flex align-items-center">
+                <div>Type</div>
+                <div className={style.selectServiceFilter}>
+                  <Select
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "" }}
+                    onChange={(value) => {
+                      queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
+                      setServiceType(value.value);
+                    }}
+                    options={[
+                      { value: 'flex', label: 'Flex' },
+                      { value: 'pathways', label: 'Pathways' },
+                      { value: 'osw', label: 'Osw' },
+                    ]}
+                    components={{
+                      IndicatorSeparator: () => null
+                    }}
+                    styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
+                  />
+                </div>
               </div>
-            </div>
-            
+            )}
           </div>
 
           {data?.pages?.map((values, i) => (
@@ -109,7 +109,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
                     className={style.noDataIcon}
                     alt="no-data-icon"
                   />
-                  <div className={style.noDataText}>No service found..!</div>
+                  <div className={style.noDataText}>No services found. Please try changing project group!</div>
                 </div>
               ) : null}
               {values?.data?.map((list) => (
@@ -124,7 +124,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange }) => {
               ))}
             </React.Fragment>
           ))}
-          {isError ? " Error loading project group list" : null}
+          {isError ? " Error loading services list" : null}
           {isLoading ? (
             <div className="d-flex justify-content-center">
               <Spinner size="md" />

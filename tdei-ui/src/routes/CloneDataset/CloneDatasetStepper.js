@@ -118,7 +118,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
                 "dataset_area": "",
                 "collection_method": "",
                 "data_source": "",
-                "schema_version": "",
+                "schema_version": dataset.metadata.dataset_detail.schema_version ?? "",
                 "collected_by": ""
             },
             "data_provenance": {
@@ -338,7 +338,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   const componentProps = {
     selectedData: selectedData[activeStep],
     ...(activeStep === 0
-      ? { onSelectedServiceChange: handleSelectedDataChange }
+      ? { onSelectedServiceChange: handleSelectedDataChange, dataset, fromCloneDataset: true }
       : { onSelectedFileChange: handleSelectedDataChange }),
   };
 
