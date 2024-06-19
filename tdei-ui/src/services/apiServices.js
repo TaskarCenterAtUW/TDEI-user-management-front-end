@@ -496,7 +496,7 @@ export async function downloadDataset(data) {
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const a = document.createElement('a');
     a.href = urlBlob;
-    a.download = 'response.zip';
+    a.download = `${data.tdei_dataset_id}.zip`;
     document.body.appendChild(a);
     a.click();
     a.remove();
