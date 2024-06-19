@@ -17,6 +17,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
   const [debounceQuery, setDebounceQuery] = useState("");
   const [serviceType, setServiceType] = useState(fromCloneDataset ? dataset.data_type : "");
   const [selectedService, setSelectedService] = useState({});
+  const [previousProjectGroupId, setPreviousProjectGroupId] = useState( selectedData && selectedData.tdei_project_group_id ? selectedData.tdei_project_group_id :"");
 
   // Fetching services data using custom hook
   const {
@@ -28,15 +29,38 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     isLoading,
   } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
+  // Effect to reset selected service if project group ID changes
+  useEffect(() => {
+    if (Array.isArray(data.pages) && data.pages.length > 0) {
+      const firstPageData = data.pages[0]?.data ?? [];
+      const newProjectGroupId = firstPageData.length > 0 ? firstPageData[0]?.tdei_project_group_id : "";
+      if (newProjectGroupId !== previousProjectGroupId) {
+          setSelectedService({
+            tdei_project_group_id: "",
+            tdei_service_id: "",
+            service_type: ""
+          });
+          setPreviousProjectGroupId(newProjectGroupId);
+          onSelectedServiceChange({
+            tdei_project_group_id: "",
+            tdei_service_id: "",
+            service_type: ""
+          });
+        }
+      }
+  }, [data]);
+
   // Event handler for selecting a service
   const handleSelectedService = (list) => {
-  setSelectedService(list);
-  onSelectedServiceChange({
-    tdei_project_group_id: list.tdei_project_group_id,
-    tdei_service_id: list.tdei_service_id,
-    service_type: list.service_type
-  });
+    setPreviousProjectGroupId(list.tdei_project_group_id);
+    setSelectedService(list);
+    onSelectedServiceChange({
+      tdei_project_group_id: list.tdei_project_group_id,
+      tdei_service_id: list.tdei_service_id,
+      service_type: list.service_type
+    });
   };
+
   // Event handler for searching services
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -85,11 +109,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
                       queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
                       setServiceType(value.value);
                     }}
-                    options={[
-                      { value: 'flex', label: 'Flex' },
-                      { value: 'pathways', label: 'Pathways' },
-                      { value: 'osw', label: 'Osw' },
-                    ]}
+                    options={options}
                     components={{
                       IndicatorSeparator: () => null
                     }}

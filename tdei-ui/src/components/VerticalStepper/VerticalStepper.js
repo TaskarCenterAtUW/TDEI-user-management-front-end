@@ -222,7 +222,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   };
   // Validation function for the first step (ServiceUpload)
   const validateServiceUpload = () => {
-    if (selectedData[activeStep] != null) {
+    if(selectedData[activeStep].tdei_service_id !== null && selectedData[activeStep].tdei_service_id !== ""){
       return true
     }
     return false;

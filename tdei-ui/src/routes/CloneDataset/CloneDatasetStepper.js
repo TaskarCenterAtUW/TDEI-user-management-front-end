@@ -18,7 +18,7 @@ import style from "../../components/VerticalStepper/steps.module.css";
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
   <Icon sx={{ alignItems: "center", display: "flex" }}>
-    <img src={serviceUpload} height={20} width={20} color='white' style={{ width: "100%", height: "70%" }} />
+    <img src={serviceUpload} height={20} alt='service-icon' width={20} color='white' style={{ width: "100%", height: "70%" }} />
   </Icon>
 );
 
@@ -102,8 +102,8 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       setSelectedData(prevData => ({
         ...prevData,
         0: {
-          tdei_project_group_id: dataset.project_group.tdei_project_group_id,
-          tdei_service_id: dataset.service.tdei_service_id,
+          tdei_project_group_id: "",
+          tdei_service_id: "",
           service_type: dataset.data_type
         },
         1:{
@@ -178,6 +178,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       return;
     }
     handleBackUntil();
+    // eslint-disable-next-line
   }, [currentStep]);
 
   // Function to update selected data
@@ -295,7 +296,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   };
 
   // Validation function for the first step (ServiceUpload)
-  const validateServiceUpload = () => selectedData[activeStep] != null;
+  const validateServiceUpload = () => selectedData[activeStep].tdei_service_id !== null && selectedData[activeStep].tdei_service_id !== "";
 
   // Validation function for the third step (Metadata)
   const validateMetadata = () => {
