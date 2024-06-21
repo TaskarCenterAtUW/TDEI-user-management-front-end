@@ -182,6 +182,7 @@
 }
 .noMessageFount {
   color: #83879B;
+  text-decoration: underline;
 }
 .updatedInfo {
   font-size: 14px;
@@ -217,4 +218,37 @@
 .textUnset {
   text-transform: unset !important;
   font-family: "Lato", sans-serif !important;
+}
+.jobDetail {
+  padding: 10px;
+}
+
+.jobDetailRow {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.jobDetailLabel {
+  font-weight: bold;
+  color: #2C3E50; 
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.jobDetailValue {
+  color: #34495E;
+  margin-bottom: 5px;
+}
+.progressBarContainer {
+  width: 80%; 
+  margin: 0 auto; 
+}
+.iconBtn{
+  background: #F8F8F8 0% 0% no-repeat padding-box !important;
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  opacity: 1 !important; 
+  width: 35px;
+  height: 35px;
 }
