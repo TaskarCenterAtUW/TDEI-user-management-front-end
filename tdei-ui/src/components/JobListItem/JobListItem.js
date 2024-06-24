@@ -139,7 +139,8 @@ class JobListItem extends React.Component {
                     message={{
                         type: jobItem.job_type,
                         job_id : jobItem.job_id,
-                        progress:jobItem.progress
+                        progress:jobItem.progress,
+                        job_type:jobItem.job_type,
                     }}
                 />
             </div>

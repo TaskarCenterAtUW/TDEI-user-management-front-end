@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Modal, ProgressBar, Spinner } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import style from "../../routes/Jobs/Jobs.module.css";
 import useGetJobDetails from "../../hooks/jobs/useGetJobDetails";
 import { useAuth } from "../../hooks/useAuth";
@@ -7,6 +7,7 @@ import { IconButton } from '@mui/material';
 import refreshBtn from "./../../assets/img/refreshBtn.svg";
 import { useQueryClient } from "react-query";
 import { GET_JOBS } from "../../utils";
+import { toPascalCase } from "../../utils";
 
 const JobMsgDescModal = (props) => {
     const { user } = useAuth();
@@ -50,48 +51,49 @@ const JobMsgDescModal = (props) => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: "18px", fontWeight: "bold" }}>
-                    {props.message.job_id} - Progress
+                    Job Progress Status
                 </Modal.Title>
-                <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
+                {/* <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
                     <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
-                </IconButton>
+                </IconButton> */}
             </Modal.Header>
             <Modal.Body>
                 <div>
                     {isLoading ? (
-                        <>
+                        <div className={style.spinnerContainer}>
                             <Spinner animation="border" role="status" color='black'>
                             </Spinner>
-                        </>
+                        </div>
                     ) : error ? (
                         <div>Error loading job details</div>
                     ) : (
                         <>
-                            <div className={style.jobDetailRow}>
-                                <div className={style.jobDetailLabel}>Current Stage</div>
-                                <div className={style.jobDetailValue}>{currentProgress.current_stage}</div>
-                            </div>
-                            <div className={style.jobDetailRow}>
-                                <div className={style.jobDetailLabel}>Total Stages</div>
-                                <div className={style.jobDetailValue}>{currentProgress.total_stages}</div>
-                            </div>
-                            <div className={style.jobDetailRow}>
-                                <div className={style.jobDetailLabel}>Completed Stages</div>
-                                <div className={style.jobDetailValue}>{currentProgress.completed_stages}</div>
-                            </div>
-                            <div className={style.jobDetailRow}>
-                                <div className={style.jobDetailLabel}>Last Updated At</div>
-                                <div className={style.jobDetailValue}>{getTime(currentProgress.last_updated_at)}</div>
-                            </div>
-                            <div className="mt-2">
-                                <div className={style.jobDetailLabel}>Progress</div>
-                                <ProgressBar
-                                    className="jobProgress"
-                                    striped
-                                    now={(currentProgress.completed_stages / currentProgress.total_stages) * 100}
-                                    label={`${currentProgress.completed_stages} of ${currentProgress.total_stages}`}
-                                    animated={false}
-                                />
+                            <div className={style.jobStatusContainer}>
+                                <div className={style.jobStatusHeader}>
+                                    <div style={{ flexGrow: 1 }}>
+                                        <div className={style.jobDetailLabel}>{props.message.job_type}:</div>
+                                        <div className={style.jobDetailValue}>ID: {props.message.job_id}</div>
+                                    </div>
+                                    <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
+                                        <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
+                                    </IconButton>
+                                </div>
+                                <div className={style.jobStatusContainerContent}>
+                                    <div className={style.jobDetailRow}>
+                                        <div className={style.jobDetailLabel}>Total Stages: {currentProgress.total_stages} </div>
+                                        <div className={style.jobDetailValue}>{`${currentProgress.completed_stages}/${currentProgress.total_stages} stages completed`}</div>
+                                    </div>
+                                    <div className={style.jobDetailRow}>
+                                        <div className={style.jobDetailLabel}>Current Stage:</div>
+                                        <div className={style.jobDetailValue}>
+                                            {currentProgress.current_stage} <span className={style.statusContainer}>{toPascalCase(currentProgress.current_state)}</span>
+                                        </div>
+                                    </div>
+                                    <div className={style.jobDetailRow}>
+                                        <div className={style.jobDetailLabel}>Last Updated:</div>
+                                        <div className={style.jobDetailValue}>{getTime(currentProgress.last_updated_at)}</div>
+                                    </div>
+                                </div>
                             </div>
                         </>
                     )}

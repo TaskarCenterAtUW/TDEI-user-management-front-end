@@ -226,14 +226,17 @@
 .jobDetailRow {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  border-left: 5px solid #DDE5E9;
+  padding-left: 10px;
 }
 
 .jobDetailLabel {
   font-weight: bold;
-  color: #2C3E50; 
+  color: #868D96; 
   flex-shrink: 0;
   white-space: nowrap;
+  font-size: medium;
 }
 
 .jobDetailValue {
@@ -251,4 +254,47 @@
   opacity: 1 !important; 
   width: 35px;
   height: 35px;
+}
+.jobStatusHeader {
+  padding: 15px;
+  background-color: #F8F8F8;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #DDDDDD;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.jobStatusContainer{
+  border: 1px solid #DDDDDD !important;
+  border-radius: 5px;
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+}
+.jobStatusContainerContent{
+  padding: 15px;
+}
+
+.statusContainer {
+  background-color: #F2F8FB !important;
+  border: 1px solid #DDE5E9 !important;
+  font-weight: normal !important;
+  font-style: italic;
+  font-size: small;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-radius: 100px;
+}
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 200px); 
+  width: 100%;
 }
