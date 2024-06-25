@@ -6,7 +6,10 @@ export const getUserName = (user, isCurrentUser) => {
 };
 
 export const toPascalCase = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.replace(/(\w)(\w*)/g,
+  function(_, firstChar, rest) {
+      return firstChar.toUpperCase() + rest.toLowerCase();
+  });
 };
 
 export const formatDate = (value) => {

@@ -8,45 +8,50 @@ import ColoredLabel from "../ColoredLabel/ColoredLabel";
 import DownloadIcon from "../../assets/img/icon-download.svg";
 import ShowJobMessageModal from "../ShowJobMessage/ShowJobMessageModal";
 import axios from "axios";
+import JobMsgDescModal from "../ShowJobMessage/JobMsgDescModal";
+import { toPascalCase } from "../../utils";
 
 class JobListItem extends React.Component {
-
     constructor(props) {
         super(props);
-        this.state = {showMore: false, jobId: null, data : null};
+        this.state = {showMore: false, showModal: false, jobId: null, data: null};
         this.handleClick = this.handleClick.bind(this);
+        this.toggleShowMore = this.toggleShowMore.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
     }
 
-    toggleShowMore = () => {
+    toggleShowMore() {
         this.setState({showMore: !this.state.showMore}, () => {
             console.log(this.state.showMore);
         });
-    };
+    }
 
-    handleClick = (e) => {
-        // Set buttonClicked to true when the button is clicked
+    toggleModal() {
+        this.setState({showModal: !this.state.showModal});
+    }
+
+    handleClick(e) {
         const {id} = e.target;
-        this.setState({jobId :id }, () =>{
+        this.setState({jobId: id}, () => {
             console.log(this.state.jobId)
             axios.get(`${process.env.REACT_APP_OSM_URL}/job/download/${this.state.jobId}`)
                 .then(response => {
-                    this.setState({ data: response.data });
+                    this.setState({data: response.data});
                 })
                 .catch(error => {
-                    this.setState({ error });
+                    this.setState({error});
                 });
-        })
-    };
+        });
+    }
 
-    updatedTime = (time) => {
+    updatedTime(time) {
         const dateTime = new Date(time);
-        return dateTime.toLocaleString()
+        return dateTime.toLocaleString();
     }
 
     render() {
         const {jobItem} = this.props;
-
-        const { data, error } = this.state;
+        const {data, error, showModal} = this.state;
 
         if (error) {
             console.log(error);
@@ -62,6 +67,21 @@ class JobListItem extends React.Component {
                 return '#D55962';
             }
         }
+        // Generates the job status title based on the dataset name, data type, and job type.
+        const getJobStatusTitle = () => {
+            let dataType = jobItem.data_type;
+            if (dataType === 'osw') {
+              dataType = dataType.toUpperCase();
+            } else {
+              dataType = toPascalCase(dataType);
+            }
+            let jobType = jobItem.job_type.replace(/-/g, ' ');
+            if (jobItem.request_input.dataset_name) {
+              return jobItem.request_input.dataset_name;
+            } else {
+              return `${dataType} ${jobType}`;
+            }
+          };
 
         return (
             <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
@@ -74,7 +94,7 @@ class JobListItem extends React.Component {
                     ) : (
                         <div className="d-flex align-items-center">
                             <img className={style.datasetFileIconSize} src={fileIcon} alt="Dataset Icon"/> 
-                            <div className={style.datasetFileName} tabIndex={0}>{jobItem.request_input.file_upload_name}</div>
+                            <div className={style.datasetFileName} tabIndex={0}>{getJobStatusTitle()}</div>
                         </div>
                     )}
                 </div>
@@ -98,11 +118,14 @@ class JobListItem extends React.Component {
                             </div>
                         </>
                     )}
-                    {!jobItem.message && (
-                        
-
-                        <div className={jobItem.status.toLowerCase() !== 'completed'?style.noMessageFount:style.content} tabIndex={0}>
-                            {jobItem.status.toLowerCase() === 'completed'? 'Job completed': 'Job is in progress'}
+                     {!jobItem.message && (
+                        <div
+                            className={jobItem.status.toLowerCase() !== 'completed' ? style.noMessageFount : style.content}
+                            tabIndex={0}
+                            role={jobItem.status.toLowerCase() !== 'completed' ? "button" : undefined}
+                            onClick={jobItem.status.toLowerCase() !== 'completed' ? this.toggleModal : undefined}
+                        >
+                            {jobItem.status.toLowerCase() === 'completed' ? 'Job completed' : 'Job is in progress'}
                         </div>
                     )}
                 </div>
@@ -120,11 +143,20 @@ class JobListItem extends React.Component {
                         this.toggleShowMore()
                     }}
                     message={{
-                        fileName: `File name`,
-                        type: `${jobItem.job_type}`,
-                        job_id: `${jobItem.job_id}`,
-                        message: `${jobItem.message}`,
-                        fileName: jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name
+                        fileName: jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name,
+                        type: jobItem.job_type,
+                        job_id: jobItem.job_id,
+                        message: jobItem.message
+                    }}
+                />
+                <JobMsgDescModal
+                    show={showModal}
+                    onHide={this.toggleModal}
+                    message={{
+                        type: jobItem.job_type,
+                        job_id : jobItem.job_id,
+                        progress:jobItem.progress,
+                        jobStatusTitle:getJobStatusTitle(),
                     }}
                 />
             </div>

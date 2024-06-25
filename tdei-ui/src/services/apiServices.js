@@ -505,3 +505,24 @@ export async function downloadDataset(data) {
     console.error('There was a problem with the download operation:', error);
   }
 };
+
+export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
+
+  const params = {};
+
+  if (isAdmin) {
+    params.tdei_project_group_id = null;
+  } else {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+  if (job_id) {
+    params.job_id = job_id;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/jobs`,
+    params: params,
+    method: "GET",
+  });
+  return res.data
+}

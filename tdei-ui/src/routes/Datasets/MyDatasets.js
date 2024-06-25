@@ -87,7 +87,7 @@ const MyDatasets = () => {
     const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
 
     const handlePublishDataset = () => {
-        mutate({ service_type: selectedDataset.service.name, tdei_dataset_id: selectedDataset.tdei_dataset_id });
+        mutate({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
     };
 
     const handleDeactivate = () => {
