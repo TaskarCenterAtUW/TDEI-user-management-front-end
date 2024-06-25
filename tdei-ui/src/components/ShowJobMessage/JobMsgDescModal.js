@@ -68,7 +68,7 @@ const JobMsgDescModal = (props) => {
                             <div className={style.jobStatusContainer}>
                                 <div className={style.jobStatusHeader}>
                                     <div style={{ flexGrow: 1 }}>
-                                        <div className={style.jobStatusHeaderLabel}>{props.message.job_type}:</div>
+                                        <div className={style.jobStatusHeaderLabel}>{props.message.jobStatusTitle}:</div>
                                         <div className={style.jobStatusHeaderValue}>ID: {props.message.job_id}</div>
                                     </div>
                                     <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
