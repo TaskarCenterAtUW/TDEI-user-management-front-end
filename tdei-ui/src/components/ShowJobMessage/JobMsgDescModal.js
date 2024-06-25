@@ -53,15 +53,12 @@ const JobMsgDescModal = (props) => {
                 <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: "18px", fontWeight: "bold" }}>
                     Job Progress Status
                 </Modal.Title>
-                {/* <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
-                    <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
-                </IconButton> */}
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className={style.modalBody}>
                 <div>
                     {isLoading ? (
-                        <div className={style.spinnerContainer}>
-                            <Spinner animation="border" role="status" color='black'>
+                        <div className={style.spinnerContainer} style={{ padding: "20px 0" }}>
+                            <Spinner animation="border" role="status" color='black' style={{ margin: "0 auto", display: "block" }}>
                             </Spinner>
                         </div>
                     ) : error ? (
@@ -71,8 +68,8 @@ const JobMsgDescModal = (props) => {
                             <div className={style.jobStatusContainer}>
                                 <div className={style.jobStatusHeader}>
                                     <div style={{ flexGrow: 1 }}>
-                                        <div className={style.jobDetailLabel}>{props.message.job_type}:</div>
-                                        <div className={style.jobDetailValue}>ID: {props.message.job_id}</div>
+                                        <div className={style.jobStatusHeaderLabel}>{props.message.job_type}:</div>
+                                        <div className={style.jobStatusHeaderValue}>ID: {props.message.job_id}</div>
                                     </div>
                                     <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
                                         <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />

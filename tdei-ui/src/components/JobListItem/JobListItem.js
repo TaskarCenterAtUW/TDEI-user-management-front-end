@@ -107,7 +107,7 @@ class JobListItem extends React.Component {
                             className={jobItem.status.toLowerCase() !== 'completed' ? style.noMessageFount : style.content}
                             tabIndex={0}
                             role={jobItem.status.toLowerCase() !== 'completed' ? "button" : undefined}
-                            onClick={jobItem.status.toLowerCase() !== 'completed' ? this.toggleModal : undefined}
+                            onClick={jobItem.status.toLowerCase() === 'completed' ? this.toggleModal : undefined}
                         >
                             {jobItem.status.toLowerCase() === 'completed' ? 'Job completed' : 'Job is in progress'}
                         </div>
