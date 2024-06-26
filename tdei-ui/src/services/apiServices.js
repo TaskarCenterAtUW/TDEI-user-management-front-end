@@ -160,11 +160,11 @@ export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job
     page_size: 10,
   };
 
-  if (isAdmin) {
-    params.tdei_project_group_id = null;
-  } else {
-    params.tdei_project_group_id = tdei_project_group_id;
-  }
+  // if (isAdmin) {
+  //   params.tdei_project_group_id = null;
+  // } else {
+  //   params.tdei_project_group_id = tdei_project_group_id;
+  // }
 
   if (job_type) {
     params.job_type = job_type;
@@ -260,8 +260,13 @@ export async function postCreateStation(data) {
 }
 export async function postCreateJob(data) {
   const formData = new FormData();
-  formData.append('dataset', data[1]);
-
+  if(data[0] === "osw/convert"){
+    formData.append('source', data[2]);
+    formData.append('target', data[3]);
+    formData.append('file', data[1]);
+  }else{
+    formData.append('dataset', data[1]);
+  }
   const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -510,11 +515,11 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
 
   const params = {};
 
-  if (isAdmin) {
+  // if (isAdmin) {
     params.tdei_project_group_id = null;
-  } else {
-    params.tdei_project_group_id = tdei_project_group_id;
-  }
+  // } else {
+  //   params.tdei_project_group_id = tdei_project_group_id;
+  // }
   if (job_id) {
     params.job_id = job_id;
   }

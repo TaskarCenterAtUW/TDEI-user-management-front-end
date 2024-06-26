@@ -1,14 +1,14 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Container from "../../components/Container/Container";
 import Layout from "../../components/Layout";
 import style from "./Jobs.module.css";
 import Select from "react-select";
 import Dropzone from "../../components/DropZone/Dropzone";
-import {Button} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import useCreateJob from "../../hooks/jobs/useCreateJob";
-import {POST_DATASET} from "../../utils";
-import {Spinner} from "react-bootstrap";
+import { POST_DATASET } from "../../utils";
+import { Spinner } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 
 const CreateJobService = () => {
@@ -19,12 +19,18 @@ const CreateJobService = () => {
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [showToast, setToast] = useState(false);
+    const [sourceFormat, setSourceFormat] = React.useState();
+    const [targetFormat, setTargetFormat] = React.useState();
 
     const jobTypeOptions = [
-        {value: 'osw-validate', label: 'OSW - Validate'},
-        {value: 'flex-validate', label: 'Flex - Validate'},
-        {value: 'pathways-validate', label: 'Pathways - Validate'},
-        {value: 'osw-convert', label: 'OSW - Convert'}
+        { value: 'osw-validate', label: 'OSW - Validate' },
+        { value: 'flex-validate', label: 'Flex - Validate' },
+        { value: 'pathways-validate', label: 'Pathways - Validate' },
+        { value: 'osw-convert', label: 'OSW - Convert' }
+    ];
+    const formatOptions = [
+        { value: 'osw', label: 'OSW' },
+        { value: 'osm', label: 'OSM' },
     ];
 
     const onSuccess = (data) => {
@@ -50,6 +56,12 @@ const CreateJobService = () => {
 
     function handleJobTypeSelect(type) {
         setJobType(type)
+    }
+    function handleSourceFormatSelect(type) {
+        setSourceFormat(type)
+    }
+    function handleTargetFormatSelect(type) {
+        setTargetFormat(type)
     }
 
     const handlePop = () => {
@@ -81,9 +93,11 @@ const CreateJobService = () => {
                 urlPath = "osw/convert";
                 break;
         }
-        const  uploadData = []
+        const uploadData = []
         uploadData[0] = urlPath
         uploadData[1] = selectedFile
+        uploadData[2] = sourceFormat.value
+        uploadData[3] = targetFormat.value
         setLoading(true)
         mutate(uploadData);
     }
@@ -97,28 +111,48 @@ const CreateJobService = () => {
                     <div className={style.rectangleBox}>
                         <form className={style.form}>
                             <div className={style.formItems}>
-                                <p>Job Type</p>
+                                <p>Job Type<span style={{ color: 'red' }}> *</span></p>
                                 <Select className={style.createJobSelectType}
                                     options={jobTypeOptions}
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />
                             </div>
+                            { jobType && jobType.value === "osw-convert" && (
+                                <div>
+                                    <div className={style.formItems}>
+                                        <p>Source Format<span style={{ color: 'red' }}> *</span></p>
+                                        <Select className={style.createJobSelectType}
+                                            options={formatOptions}
+                                            placeholder="Select source format"
+                                            onChange={handleSourceFormatSelect}
+                                        />
+                                    </div>
+                                    <div className={style.formItems}>
+                                        <p>Target Format<span style={{ color: 'red' }}> *</span></p>
+                                        <Select className={style.createJobSelectType}
+                                            options={formatOptions}
+                                            placeholder="Select target format"
+                                            onChange={handleTargetFormatSelect}
+                                        />
+                                    </div>
+                                </div>
 
+                            )}
                             <div className={style.formItems}>
-                                <p>Attach data file</p>
+                                <p>Attach data file<span style={{ color: 'red' }}> *</span></p>
                                 <Dropzone onDrop={onDrop} accept={{
                                     'application/zip': ['.zip']
-                                }} format={".zip"}/>
+                                }} format={".zip"} />
                             </div>
                         </form>
                     </div>
                     <div className={style.divider}></div>
                     <div className={style.buttonContainer}>
                         <Button className={style.buttonSecondaryCustomised}
-                                onClick={handlePop}>Cancel</Button>
+                            onClick={handlePop}>Cancel</Button>
                         <Button className={`tdei-primary-button ${style.textUnset}`}
-                                onClick={handleCreate}>Create</Button>
+                            onClick={handleCreate}>Create</Button>
                     </div>
 
                     {loading && (
@@ -139,8 +173,8 @@ const CreateJobService = () => {
                                 navigate('/jobs', { replace: true });
                             }}
                             btnlabel="Go to Jobs page"
-                            modaltype = "success"
-                            title= "Success"
+                            modaltype="success"
+                            title="Success"
                         />
                     )}
                     {showToast && (
@@ -150,8 +184,8 @@ const CreateJobService = () => {
                             content={errorMessage}
                             handler={handleClose}
                             btnlabel="Dismiss"
-                            modaltype = "error"
-                            title= "Error"
+                            modaltype="error"
+                            title="Error"
                         />
                     )}
                 </>
