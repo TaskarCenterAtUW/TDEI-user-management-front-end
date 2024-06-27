@@ -43,7 +43,7 @@ const JobMsgDescModal = (props) => {
 
     return (
         <Modal
-            onHide={props.onHide}
+            onHide={handleClose}
             show={props.show}
             size="md"
             aria-labelledby="contained-modal-title-vcenter"
