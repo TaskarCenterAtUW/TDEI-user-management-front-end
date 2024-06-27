@@ -10,6 +10,7 @@ import useCreateJob from "../../hooks/jobs/useCreateJob";
 import { POST_DATASET } from "../../utils";
 import { Spinner } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
+import ToastMessage from "../../components/ToastMessage/ToastMessage";
 
 const CreateJobService = () => {
     const navigate = useNavigate();
@@ -21,6 +22,8 @@ const CreateJobService = () => {
     const [showToast, setToast] = useState(false);
     const [sourceFormat, setSourceFormat] = React.useState();
     const [targetFormat, setTargetFormat] = React.useState();
+    const [showValidateToast, setShowValidateToast] = useState(false);
+    const [validateErrorMessage, setValidateErrorMessage] = useState("");
 
     const jobTypeOptions = [
         { value: 'osw-validate', label: 'OSW - Validate' },
@@ -76,8 +79,20 @@ const CreateJobService = () => {
     const handleClose = () => {
         setToast(false);
     };
-
+    const handleCloseToast = () => {
+        setShowValidateToast(false);
+    }
     const handleCreate = () => {
+        if (!jobType) {
+            setValidateErrorMessage("Job type is required");
+            setShowValidateToast(true);
+            return;
+        }
+        if (!selectedFile) {
+            setValidateErrorMessage("File is required");
+            setShowValidateToast(true);
+            return;
+        }
         let urlPath = ""
         switch (jobType?.value) {
             case "osw-validate":
@@ -93,11 +108,17 @@ const CreateJobService = () => {
                 urlPath = "osw/convert";
                 break;
         }
-        const uploadData = []
-        uploadData[0] = urlPath
-        uploadData[1] = selectedFile
-        uploadData[2] = sourceFormat.value
-        uploadData[3] = targetFormat.value
+        if (urlPath === "osw/convert") {
+            if (!sourceFormat?.value || !targetFormat?.value) {
+                setValidateErrorMessage("Source and target formats are required for OSW - Convert job");
+                setShowValidateToast(true);
+                return;
+            }
+        }
+        const uploadData = [urlPath, selectedFile];
+        if (urlPath === "osw/convert") {
+            uploadData.push(sourceFormat.value, targetFormat.value);
+        }
         setLoading(true)
         mutate(uploadData);
     }
@@ -118,7 +139,7 @@ const CreateJobService = () => {
                                     onChange={handleJobTypeSelect}
                                 />
                             </div>
-                            { jobType && jobType.value === "osw-convert" && (
+                            { jobType && jobType.value && jobType.value === "osw-convert" && (
                                 <div>
                                     <div className={style.formItems}>
                                         <p>Source Format<span style={{ color: 'red' }}> *</span></p>
@@ -188,6 +209,7 @@ const CreateJobService = () => {
                             title="Error"
                         />
                     )}
+                     <ToastMessage showToast={showValidateToast} toastMessage={validateErrorMessage} onClose={handleCloseToast} isSuccess={false} />
                 </>
             </div>
         </Layout>
