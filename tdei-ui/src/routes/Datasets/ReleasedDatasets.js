@@ -15,6 +15,7 @@ import { toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import useGetReleasedDatasets from '../../hooks/service/useGetReleaseDatasets';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
+import { useNavigate } from 'react-router-dom';
 
 
 const ReleasedDatasets = () => {
@@ -25,6 +26,7 @@ const ReleasedDatasets = () => {
   const [dataType, setDataType] = React.useState("");
   const [sortedData, setSortedData] = useState([]);
   const [eventKey, setEventKey] = useState("");
+  const navigate = useNavigate();
 
   const {
     data = [],
@@ -99,6 +101,8 @@ const ReleasedDatasets = () => {
     setEventKey(eventKey);
    if(eventKey === 'downLoadDataset'){
         handleDownloadDataset(dataset)
+    }else if(eventKey === 'cloneDataset'){
+      navigate('/CloneDataset',{ state: { dataset } });
     }
 };
 
