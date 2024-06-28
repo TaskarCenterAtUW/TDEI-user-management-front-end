@@ -160,11 +160,11 @@ export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job
     page_size: 10,
   };
 
-  if (isAdmin) {
-    params.tdei_project_group_id = null;
-  } else {
-    params.tdei_project_group_id = tdei_project_group_id;
-  }
+  // if (isAdmin) {
+  //   params.tdei_project_group_id = null;
+  // } else {
+  //   params.tdei_project_group_id = tdei_project_group_id;
+  // }
 
   if (job_type) {
     params.job_type = job_type;
@@ -260,21 +260,25 @@ export async function postCreateStation(data) {
 }
 export async function postCreateJob(data) {
   const formData = new FormData();
-  formData.append('dataset', data[1]);
-
+  if(data[0] === "osw/convert"){
+    formData.append('source', data[2]);
+    formData.append('target', data[3]);
+    formData.append('file', data[1]);
+  }else{
+    formData.append('dataset', data[1]);
+  }
   const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response: ', response)
   return response.data;
 }
 export async function postUploadDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data[0].tdei_project_group_id);
   formData.append('tdei_service_id', data[0].tdei_service_id);
-  formData.append('dataset', data[1]);
+  formData.append('dataset', data[1].file);
   if (data[2] instanceof File) {
     formData.append('metadata', data[2]);
   } else {
@@ -282,7 +286,7 @@ export async function postUploadDataset(data) {
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
-        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+        metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
@@ -290,9 +294,7 @@ export async function postUploadDataset(data) {
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
-        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
-      } else {
-        metadata.dataset_detail.custom_metadata = null;
+        metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
@@ -311,19 +313,29 @@ export async function postUploadDataset(data) {
   if (data[3] != null) {
     formData.append('changeset', data[3]);
   }
-  //get the end point based on the service_type
-  var file_end_point = ''
-  var service_type = data[0].service_type
-  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
-  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
-  else { file_end_point = 'osw' }
-  const response = await axios.post(`${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  console.log('Response:', response);
-  return response.data;
+  // Get the endpoint based on the service_type
+  const service_type = data[0].service_type;
+  const file_end_point = service_type === 'flex' ? 'gtfs-flex' : (service_type === 'pathways' ? 'gtfs-pathways' : 'osw');
+  const url = data[1].derived_from_dataset_id ? 
+    `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}` :
+    `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
+  try {
+    const response = await axios.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error object:', error);
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data);
+    }else if (error.data) {
+      throw new Error(error.data);
+    } else {
+      throw new Error(error);
+    }
+  }
 }
 export async function getDatasets(searchText, pageParam = 1, status, dataType, tdei_project_group_id) {
   const params = {
@@ -347,7 +359,6 @@ export async function getDatasets(searchText, pageParam = 1, status, dataType, t
     params: params,
     method: "GET",
   });
-  console.log("my datasets", res.data)
   return {
     data: res.data,
     pageParam,
@@ -370,7 +381,6 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
     params: params,
     method: "GET",
   });
-  console.log("released datasets", res.data)
   return {
     data: res.data,
     pageParam,
@@ -383,13 +393,11 @@ export async function postPublishDataset(data) {
   else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
   else { file_end_point = 'osw' }
   const res = await axios.post(`${osmUrl}/${file_end_point}/publish/${data.tdei_dataset_id}`, data);
-  console.log('Response:', res.data);
   return res.data;
 }
 
 export async function deleteDataset(tdei_dataset_id) {
   const res = await axios.delete(`${osmUrl}/dataset/${tdei_dataset_id}`, tdei_dataset_id);
-  console.log('Response:', res.data);
   return res.data;
 }
 
@@ -401,12 +409,16 @@ export async function editMetadata(data) {
     let metadata = data.metadata;
     // Parse datasetArea and customMetadata fields
     try {
-      metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+      if (typeof metadata.dataset_detail.dataset_area === 'string') {
+        metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
+      }
     } catch (e) {
       console.error("Failed to parse datasetArea: ", e);
     }
     try {
-      metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      if (typeof metadata.dataset_detail.custom_metadata === 'string') {
+        metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
+      }
     } catch (e) {
       console.error("Failed to parse customMetadata: ", e);
     }
@@ -424,6 +436,98 @@ export async function editMetadata(data) {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log('Response:', response);
   return response.data;
+}
+
+export async function cloneDataset(data) {
+  const formData = new FormData();
+  formData.append('tdei_project_group_id', data.selectedData[0].tdei_project_group_id);
+  formData.append('tdei_service_id', data.selectedData[0].tdei_service_id);
+  formData.append('tdei_dataset_id', data.tdei_dataset_id);
+  if (data.selectedData[1] instanceof File) {
+    formData.append('file', data.selectedData[1]);
+  } else {
+    const metadata = { ...data.selectedData[1]};
+    // Parse datasetArea and customMetadata fields
+    try {
+      if (typeof metadata.dataset_detail.dataset_area === 'string') {
+        metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
+      }
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.dataset_area = null;
+    }
+    try {
+      if (typeof metadata.dataset_detail.custom_metadata === 'string') {
+        metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
+      }
+    } catch (e) {
+      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.custom_metadata = null;
+    }
+    replaceEmptyStringsWithNull(metadata);
+    if (Array.isArray(metadata.maintenance.official_maintainer) && metadata.maintenance.official_maintainer.length === 0) {
+      metadata.maintenance.official_maintainer = null;
+    }
+    // Convert the metadata object to a JSON string
+    const jsonString = JSON.stringify(metadata, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const file = new File([blob], 'metadata.json', { type: 'application/json' });
+    
+    formData.append('file', file);
+  }
+  // if (data.selectedData[2] != null) {
+  //   formData.append('changeset', data[2]);
+  // }
+
+  const response = await axios.post(`${osmUrl}/dataset/clone/${data.tdei_dataset_id}/${data.selectedData[0].tdei_project_group_id}/${data.selectedData[0].tdei_service_id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+}
+
+export async function downloadDataset(data) {
+  var file_end_point = ''
+  var service_type = data.data_type
+  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
+  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
+  else { file_end_point = 'osw' }
+  try {
+    const response = await axios.get(`${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`, {
+      responseType: 'blob'
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = urlBlob;
+    a.download = `${data.tdei_dataset_id}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  } catch (error) {
+    console.error('There was a problem with the download operation:', error);
+  }
+};
+
+export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
+
+  const params = {};
+
+  // if (isAdmin) {
+    params.tdei_project_group_id = null;
+  // } else {
+  //   params.tdei_project_group_id = tdei_project_group_id;
+  // }
+  if (job_id) {
+    params.job_id = job_id;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/jobs`,
+    params: params,
+    method: "GET",
+  });
+  return res.data
 }

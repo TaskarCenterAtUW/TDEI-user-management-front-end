@@ -16,6 +16,7 @@ import useDeactivateDataset from '../../hooks/datasets/useDeactivateDataset';
 import CustomModal from '../../components/SuccessModal/CustomModal';
 import ResponseToast from '../../components/ToastMessage/ResponseToast';
 import { useNavigate } from 'react-router-dom';
+import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -68,7 +69,6 @@ const MyDatasets = () => {
     ];
 
     const onSuccess = (data) => {
-        console.log("successfull", data);
         setOperationResult("success");
         setShowSuccessModal(false);
         handleToast();
@@ -84,13 +84,17 @@ const MyDatasets = () => {
 
     const { isLoading: isPublishing, mutate } = usePublishDataset({ onSuccess, onError });
     const { mutate: deactivateDataset, isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
+    const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
 
     const handlePublishDataset = () => {
-        mutate({ service_type: selectedDataset.service.name, tdei_dataset_id: selectedDataset.tdei_dataset_id });
+        mutate({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
     };
 
     const handleDeactivate = () => {
         deactivateDataset(selectedDataset.tdei_dataset_id);
+    };
+    const handleDownloadDataset = (dataset) => {
+        downloadDataset({tdei_dataset_id : dataset.tdei_dataset_id, data_type: dataset.data_type});
     };
 
     const onAction = (eventKey, dataset) => {
@@ -98,7 +102,15 @@ const MyDatasets = () => {
         setEventKey(eventKey);
         if(eventKey === 'editMetadata'){
             navigate('/EditMetadata', { state: { dataset } });
-        } else {
+        } else if(eventKey === 'cloneDataset'){
+            navigate('/CloneDataset',{ state: { dataset } });
+        
+        }  else if(eventKey === 'cloneDataset'){
+            navigate('/CloneDataset',{ state: { dataset } });
+        }else if(eventKey === 'downLoadDataset'){
+            handleDownloadDataset(dataset)
+        }
+        else {
             setShowSuccessModal(true);
         }
     };

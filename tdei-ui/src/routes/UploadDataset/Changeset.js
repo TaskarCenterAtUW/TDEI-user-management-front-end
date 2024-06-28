@@ -7,7 +7,6 @@ const Changeset = ({ selectedData, onSelectedFileChange }) => {
   // Function to handle file drop
   const onDrop = (files) => {
     const selectedFile = files[0];
-    console.log(selectedFile);
     onSelectedFileChange(selectedFile);
   };
   return (

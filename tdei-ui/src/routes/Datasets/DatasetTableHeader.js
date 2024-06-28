@@ -9,6 +9,9 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                 <Col md={5}>
                     Dataset Name
                 </Col>
+                {isReleasedDataList && <Col>
+                    Project Group
+                </Col>}
                 <Col>
                     Service Name
                 </Col >
@@ -21,9 +24,10 @@ const DatasetTableHeader = ({ isReleasedDataList }) => {
                 {/* <Col>
                     View
                 </Col> */}
-                {!isReleasedDataList && <Col className="d-flex justify-content-center">
+                <Col className="d-flex justify-content-center">
                     Action
-                </Col>}
+                </Col>
+                {/* } */}
             </Row>
         </Container>
     )

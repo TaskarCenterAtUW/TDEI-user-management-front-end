@@ -12,9 +12,9 @@ const DataSourceDropdownForm = ({ field, form, onChange, formDataDataSource }) =
   const [currentValue, setCurrentValue] = useState(null);
 
   useEffect(() => {
-    if (formDataDataSource) {
+    if (formDataDataSource !== undefined && formDataDataSource !== null) {
       const selectedOption = options.find(option => option.value === formDataDataSource);
-      setCurrentValue(selectedOption);
+      setCurrentValue(selectedOption ?? "");
     }
   }, [formDataDataSource]);
 

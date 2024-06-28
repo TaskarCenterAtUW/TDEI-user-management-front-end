@@ -72,7 +72,7 @@ ColorlibStepIcon.propTypes = {
     icon: PropTypes.node,
 };
 export default function EditMetadata() {
-    
+
     const location = useLocation();
     const navigate = useNavigate();
     const dataset = location.state?.dataset;
@@ -83,7 +83,6 @@ export default function EditMetadata() {
         "dataset_detail": {
             "name": "",
             "version": "",
-            "derived_from_dataset_id": "",
             "collection_date": "",
             "valid_from": "",
             "valid_to": "",
@@ -176,6 +175,17 @@ export default function EditMetadata() {
         console.error("error message", err);
         setShowErrorModal(true);
         setError(err.data)
+        if (selectedData) {
+            const parsedDataset = {
+                ...selectedData,
+                dataset_detail: {
+                    ...selectedData.dataset_detail,
+                    custom_metadata: selectedData.dataset_detail.custom_metadata ? JSON.stringify(selectedData.dataset_detail.custom_metadata, null, 2) : "",
+                    dataset_area: selectedData.dataset_detail.dataset_area ? JSON.stringify(selectedData.dataset_detail.dataset_area, null, 2) : ""
+                }
+            };
+            setSelectedData(parsedDataset);
+        }
     };
     const { isLoading, mutate } = useEditMetadata({ onSuccess, onError });
     const handleClose = () => {
@@ -223,7 +233,7 @@ export default function EditMetadata() {
             }
             if (!data_provenance || !data_provenance.full_dataset_name) {
                 return "Full Dataset Name in Data Provenance is required";
-              }
+            }
         }
         return null;
     };
@@ -231,7 +241,7 @@ export default function EditMetadata() {
     return (
         <div className={style.layout}>
             <Container>
-            <div className={style.uploadWidgetTitle}>Update Metadata - {selectedData && selectedData.dataset_detail && selectedData.dataset_detail.name}</div>
+                <div className={style.uploadWidgetTitle}>Update Metadata - {dataset && dataset.metadata && dataset.metadata.dataset_detail && dataset.metadata.dataset_detail.name}</div>
                 <Box className={style.uploadDatasetStepsLayout}>
                     <Grid container spacing={0} columns={15}>
                         <Grid item xs={4}>
