@@ -260,18 +260,79 @@ export async function postCreateStation(data) {
 }
 export async function postCreateJob(data) {
   const formData = new FormData();
-  if(data[0] === "osw/convert"){
-    formData.append('source', data[2]);
-    formData.append('target', data[3]);
-    formData.append('file', data[1]);
-  }else{
-    formData.append('dataset', data[1]);
+  let url;
+  let response;
+  const params = {};
+  const baseUrl = `${osmUrl}/${data[0]}`;
+  let headers = {
+    'Content-Type': 'multipart/form-data',
+  };
+
+  switch (data[0]) {
+    case "osw/convert":
+      formData.append('source', data[2]);
+      formData.append('target', data[3]);
+      formData.append('file', data[1]);
+      url = baseUrl;
+      break;
+    case "osw/confidence":
+      formData.append('file', data[1]);
+      url = `${baseUrl}/${data[2]}`;
+      break;
+    case "osw/quality-metric":
+      formData.append('tdei_dataset_id', data[2]);
+      url = `${baseUrl}/${data[2]}`;
+      headers = {
+        'Content-Type': 'application/json',
+      };
+      break;
+    case "osw/dataset-bbox":
+      url = baseUrl;
+      headers = {
+        'Content-Type': 'application/json',
+      };
+      break;
+    case "osw/dataset-tag-road":
+      params.source_dataset_id = data[2];
+      params.target_dataset_id = data[3];
+      url = baseUrl
+      headers = {
+        'Content-Type': 'application/json',
+      };
+      break;
+    default:
+      formData.append('dataset', data[1]);
+      url = baseUrl;
   }
-  const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  console.log(url);
+  const config = { headers };
+  if (Object.keys(params).length > 0) {
+    config.params = params;
+  }
+  if (data[0] === "osw/quality-metric" && data[3]) {
+    const requestBody = JSON.parse(data[3])
+    console.log(requestBody);
+    response = await axios.post(url, requestBody, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+  } else {
+    if (data[0] === "osw/dataset-bbox") {
+      const bboxParams = [
+        `bbox=${parseFloat(data[4].west)}`,
+        `bbox=${parseFloat(data[4].south)}`,
+        `bbox=${parseFloat(data[4].east)}`,
+        `bbox=${parseFloat(data[4].north)}`
+      ];
+      url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]}&${bboxParams.join('&')}`;
+      response = await axios.post(url);
+    } if (data[0] === "osw/dataset-tag-road") {
+      response = await axios.post(url, {}, config);
+    } else {
+      response = await axios.post(url, formData, config);
+    }
+  }
   return response.data;
 }
 export async function postUploadDataset(data) {
@@ -316,7 +377,7 @@ export async function postUploadDataset(data) {
   // Get the endpoint based on the service_type
   const service_type = data[0].service_type;
   const file_end_point = service_type === 'flex' ? 'gtfs-flex' : (service_type === 'pathways' ? 'gtfs-pathways' : 'osw');
-  const url = data[1].derived_from_dataset_id ? 
+  const url = data[1].derived_from_dataset_id ?
     `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}` :
     `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
   try {
@@ -330,7 +391,7 @@ export async function postUploadDataset(data) {
     console.error('Error object:', error);
     if (error.response && error.response.data) {
       throw new Error(error.response.data);
-    }else if (error.data) {
+    } else if (error.data) {
       throw new Error(error.data);
     } else {
       throw new Error(error);
@@ -447,7 +508,7 @@ export async function cloneDataset(data) {
   if (data.selectedData[1] instanceof File) {
     formData.append('file', data.selectedData[1]);
   } else {
-    const metadata = { ...data.selectedData[1]};
+    const metadata = { ...data.selectedData[1] };
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
@@ -473,7 +534,7 @@ export async function cloneDataset(data) {
     const jsonString = JSON.stringify(metadata, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const file = new File([blob], 'metadata.json', { type: 'application/json' });
-    
+
     formData.append('file', file);
   }
   // if (data.selectedData[2] != null) {
@@ -516,7 +577,7 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
   const params = {};
 
   // if (isAdmin) {
-    params.tdei_project_group_id = null;
+  params.tdei_project_group_id = null;
   // } else {
   //   params.tdei_project_group_id = tdei_project_group_id;
   // }

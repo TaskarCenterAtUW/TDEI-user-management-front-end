@@ -7,8 +7,7 @@ import Dropzone from "../../components/DropZone/Dropzone";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useCreateJob from "../../hooks/jobs/useCreateJob";
-import { POST_DATASET } from "../../utils";
-import { Spinner, Form, Row, Col } from "react-bootstrap";
+import { Spinner, Form } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 
@@ -71,14 +70,14 @@ const formConfig = {
 
 const CreateJobService = () => {
     const navigate = useNavigate();
-    const [jobType, setJobType] = React.useState();
-    const [selectedFile, setSelectedFile] = React.useState();
+    const [jobType, setJobType] = React.useState(null);
+    const [selectedFile, setSelectedFile] = React.useState(null);
     const [loading, setLoading] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [showToast, setToast] = useState(false);
-    const [sourceFormat, setSourceFormat] = React.useState();
-    const [targetFormat, setTargetFormat] = React.useState();
+    const [sourceFormat, setSourceFormat] = React.useState(null);
+    const [targetFormat, setTargetFormat] = React.useState(null);
     const [showValidateToast, setShowValidateToast] = useState(false);
     const [validateErrorMessage, setValidateErrorMessage] = useState("");
     const [tdeiDatasetId, setTdeiDatasetId] = React.useState("");
@@ -91,7 +90,7 @@ const CreateJobService = () => {
         east: "",
         north: ""
     });
-    const [fileType, setFileType] = React.useState();
+    const [fileType, setFileType] = React.useState(null);
 
     const onSuccess = (data) => {
         setLoading(false);
@@ -108,14 +107,22 @@ const CreateJobService = () => {
 
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
 
-    const onStepsComplete = (uploadData) => {
-        console.log(uploadData);
-        setLoading(true)
-        //mutate(uploadData);
-    };
-
     function handleJobTypeSelect(type) {
         setJobType(type);
+        setSelectedFile(null);
+        setSourceFormat(null);
+        setTargetFormat(null);
+        setTdeiDatasetId("");
+        setSourceDatasetId("");
+        setTargetDatasetId("");
+        setAlgorithmsJson("");
+        setBboxValues({
+            west: "",
+            south: "",
+            east: "",
+            north: ""
+        });
+        setFileType(null);
     }
 
     const handlePop = () => {
@@ -147,6 +154,38 @@ const CreateJobService = () => {
             return;
         }
 
+        if (jobType.value === "confidence" && (!tdeiDatasetId || !selectedFile)) {
+            setValidateErrorMessage("Tdei Dataset Id and File are required for Confidence Calculation job");
+            setShowValidateToast(true);
+            return;
+        }
+
+        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !algorithmsJson)) {
+            setValidateErrorMessage("Tdei Dataset Id and Algorithms, Persist are required for Quality Metric Calculation job");
+            setShowValidateToast(true);
+            return;
+        }
+
+        if (jobType.value === "dataset-bbox" && (!bboxValues.west || !bboxValues.south || !bboxValues.east || !bboxValues.north || !tdeiDatasetId)) {
+            setValidateErrorMessage("Bounding Box values and Tdei Dataset Id are required for Dataset BBox job");
+            setShowValidateToast(true);
+            return;
+        }
+
+        if (jobType.value === "dataset-tag-road" && (!sourceDatasetId || !targetDatasetId)) {
+            setValidateErrorMessage("Source and Target Dataset Ids are required for Dataset Tag Road job");
+            setShowValidateToast(true);
+            return;
+        }
+
+        if (jobType.value === "osw-convert") {
+            if (!sourceFormat?.value || !targetFormat?.value) {
+                setValidateErrorMessage("Source and target formats are required for OSW - Convert job");
+                setShowValidateToast(true);
+                return;
+            }
+        }
+
         let urlPath = "";
         switch (jobType?.value) {
             case "osw-validate":
@@ -162,30 +201,30 @@ const CreateJobService = () => {
                 urlPath = "osw/convert";
                 break;
             case "confidence":
-                urlPath = "osw/confidence/";
+                urlPath = "osw/confidence";
                 break;
             case "quality-metric":
-                urlPath = "quality-metric/calculate";
+                urlPath = "osw/quality-metric";
                 break;
             case "dataset-bbox":
-                urlPath = "dataset/bbox";
+                urlPath = "osw/dataset-bbox";
                 break;
             case "dataset-tag-road":
-                urlPath = "dataset/tag-road";
+                urlPath = "osw/dataset-tag-road";
                 break;
-        }
-
-        if (urlPath === "osw/convert") {
-            if (!sourceFormat?.value || !targetFormat?.value) {
-                setValidateErrorMessage("Source and target formats are required for OSW - Convert job");
-                setShowValidateToast(true);
-                return;
-            }
         }
 
         const uploadData = [urlPath, selectedFile];
-        if (urlPath === "osw/convert") {
+        if (jobType.value === "osw-convert") {
             uploadData.push(sourceFormat.value, targetFormat.value);
+        }else if (jobType.value === "confidence"){
+            uploadData.push(tdeiDatasetId);
+        }else if (jobType.value === "quality-metric"){
+            uploadData.push(tdeiDatasetId,algorithmsJson);
+        }else if (jobType.value === "dataset-bbox"){
+            uploadData.push(tdeiDatasetId,fileType.value,bboxValues);
+        }else if (jobType.value === "dataset-tag-road"){
+            uploadData.push(sourceDatasetId,targetDatasetId);
         }
 
         setLoading(true);
@@ -218,7 +257,7 @@ const CreateJobService = () => {
                     );
                 case "text":
                     return (
-                        <Form.Group key={index}>
+                        <Form.Group key={index} controlId={field.label}>
                             <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
                             <Form.Control
                                 type="text"
@@ -229,6 +268,15 @@ const CreateJobService = () => {
                                     if (field.stateSetter === "setSourceDatasetId") setSourceDatasetId(e.target.value);
                                     if (field.stateSetter === "setTargetDatasetId") setTargetDatasetId(e.target.value);
                                 }}
+                                value={
+                                    field.stateSetter === "setTdeiDatasetId"
+                                        ? tdeiDatasetId
+                                        : field.stateSetter === "setSourceDatasetId"
+                                            ? sourceDatasetId
+                                            : field.stateSetter === "setTargetDatasetId"
+                                                ? targetDatasetId
+                                                : ""
+                                }
                             />
                         </Form.Group>
                     );
@@ -244,6 +292,7 @@ const CreateJobService = () => {
                                     onChange={(e) => {
                                         if (field.stateSetter === "setAlgorithmsJson") setAlgorithmsJson(e.target.value);
                                     }}
+                                    value={algorithmsJson}
                                     rows={10}
                                 />
                             </div>
@@ -257,6 +306,7 @@ const CreateJobService = () => {
                                 onDrop={onDrop}
                                 accept={{ 'application/zip': ['.zip'] }}
                                 format=".zip"
+                                selectedFile={selectedFile}
                             />
                         </div>
                     );
@@ -272,6 +322,7 @@ const CreateJobService = () => {
                                         type="text"
                                         placeholder="Enter Coordinates"
                                         onChange={(e) => setBboxValues({ ...bboxValues, west: e.target.value })}
+                                        value={bboxValues.west}
                                     />
 
                                 </Form.Group>
@@ -282,6 +333,7 @@ const CreateJobService = () => {
                                         type="text"
                                         placeholder="Enter Coordinates"
                                         onChange={(e) => setBboxValues({ ...bboxValues, south: e.target.value })}
+                                        value={bboxValues.south}
                                     />
                                 </Form.Group>
                                 <Form.Group controlId="east" className={style.bboxFormGroup}>
@@ -291,6 +343,7 @@ const CreateJobService = () => {
                                         type="text"
                                         placeholder="Enter Coordinates"
                                         onChange={(e) => setBboxValues({ ...bboxValues, east: e.target.value })}
+                                        value={bboxValues.east}
                                     />
                                 </Form.Group>
                                 <Form.Group controlId="north" className={style.bboxFormGroup}>
@@ -300,6 +353,7 @@ const CreateJobService = () => {
                                         type="text"
                                         placeholder="Enter Coordinates"
                                         onChange={(e) => setBboxValues({ ...bboxValues, north: e.target.value })}
+                                        value={bboxValues.north}
                                     />
                                 </Form.Group>
                             </div>
