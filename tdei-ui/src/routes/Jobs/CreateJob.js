@@ -154,8 +154,8 @@ const CreateJobService = () => {
             return;
         }
 
-        if (jobType.value === "confidence" && (!tdeiDatasetId || !selectedFile)) {
-            setValidateErrorMessage("Tdei Dataset Id and File are required for Confidence Calculation job");
+        if (jobType.value === "confidence" && !tdeiDatasetId) {
+            setValidateErrorMessage("Tdei Dataset Id is required for Confidence Calculation job");
             setShowValidateToast(true);
             return;
         }
@@ -296,7 +296,7 @@ const CreateJobService = () => {
             case "dropzone":
                 return (
                     <div key={index} className={style.formItems}>
-                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <p>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
                         <Dropzone
                             onDrop={onDrop}
                             accept={{ 'application/zip': ['.zip'] }}
