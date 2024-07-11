@@ -217,18 +217,144 @@ const CreateJobService = () => {
         const uploadData = [urlPath, selectedFile];
         if (jobType.value === "osw-convert") {
             uploadData.push(sourceFormat.value, targetFormat.value);
-        }else if (jobType.value === "confidence"){
+        } else if (jobType.value === "confidence") {
             uploadData.push(tdeiDatasetId);
-        }else if (jobType.value === "quality-metric"){
-            uploadData.push(tdeiDatasetId,algorithmsJson);
-        }else if (jobType.value === "dataset-bbox"){
-            uploadData.push(tdeiDatasetId,fileType.value,bboxValues);
-        }else if (jobType.value === "dataset-tag-road"){
-            uploadData.push(sourceDatasetId,targetDatasetId);
+        } else if (jobType.value === "quality-metric") {
+            uploadData.push(tdeiDatasetId, algorithmsJson);
+        } else if (jobType.value === "dataset-bbox") {
+            uploadData.push(tdeiDatasetId, fileType.value, bboxValues);
+        } else if (jobType.value === "dataset-tag-road") {
+            uploadData.push(sourceDatasetId, targetDatasetId);
         }
 
         setLoading(true);
         mutate(uploadData);
+    };
+
+    const renderField = (field, index) => {
+        const isSpecialJobType = ["confidence", "quality-metric"].includes(jobType?.value);
+        switch (field.type) {
+            case "select":
+                return (
+                    <div key={index} className={style.formItem}>
+                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <Select
+                            options={field.options}
+                            placeholder={`Select ${field.label.toLowerCase()}`}
+                            onChange={(value) => {
+                                if (field.stateSetter === "setSourceFormat") setSourceFormat(value);
+                                if (field.stateSetter === "setTargetFormat") setTargetFormat(value);
+                                if (field.stateSetter === "setFileType") setFileType(value);
+                            }}
+                        />
+                    </div>
+                );
+            case "text":
+                return (
+                    <Form.Group key={index} controlId={field.label} className={style.formItem}>
+                        <Form.Label style={{paddingBottom:"8px"}}>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
+                        <Form.Control
+                            type="text"
+                            className={isSpecialJobType ? style.createJobSelectType : ''}
+                            name={field.label}
+                            onChange={(e) => {
+                                if (field.stateSetter === "setTdeiDatasetId") setTdeiDatasetId(e.target.value);
+                                if (field.stateSetter === "setSourceDatasetId") setSourceDatasetId(e.target.value);
+                                if (field.stateSetter === "setTargetDatasetId") setTargetDatasetId(e.target.value);
+                            }}
+                            value={
+                                field.stateSetter === "setTdeiDatasetId"
+                                    ? tdeiDatasetId
+                                    : field.stateSetter === "setSourceDatasetId"
+                                        ? sourceDatasetId
+                                        : field.stateSetter === "setTargetDatasetId"
+                                            ? targetDatasetId
+                                            : ""
+                            }
+                        />
+                    </Form.Group>
+                );
+            case "textarea":
+                return (
+                    <div key={index} style={{ marginTop: '10px' }}>
+                        <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
+                        <div className="jsonContent">
+                            <Form.Control
+                                as="textarea"
+                                type="text"
+                                name={field.label}
+                                onChange={(e) => {
+                                    if (field.stateSetter === "setAlgorithmsJson") setAlgorithmsJson(e.target.value);
+                                }}
+                                value={algorithmsJson}
+                                rows={10}
+                            />
+                        </div>
+                    </div>
+                );
+            case "dropzone":
+                return (
+                    <div key={index} className={style.formItems}>
+                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <Dropzone
+                            onDrop={onDrop}
+                            accept={{ 'application/zip': ['.zip'] }}
+                            format=".zip"
+                            selectedFile={selectedFile}
+                        />
+                    </div>
+                );
+            case "bbox":
+                return (
+                    <div key={index} style={{ paddingTop: "25px" }}>
+                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <div className={style.bBoxContainer}>
+                            <Form.Group controlId="west" className={style.bboxFormGroup}>
+                                <Form.Label className={style.bboxLabel}>West</Form.Label>
+                                <Form.Control
+                                    className={style.bboxForm}
+                                    type="text"
+                                    placeholder="Enter Coordinates"
+                                    onChange={(e) => setBboxValues({ ...bboxValues, west: e.target.value })}
+                                    value={bboxValues.west}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="south" className={style.bboxFormGroup}>
+                                <Form.Label className={style.bboxLabel}>South</Form.Label>
+                                <Form.Control
+                                    className={style.bboxForm}
+                                    type="text"
+                                    placeholder="Enter Coordinates"
+                                    onChange={(e) => setBboxValues({ ...bboxValues, south: e.target.value })}
+                                    value={bboxValues.south}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="east" className={style.bboxFormGroup}>
+                                <Form.Label className={style.bboxLabel}>East</Form.Label>
+                                <Form.Control
+                                    className={style.bboxForm}
+                                    type="text"
+                                    placeholder="Enter Coordinates"
+                                    onChange={(e) => setBboxValues({ ...bboxValues, east: e.target.value })}
+                                    value={bboxValues.east}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="north" className={style.bboxFormGroup}>
+                                <Form.Label className={style.bboxLabel}>North</Form.Label>
+                                <Form.Control
+                                    className={style.bboxForm}
+                                    type="text"
+                                    placeholder="Enter Coordinates"
+                                    onChange={(e) => setBboxValues({ ...bboxValues, north: e.target.value })}
+                                    value={bboxValues.north}
+                                />
+                            </Form.Group>
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
     };
 
     const renderFormFields = () => {
@@ -237,132 +363,18 @@ const CreateJobService = () => {
         const fields = formConfig[jobType.value];
         if (!fields) return null;
 
-        return fields.map((field, index) => {
-            switch (field.type) {
-                case "select":
-                    return (
-                        <div key={index} className={style.formItems}>
-                            <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
-                            <Select
-                                className={style.createJobSelectType}
-                                options={field.options}
-                                placeholder={`Select ${field.label.toLowerCase()}`}
-                                onChange={(value) => {
-                                    if (field.stateSetter === "setSourceFormat") setSourceFormat(value);
-                                    if (field.stateSetter === "setTargetFormat") setTargetFormat(value);
-                                    if (field.stateSetter === "setFileType") setFileType(value);
-                                }}
-                            />
-                        </div>
-                    );
-                case "text":
-                    return (
-                        <Form.Group key={index} controlId={field.label}>
-                            <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                name={field.label}
-                                className={style.createJobSelectType}
-                                onChange={(e) => {
-                                    if (field.stateSetter === "setTdeiDatasetId") setTdeiDatasetId(e.target.value);
-                                    if (field.stateSetter === "setSourceDatasetId") setSourceDatasetId(e.target.value);
-                                    if (field.stateSetter === "setTargetDatasetId") setTargetDatasetId(e.target.value);
-                                }}
-                                value={
-                                    field.stateSetter === "setTdeiDatasetId"
-                                        ? tdeiDatasetId
-                                        : field.stateSetter === "setSourceDatasetId"
-                                            ? sourceDatasetId
-                                            : field.stateSetter === "setTargetDatasetId"
-                                                ? targetDatasetId
-                                                : ""
-                                }
-                            />
-                        </Form.Group>
-                    );
-                case "textarea":
-                    return (
-                        <div key={index} style={{ marginTop: '10px' }}>
-                            <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
-                            <div className="jsonContent">
-                                <Form.Control
-                                    as="textarea"
-                                    type="text"
-                                    name={field.label}
-                                    onChange={(e) => {
-                                        if (field.stateSetter === "setAlgorithmsJson") setAlgorithmsJson(e.target.value);
-                                    }}
-                                    value={algorithmsJson}
-                                    rows={10}
-                                />
-                            </div>
-                        </div>
-                    );
-                case "dropzone":
-                    return (
-                        <div key={index} className={style.formItems}>
-                            <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
-                            <Dropzone
-                                onDrop={onDrop}
-                                accept={{ 'application/zip': ['.zip'] }}
-                                format=".zip"
-                                selectedFile={selectedFile}
-                            />
-                        </div>
-                    );
-                case "bbox":
-                    return (
-                        <div key={index}>
-                            <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
-                            <div>
-                                <Form.Group controlId="west" className={style.bboxFormGroup}>
-                                    <Form.Label className={style.bboxLabel}>West</Form.Label>
-                                    <Form.Control
-                                        className={style.bboxForm}
-                                        type="text"
-                                        placeholder="Enter Coordinates"
-                                        onChange={(e) => setBboxValues({ ...bboxValues, west: e.target.value })}
-                                        value={bboxValues.west}
-                                    />
+        if (jobType.value === "osw-convert" || jobType.value === "dataset-tag-road" || jobType.value === "dataset-bbox") {
+            return (
+                <div>
+                    <div className={style.formRow}>
+                        {fields.filter(field => field.type === "select" || field.type === "text").map(renderField)}
+                    </div>
+                    {fields.filter(field => field.type === "dropzone" || field.type === "bbox").map(renderField)}
+                </div>
+            );
+        }
 
-                                </Form.Group>
-                                <Form.Group controlId="south" className={style.bboxFormGroup}>
-                                    <Form.Label className={style.bboxLabel}>South</Form.Label>
-                                    <Form.Control
-                                        className={style.bboxForm}
-                                        type="text"
-                                        placeholder="Enter Coordinates"
-                                        onChange={(e) => setBboxValues({ ...bboxValues, south: e.target.value })}
-                                        value={bboxValues.south}
-                                    />
-                                </Form.Group>
-                                <Form.Group controlId="east" className={style.bboxFormGroup}>
-                                    <Form.Label className={style.bboxLabel}>East</Form.Label>
-                                    <Form.Control
-                                        className={style.bboxForm}
-                                        type="text"
-                                        placeholder="Enter Coordinates"
-                                        onChange={(e) => setBboxValues({ ...bboxValues, east: e.target.value })}
-                                        value={bboxValues.east}
-                                    />
-                                </Form.Group>
-                                <Form.Group controlId="north" className={style.bboxFormGroup}>
-                                    <Form.Label className={style.bboxLabel}>North</Form.Label>
-                                    <Form.Control
-                                        className={style.bboxForm}
-                                        type="text"
-                                        placeholder="Enter Coordinates"
-                                        onChange={(e) => setBboxValues({ ...bboxValues, north: e.target.value })}
-                                        value={bboxValues.north}
-                                    />
-                                </Form.Group>
-                            </div>
-                        </div>
-                    );
-                default:
-                    return null;
-            }
-        });
+        return fields.map(renderField);
     };
 
     return (
@@ -382,6 +394,7 @@ const CreateJobService = () => {
                                     onChange={handleJobTypeSelect}
                                 />
                             </div>
+                            { jobType == null ? null : (<div className={style.dottedLine}></div>) }
                             {renderFormFields()}
                         </form>
                     </div>
