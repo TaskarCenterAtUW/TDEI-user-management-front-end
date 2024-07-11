@@ -254,6 +254,7 @@ const CreateJobService = () => {
                     <Form.Group key={index} controlId={field.label} className={style.formItem}>
                         <Form.Label style={{paddingBottom:"8px"}}>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
                         <Form.Control
+                        placeholder={`Enter ${field.label}`}
                             type="text"
                             className={isSpecialJobType ? style.createJobSelectType : ''}
                             name={field.label}
