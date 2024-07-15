@@ -380,11 +380,11 @@ const CreateJobService = () => {
 
     return (
         <Layout>
-            <div className={style.createJobContainer}>
+            <div className={` ${jobType ? style.createJobContainer : style.createJobContainerWithJobType }`}>
                 <>
                     <div className={style.createJobTitle}>Create New Job</div>
                     <div className={style.divider}></div>
-                    <div className={style.rectangleBox}>
+                    <div className={`${jobType ? style.rectangleBox : style.fixedRectangleBox}`}>
                         <form className={style.form}>
                             <div className={style.formItems}>
                                 <p>Job Type<span style={{ color: 'red' }}> *</span></p>
@@ -399,8 +399,7 @@ const CreateJobService = () => {
                             {renderFormFields()}
                         </form>
                     </div>
-                    <div className={style.divider}></div>
-                    <div className={style.buttonContainer}>
+                    <div className={`${jobType ? style.buttonContainer : style.fixedButtonContainer}`}>
                         <Button
                             className={style.buttonSecondaryCustomised}
                             onClick={handlePop}

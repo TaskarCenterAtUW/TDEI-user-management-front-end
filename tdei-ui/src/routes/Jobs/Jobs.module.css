@@ -90,6 +90,31 @@
     background-color: #ffffff;
   }
 }
+.fixedRectangleBox {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background: #F4F9FC;
+  border: 1px solid #DDDDDD;
+  padding: 20px 10px;
+  border-radius: 10px;
+
+  [class*='Dropzone_dropzone'] {
+    background-color: #ffffff;
+  }
+}
+
+.fixedButtonContainer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #ccc;
+  padding: 20px;
+  margin-top: 20px;
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom:0;
+}
 
 .form {
   align-self: center;
@@ -120,7 +145,9 @@
 .buttonContainer {
   display: flex;
   justify-content: space-between;
-  /* Ensures equal space between the buttons */
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+  margin-top: 20px;
 }
 
 .select {
@@ -223,6 +250,17 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.createJobContainerWithJobType {
+  padding: 20px;
+  box-shadow: 0px 1px 6px #22222226;
+  border-radius: 5px;
+  background-color: #ffffff;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .createJobTitle {
