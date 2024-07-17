@@ -41,7 +41,6 @@ const MyDatasets = () => {
     }, [data]);
 
     const handleSelectedDataType = (value) => {
-        queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
         setDataType(value.value);
     };
 
