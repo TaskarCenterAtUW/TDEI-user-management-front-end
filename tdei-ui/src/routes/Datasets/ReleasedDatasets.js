@@ -47,7 +47,6 @@ const ReleasedDatasets = () => {
   }, [data]);
   // Event handler for selecting data type from dropdown
   const handleSelectedDataType = (value) => {
-    queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
     setDataType(value.value);
   };
 
@@ -93,7 +92,7 @@ const ReleasedDatasets = () => {
       setSortedData(sorted);
     } else if (eventKey === 'asc') {
       // Sort by name in ascending order
-      const sorted = [...sortedData].sort((a, b) => a.name.localeCompare(b.name));
+      const sorted = [...sortedData].sort((a, b) => a.metadata?.dataset_detail?.name.localeCompare(b.metadata?.dataset_detail?.name));
       setSortedData(sorted);
     }
   };
