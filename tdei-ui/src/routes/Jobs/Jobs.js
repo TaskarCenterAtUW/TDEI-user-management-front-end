@@ -50,7 +50,7 @@ const Jobs = () => {
     ];
 
     const jobShowOptions = [
-        { value: '', label: 'All' },
+        { value: 'all', label: 'All' },
         { value: 'me', label: 'Submitted by me' }
     ]
 
@@ -66,7 +66,7 @@ const Jobs = () => {
         isFetchingNextPage,
         isLoading,
         refreshData
-    } = useGetJobs(user.isAdmin, debounceQuery, jobType.value, jobStatus.value);
+    } = useGetJobs(user.isAdmin, debounceQuery, jobType.value, jobStatus.value,jobShow.value);
 
     useEffect(() => {
         // Check if data is available and update sortedData
@@ -78,12 +78,10 @@ const Jobs = () => {
 
     const handleJobTypeSelect = (value) => {
         setJobType(value);
-        queryClient.invalidateQueries({ queryKey: [GET_JOBS] });
     };
 
     const handleJobStatusSelect = (value) => {
         setJobStatus(value);
-        queryClient.invalidateQueries({ queryKey: [GET_JOBS] });
     };
 
     const handleJobShowSelect = (value) => {
@@ -112,7 +110,7 @@ const Jobs = () => {
             setSortedData(sorted);
         } else if (eventKey === 'type') {
             // Sort by type in ascending order
-            const sorted = [...sortedData].sort((a, b) => a.data_type.localeCompare(b.data_type));
+            const sorted = [...sortedData].sort((a, b) => a.jobType.localeCompare(b.jobType));
             setSortedData(sorted);
         } else if (eventKey === 'asc') {
             // Sort by name in ascending order

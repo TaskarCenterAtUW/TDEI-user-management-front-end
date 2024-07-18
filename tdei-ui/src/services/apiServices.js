@@ -153,17 +153,18 @@ export async function getService(tdei_service_id, service_type, tdei_project_gro
     pageParam,
   };
 }
-export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status) {
+export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status,job_show) {
 
   const params = {
     page_no: pageParam,
     page_size: 10,
   };
 
-  if (isAdmin) {
-    params.tdei_project_group_id = null;
-  } else {
+  if(!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
+  }
+  if(job_show == "all"){
+    params.show_group_jobs = true;
   }
 
   if (job_type) {

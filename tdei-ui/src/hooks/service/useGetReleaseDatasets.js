@@ -24,9 +24,6 @@ function useGetReleasedDatasets(searchText = "", dataType) {
   const refreshData = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };
-  useEffect(() => {
-    refreshData();
-  }, [searchText, dataType]);
   return { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData };
 }
 
