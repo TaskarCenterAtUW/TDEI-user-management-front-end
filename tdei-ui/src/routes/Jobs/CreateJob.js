@@ -46,7 +46,7 @@ const formConfig = {
     ],
     "confidence": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Attach file", type: "dropzone" }
+        { label: "Attach File", type: "dropzone" }
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
@@ -162,17 +162,39 @@ const CreateJobService = () => {
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
     };
-     // Handle file input specific cases for confidence and dataset-bbox
-    const getFileDescription = (jobType) => {
-        const path = getPathFromJobType(jobType);
-        if (jobType === "confidence") {
-            return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
-        }
-        
-        if (jobType === "dataset-bbox") {
+    // Handle file input specific cases for description
+    const getBBoxDescription = (label) => {
+        const path = getPathFromJobType("dataset-bbox");
+        if (label === "Tdei Dataset Id") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        } else if (label === "File Type") {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "file_type")?.description || "";
+        } else {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "bbox")?.description || "";
         }
     };
+    const getDatasetTagInputDescription = (label) => {
+        const path = getPathFromJobType("dataset-tag-road");
+        if (label === "Source Dataset Id") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "source_dataset_id")?.description || "";
+        } else {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "target_dataset_id")?.description || "";
+        }
+    }
+    const getConfidenceInputDescription = (label) => {
+        const path = getPathFromJobType("confidence");
+        if (label === "Tdei Dataset Id") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        } else {
+            return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
+        }
+    }
+    const getQualityMetricDescription = (label) => {
+        const path = getPathFromJobType("quality-metric");
+        if (label === "Tdei Dataset Id") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        }
+    }
     const handleCreate = () => {
         if (!jobType) {
             setValidateErrorMessage("Job type is required");
@@ -264,6 +286,19 @@ const CreateJobService = () => {
 
     const renderField = (field, index) => {
         const isSpecialJobType = ["confidence", "quality-metric"].includes(jobType?.value);
+        const getDescriptionForField = (label) => {
+            if (jobType.value === "dataset-bbox") {
+                return getBBoxDescription(label);
+            } else if (jobType.value === "dataset-tag-road") {
+                return getDatasetTagInputDescription(label);
+            } else if (jobType.value === "confidence") {
+                return getConfidenceInputDescription(label);
+            } else if (jobType.value === "quality-metric") {
+                return getQualityMetricDescription(label);
+            }
+            return "";
+        };
+
         switch (field.type) {
             case "select":
                 return (
@@ -278,18 +313,22 @@ const CreateJobService = () => {
                                 if (field.stateSetter === "setFileType") setFileType(value);
                             }}
                         />
-                        {jobType !== null && jobType.value === "dataset-bbox" && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />} 
+                        {jobType !== null && jobType.value === "dataset-bbox" && (
+                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
+                        )}
                         <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getFileDescription(jobType == null ? "" : jobType.value)}
+                            {getDescriptionForField(field.label)}
                         </Form.Text>
                     </div>
                 );
             case "text":
                 return (
                     <Form.Group key={index} controlId={field.label} className={style.formItem}>
-                        <Form.Label style={{paddingBottom:"8px"}}>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
+                        <Form.Label style={{ paddingBottom: "8px" }}>
+                            {field.label}<span style={{ color: 'red' }}> *</span>
+                        </Form.Label>
                         <Form.Control
-                        placeholder={`Enter ${field.label}`}
+                            placeholder={`Enter ${field.label}`}
                             type="text"
                             className={isSpecialJobType ? style.createJobSelectType : ''}
                             name={field.label}
@@ -308,6 +347,10 @@ const CreateJobService = () => {
                                             : ""
                             }
                         />
+                        <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
+                        <Form.Text id="passwordHelpBlock" className={style.description}>
+                            {getDescriptionForField(field.label)}
+                        </Form.Text>
                     </Form.Group>
                 );
             case "textarea":
@@ -338,9 +381,11 @@ const CreateJobService = () => {
                             format=".zip"
                             selectedFile={selectedFile}
                         />
-                        {jobType !== null && jobType.value === "confidence" && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />}
+                        {jobType !== null && jobType.value === "confidence" && (
+                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
+                        )}
                         <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getFileDescription(jobType == null ? "" : jobType.value)}
+                            {getDescriptionForField(field.label)}
                         </Form.Text>
                     </div>
                 );
@@ -389,13 +434,21 @@ const CreateJobService = () => {
                                     value={bboxValues.north}
                                 />
                             </Form.Group>
+
                         </div>
+                        {jobType !== null && jobType.value === "dataset-bbox" && (
+                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
+                        )}
+                        <Form.Text id="passwordHelpBlock" className={style.description}>
+                            {getDescriptionForField(field.label)}
+                        </Form.Text>
                     </div>
                 );
             default:
                 return null;
         }
     };
+
 
     const renderFormFields = () => {
         if (!jobType) return null;
@@ -416,11 +469,11 @@ const CreateJobService = () => {
 
         return fields.map(renderField);
     };
- 
+
 
     return (
         <Layout>
-            <div className={` ${jobType ? style.createJobContainer : style.createJobContainerWithJobType }`}>
+            <div className={` ${jobType ? style.createJobContainer : style.createJobContainerWithJobType}`}>
                 <>
                     <div className={style.createJobTitle}>Create New Job</div>
                     <div className={style.divider}></div>
@@ -434,12 +487,12 @@ const CreateJobService = () => {
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />
-                                {jobType !== null && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />} 
+                                {jobType !== null && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />}
                                 <Form.Text id="passwordHelpBlock" className={style.description}>
                                     {getDescription(jobType == null ? "" : jobType.value)}
                                 </Form.Text>
                             </div>
-                            { jobType == null ? null : (<div className={style.dottedLine}></div>) }
+                            {jobType == null ? null : (<div className={style.dottedLine}></div>)}
                             {renderFormFields()}
                         </form>
                     </div>
