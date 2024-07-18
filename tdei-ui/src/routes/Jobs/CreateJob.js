@@ -143,39 +143,25 @@ const CreateJobService = () => {
     const handleCloseToast = () => {
         setShowValidateToast(false);
     };
-    const getDescription = (jobType) => {
-        let path = "";
-        switch (jobType) {
-            case "osw-validate":
-                path = "/api/v1/osw/validate";
-                break;
-            case "flex-validate":
-                path = "/api/v1/gtfs-flex/validate";
-                break;
-            case "pathways-validate":
-                path = "/api/v1/gtfs-pathways/validate";
-                break;
-            case "osw-convert":
-                path = "/api/v1/osw/convert";
-                break;
-            case "confidence":
-                path = "/api/v1/osw/confidence/{tdei_dataset_id}";
-                break;
-            case "quality-metric":
-                path = "/api/v1/osw/quality-metric/{tdei_dataset_id}";
-                break;
-            case "dataset-bbox":
-                path = "/api/v1/osw/dataset-bbox";
-                break;
-            case "dataset-tag-road":
-                path = "/api/v1/osw/dataset-tag-road";
-                break;
-            default:
-                return "";
-        }
-        return apiSpec.paths[path]?.post?.description || "";
+    const getPathFromJobType = (jobType) => {
+        const jobTypePathMap = {
+            "osw-validate": "/api/v1/osw/validate",
+            "flex-validate": "/api/v1/gtfs-flex/validate",
+            "pathways-validate": "/api/v1/gtfs-pathways/validate",
+            "osw-convert": "/api/v1/osw/convert",
+            "confidence": "/api/v1/osw/confidence/{tdei_dataset_id}",
+            "quality-metric": "/api/v1/osw/quality-metric/{tdei_dataset_id}",
+            "dataset-bbox": "/api/v1/osw/dataset-bbox",
+            "dataset-tag-road": "/api/v1/osw/dataset-tag-road"
+        };
+
+        return jobTypePathMap[jobType] || "";
     };
 
+    const getDescription = (jobType) => {
+        const path = getPathFromJobType(jobType);
+        return apiSpec.paths[path]?.post?.description || "";
+    };
     const handleCreate = () => {
         if (!jobType) {
             setValidateErrorMessage("Job type is required");
@@ -429,8 +415,8 @@ const CreateJobService = () => {
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />
-                                <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                                <Form.Text id="passwordHelpBlock" muted className={style.description}>
+                                {jobType !== null && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />} 
+                                <Form.Text id="passwordHelpBlock" className={style.description}>
                                     {getDescription(jobType == null ? "" : jobType.value)}
                                 </Form.Text>
                             </div>
