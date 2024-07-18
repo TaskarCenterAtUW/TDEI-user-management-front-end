@@ -328,7 +328,7 @@ export async function postCreateJob(data) {
       ];
       url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]}&${bboxParams.join('&')}`;
       response = await axios.post(url);
-    } if (data[0] === "osw/dataset-tag-road") {
+    } else if (data[0] === "osw/dataset-tag-road") {
       response = await axios.post(url, {}, config);
     } else {
       response = await axios.post(url, formData, config);
