@@ -46,7 +46,7 @@ const formConfig = {
     ],
     "confidence": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Attach data file", type: "dropzone" }
+        { label: "Attach file", type: "dropzone" }
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
@@ -162,6 +162,17 @@ const CreateJobService = () => {
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
     };
+     // Handle file input specific cases for confidence and dataset-bbox
+    const getFileDescription = (jobType) => {
+        const path = getPathFromJobType(jobType);
+        if (jobType === "confidence") {
+            return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
+        }
+        
+        if (jobType === "dataset-bbox") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "file_type")?.description || "";
+        }
+    };
     const handleCreate = () => {
         if (!jobType) {
             setValidateErrorMessage("Job type is required");
@@ -267,6 +278,10 @@ const CreateJobService = () => {
                                 if (field.stateSetter === "setFileType") setFileType(value);
                             }}
                         />
+                        {jobType !== null && jobType.value === "dataset-bbox" && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />} 
+                        <Form.Text id="passwordHelpBlock" className={style.description}>
+                            {getFileDescription(jobType == null ? "" : jobType.value)}
+                        </Form.Text>
                     </div>
                 );
             case "text":
@@ -323,6 +338,10 @@ const CreateJobService = () => {
                             format=".zip"
                             selectedFile={selectedFile}
                         />
+                        {jobType !== null && jobType.value === "confidence" && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />}
+                        <Form.Text id="passwordHelpBlock" className={style.description}>
+                            {getFileDescription(jobType == null ? "" : jobType.value)}
+                        </Form.Text>
                     </div>
                 );
             case "bbox":
