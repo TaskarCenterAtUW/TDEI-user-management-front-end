@@ -72,27 +72,29 @@ const formConfig = {
 
 const CreateJobService = () => {
     const navigate = useNavigate();
-    const [jobType, setJobType] = React.useState(null);
-    const [selectedFile, setSelectedFile] = React.useState(null);
+
+    // State management for various form fields
+    const [jobType, setJobType] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [showToast, setToast] = useState(false);
-    const [sourceFormat, setSourceFormat] = React.useState(null);
-    const [targetFormat, setTargetFormat] = React.useState(null);
+    const [sourceFormat, setSourceFormat] = useState(null);
+    const [targetFormat, setTargetFormat] = useState(null);
     const [showValidateToast, setShowValidateToast] = useState(false);
     const [validateErrorMessage, setValidateErrorMessage] = useState("");
-    const [tdeiDatasetId, setTdeiDatasetId] = React.useState("");
-    const [sourceDatasetId, setSourceDatasetId] = React.useState("");
-    const [targetDatasetId, setTargetDatasetId] = React.useState("");
-    const [algorithmsJson, setAlgorithmsJson] = React.useState("");
-    const [bboxValues, setBboxValues] = React.useState({
+    const [tdeiDatasetId, setTdeiDatasetId] = useState("");
+    const [sourceDatasetId, setSourceDatasetId] = useState("");
+    const [targetDatasetId, setTargetDatasetId] = useState("");
+    const [algorithmsJson, setAlgorithmsJson] = useState("");
+    const [bboxValues, setBboxValues] = useState({
         west: "",
         south: "",
         east: "",
         north: ""
     });
-    const [fileType, setFileType] = React.useState(null);
+    const [fileType, setFileType] = useState(null);
 
     const onSuccess = (data) => {
         setLoading(false);
@@ -109,6 +111,7 @@ const CreateJobService = () => {
 
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
 
+    // Handle selection of job type
     function handleJobTypeSelect(type) {
         setJobType(type);
         setSelectedFile(null);
@@ -131,6 +134,7 @@ const CreateJobService = () => {
         navigate(-1);
     };
 
+    // Handle file drop
     const onDrop = (files) => {
         const selectedFile = files[0];
         setSelectedFile(selectedFile);
@@ -143,6 +147,8 @@ const CreateJobService = () => {
     const handleCloseToast = () => {
         setShowValidateToast(false);
     };
+
+    // Get API path from job type
     const getPathFromJobType = (jobType) => {
         const jobTypePathMap = {
             "osw-validate": "/api/v1/osw/validate",
@@ -158,11 +164,13 @@ const CreateJobService = () => {
         return jobTypePathMap[jobType] || "";
     };
 
+    // Get description for job type
     const getDescription = (jobType) => {
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
     };
-    // Handle file input specific cases for description
+
+    // Get description for specific field in dataset-bbox job
     const getBBoxDescription = (label) => {
         const path = getPathFromJobType("dataset-bbox");
         if (label === "Tdei Dataset Id") {
@@ -173,6 +181,8 @@ const CreateJobService = () => {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "bbox")?.description || "";
         }
     };
+
+    // Get description for specific field in dataset-tag-road job
     const getDatasetTagInputDescription = (label) => {
         const path = getPathFromJobType("dataset-tag-road");
         if (label === "Source Dataset Id") {
@@ -180,7 +190,9 @@ const CreateJobService = () => {
         } else {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "target_dataset_id")?.description || "";
         }
-    }
+    };
+
+    // Get description for specific field in confidence job
     const getConfidenceInputDescription = (label) => {
         const path = getPathFromJobType("confidence");
         if (label === "Tdei Dataset Id") {
@@ -188,13 +200,17 @@ const CreateJobService = () => {
         } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
         }
-    }
+    };
+
+    // Get description for specific field in quality-metric job
     const getQualityMetricDescription = (label) => {
         const path = getPathFromJobType("quality-metric");
         if (label === "Tdei Dataset Id") {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
         }
-    }
+    };
+
+    // Handle job creation
     const handleCreate = () => {
         if (!jobType) {
             setValidateErrorMessage("Job type is required");
@@ -239,33 +255,7 @@ const CreateJobService = () => {
             }
         }
 
-        let urlPath = "";
-        switch (jobType?.value) {
-            case "osw-validate":
-                urlPath = "osw/validate";
-                break;
-            case "flex-validate":
-                urlPath = "gtfs-flex/validate";
-                break;
-            case "pathways-validate":
-                urlPath = "gtfs-pathways/validate";
-                break;
-            case "osw-convert":
-                urlPath = "osw/convert";
-                break;
-            case "confidence":
-                urlPath = "osw/confidence";
-                break;
-            case "quality-metric":
-                urlPath = "osw/quality-metric";
-                break;
-            case "dataset-bbox":
-                urlPath = "osw/dataset-bbox";
-                break;
-            case "dataset-tag-road":
-                urlPath = "osw/dataset-tag-road";
-                break;
-        }
+        let urlPath = getPathFromJobType(jobType?.value);
 
         const uploadData = [urlPath, selectedFile];
         if (jobType.value === "osw-convert") {
@@ -284,6 +274,7 @@ const CreateJobService = () => {
         mutate(uploadData);
     };
 
+    // Render individual form field
     const renderField = (field, index) => {
         const isSpecialJobType = ["confidence", "quality-metric"].includes(jobType?.value);
         const getDescriptionForField = (label) => {
@@ -434,7 +425,6 @@ const CreateJobService = () => {
                                     value={bboxValues.north}
                                 />
                             </Form.Group>
-
                         </div>
                         {jobType !== null && jobType.value === "dataset-bbox" && (
                             <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
@@ -449,7 +439,7 @@ const CreateJobService = () => {
         }
     };
 
-
+    // Render form fields based on job type
     const renderFormFields = () => {
         if (!jobType) return null;
 
@@ -469,7 +459,6 @@ const CreateJobService = () => {
 
         return fields.map(renderField);
     };
-
 
     return (
         <Layout>
