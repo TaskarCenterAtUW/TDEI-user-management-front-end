@@ -430,3 +430,10 @@
   border-radius: 8px;
   opacity: 1;
 }
+.description {
+  font: normal normal normal 11px/14px Lato;
+  letter-spacing: 0px;
+  color: #83879B;
+  opacity: 1;
+  font-style: italic;
+}

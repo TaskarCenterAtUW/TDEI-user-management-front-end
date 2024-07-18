@@ -160,11 +160,11 @@ export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job
     page_size: 10,
   };
 
-  // if (isAdmin) {
-  //   params.tdei_project_group_id = null;
-  // } else {
-  //   params.tdei_project_group_id = tdei_project_group_id;
-  // }
+  if (isAdmin) {
+    params.tdei_project_group_id = null;
+  } else {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
 
   if (job_type) {
     params.job_type = job_type;

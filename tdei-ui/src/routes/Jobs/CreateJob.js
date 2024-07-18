@@ -10,6 +10,8 @@ import useCreateJob from "../../hooks/jobs/useCreateJob";
 import { Spinner, Form } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
+import apiSpec from "../../assets/api_spec.json";
+import InfoIcon from '@mui/icons-material/Info';
 
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
@@ -140,6 +142,38 @@ const CreateJobService = () => {
 
     const handleCloseToast = () => {
         setShowValidateToast(false);
+    };
+    const getDescription = (jobType) => {
+        let path = "";
+        switch (jobType) {
+            case "osw-validate":
+                path = "/api/v1/osw/validate";
+                break;
+            case "flex-validate":
+                path = "/api/v1/gtfs-flex/validate";
+                break;
+            case "pathways-validate":
+                path = "/api/v1/gtfs-pathways/validate";
+                break;
+            case "osw-convert":
+                path = "/api/v1/osw/convert";
+                break;
+            case "confidence":
+                path = "/api/v1/osw/confidence/{tdei_dataset_id}";
+                break;
+            case "quality-metric":
+                path = "/api/v1/osw/quality-metric/{tdei_dataset_id}";
+                break;
+            case "dataset-bbox":
+                path = "/api/v1/osw/dataset-bbox";
+                break;
+            case "dataset-tag-road":
+                path = "/api/v1/osw/dataset-tag-road";
+                break;
+            default:
+                return "";
+        }
+        return apiSpec.paths[path]?.post?.description || "";
     };
 
     const handleCreate = () => {
@@ -377,6 +411,7 @@ const CreateJobService = () => {
 
         return fields.map(renderField);
     };
+ 
 
     return (
         <Layout>
@@ -394,6 +429,10 @@ const CreateJobService = () => {
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />
+                                <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
+                                <Form.Text id="passwordHelpBlock" muted className={style.description}>
+                                    {getDescription(jobType == null ? "" : jobType.value)}
+                                </Form.Text>
                             </div>
                             { jobType == null ? null : (<div className={style.dottedLine}></div>) }
                             {renderFormFields()}
