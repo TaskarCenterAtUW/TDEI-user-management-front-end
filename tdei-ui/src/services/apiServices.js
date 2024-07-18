@@ -305,14 +305,12 @@ export async function postCreateJob(data) {
       formData.append('dataset', data[1]);
       url = baseUrl;
   }
-  console.log(url);
   const config = { headers };
   if (Object.keys(params).length > 0) {
     config.params = params;
   }
   if (data[0] === "osw/quality-metric" && data[3]) {
     const requestBody = JSON.parse(data[3])
-    console.log(requestBody);
     response = await axios.post(url, requestBody, {
       headers: {
         "Content-Type": "application/json"

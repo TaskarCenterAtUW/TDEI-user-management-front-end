@@ -96,7 +96,6 @@ const CreateJobService = () => {
 
     const onSuccess = (data) => {
         setLoading(false);
-        console.log("successfully created", data);
         setShowSuccessModal(true);
     };
 

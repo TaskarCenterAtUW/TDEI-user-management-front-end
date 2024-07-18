@@ -35,7 +35,6 @@ const ManagePoc = (props) => {
   });
 
   const onSuccess = (data) => {
-    console.log("Assigned POC", data);
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
     setShowModal(true);
     props.onHide();
