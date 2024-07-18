@@ -5,7 +5,6 @@ import { useAuth } from "../useAuth";
 
 function useApiKey() {
   const { user } = useAuth();
-  console.log(user);
   return useQuery([GET_API_KEY, user?.emailId], getApiKey);
 }
 

@@ -23,7 +23,6 @@ const UserHeader = ({ roles }) => {
   };
   const role = getRoles();
   const authorizedUser = user.isAdmin || !!roles?.length;
-  console.log("api key---", data);
   let API_KEY = data?.apiKey;
   const maskedKey = maskString(API_KEY, {
     maskAll: true,

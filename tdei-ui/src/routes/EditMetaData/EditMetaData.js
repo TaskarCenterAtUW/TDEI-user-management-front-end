@@ -166,7 +166,6 @@ export default function EditMetadata() {
 
     const onSuccess = (data) => {
         setLoading(false);
-        console.log("sucessfully edited", data);
         queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
         setShowSuccessModal(true);
     };

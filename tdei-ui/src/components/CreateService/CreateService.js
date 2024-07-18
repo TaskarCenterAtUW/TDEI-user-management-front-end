@@ -42,7 +42,6 @@ const CreateService = (props) => {
     service_name: yup.string().required("Service Name is required"),
   });
   const onSuccess = (data) => {
-    console.log("sucessfully created", data);
     queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
     props.onHide();
     dispatch(

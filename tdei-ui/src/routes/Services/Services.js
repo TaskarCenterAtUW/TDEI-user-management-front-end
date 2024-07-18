@@ -56,7 +56,6 @@ const Services = () => {
   } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
   const onSuccess = (data) => {
-    console.log("suucessfull", data);
     queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
     setShowDeleteModal(false);
     dispatch(showModal({ message: "Service deleted successfully" }));

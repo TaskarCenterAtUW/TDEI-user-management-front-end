@@ -22,7 +22,6 @@ class JobListItem extends React.Component {
 
     toggleShowMore() {
         this.setState({showMore: !this.state.showMore}, () => {
-            console.log(this.state.showMore);
         });
     }
 
@@ -33,7 +32,6 @@ class JobListItem extends React.Component {
     handleClick(e) {
         const {id} = e.target;
         this.setState({jobId: id}, () => {
-            console.log(this.state.jobId)
             axios.get(`${process.env.REACT_APP_OSM_URL}/job/download/${this.state.jobId}`)
                 .then(response => {
                     this.setState({data: response.data});

@@ -58,7 +58,6 @@ const ProjectGroup = () => {
   );
 
   const onSuccess = (data) => {
-    console.log("suucessfull", data);
     setShowDeleteModal(false);
     setShowModal(true);
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
