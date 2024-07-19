@@ -5,15 +5,12 @@ async function refreshRequest() {
   try {
     const token = localStorage.getItem("refreshToken");
     if(token){
-      const data = await axios({
-        url: `${url}/refresh-token`,
-        method: "POST",
-        headers: {
-          refresh_token: token,
-        },
+      const response = await axios.post(`${url}/refresh-token`, {
+        token,
       });
-      localStorage.setItem("accessToken", data?.data?.access_token);
-      localStorage.setItem("refreshToken", data?.data?.refresh_token);
+      localStorage.setItem("accessToken", response.data.access_token);
+      localStorage.setItem("refreshToken", response.data.refresh_token);
+      return response.data.access_token;
     }
   } catch (e) {
     localStorage.removeItem("accessToken");
@@ -27,29 +24,29 @@ axios.interceptors.request.use(
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => {
-    return Promise.reject(error.response ?? error);
+    return Promise.reject(error);
   }
 );
 
 axios.interceptors.response.use(
-  (res) => {
-    return res;
+  (response) => {
+    return response;
   },
-  async (err) => {
-    if (err.response?.status === 401 && !err.config?._retry) {
-      err.config._retry = true;
-      try {
-        await refreshRequest();
-        return await axios(err.config);
-      } catch (e) {
-        return Promise.reject(e);
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const newToken = await refreshRequest();
+      if (newToken) {
+        axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axios(originalRequest);
       }
     }
-    return Promise.reject(err.response ?? err);
+    return Promise.reject(error);
   }
 );
