@@ -12,6 +12,7 @@ import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import apiSpec from "../../assets/api_spec.json";
 import InfoIcon from '@mui/icons-material/Info';
+import { extractLinks } from "../../utils";
 
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
@@ -21,7 +22,8 @@ const jobTypeOptions = [
     { value: 'confidence', label: 'Confidence Calculation' },
     { value: 'quality-metric', label: 'Quality Metric Calculation' },
     { value: 'dataset-bbox', label: 'Dataset BBox' },
-    { value: 'dataset-tag-road', label: 'Dataset Tag Road' }
+    { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
+    { value: 'quality-metric-tag', label: 'Quality Metric Tag' }
 ];
 
 const formatOptions = [
@@ -67,7 +69,11 @@ const formConfig = {
     "dataset-tag-road": [
         { label: "Source Dataset Id", type: "text", stateSetter: "setSourceDatasetId" },
         { label: "Target Dataset Id", type: "text", stateSetter: "setTargetDatasetId" }
-    ]
+    ],
+    "quality-metric-tag": [
+        { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
+        { label: "Attach File", type: "dropzone" }
+    ],
 };
 
 const CreateJobService = () => {
@@ -97,6 +103,7 @@ const CreateJobService = () => {
     const onSuccess = (data) => {
         setLoading(false);
         setShowSuccessModal(true);
+        console.log("error message", data);
     };
 
     const onError = (err) => {
@@ -151,7 +158,8 @@ const CreateJobService = () => {
             "confidence": "/api/v1/osw/confidence/{tdei_dataset_id}",
             "quality-metric": "/api/v1/osw/quality-metric/{tdei_dataset_id}",
             "dataset-bbox": "/api/v1/osw/dataset-bbox",
-            "dataset-tag-road": "/api/v1/osw/dataset-tag-road"
+            "dataset-tag-road": "/api/v1/osw/dataset-tag-road",
+            "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}"
         };
 
         return jobTypePathMap[jobType] || "";
@@ -192,6 +200,14 @@ const CreateJobService = () => {
         const path = getPathFromJobType("quality-metric");
         if (label === "Tdei Dataset Id") {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        }
+    }
+    const getQualityMetricTagDescription = (label) => {
+        const path = getPathFromJobType("quality-metric-tag");
+        if (label === "Tdei Dataset Id") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        }else{
+            return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
         }
     }
     const handleCreate = () => {
@@ -237,6 +253,11 @@ const CreateJobService = () => {
                 return;
             }
         }
+        if (jobType.value === "quality-metric-tag" && (!tdeiDatasetId || !selectedFile)) {
+            setValidateErrorMessage("Tdei Dataset Id and File attachment are required for Quality Metric Tag Calculation job");
+            setShowValidateToast(true);
+            return;
+        }
 
         let urlPath = "";
         switch (jobType?.value) {
@@ -264,12 +285,15 @@ const CreateJobService = () => {
             case "dataset-tag-road":
                 urlPath = "osw/dataset-tag-road";
                 break;
+            case "quality-metric-tag":
+                urlPath = "osw/quality-metric/tag";
+                break;
         }
 
         const uploadData = [urlPath, selectedFile];
         if (jobType.value === "osw-convert") {
             uploadData.push(sourceFormat.value, targetFormat.value);
-        } else if (jobType.value === "confidence") {
+        } else if (jobType.value === "confidence" || jobType.value === "quality-metric-tag") {
             uploadData.push(tdeiDatasetId);
         } else if (jobType.value === "quality-metric") {
             uploadData.push(tdeiDatasetId, algorithmsJson);
@@ -284,7 +308,7 @@ const CreateJobService = () => {
     };
 
     const renderField = (field, index) => {
-        const isSpecialJobType = ["confidence", "quality-metric"].includes(jobType?.value);
+        const isSpecialJobType = ["confidence", "quality-metric","quality-metric-tag"].includes(jobType?.value);
         const getDescriptionForField = (label) => {
             if (jobType.value === "dataset-bbox") {
                 return getBBoxDescription(label);
@@ -294,6 +318,8 @@ const CreateJobService = () => {
                 return getConfidenceInputDescription(label);
             } else if (jobType.value === "quality-metric") {
                 return getQualityMetricDescription(label);
+            }else if (jobType.value === "quality-metric-tag"){
+                return getQualityMetricTagDescription(label);
             }
             return "";
         };
@@ -376,15 +402,15 @@ const CreateJobService = () => {
                         <p>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
                         <Dropzone
                             onDrop={onDrop}
-                            accept={{ 'application/zip': ['.zip'] }}
-                            format=".zip"
+                            accept={jobType.value === "quality-metric-tag" ? { 'application/json': ['.json'] }: { 'application/zip': ['.zip'] }}
+                            format= {jobType.value === "quality-metric-tag" ? ".json" :".zip"}
                             selectedFile={selectedFile}
                         />
-                        {jobType !== null && jobType.value === "confidence" && (
+                        {jobType !== null && (jobType.value === "confidence" || jobType.value === "quality-metric-tag") && (
                             <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
                         )}
                         <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
+                            {extractLinks(getDescriptionForField(field.label))}
                         </Form.Text>
                     </div>
                 );
