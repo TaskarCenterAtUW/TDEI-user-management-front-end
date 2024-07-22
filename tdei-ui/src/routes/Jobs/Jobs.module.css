@@ -79,10 +79,10 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  background: #F4F9FC;
+  background: var(--purple-background-light);
   margin: auto;
   /* Center the box horizontally */
-  border: 1px solid #DDDDDD;
+  border: 1px solid #ebe8f6;
   padding: 20px 10px;
   border-radius: 10px;
 
@@ -94,8 +94,9 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  background: #F4F9FC;
-  border: 1px solid #DDDDDD;
+  min-height: calc(100% - 150px);
+  background:  var(--purple-background-light);
+  border: 1px solid #ebe8f6;
   padding: 20px 10px;
   border-radius: 10px;
 
@@ -228,18 +229,18 @@
 }
 
 .noMessageFount {
-  color: #83879B;
+  color: var(--secondary-color);
   text-decoration: underline;
 }
 
 .updatedInfo {
   font-size: 14px;
-  color: #83879B;
+  color: var(--secondary-color);
 }
 
 .jobIdLabel {
   font-size: 14px;
-  color: #83879B;
+  color: var(--secondary-color);
 }
 
 .createJobContainer {
@@ -257,7 +258,7 @@
   box-shadow: 0px 1px 6px #22222226;
   border-radius: 5px;
   background-color: #ffffff;
-  height: 80vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -272,17 +273,36 @@
   width: 50%;
 }
 
+.selectIconsize {
+  height: 60px;
+}
+
+.selectItemText {
+  color: var(--secondary-color);
+  width: 50%;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.noJobItems {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
 .buttonSecondaryCustomised {
-  border: 1px solid #83879B !important;
+  border: 1px solid var(--secondary-color) !important;
   font-weight: 600 !important;
   color: #162848 !important;
   text-transform: unset !important;
-  font-family: "Lato", sans-serif !important;
+  font-family: var(--primary-font-family) !important;
 }
 
 .textUnset {
   text-transform: unset !important;
-  font-family: "Lato", sans-serif !important;
+  font-family: var(--primary-font-family) !important;
 }
 
 .jobDetail {
@@ -385,6 +405,9 @@
 .bboxFormGroup {
   display: flex;
   padding-bottom: 20px;
+  &:nth-last-child(1) {
+    padding-bottom: 0px;
+  }
 }
 
 .bboxLabel {
@@ -418,21 +441,28 @@
   border-bottom: 1px dashed #B5B5B5;
   text-align: center;
   position: relative;
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.formLabelP {
+  margin-bottom: .5rem;
 }
 
 .bBoxContainer {
   width: 100%;
   padding: 20px;
-  background: #E4F1F8 0% 0% no-repeat padding-box;
-  border: 1px solid #CFE3EF;
+  background: var(--purple-background-dark);
+  border: 1px solid #d8d1e9;
   border-radius: 8px;
   opacity: 1;
 }
 .description {
-  font: normal normal normal 11px/14px Lato;
-  color: #83879B;
-  opacity: 1;
-  font-style: italic;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+    margin-top: -1px;
+    color: var(--secondary-color);
+    opacity: 1;
+    /* font-style: italic; */
 }

@@ -21,9 +21,9 @@
 }
 
 .item.selected {
-  border-color: #4DA9AD;
-  background-color: #4DA9AD14;
-  font-weight: 700;
+  border-color: var(--primary-color);
+  background-color: var(--purple-background-light);
+  font-weight: 600;
 }
 
 .item i {
@@ -32,7 +32,7 @@
 }
 
 .item.selected i {
-  color: #4DA9AD;
+  color: var(--primary-color);
 }
 
 .serviceTypeContainer {
@@ -47,7 +47,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 90px;
-  color: #83879B;
+  color: var(--secondary-color);
   font-weight: 600;
 }
 
@@ -82,7 +82,7 @@
   background-color: #f8f8f8;
 
   .uploadWidgetTitle {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     padding: 15px 30px;
   }
@@ -132,7 +132,7 @@
 .derivedDatasetSubtile {
   font: normal normal normal 12px/17px Lato;
   letter-spacing: 0px;
-  color: #83879B;
+  color: var(--secondary-color);
   opacity: 1;
   font-style: italic;
 }
@@ -141,6 +141,6 @@
   text-align: left;
   font: normal normal normal 12px/17px Lato;
   letter-spacing: 0px;
-  color: #83879B;
+  color: var(--secondary-color);
   opacity: 1;
 }

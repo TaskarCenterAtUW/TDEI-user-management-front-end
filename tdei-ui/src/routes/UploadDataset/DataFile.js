@@ -34,10 +34,11 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
     <div>
       <Box
         sx={{
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#f8f8f9',
           padding: '16px',
           borderRadius: '5px',
           marginBottom: '20px',
+          border: '1px solid #ededf6'
         }}
       >
         <div className={style.derivedDatasetTitle}>

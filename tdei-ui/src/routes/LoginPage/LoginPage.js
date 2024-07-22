@@ -121,7 +121,7 @@ const LoginPage = () => {
                       >
                         {loading ? "Signing In..." : "Sign In"}
                       </Button>
-                      <div className="mt-5">
+                      <div className="mt-5 mb-2">
                         New to TDEI?{" "}
                         <Link className="tdei-primary-link" to={"/register"}>
                           Register Now
@@ -136,7 +136,7 @@ const LoginPage = () => {
           </Card>
         </div>
       </Row>
-      <div className={style.appVersionText}>V 0.1.5</div>
+      <div className={style.appVersionText}>V 0.2.1</div>
     </div>
   );
 };

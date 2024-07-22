@@ -11,6 +11,7 @@ import { Spinner, Form } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import apiSpec from "../../assets/api_spec.json";
+import notSelectedIcon from "../../assets/img/notSelectedIcon.png"
 import InfoIcon from '@mui/icons-material/Info';
 
 const jobTypeOptions = [
@@ -302,7 +303,7 @@ const CreateJobService = () => {
             case "select":
                 return (
                     <div key={index} className={style.formItem}>
-                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
                         <Select
                             options={field.options}
                             placeholder={`Select ${field.label.toLowerCase()}`}
@@ -312,18 +313,20 @@ const CreateJobService = () => {
                                 if (field.stateSetter === "setFileType") setFileType(value);
                             }}
                         />
-                        {jobType !== null && jobType.value === "dataset-bbox" && (
-                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        )}
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* {jobType !== null && jobType.value === "dataset-bbox" && (
+                                <InfoIcon className="infoIconImg" />
+                            )} */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </div>
                 );
             case "text":
                 return (
                     <Form.Group key={index} controlId={field.label} className={style.formItem}>
-                        <Form.Label style={{ paddingBottom: "8px" }}>
+                        <Form.Label>
                             {field.label}<span style={{ color: 'red' }}> *</span>
                         </Form.Label>
                         <Form.Control
@@ -346,10 +349,12 @@ const CreateJobService = () => {
                                             : ""
                             }
                         />
-                        <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* <InfoIcon className="infoIconImg" /> */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </Form.Group>
                 );
             case "textarea":
@@ -373,25 +378,27 @@ const CreateJobService = () => {
             case "dropzone":
                 return (
                     <div key={index} className={style.formItems}>
-                        <p>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
                         <Dropzone
                             onDrop={onDrop}
                             accept={{ 'application/zip': ['.zip'] }}
                             format=".zip"
                             selectedFile={selectedFile}
                         />
-                        {jobType !== null && jobType.value === "confidence" && (
-                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        )}
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* {jobType !== null && jobType.value === "confidence" && (
+                                <InfoIcon className="infoIconImg" />
+                            )} */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </div>
                 );
             case "bbox":
                 return (
                     <div key={index} style={{ paddingTop: "25px" }}>
-                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
                         <div className={style.bBoxContainer}>
                             <Form.Group controlId="west" className={style.bboxFormGroup}>
                                 <Form.Label className={style.bboxLabel}>West</Form.Label>
@@ -435,12 +442,14 @@ const CreateJobService = () => {
                             </Form.Group>
 
                         </div>
-                        {jobType !== null && jobType.value === "dataset-bbox" && (
-                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        )}
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* {jobType !== null && jobType.value === "dataset-bbox" && (
+                                <InfoIcon className="infoIconImg" />
+                            )} */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </div>
                 );
             default:
@@ -479,19 +488,27 @@ const CreateJobService = () => {
                     <div className={`${jobType ? style.rectangleBox : style.fixedRectangleBox}`}>
                         <form className={style.form}>
                             <div className={style.formItems}>
-                                <p>Job Type<span style={{ color: 'red' }}> *</span></p>
+                                <p className={style.formLabelP}>Job Type<span style={{ color: 'red' }}> *</span></p>
                                 <Select
                                     className={style.createJobSelectType}
                                     options={jobTypeOptions}
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />
-                                {jobType !== null && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />}
-                                <Form.Text id="passwordHelpBlock" className={style.description}>
-                                    {getDescription(jobType == null ? "" : jobType.value)}
-                                </Form.Text>
+                                <div className="d-flex align-items-start mt-2">
+                                {/* {jobType !== null && <InfoIcon className="infoIconImg" />} */}
+                                    <div id="passwordHelpBlock" className={style.description}>
+                                        {getDescription(jobType == null ? "" : jobType.value)}
+                                    </div>
+                                </div>
                             </div>
-                            {jobType == null ? null : (<div className={style.dottedLine}></div>)}
+                            <div className={style.dottedLine}></div>
+                            {jobType == null && (
+                                <div className={style.noJobItems}>
+                                    <img src={notSelectedIcon} className={style.selectIconsize} />
+                                    <div className={style.selectItemText}>Please select the job type and the respective attributes will appear here.</div>
+                                </div>
+                            )}
                             {renderFormFields()}
                         </form>
                     </div>

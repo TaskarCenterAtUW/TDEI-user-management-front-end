@@ -11,7 +11,7 @@ function ServicesList({ id, name, isSelected, serviceType, handleSelectedService
             className={`${styles.item} ${isSelected ? styles.selected : ''}`}
             onClick={() => handleSelectedService(id)}
         >
-            {isSelected ? <CheckCircleIcon style={{ color: "#4DA9AD", fontSize: 20 }} /> : <RadioButtonUncheckedIcon style={{ color: "#4DA9AD", fontSize: 20 }} />}
+            {isSelected ? <CheckCircleIcon style={{ color: "var(--primary-color)", fontSize: 20 }} /> : <RadioButtonUncheckedIcon style={{ color: "var(--primary-color)", fontSize: 20 }} />}
             <span style={{ marginLeft: "10px" }}>{name}</span>
             <div className={styles.serviceTypeContainer}>
                 <span className={styles.divider}>|</span>

@@ -8,7 +8,7 @@ import useGetRoles from "../../hooks/roles/useGetRoles";
 import { Field, Formik } from "formik";
 import * as yup from "yup";
 import clsx from "clsx";
-import successIcon from "../../assets/img/success-icon.svg";
+import checkIcon from "../../assets/img/checkIcon-purple.svg";
 import { useQueryClient } from "react-query";
 import { GET_PROJECT_GROUP_USERS } from "../../utils";
 import { getSelectedProjectGroup } from "../../selectors";
@@ -186,7 +186,7 @@ const AssignRoles = (props) => {
                               </div>
                               <div className={style.successIcon}>
                                 <img
-                                  src={successIcon}
+                                  src={checkIcon}
                                   className={style.iconSelected}
                                   alt="success-icon"
                                 />
