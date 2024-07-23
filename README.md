@@ -26,3 +26,9 @@ REACT_APP_URL = <User management backend URL>
 REACT_APP_MAP_KEY= <Map API Key for mapbox>
 REACT_APP_OSM_URL=<gateway URL for TDEI APIs>
 ```
+
+## For changing brand color and font
+
+- Go to /tdei-ui/src/index.css
+- Colors: Find --primary-color defined in the the root.  Adujst --primary-color and other relative shades.
+- Font: Import font family. Find --primary-font-family defined in the the root and change the font name for primary and secondary font.  
