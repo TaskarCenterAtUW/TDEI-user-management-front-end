@@ -34,7 +34,7 @@
 }
 .noDataText {
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
   margin-left: 5px;
 }
 .layout {

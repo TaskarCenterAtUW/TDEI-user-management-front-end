@@ -12,8 +12,8 @@
       align-items: center;
       justify-content: center;
       &:hover {
-        border: 1.5px #4ea9ad dashed;
-        background-color: #f8fcfc;
+        border: 1.5px var(--primary-color) dashed;
+        background-color: var(--purple-background-light);
       }
   }
 
@@ -21,7 +21,7 @@
       font-size: 14px;
       font-weight: 700;
       letter-spacing: 0px;
-      color: #83879B;
+      color: var(--secondary-color);
       opacity: 1;
       margin-bottom: 10px;
   }
@@ -29,13 +29,13 @@
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0px;
-    color: #83879B;
+    color: var(--secondary-color);
     opacity: 1;
   }
   .subtile{
     font: normal normal normal 12px/17px Lato;
     letter-spacing: 0px;
-    color: #83879B;
+    color: var(--secondary-color);
     opacity: 1;
   }
   .file {
