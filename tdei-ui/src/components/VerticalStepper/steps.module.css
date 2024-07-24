@@ -19,24 +19,24 @@
     border-color: #ccc;
 }
 .buttonSecondaryCustomised {
-    border: 1px solid #83879B !important;
+    border: 1px solid var(--secondary-color) !important;
     font-weight: 600 !important;
     color: #162848 !important;
     text-transform: unset !important;
-    font-family: "Lato", sans-serif !important;
+    font-family: var(--primary-font-family) !important;
 }
 .buttonOutlineCustomised {
-    border: 1px solid #4DA9AD !important;
+    border: 1px solid var(--primary-color) !important;
     font-weight: 600 !important;
-    color: #4DA9AD !important;
+    color: var(--primary-color) !important;
     text-transform: unset !important;
     margin-right: 10px !important;
     padding: 5px 8px !important;
-    font-family: "Lato", sans-serif !important;
+    font-family: var(--primary-font-family) !important;
 }
 .textUnset {
     text-transform: unset !important;
-    font-family: "Lato", sans-serif !important;
+    font-family: var(--primary-font-family) !important;
 }
 .footerButtonBlock {
     padding: 15px 20px;
@@ -46,9 +46,9 @@
 }
 .stepTimelineTitle {
     font-size: 16px;
-    font-weight: 700;
-    color: #83879B;
-    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-family: var(--primary-font-family);
 }
 [class*='Mui-active'], [class*='Mui-completed'] {
     .stepTimelineTitle {
@@ -58,8 +58,8 @@
 .stepTimelineSubTitle {
     font-size: 14px;
     font-weight: 400;
-    color: #83879B;
-    font-family: "Lato", sans-serif;
+    color: var(--secondary-color);
+    font-family: var(--primary-font-family);
 }
 .layout {
     height: 100%;
@@ -67,7 +67,7 @@
     background-color: #f8f8f8;
 
     .uploadWidgetTitle {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       padding: 15px 30px;
     }

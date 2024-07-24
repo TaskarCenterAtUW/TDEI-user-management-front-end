@@ -17,12 +17,13 @@
     position: relative;
     top: 50%;
     transform: translateY(50%);
-    font: normal normal 900 14px/16px Lato;
-    color: #83879B;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--secondary-color);
     opacity: 1;
     border-radius: 50%;
     height: 30px;
-    width: 35px;
+    width: 30px;
     display: flex;
     align-items: center;
     justify-content: center;

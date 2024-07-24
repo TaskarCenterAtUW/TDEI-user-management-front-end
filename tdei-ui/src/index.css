@@ -1,24 +1,31 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --primary-font-family: "Open Sans", sans-serif;
+  --secondary-font-family: "Montserrat", sans-serif;
+  --primary-color: #873EF2;
+  --primary-color-dark: #7a32e4;
+  --secondary-color: #83879b;
+  --tdei-blue: #586AB5;
+  --tdei-green: #479FA1;
+  --purple-background-light: #fbf8ff;
+  --purple-background-dark: #e7e2f3;
+  --white: #ffffff; 
+}
 
 body {
   margin: 0;
-  font-family: "Lato", sans-serif;
-  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif; */
+  font-family: var(--primary-font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
 
-/* code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-} */
-
 .tdei-primary-button {
-  background-color: #4DA9AD !important;
-  border-color: #59c3c8 !important;
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
   color: #fff !important;
   font-weight: 600 !important;
   border-radius: 4px !important;
@@ -26,52 +33,56 @@ body {
 
 .tdei-primary-button:hover,
 .tdei-primary-button:active {
-  background-color: #4da9ad !important;
-  border-color: #4da9ad !important;
+  background-color: var(--primary-color-dark) !important;
+  border-color: var(--primary-color-dark) !important;
   color: #fff !important;
   font-weight: 600;
 }
 
 .tdei-primary-link {
-  color: #59c3c8;
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .tdei-primary-link:hover {
-  color: #4da9ad;
+  color: var(--primary-color-dark);
+  text-decoration: underline;
 }
 
 .tdei-secondary-button {
-  border-color: #83879b;
+  border-color: var(--secondary-color);
+  font-weight: 600 !important;
 }
 .tdei-secondary-button:hover {
-  background-color: #83879b;
+  background-color: var(--secondary-color);
   color: #fff;
-  border-color: #83879b;
+  border-color: var(--secondary-color);
 }
 .page-header-title {
+  font-family: var(--secondary-font-family);
   font-size: 20px;
-  font-weight: bold;
-  color: #2f3661;
+  font-weight: 700;
 }
 .page-header-subtitle {
+  font-family: var(--secondary-font-family);
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
 }
 
 .tdei-bold-name {
   font-size: 16px;
   font-weight: 700;
-  color: #2f3661;
   margin-bottom: 8px;
 }
 
 .tdei-name-desc {
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
 }
 .tdei-hint-text {
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
   font-style: italic;
 }
 
@@ -104,22 +115,22 @@ body {
   border: 2px solid #59c3c8;
 }
 .tdei-rounded-button{
-  background-color: #4da9ad !important; 
-  border-color: #4da9ad !important;
+  background-color: var(--primary-color) !important; 
+  border-color: var(--primary-color) !important;
   color: #fff !important;
   font-weight: 600;
   border-radius: 100px;
 }
 .tdei-rounded-button:hover,
 .tdei-rounded-button:active {
-  background-color: #59c3c8 !important;
-  border-color: #59c3c8 !important;
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
   color: #fff !important;
   font-weight: 600;
 }
 
 .nav-tabs .nav-link{
-  color: #83879B ;
+  color: var(--secondary-color) ;
   background-color: transparent !important;
   border-top: none !important;
   border-left: none !important;
@@ -139,7 +150,7 @@ body {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 4px solid #D3A651;
+  border-bottom: 4px solid var(--primary-color);
 }
 .maroon-bg, 
 .maroon-bg:hover{
@@ -174,7 +185,7 @@ body {
 .row {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  /* gap: 20px; */
 }
 
 .column-style {
@@ -185,6 +196,10 @@ body {
   opacity: 1;
   padding: 20px;
   flex: 1;
+  margin-right: 15px;
+  &:nth-last-child(1) {
+    margin-right: 0px;
+  }
 }
 
 .section-style {
@@ -195,4 +210,10 @@ body {
   opacity: 1;
   padding: 20px;
   margin-top: 20px;
+}
+
+.infoIconImg {
+  font-size: 14px !important;
+  color: #a5a5a5 !important;
+  margin-right: 5px !important;
 }

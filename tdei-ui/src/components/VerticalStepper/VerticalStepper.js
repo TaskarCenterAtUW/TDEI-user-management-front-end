@@ -41,12 +41,12 @@ const OutlineCircle = styled('div')(({ ownerState }) => ({
   width: 45,
   height: 45,
   borderRadius: '50%',
-  border: `1px solid ${ownerState.completed || ownerState.active ? '#59C3C8' : '#ccc'}`,
+  border: `1px solid ${ownerState.completed || ownerState.active ? 'var(--primary-color)' : '#ddd7e6'}`,
   boxSizing: 'border-box',
 }));
 
 const InnerCircle = styled('div')(({ theme, ownerState }) => ({
-  backgroundColor: ownerState.completed || ownerState.active ? '#59C3C8' : (theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc'),
+  backgroundColor: ownerState.completed || ownerState.active ? 'var(--primary-color)' : (theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ddd7e6'),
   zIndex: 1,
   zIndex: 1,
   color: '#fff',

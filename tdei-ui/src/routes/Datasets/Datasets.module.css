@@ -27,14 +27,13 @@
 }
 
 .datasetsTabsHeaderActive{
-    border-bottom: 4px solid #D3A651
+    border-bottom: 4px solid var(--primary-color)
 }
 
 .datasetsTableHeaderRow{
     background-color: #F8F8F8;
     padding: 10px 15px;
-    color: #162848;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     border: 1px solid #DDDDDD;
     border-radius: 5px;
@@ -49,7 +48,7 @@
     align-content: center;
     align-items: center;
     padding: 0px; 
-    border-left: 12px solid #B6EDD7 ;
+    border-left: 8px solid var(--tdei-blue) ;
     .datasetCard {
       align-items: center;
       padding: 25px 20px;
@@ -69,7 +68,7 @@
     }
     .datasetSecondaryInfoBlock {
       font-size: 14px;
-      color: #83879B;
+      color: var(--secondary-color);
       display: flex;
       align-items: center;
     }
@@ -109,7 +108,7 @@
     margin-right: 5px;
 }
 .boldText{
-    font-weight: 600;
+    font-weight: 700;
 }
 .projectHeader {
     background-color: #f8f8f8;
