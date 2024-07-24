@@ -12,6 +12,7 @@ import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import apiSpec from "../../assets/api_spec.json";
 import InfoIcon from '@mui/icons-material/Info';
+import QualityMetricAlgo from "./QualityMetricAlgo";
 
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
@@ -357,16 +358,7 @@ const CreateJobService = () => {
                     <div key={index} style={{ marginTop: '10px' }}>
                         <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
                         <div className="jsonContent">
-                            <Form.Control
-                                as="textarea"
-                                type="text"
-                                name={field.label}
-                                onChange={(e) => {
-                                    if (field.stateSetter === "setAlgorithmsJson") setAlgorithmsJson(e.target.value);
-                                }}
-                                value={algorithmsJson}
-                                rows={10}
-                            />
+                        <QualityMetricAlgo />
                         </div>
                     </div>
                 );

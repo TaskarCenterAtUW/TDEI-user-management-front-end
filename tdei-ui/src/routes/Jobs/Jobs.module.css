@@ -436,3 +436,40 @@
   opacity: 1;
   font-style: italic;
 }
+.qualityMetricContainer {
+  border: 1px solid #CFE3EF !important;
+  border-radius: 5px;
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  background: #E4F1F8 0% 0% no-repeat padding-box;
+  overflow: hidden;
+}
+
+.qualityMetricHeader {
+  padding: 15px;
+  background-color: #CAE3F0;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #CAE3F0;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.qualityMetricContentRow {
+  display: flex;
+  flex-direction: row;
+  padding: 15px;
+}
+
+.qualityMetricContentLabel {
+  width: 60px;
+  padding-top: 6px;
+}
+.qualityMetricDropdown {
+  padding-left: 15px;
+  width: 180px;
+}
