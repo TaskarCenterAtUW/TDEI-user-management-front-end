@@ -12,6 +12,7 @@
   --tdei-green: #479FA1;
   --purple-background-light: #fbf8ff;
   --purple-background-dark: #e7e2f3;
+  --purple-background-medium: #f5f0ff;
   --white: #ffffff; 
 }
 
@@ -216,4 +217,17 @@ body {
   font-size: 14px !important;
   color: #a5a5a5 !important;
   margin-right: 5px !important;
+}
+
+input[type=checkbox] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  border-radius: 6px;
+  border: 1.5px solid var(--secondary-color);
+  &:checked{
+      background-color: var(--primary-color);
+      border: 1.5px solid var(--primary-color);
+  }
 }
