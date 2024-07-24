@@ -25,8 +25,7 @@
 }
 
 .selectPanel>*:not(:last-child) {
-  margin-right: 10px;
-  /* Adjust as needed */
+  margin-right: 10px; /* Adjust as needed */
 }
 
 /* The last item should not have a margin to avoid extra space at the end */
@@ -48,7 +47,7 @@
 .gridContainer {
   display: grid;
   grid-template-columns: 25% 20% 30% 25%;
-  /* to be adjusted once action is added again*/
+  /* to be adjusted once action is added again */
   grid-column-gap: 10px;
   /* min-height: 70px; */
   align-items: center;
@@ -85,24 +84,17 @@
   border: 1px solid #ebe8f6;
   padding: 20px 10px;
   border-radius: 10px;
-
-  [class*='Dropzone_dropzone'] {
-    background-color: #ffffff;
-  }
 }
+
 .fixedRectangleBox {
   display: flex;
   justify-content: center;
   width: 100%;
   min-height: calc(100% - 150px);
-  background:  var(--purple-background-light);
+  background: var(--purple-background-light);
   border: 1px solid #ebe8f6;
   padding: 20px 10px;
   border-radius: 10px;
-
-  [class*='Dropzone_dropzone'] {
-    background-color: #ffffff;
-  }
 }
 
 .fixedButtonContainer {
@@ -113,8 +105,8 @@
   margin-top: 20px;
   position: absolute;
   left: 0;
-  right:0;
-  bottom:0;
+  right: 0;
+  bottom: 0;
 }
 
 .form {
@@ -406,7 +398,7 @@
   display: flex;
   padding-bottom: 20px;
   &:nth-last-child(1) {
-    padding-bottom: 0px;
+      padding-bottom: 0px;
   }
 }
 
@@ -457,6 +449,7 @@
   border-radius: 8px;
   opacity: 1;
 }
+
 .description {
   font: normal normal normal 11px/14px Lato;
   color: #83879B;
@@ -468,8 +461,8 @@
   margin-top: -1px;
   color: var(--secondary-color);
   opacity: 1;
-  /* font-style: italic; */
 }
+
 .qualityMetricContainer {
   border: 1px solid #d8d1e9;
   border-radius: 5px;
@@ -477,7 +470,7 @@
   width: 100%;
   display: flex;
   margin: 0 auto;
-  background: #E4F1F8 0% 0% no-repeat padding-box;
+  background: var(--purple-background-medium);
   overflow: hidden;
 }
 
@@ -504,6 +497,6 @@
   padding-top: 6px;
 }
 .qualityMetricDropdown {
-  padding-left: 15px;
-  width: 180px;
+  margin-left: 8px;
+  width: 250px;
 }
