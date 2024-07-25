@@ -15,6 +15,7 @@ import notSelectedIcon from "../../assets/img/notSelectedIcon.png"
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
+import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
@@ -93,7 +94,8 @@ const CreateJobService = () => {
     const [tdeiDatasetId, setTdeiDatasetId] = React.useState("");
     const [sourceDatasetId, setSourceDatasetId] = React.useState("");
     const [targetDatasetId, setTargetDatasetId] = React.useState("");
-    // const [algorithmsJson, setAlgorithmsJson] = React.useState("");
+    const [showJsonSuccessModal, setShowJsonSuccessModal] = React.useState(false);
+    const [jobSuccessJson, setJobSuccessJson] = React.useState("");
     const [bboxValues, setBboxValues] = React.useState({
         west: "",
         south: "",
@@ -112,8 +114,12 @@ const CreateJobService = () => {
 
     const onSuccess = (data) => {
         setLoading(false);
-        setShowSuccessModal(true);
-        console.log("error message", data);
+        if (Array.isArray(data)){
+            setShowJsonSuccessModal(true);
+            setJobSuccessJson(data)
+        }else{
+            setShowSuccessModal(true);
+        }
     };
 
     const onError = (err) => {
@@ -414,13 +420,7 @@ const CreateJobService = () => {
                             format= {jobType.value === "quality-metric-tag" ? ".json" :".zip"}
                             selectedFile={selectedFile}
                         />
-                        {jobType !== null && (jobType.value === "confidence" || jobType.value === "quality-metric-tag") && (
-                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        )}
                         <div className="d-flex align-items-start mt-2">
-                            {/* {jobType !== null && jobType.value === "confidence" && (
-                                <InfoIcon className="infoIconImg" />
-                            )} */}
                             <Form.Text id="passwordHelpBlock" className={style.description}>
                             {extractLinks(getDescriptionForField(field.label))}
                             </Form.Text>
@@ -590,6 +590,20 @@ const CreateJobService = () => {
                             btnlabel="Dismiss"
                             modaltype="error"
                             title="Error"
+                        />
+                    )}
+                    { showJsonSuccessModal &&(
+                        <JobJsonResponseModal
+                        show={showJsonSuccessModal}
+                            message="Job has been created!"
+                            content={JSON.stringify(jobSuccessJson, null, 2) ?? ""}
+                            handler={() => {
+                                setShowJsonSuccessModal(false);
+                                navigate('/jobs', { replace: true });
+                            }}
+                            btnlabel="Go Back Jobs page"
+                            modaltype="success"
+                            title="Success"
                         />
                     )}
                     <ToastMessage
