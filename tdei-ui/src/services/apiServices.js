@@ -301,6 +301,11 @@ export async function postCreateJob(data) {
         'Content-Type': 'application/json',
       };
       break;
+      case "osw/quality-metric/tag":
+      formData.append('tdei_dataset_id', data[2]);
+      formData.append('file', data[1]);
+      url = `${baseUrl}/${data[2]}`;
+      break;
     default:
       formData.append('dataset', data[1]);
       url = baseUrl;

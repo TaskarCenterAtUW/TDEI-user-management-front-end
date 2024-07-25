@@ -72,7 +72,7 @@ const Register = () => {
       );
     } catch (err) {
       setLoading(false);
-      dispatch(show({ message: "Error in registering", type: "danger" }));
+      dispatch(show({ message: err.data ?? "Error in registering", type: "danger" }));
     }
   };
 
