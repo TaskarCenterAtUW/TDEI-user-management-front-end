@@ -19,3 +19,33 @@ export const formatDate = (value) => {
   const year = date.toLocaleString('default', { year: 'numeric' });
   return day + ' ' + month + ' ' + year;
 }
+// To extract link from text and return a link text
+export const extractLinks = (text) => {
+  const linkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+  let lastIndex = 0;
+  const elements = [];
+
+  let match;
+  while ((match = linkPattern.exec(text)) !== null) {
+    const beforeText = text.substring(lastIndex, match.index);
+    const label = match[1];
+    const url = match[2];
+    lastIndex = linkPattern.lastIndex;
+
+    if (beforeText) {
+      elements.push(beforeText);
+    }
+
+    elements.push(
+      <a key={lastIndex} href={url} target="_blank" rel="noopener noreferrer">
+        {label}
+      </a>
+    );
+  }
+
+  if (lastIndex < text.length) {
+    elements.push(text.substring(lastIndex));
+  }
+
+  return elements;
+};

@@ -2,7 +2,7 @@
   width: 40vw;
   font-size: 16px !important;
   font-weight: 400 !important;
-  font-family: "Lato", sans-serif !important;
+  font-family: var(--primary-font-family) !important;
   .contentPosition {
     position: relative;
     bottom: 2px;

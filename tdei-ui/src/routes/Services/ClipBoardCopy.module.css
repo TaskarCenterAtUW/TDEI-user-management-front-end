@@ -1,6 +1,6 @@
 .textStyle {
     font-size: 14px;
-    color: #83879b;
+    color: var(--secondary-color);
 }
 .copiedInfo {
     color: #ffffff;

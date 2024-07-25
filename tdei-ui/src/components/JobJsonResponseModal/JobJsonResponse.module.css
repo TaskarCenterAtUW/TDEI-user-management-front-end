@@ -1,0 +1,118 @@
+.successModal {
+    padding: 50px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.successModal>div {
+    padding-bottom: 8px;
+}
+
+.title {
+    font-size: 20px;
+    color: var(--tdei-green);
+    font-size: 20px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+.message {
+    font-size: 18px;
+    color: var(--secondary-color);
+}
+
+.modalContainer {
+    width: 300px;
+    align-items: center;
+    justify-content: center;
+}
+
+.customSuccessModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 25px;
+
+    .content {
+        background: #FDF3D080 0% 0% no-repeat padding-box;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 14px;
+        letter-spacing: 0px;
+        color: #162848;
+        opacity: 1;
+        padding: 15px 15px;
+        width: 100%;
+    }
+
+    .customMessage {
+        text-align: center;
+        font-size: 16px;
+        letter-spacing: 0px;
+        color: #162848;
+        opacity: 1;
+        margin: 5px 10px 20px 10px;
+    }
+}
+
+.footerStyle {
+    display: flex;
+    justify-content: center;
+}
+
+.modalHeaderIcon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+.jobResponseHeader {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #DDDDDD;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: white;
+  }
+  .jobResponseContainer {
+    border: 1px solid #DDDDDD !important;
+    border-radius: 5px;
+    flex-direction: column;
+    width: 100%;
+    display: flex;
+    margin: 0 auto;
+    background-color: #F8F8F8;
+  }
+  .jobResponseHeaderLabel {
+    font-weight: bold !important;
+  }
+  .jobResponseHeaderValue {
+    font-weight: 500 !important;
+  }
+  .iconBtn {
+    background: #F8F8F8 0% 0% no-repeat padding-box !important;
+    border: 1px solid #CED4DA !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    width: 25px;
+    height: 25px;
+  }
+  .jobResponseContainerContent {
+    padding: 15px;
+   height: 350px;
+   overflow-y: auto;
+  }
+  .copyIcon {
+    height: 20px;
+    padding: 0px 4px;
+    transition: transform .2s;
+    cursor: pointer;
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+  

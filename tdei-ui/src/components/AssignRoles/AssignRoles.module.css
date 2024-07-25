@@ -35,13 +35,13 @@
   width: 100%;
 }
 .roleListBlock:hover {
-  border-color: #4da9ad;
-  background: #4da9ad14;
+  border-color: var(--primary-color);
+  background: var(--purple-background-light);
 }
 
 .active {
-  border-color: #4da9ad;
-  background: #4da9ad14;
+  border-color: var(--primary-color);
+  background: var(--purple-background-light);
 }
 
 .active .successIcon {
@@ -58,12 +58,11 @@
 
 .roleName {
   font-size: 16px;
-  color: #162848;
-  font-weight: bold;
+  font-weight: 600;
 }
 .roleDesc {
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
 }
 .iconSelected {
   width: 25px;
