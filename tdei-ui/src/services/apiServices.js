@@ -315,7 +315,7 @@ export async function postCreateJob(data) {
     config.params = params;
   }
   if (data[0] === "osw/quality-metric" && data[3]) {
-    const requestBody = JSON.parse(data[3])
+    const requestBody = JSON.stringify(data[3])
     response = await axios.post(url, requestBody, {
       headers: {
         "Content-Type": "application/json"
@@ -582,6 +582,8 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
 
   if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
+  }else{
+    params.show_group_jobs = false;
   }
   if (job_id) {
     params.job_id = job_id;

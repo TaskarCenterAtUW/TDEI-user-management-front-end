@@ -20,11 +20,11 @@
 .loginSubTitle {
   margin-bottom: 20px;
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
 }
 .appVersionText {
   text-align: center;
   font-size: 12px;
-  color: #83879b;
+  color: var(--secondary-color);
   margin-top: 5px;
 }

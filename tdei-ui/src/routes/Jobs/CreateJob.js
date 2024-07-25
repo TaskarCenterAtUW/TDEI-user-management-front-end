@@ -11,8 +11,10 @@ import { Spinner, Form } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import apiSpec from "../../assets/api_spec.json";
+import notSelectedIcon from "../../assets/img/notSelectedIcon.png"
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
+import QualityMetricAlgo from "./QualityMetricAlgo";
 
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
@@ -52,7 +54,7 @@ const formConfig = {
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Algorithms & Optional Persistence", type: "textarea", stateSetter: "setAlgorithmsJson" }
+        { label: "Algorithms & Optional Persistence", type: "textarea", stateSetter: "setAlgorithmConfig" }
     ],
     "dataset-bbox": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
@@ -91,7 +93,7 @@ const CreateJobService = () => {
     const [tdeiDatasetId, setTdeiDatasetId] = React.useState("");
     const [sourceDatasetId, setSourceDatasetId] = React.useState("");
     const [targetDatasetId, setTargetDatasetId] = React.useState("");
-    const [algorithmsJson, setAlgorithmsJson] = React.useState("");
+    // const [algorithmsJson, setAlgorithmsJson] = React.useState("");
     const [bboxValues, setBboxValues] = React.useState({
         west: "",
         south: "",
@@ -99,6 +101,14 @@ const CreateJobService = () => {
         north: ""
     });
     const [fileType, setFileType] = React.useState(null);
+    const [algorithmConfig, setAlgorithmConfig] = useState({
+        algorithms: [],
+        persist: {}
+    });
+
+    const handleAlgorithmUpdate = (updatedConfig) => {
+        setAlgorithmConfig(updatedConfig);
+    };
 
     const onSuccess = (data) => {
         setLoading(false);
@@ -123,7 +133,10 @@ const CreateJobService = () => {
         setTdeiDatasetId("");
         setSourceDatasetId("");
         setTargetDatasetId("");
-        setAlgorithmsJson("");
+        setAlgorithmConfig({
+            algorithms: [],
+            persist: {}
+        });
         setBboxValues({
             west: "",
             south: "",
@@ -228,7 +241,7 @@ const CreateJobService = () => {
             return;
         }
 
-        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !algorithmsJson)) {
+        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !(algorithmConfig.algorithms.length > 0))) {
             setValidateErrorMessage("Tdei Dataset Id and Algorithms, Persist are required for Quality Metric Calculation job");
             setShowValidateToast(true);
             return;
@@ -296,7 +309,7 @@ const CreateJobService = () => {
         } else if (jobType.value === "confidence" || jobType.value === "quality-metric-tag") {
             uploadData.push(tdeiDatasetId);
         } else if (jobType.value === "quality-metric") {
-            uploadData.push(tdeiDatasetId, algorithmsJson);
+            uploadData.push(tdeiDatasetId, algorithmConfig);
         } else if (jobType.value === "dataset-bbox") {
             uploadData.push(tdeiDatasetId, fileType.value, bboxValues);
         } else if (jobType.value === "dataset-tag-road") {
@@ -328,7 +341,7 @@ const CreateJobService = () => {
             case "select":
                 return (
                     <div key={index} className={style.formItem}>
-                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
                         <Select
                             options={field.options}
                             placeholder={`Select ${field.label.toLowerCase()}`}
@@ -338,18 +351,20 @@ const CreateJobService = () => {
                                 if (field.stateSetter === "setFileType") setFileType(value);
                             }}
                         />
-                        {jobType !== null && jobType.value === "dataset-bbox" && (
-                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        )}
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* {jobType !== null && jobType.value === "dataset-bbox" && (
+                                <InfoIcon className="infoIconImg" />
+                            )} */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </div>
                 );
             case "text":
                 return (
                     <Form.Group key={index} controlId={field.label} className={style.formItem}>
-                        <Form.Label style={{ paddingBottom: "8px" }}>
+                        <Form.Label>
                             {field.label}<span style={{ color: 'red' }}> *</span>
                         </Form.Label>
                         <Form.Control
@@ -372,34 +387,27 @@ const CreateJobService = () => {
                                             : ""
                             }
                         />
-                        <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* <InfoIcon className="infoIconImg" /> */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </Form.Group>
                 );
             case "textarea":
                 return (
-                    <div key={index} style={{ marginTop: '10px' }}>
+                    <div key={index} style={{ marginTop: '20px' }}>
                         <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
                         <div className="jsonContent">
-                            <Form.Control
-                                as="textarea"
-                                type="text"
-                                name={field.label}
-                                onChange={(e) => {
-                                    if (field.stateSetter === "setAlgorithmsJson") setAlgorithmsJson(e.target.value);
-                                }}
-                                value={algorithmsJson}
-                                rows={10}
-                            />
+                        <QualityMetricAlgo onUpdate={handleAlgorithmUpdate} />
                         </div>
                     </div>
                 );
             case "dropzone":
                 return (
                     <div key={index} className={style.formItems}>
-                        <p>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
                         <Dropzone
                             onDrop={onDrop}
                             accept={jobType.value === "quality-metric-tag" ? { 'application/json': ['.json'] }: { 'application/zip': ['.zip'] }}
@@ -409,15 +417,20 @@ const CreateJobService = () => {
                         {jobType !== null && (jobType.value === "confidence" || jobType.value === "quality-metric-tag") && (
                             <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
                         )}
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* {jobType !== null && jobType.value === "confidence" && (
+                                <InfoIcon className="infoIconImg" />
+                            )} */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
                             {extractLinks(getDescriptionForField(field.label))}
-                        </Form.Text>
+                            </Form.Text>
+                        </div>
                     </div>
                 );
             case "bbox":
                 return (
                     <div key={index} style={{ paddingTop: "25px" }}>
-                        <p>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
                         <div className={style.bBoxContainer}>
                             <Form.Group controlId="west" className={style.bboxFormGroup}>
                                 <Form.Label className={style.bboxLabel}>West</Form.Label>
@@ -461,12 +474,14 @@ const CreateJobService = () => {
                             </Form.Group>
 
                         </div>
-                        {jobType !== null && jobType.value === "dataset-bbox" && (
-                            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
-                        )}
-                        <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
-                        </Form.Text>
+                        <div className="d-flex align-items-start mt-2">
+                            {/* {jobType !== null && jobType.value === "dataset-bbox" && (
+                                <InfoIcon className="infoIconImg" />
+                            )} */}
+                            <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {getDescriptionForField(field.label)}
+                            </Form.Text>
+                        </div>
                     </div>
                 );
             default:
@@ -505,19 +520,27 @@ const CreateJobService = () => {
                     <div className={`${jobType ? style.rectangleBox : style.fixedRectangleBox}`}>
                         <form className={style.form}>
                             <div className={style.formItems}>
-                                <p>Job Type<span style={{ color: 'red' }}> *</span></p>
+                                <p className={style.formLabelP}>Job Type<span style={{ color: 'red' }}> *</span></p>
                                 <Select
                                     className={style.createJobSelectType}
                                     options={jobTypeOptions}
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />
-                                {jobType !== null && <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />}
-                                <Form.Text id="passwordHelpBlock" className={style.description}>
-                                    {getDescription(jobType == null ? "" : jobType.value)}
-                                </Form.Text>
+                                <div className="d-flex align-items-start mt-2">
+                                {/* {jobType !== null && <InfoIcon className="infoIconImg" />} */}
+                                    <div id="passwordHelpBlock" className={style.description}>
+                                        {getDescription(jobType == null ? "" : jobType.value)}
+                                    </div>
+                                </div>
                             </div>
-                            {jobType == null ? null : (<div className={style.dottedLine}></div>)}
+                            <div className={style.dottedLine}></div>
+                            {jobType == null && (
+                                <div className={style.noJobItems}>
+                                    <img src={notSelectedIcon} className={style.selectIconsize} />
+                                    <div className={style.selectItemText}>Please select the job type and the respective attributes will appear here.</div>
+                                </div>
+                            )}
                             {renderFormFields()}
                         </form>
                     </div>
