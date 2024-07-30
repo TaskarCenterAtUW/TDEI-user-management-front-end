@@ -164,18 +164,23 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-             const finalData = {
-          ...selectedData,
-          2: {
-            ...selectedData[2],
-            dataset_detail: {
-              ...selectedData[2].dataset_detail,
-              custom_metadata: selectedData[2].dataset_detail.custom_metadata ? JSON.stringify(selectedData[2].dataset_detail.custom_metadata, null, 2) : "",
-              dataset_area: selectedData[2].dataset_detail.dataset_area ? JSON.stringify(selectedData[2].dataset_detail.dataset_area, null, 2) : ""
+        if(!(selectedData[2] instanceof File)){
+          const finalData = {
+            ...selectedData,
+            2: {
+              ...selectedData[2],
+              dataset_detail: {
+                ...selectedData[2].dataset_detail,
+                custom_metadata: selectedData[2].dataset_detail && selectedData[2].dataset_detail.custom_metadata ? JSON.stringify(selectedData[2].dataset_detail.custom_metadata, null, 2) : "",
+                dataset_area: selectedData[2].dataset_detail && selectedData[2].dataset_detail.dataset_area ? JSON.stringify(selectedData[2].dataset_detail.dataset_area, null, 2) : ""
+              }
             }
-          }
-        };
-        onStepsComplete(finalData);
+          };
+          onStepsComplete(finalData);
+        }else{
+          onStepsComplete(selectedData);
+        }
+        
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;
