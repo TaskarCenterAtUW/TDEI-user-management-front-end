@@ -19,7 +19,6 @@
     "dayjs": "^1.11.11",
     "formik": "^2.2.9",
     "husky": "^8.0.3",
-    "jwt-decode": "^4.0.0",
     "lint-staged": "^13.1.2",
     "lodash": "^4.17.21",
     "maskdata": "^1.2.2",
