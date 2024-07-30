@@ -181,7 +181,7 @@ const AssignRoles = (props) => {
                               <div className={style.roleInfoBlock}>
                                 <div className={style.roleName}>{val.name}</div>
                                 <div className={style.roleDesc}>
-                                  {val.description}
+                                  { val.name === 'poc' ? "Responsible for the management of the project group" : val.description}
                                 </div>
                               </div>
                               <div className={style.successIcon}>
