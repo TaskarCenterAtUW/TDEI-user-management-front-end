@@ -55,7 +55,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                     handleChange(e);
                   }}
                   value={formData.name}
-                  isInvalid={errors.name && touched.name}
+                  isInvalid={touched.name && errors.name && (formData.name === '')}
                   onBlur={handleBlur}
                 />
                 <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
@@ -82,7 +82,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   placeholder="Enter Dataset Version"
                   name="version"
                   value={formData.version}
-                  isInvalid={errors.version && touched.version}
+                  isInvalid={touched.version && errors.version && (formData.version === '')}
                   onBlur={handleBlur}
                   onChange={(e) => {
                     handleFieldChange(e);
@@ -97,7 +97,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   type="text"
                   placeholder="Enter Schema Version"
                   name="schema_version"
-                  isInvalid={errors.schema_version && touched.schema_version}
+                  isInvalid={touched.schema_version && errors.schema_version && (formData.schema_version === '')}
                   onBlur={handleBlur}
                   value={formData.schema_version}
                   onChange={(e) => {
@@ -117,7 +117,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   name="collected_by"
                   value={formData.collected_by}
                   onBlur={handleBlur}
-                  isInvalid={errors.collected_by && touched.collected_by}
+                  isInvalid={touched.collected_by && errors.collected_by && (formData.collected_by === '')}
                   onChange={(e) => {
                     handleFieldChange(e);
                     handleChange(e);

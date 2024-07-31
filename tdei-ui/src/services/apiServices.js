@@ -354,7 +354,6 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
-      console.error("Failed to parse customMetadata: ", e);
       metadata.dataset_detail.dataset_area = null;
     }
     try {
@@ -362,7 +361,6 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
-      console.error("Failed to parse customMetadata: ", e);
       metadata.dataset_detail.custom_metadata = null;
     }
     replaceEmptyStringsWithNull(metadata);
@@ -478,14 +476,14 @@ export async function editMetadata(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
       }
     } catch (e) {
-      console.error("Failed to parse datasetArea: ", e);
+      metadata.dataset_detail.dataset_area = null;
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
         metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
       }
     } catch (e) {
-      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.custom_metadata = null;
     }
     // Replace empty strings with null
     replaceEmptyStringsWithNull(metadata);
