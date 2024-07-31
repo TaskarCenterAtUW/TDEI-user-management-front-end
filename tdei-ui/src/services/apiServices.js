@@ -596,3 +596,20 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
   });
   return res.data
 }
+export async function downloadJob(jobId) {
+  try {
+    const response = await axios.get(`${osmUrl}/job/download/${jobId}`, {
+      responseType: 'blob'
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = urlBlob;
+    a.download = `${jobId}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  } catch (error) {
+    console.error('There was a problem with the download operation:', error);
+  }
+};

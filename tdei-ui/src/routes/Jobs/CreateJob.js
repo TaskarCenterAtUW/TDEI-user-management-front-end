@@ -413,16 +413,35 @@ const CreateJobService = () => {
             case "dropzone":
                 return (
                     <div key={index} className={style.formItems}>
-                        <p className={style.formLabelP}>{field.label}<span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span></p>
+                        <p className={style.formLabelP}>
+                            {field.label}
+                            <span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span>
+                        </p>
                         <Dropzone
                             onDrop={onDrop}
-                            accept={jobType.value === "quality-metric-tag" ? { 'application/json': ['.json'] }: { 'application/zip': ['.zip'] }}
-                            format= {jobType.value === "quality-metric-tag" ? ".json" :".zip"}
+                            accept={
+                                jobType.value === "quality-metric-tag"
+                                    ? { 'application/json': ['.json'] }
+                                    : jobType.value === "osw-convert"
+                                        ? {
+                                            'application/zip': ['.zip'],
+                                            'application/octet-stream': ['.pbf', '.osm'],
+                                            'application/xml': ['.xml']
+                                        }
+                                        : { 'application/zip': ['.zip'] }
+                            }
+                            format={
+                                jobType.value === "quality-metric-tag"
+                                    ? ".json"
+                                    : jobType.value === "osw-convert"
+                                        ? ".zip, .pbf, .osm, .xml"
+                                        : ".zip"
+                            }
                             selectedFile={selectedFile}
                         />
                         <div className="d-flex align-items-start mt-2">
                             <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {extractLinks(getDescriptionForField(field.label))}
+                                {extractLinks(getDescriptionForField(field.label))}
                             </Form.Text>
                         </div>
                     </div>

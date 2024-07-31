@@ -150,6 +150,8 @@
 
 .downloadLink {
   color: #0969DA;
+  cursor: pointer;
+  padding-top: 10px;
 }
 
 .dot {
@@ -499,4 +501,7 @@
 .qualityMetricDropdown {
   margin-left: 8px;
   width: 250px;
+}
+.itemIcon {
+  margin-left: 10px;
 }

@@ -1,165 +1,193 @@
-import React from "react";
+import React, { useState } from "react";
 import style from "../../routes/Jobs/Jobs.module.css";
 import DatasetIcon from "../../assets/img/icon-job-dataset.svg";
 import fileIcon from "../../assets/img/icon-job-file.svg";
-import Typography from "@mui/material/Typography";
-import {Button} from "react-bootstrap";
-import ColoredLabel from "../ColoredLabel/ColoredLabel";
+import { Button } from "react-bootstrap";
 import DownloadIcon from "../../assets/img/icon-download.svg";
 import ShowJobMessageModal from "../ShowJobMessage/ShowJobMessageModal";
-import axios from "axios";
 import JobMsgDescModal from "../ShowJobMessage/JobMsgDescModal";
 import { toPascalCase } from "../../utils";
+import useDownloadJob from "../../hooks/jobs/useDownloadJob";
+import ColoredLabel from "../ColoredLabel/ColoredLabel";
 
-class JobListItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {showMore: false, showModal: false, jobId: null, data: null};
-        this.handleClick = this.handleClick.bind(this);
-        this.toggleShowMore = this.toggleShowMore.bind(this);
-        this.toggleModal = this.toggleModal.bind(this);
+const JobListItem = ({ jobItem }) => {
+  const [showMore, setShowMore] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [jobId, setJobId] = useState(null);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const { mutate: downloadJob, isLoading: isDownloadingJob } = useDownloadJob();
+
+  const toggleShowMore = () => {
+    setShowMore(!showMore);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+
+  const handleClick = (e) => {
+    const { id } = e.target;
+    setJobId(id);
+    downloadJob(id);
+  };
+
+  const updatedTime = (time) => {
+    const dateTime = new Date(time);
+    return dateTime.toLocaleString();
+  };
+
+  const getColorForLabel = (text) => {
+    if (!text) return "green";
+    if (text.includes("completed")) {
+      return "#6BD2D6";
+    } else if (text.includes("in-progress")) {
+      return "#E2C7A2";
+    } else {
+      return "#D55962";
     }
+  };
 
-    toggleShowMore() {
-        this.setState({showMore: !this.state.showMore}, () => {
-        });
+  const getJobStatusTitle = () => {
+    let dataType = jobItem.data_type;
+    if (dataType === "osw") {
+      dataType = dataType.toUpperCase();
+    } else {
+      dataType = toPascalCase(dataType);
     }
-
-    toggleModal() {
-        this.setState({showModal: !this.state.showModal});
+    let jobType = jobItem.job_type.replace(/-/g, " ");
+    if (jobItem.request_input.dataset_name) {
+      return jobItem.request_input.dataset_name;
+    } else {
+      return `${dataType} ${jobType}`;
     }
+  };
 
-    handleClick(e) {
-        const {id} = e.target;
-        this.setState({jobId: id}, () => {
-            axios.get(`${process.env.REACT_APP_OSM_URL}/job/download/${this.state.jobId}`)
-                .then(response => {
-                    this.setState({data: response.data});
-                })
-                .catch(error => {
-                    this.setState({error});
-                });
-        });
-    }
+  if (error) {
+    console.log(error);
+  }
 
-    updatedTime(time) {
-        const dateTime = new Date(time);
-        return dateTime.toLocaleString();
-    }
-
-    render() {
-        const {jobItem} = this.props;
-        const {data, error, showModal} = this.state;
-
-        if (error) {
-            console.log(error);
-        }
-
-        const getColorForLabel = (text) => {
-            if (!text) return 'green';
-            if (text.includes('completed')) {
-                return '#6BD2D6';
-            } else if (text.includes('in-progress')) {
-                return '#E2C7A2';
-            } else {
-                return '#D55962';
-            }
-        }
-        // Generates the job status title based on the dataset name, data type, and job type.
-        const getJobStatusTitle = () => {
-            let dataType = jobItem.data_type;
-            if (dataType === 'osw') {
-              dataType = dataType.toUpperCase();
-            } else {
-              dataType = toPascalCase(dataType);
-            }
-            let jobType = jobItem.job_type.replace(/-/g, ' ');
-            if (jobItem.request_input.dataset_name) {
-              return jobItem.request_input.dataset_name;
-            } else {
-              return `${dataType} ${jobType}`;
-            }
-          };
-
-        return (
-            <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
-                <div className="d-flex">
-                    {jobItem.request_input.dataset_name ? ( 
-                       <div className="d-flex align-items-center">
-                            <img className={style.datasetFileIconSize} src={DatasetIcon} alt="Dataset Icon"/> 
-                            <div className={style.datasetFileName} tabIndex={0}>{jobItem.request_input.dataset_name}</div>
-                        </div>
-                    ) : (
-                        <div className="d-flex align-items-center">
-                            <img className={style.datasetFileIconSize} src={fileIcon} alt="Dataset Icon"/> 
-                            <div className={style.datasetFileName} tabIndex={0}>{getJobStatusTitle()}</div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={style.content} tabIndex={0}>
-                    {jobItem.job_type} <br/>
-                    <span className={style.jobIdLabel}>Job Id - {jobItem.job_id}</span>
-                </div>
-                <div className={style.content}>
-                    {jobItem.message && (
-                        <>
-                            <div className={style.errorMessageContent} tabIndex={0}>
-                                {jobItem.message.length > 70 ? `${jobItem.message.slice(0, 70)}...` : `${jobItem.message}`}
-                            </div>
-                            <div>
-                                {jobItem.message.length > 70 &&
-                                    <Button className={style.showMoreButton} onClick={this.toggleShowMore}
-                                            variant="link">
-                                        {this.state.showMore ? 'Show less' : 'Show more'}
-                                    </Button>}
-                            </div>
-                        </>
-                    )}
-                     {!jobItem.message && (
-                        <div
-                            className={jobItem.status.toLowerCase() !== 'completed' ? style.noMessageFount : style.content}
-                            tabIndex={0}
-                            role={jobItem.status.toLowerCase() !== 'completed' ? "button" : undefined}
-                            onClick={jobItem.status.toLowerCase() !== 'completed' ? this.toggleModal : undefined}
-                        >
-                            {jobItem.status.toLowerCase() === 'completed' ? 'Job completed' : 'Job is in progress'}
-                        </div>
-                    )}
-                </div>
-                <div className={style.content} tabIndex={0}>
-                    <ColoredLabel labelText={jobItem.status} color={getColorForLabel(jobItem.status.toLowerCase())}/>
-                    <div className={style.updatedInfo}>Updated at : {this.updatedTime(jobItem.updated_at)}</div>
-                </div>
-                {/* <p id={jobItem.job_id} className={style.downloadLink}
-                   onClick={(e) => this.handleClick(e)}>
-                    <img src={DownloadIcon} alt="Download icon"></img> Download Report
-                </p> */}
-                <ShowJobMessageModal
-                    show={this.state.showMore}
-                    onHide={() => {
-                        this.toggleShowMore()
-                    }}
-                    message={{
-                        fileName: jobItem.request_input.dataset_name ? jobItem.request_input.dataset_name : jobItem.request_input.file_upload_name,
-                        type: jobItem.job_type,
-                        job_id: jobItem.job_id,
-                        message: jobItem.message
-                    }}
-                />
-                <JobMsgDescModal
-                    show={showModal}
-                    onHide={this.toggleModal}
-                    message={{
-                        type: jobItem.job_type,
-                        job_id : jobItem.job_id,
-                        progress:jobItem.progress,
-                        jobStatusTitle:getJobStatusTitle(),
-                    }}
-                />
+  return (
+    <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
+      <div className="d-flex">
+        {jobItem.request_input.dataset_name ? (
+          <div className="d-flex align-items-center">
+            <img
+              className={style.datasetFileIconSize}
+              src={DatasetIcon}
+              alt="Dataset Icon"
+            />
+            <div className={style.datasetFileName} tabIndex={0}>
+              {jobItem.request_input.dataset_name}
             </div>
-        );
-    }
-}
+          </div>
+        ) : (
+          <div className="d-flex align-items-center">
+            <img
+              className={style.datasetFileIconSize}
+              src={fileIcon}
+              alt="Dataset Icon"
+            />
+            <div className={style.datasetFileName} tabIndex={0}>
+              {getJobStatusTitle()}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className={style.content} tabIndex={0}>
+        {jobItem.job_type} <br />
+        <span className={style.jobIdLabel}>Job Id - {jobItem.job_id}</span>
+      </div>
+      <div className={style.content}>
+        {jobItem.message && (
+          <>
+            <div className={style.errorMessageContent} tabIndex={0}>
+              {jobItem.message.length > 70
+                ? `${jobItem.message.slice(0, 70)}...`
+                : `${jobItem.message}`}
+            </div>
+            <div>
+              {jobItem.message.length > 70 && (
+                <Button
+                  className={style.showMoreButton}
+                  onClick={toggleShowMore}
+                  variant="link"
+                >
+                  {showMore ? "Show less" : "Show more"}
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+        {!jobItem.message && (
+          <div
+            className={
+              jobItem.status.toLowerCase() !== "completed"
+                ? style.noMessageFount
+                : style.content
+            }
+            tabIndex={0}
+            role={
+              jobItem.status.toLowerCase() !== "completed" ? "button" : undefined
+            }
+            onClick={
+              jobItem.status.toLowerCase() !== "completed"
+                ? toggleModal
+                : undefined
+            }
+          >
+            {jobItem.status.toLowerCase() === "completed"
+              ? "Job completed"
+              : "Job is in progress"}
+          </div>
+        )}
+             {jobItem.job_type === "Dataset-Reformat" && jobItem.status.toLowerCase() === "completed" && (
+        <div
+          id={jobItem.job_id}
+          className={style.downloadLink}
+          onClick={(e) => handleClick(e)}
+          variant="link"
+        >
+          <img src={DownloadIcon} alt="Download icon" /> Download Job
+        </div>
+      )}
+      </div>
+      <div className={style.content} tabIndex={0}>
+        <ColoredLabel
+          labelText={jobItem.status}
+          color={getColorForLabel(jobItem.status.toLowerCase())}
+        />
+        <div className={style.updatedInfo}>
+          Updated at : {updatedTime(jobItem.updated_at)}
+        </div>
+      </div>
+ 
+      <ShowJobMessageModal
+        show={showMore}
+        onHide={toggleShowMore}
+        message={{
+          fileName: jobItem.request_input.dataset_name
+            ? jobItem.request_input.dataset_name
+            : jobItem.request_input.file_upload_name,
+          type: jobItem.job_type,
+          job_id: jobItem.job_id,
+          message: jobItem.message,
+        }}
+      />
+      <JobMsgDescModal
+        show={showModal}
+        onHide={toggleModal}
+        message={{
+          type: jobItem.job_type,
+          job_id: jobItem.job_id,
+          progress: jobItem.progress,
+          jobStatusTitle: getJobStatusTitle(),
+        }}
+      />
+    </div>
+  );
+};
 
 export default JobListItem;
