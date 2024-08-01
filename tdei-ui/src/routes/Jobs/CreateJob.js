@@ -16,6 +16,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
+import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
+
 
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
@@ -26,7 +28,8 @@ const jobTypeOptions = [
     { value: 'quality-metric', label: 'Quality Metric Calculation' },
     { value: 'dataset-bbox', label: 'Dataset BBox' },
     { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
-    { value: 'quality-metric-tag', label: 'Quality Metric Tag' }
+    { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
+    { value: 'spatial-join', label: 'Spatial Join' }
 ];
 
 const formatOptions = [
@@ -55,7 +58,7 @@ const formConfig = {
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Algorithms & Optional Persistence", type: "textarea", stateSetter: "setAlgorithmConfig" }
+        { label: "Algorithms & Optional Persistence", type: "dropdown", stateSetter: "setAlgorithmConfig" }
     ],
     "dataset-bbox": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
@@ -77,6 +80,9 @@ const formConfig = {
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
         { label: "Attach File", type: "dropzone" }
     ],
+    "spatial-join" : [
+        { label: "Spatial join operation request body", type: "textarea", stateSetter: "setSpatialRequestBody" }
+    ]
 };
 
 const CreateJobService = () => {
@@ -107,7 +113,8 @@ const CreateJobService = () => {
         algorithms: [],
         persist: {}
     });
-
+    const [spatialRequestBody, setSpatialRequestBody] = React.useState(JSON.stringify(SPATIAL_JOIN, null, 2));
+    const [showModal, setShowModal] = useState(false);
     const handleAlgorithmUpdate = (updatedConfig) => {
         setAlgorithmConfig(updatedConfig);
     };
@@ -126,7 +133,7 @@ const CreateJobService = () => {
         setLoading(false);
         console.error("error message", err);
         setToast(true);
-        setErrorMessage(err.data);
+        setErrorMessage(err.data ?? err);
     };
 
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
@@ -139,6 +146,7 @@ const CreateJobService = () => {
         setTdeiDatasetId("");
         setSourceDatasetId("");
         setTargetDatasetId("");
+        setSpatialRequestBody(JSON.stringify(SPATIAL_JOIN, null, 2));
         setAlgorithmConfig({
             algorithms: [],
             persist: {}
@@ -164,6 +172,11 @@ const CreateJobService = () => {
     const handleClose = () => {
         setToast(false);
     };
+    const handleModalClose = () => setShowModal(false);
+    const handleShow = () => {
+        setShowModal(true);
+      };
+    
 
     const handleCloseToast = () => {
         setShowValidateToast(false);
@@ -178,7 +191,8 @@ const CreateJobService = () => {
             "quality-metric": "/api/v1/osw/quality-metric/{tdei_dataset_id}",
             "dataset-bbox": "/api/v1/osw/dataset-bbox",
             "dataset-tag-road": "/api/v1/osw/dataset-tag-road",
-            "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}"
+            "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}",
+            "spatial-join": "/api/v1/osw/spatial-join"
         };
 
         return jobTypePathMap[jobType] || "";
@@ -277,6 +291,11 @@ const CreateJobService = () => {
             setShowValidateToast(true);
             return;
         }
+        if (jobType.value === "spatial-join" && (!spatialRequestBody || spatialRequestBody.trim() === "" || spatialRequestBody === JSON.stringify(SPATIAL_JOIN, null, 2))) {
+            setValidateErrorMessage("A valid request body is required for the spatial join calculation job.");
+            setShowValidateToast(true);
+            return;
+        }        
 
         let urlPath = "";
         switch (jobType?.value) {
@@ -307,6 +326,9 @@ const CreateJobService = () => {
             case "quality-metric-tag":
                 urlPath = "osw/quality-metric/tag";
                 break;
+            case "spatial-join":
+                urlPath = "osw/spatial-join";
+                break;
         }
 
         const uploadData = [urlPath, selectedFile];
@@ -320,6 +342,8 @@ const CreateJobService = () => {
             uploadData.push(tdeiDatasetId, fileType.value, bboxValues);
         } else if (jobType.value === "dataset-tag-road") {
             uploadData.push(sourceDatasetId, targetDatasetId);
+        }else if (jobType.value === "spatial-join"){
+            uploadData.push(spatialRequestBody);
         }
 
         setLoading(true);
@@ -401,12 +425,38 @@ const CreateJobService = () => {
                         </div>
                     </Form.Group>
                 );
-            case "textarea":
+            case "dropdown":
                 return (
                     <div key={index} style={{ marginTop: '20px' }}>
                         <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
                         <div className="jsonContent">
                         <QualityMetricAlgo onUpdate={handleAlgorithmUpdate} />
+                        </div>
+                    </div>
+                );
+                case "textarea":
+                return (
+                    <div key={index} style={{ marginTop: '20px' }}>
+                        <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
+                        <div className="jsonContent">
+                            <Form.Control
+                                as="textarea"
+                                type="text"
+                                name={field.label}
+                                onChange={(e) => {
+                                    if (field.stateSetter === "setSpatialRequestBody") setSpatialRequestBody(e.target.value);
+                                }}
+                                value={spatialRequestBody}
+                                rows={15}
+                            />
+                            <div className="d-flex align-items-start mt-2">
+                                <div className="tdei-hint-text">
+                                    (hint: check out the sample request{' '}
+                                    <a href="#" onClick={handleShow} style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+                                        here
+                                    </a>)
+                                </div>
+                        </div>
                         </div>
                     </div>
                 );
@@ -612,6 +662,19 @@ const CreateJobService = () => {
                         onClose={handleCloseToast}
                         isSuccess={false}
                     />
+                       { showModal &&(
+                        <JobJsonResponseModal
+                        show={showModal}
+                            message=""
+                            content={JSON.stringify(SAMPLE_SPATIAL_JOIN, null, 2) ?? ""}
+                            handler={() => {
+                                setShowModal(false);
+                            }}
+                            btnlabel="Cancel"
+                            modaltype="regular"
+                            title="Sample Spatial Join Request Body"
+                        />
+                    )}
                 </>
             </div>
         </Layout>
