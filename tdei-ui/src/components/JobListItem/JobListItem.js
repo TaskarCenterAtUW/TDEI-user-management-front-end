@@ -9,6 +9,7 @@ import JobMsgDescModal from "../ShowJobMessage/JobMsgDescModal";
 import { toPascalCase } from "../../utils";
 import useDownloadJob from "../../hooks/jobs/useDownloadJob";
 import ColoredLabel from "../ColoredLabel/ColoredLabel";
+import ResponseToast from "../ToastMessage/ResponseToast";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -16,8 +17,28 @@ const JobListItem = ({ jobItem }) => {
   const [jobId, setJobId] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [eventKey, setEventKey] = useState("");
 
-  const { mutate: downloadJob, isLoading: isDownloadingJob } = useDownloadJob();
+  const handleToast = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const onSuccess = (data) => {
+    setEventKey("success")
+    handleToast();
+  };
+
+  const onError = (err) => {
+    console.error("error message", err);
+    setEventKey("error")
+    handleToast();
+  };
+  const { mutate: downloadJob, isLoading: isDownloadingJob } = useDownloadJob({ onSuccess, onError });
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
@@ -143,16 +164,18 @@ const JobListItem = ({ jobItem }) => {
               : "Job is in progress"}
           </div>
         )}
-             {jobItem.job_type === "Dataset-Reformat" && jobItem.status.toLowerCase() === "completed" && (
-        <div
-          id={jobItem.job_id}
-          className={style.downloadLink}
-          onClick={(e) => handleClick(e)}
-          variant="link"
-        >
-          <img src={DownloadIcon} alt="Download icon" /> Download Job
-        </div>
-      )}
+        {(jobItem.job_type === "Dataset-Reformat" || jobItem.job_type === "Dataset-Queries") &&
+          jobItem.status.toLowerCase() === "completed" &&
+          jobItem.download_url && (
+            <div
+              id={jobItem.job_id}
+              className={style.downloadLink}
+              onClick={(e) => handleClick(e)}
+              variant="link"
+            >
+              <img src={DownloadIcon} alt="Download icon" /> Download Result
+            </div>
+          )}
       </div>
       <div className={style.content} tabIndex={0}>
         <ColoredLabel
@@ -185,6 +208,12 @@ const JobListItem = ({ jobItem }) => {
           progress: jobItem.progress,
           jobStatusTitle: getJobStatusTitle(),
         }}
+      />
+      <ResponseToast
+        showtoast={open}
+        handleClose={handleClose}
+        type={eventKey === "success" ? "success" : "error"}
+        message={eventKey === 'success' ? "Success! Download has been initiated." : "Error! Failed to initiate download."}
       />
     </div>
   );
