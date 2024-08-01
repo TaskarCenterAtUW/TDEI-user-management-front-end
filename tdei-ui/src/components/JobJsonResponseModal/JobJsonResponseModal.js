@@ -27,15 +27,15 @@ const JobJsonResponseModal = (props) => {
     >
       <Modal.Body>
         <div className={style.customSuccessModal}>
-          <img src={successIcon} alt="success-icon" className={style.modalHeaderIcon} />
-          <div className={style.title} >
+          {props.modaltype === "success" && <img src={successIcon} alt="success-icon" className={style.modalHeaderIcon} />}
+          {props.modaltype === "success" && (<div className={style.title} >
             {props.title}
-          </div>
+          </div>)}
           <div className={style.customMessage}>{props.message}</div>
           <div className={style.jobResponseContainer}>
             <div className={style.jobResponseHeader}>
               <div style={{ flexGrow: 1 }}>
-                <div className={style.jobResponseHeaderLabel}>Response</div>
+                <div className={style.jobResponseHeaderLabel}> {props.modaltype === "success" ? "Response" : "Sample Request Body"}</div>
               </div>
               <CopyToClipboard text={props.content} onCopy={() => handleClipBoardCopy(props.content)}>
                 <Button variant="link d-flex p-0">
@@ -44,7 +44,7 @@ const JobJsonResponseModal = (props) => {
               </CopyToClipboard>
             </div>
             <div className={style.jobResponseContainerContent}>
-            <pre>{props.content}</pre>
+              <pre>{props.content}</pre>
             </div>
           </div>
         </div>

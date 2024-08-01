@@ -4,15 +4,22 @@ export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
-const flattenMetadata = (metadata) => {
-  return {
-    ...metadata.dataset_detail,
-    ...metadata.data_provenance,
-    ...metadata.dataset_summary,
-    ...metadata.maintenance,
-    ...metadata.methodology
-  };
-};
+const MAX_PAYLOAD_SIZE = 100 * 1024; 
+
+// Calculate the byte length of the JSON string
+function calculatePayloadSize(payload) {
+  const jsonString = JSON.stringify(payload);
+  return new Blob([jsonString]).size;
+}
+async function checkPayloadSizeAndSendRequest(url, requestBody, headers) {
+  const payloadSize = calculatePayloadSize(requestBody);
+  
+  if (payloadSize > MAX_PAYLOAD_SIZE) {
+    throw new Error("Payload size exceeds the maximum allowed limit of 100kb.");
+  }
+  return axios.post(url, requestBody, { headers });
+}
+
 // Helper function to recursively replace empty strings with null
 function replaceEmptyStringsWithNull(obj) {
   for (const key in obj) {
@@ -268,61 +275,68 @@ export async function postCreateJob(data) {
   let headers = {
     'Content-Type': 'multipart/form-data',
   };
-
-  switch (data[0]) {
-    case "osw/convert":
-      formData.append('source', data[2]);
-      formData.append('target', data[3]);
-      formData.append('file', data[1]);
-      url = baseUrl;
-      break;
-    case "osw/confidence":
-      formData.append('file', data[1]);
-      url = `${baseUrl}/${data[2]}`;
-      break;
-    case "osw/quality-metric":
-      formData.append('tdei_dataset_id', data[2]);
-      url = `${baseUrl}/${data[2]}`;
-      headers = {
-        'Content-Type': 'application/json',
-      };
-      break;
-    case "osw/dataset-bbox":
-      url = baseUrl;
-      headers = {
-        'Content-Type': 'application/json',
-      };
-      break;
-    case "osw/dataset-tag-road":
-      params.source_dataset_id = data[2];
-      params.target_dataset_id = data[3];
-      url = baseUrl
-      headers = {
-        'Content-Type': 'application/json',
-      };
-      break;
+  try {
+    switch (data[0]) {
+      case "osw/convert":
+        formData.append('source', data[2]);
+        formData.append('target', data[3]);
+        formData.append('file', data[1]);
+        url = baseUrl;
+        break;
+      case "osw/confidence":
+        formData.append('file', data[1]);
+        url = `${baseUrl}/${data[2]}`;
+        break;
+      case "osw/quality-metric":
+        formData.append('tdei_dataset_id', data[2]);
+        url = `${baseUrl}/${data[2]}`;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        break;
+      case "osw/dataset-bbox":
+        url = baseUrl;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        break;
+      case "osw/dataset-tag-road":
+        params.source_dataset_id = data[2];
+        params.target_dataset_id = data[3];
+        url = baseUrl;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        break;
       case "osw/quality-metric/tag":
-      formData.append('tdei_dataset_id', data[2]);
-      formData.append('file', data[1]);
-      url = `${baseUrl}/${data[2]}`;
-      break;
-    default:
-      formData.append('dataset', data[1]);
-      url = baseUrl;
-  }
-  const config = { headers };
-  if (Object.keys(params).length > 0) {
-    config.params = params;
-  }
-  if (data[0] === "osw/quality-metric" && data[3]) {
-    const requestBody = JSON.stringify(data[3])
-    response = await axios.post(url, requestBody, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-    });
-  } else {
-    if (data[0] === "osw/dataset-bbox") {
+        formData.append('tdei_dataset_id', data[2]);
+        formData.append('file', data[1]);
+        url = `${baseUrl}/${data[2]}`;
+        break;
+      case "osw/spatial-join":
+        if (data[2]) {
+          url = baseUrl;
+          const requestBody = JSON.parse(data[2]);
+          headers = { "Content-Type": "application/json" };
+          response = await checkPayloadSizeAndSendRequest(url, requestBody, headers);
+          if (response) return response.data;
+          return;
+        }
+        break;
+      default:
+        formData.append('dataset', data[1]);
+        url = baseUrl;
+    }
+
+    const config = { headers };
+    if (Object.keys(params).length > 0) {
+      config.params = params;
+    }
+
+    if (data[0] === "osw/quality-metric" && data[3]) {
+      const requestBody = JSON.stringify(data[3]);
+      response = await checkPayloadSizeAndSendRequest(url, requestBody, headers);
+    } else if (data[0] === "osw/dataset-bbox") {
       const bboxParams = [
         `bbox=${parseFloat(data[4].west)}`,
         `bbox=${parseFloat(data[4].south)}`,
@@ -336,8 +350,15 @@ export async function postCreateJob(data) {
     } else {
       response = await axios.post(url, formData, config);
     }
+
+    return response.data;
+  } catch (error) {
+    if (error.message === "Payload size exceeds the maximum allowed limit of 100kb.") {
+      return { error: error.message };
+    } else {
+      throw error.message ?? error;
+    }
   }
-  return response.data;
 }
 export async function postUploadDataset(data) {
   const formData = new FormData();
