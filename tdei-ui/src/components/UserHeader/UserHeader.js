@@ -53,7 +53,7 @@ const UserHeader = ({ roles }) => {
           <div>My API Key </div>
           <div className={style.maskedKey}>
             {isLoading ? (
-              <span class={style.font14}>loading api key...</span>
+              <span className={style.font14}>loading api key...</span>
             ) : (
               <>
                 {show ? (

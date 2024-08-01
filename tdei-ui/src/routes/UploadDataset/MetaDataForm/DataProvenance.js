@@ -55,7 +55,7 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                     handleFieldChange(e);
                     handleChange(e);
                   }}
-                  isInvalid={errors.full_dataset_name && touched.full_dataset_name}
+                  isInvalid={touched.full_dataset_name && errors.full_dataset_name && (formData.full_dataset_name === '')}
                   onBlur={handleBlur}
                 />
                 <Form.Control.Feedback type="invalid">{errors.full_dataset_name}</Form.Control.Feedback>
