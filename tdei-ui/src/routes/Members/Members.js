@@ -21,6 +21,8 @@ import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import SuccessModal from "../../components/SuccessModal";
 import DeleteModal from "../../components/DeleteModal";
+import { Tooltip, OverlayTrigger } from "react-bootstrap";
+import { formatPhoneNumber } from "../../utils";
 
 
 const Members = () => {
@@ -156,7 +158,7 @@ const Members = () => {
                       <div className={style.address}>{list.username}</div>
                     </div>
                   </div>
-                  <div className={style.content}>{list.phone}</div>
+                  <div className={style.content}>{formatPhoneNumber(list.phone)}</div>
                   <div className={style.roles}>
                     <DisplayRolesList list={list} />
                   </div>
