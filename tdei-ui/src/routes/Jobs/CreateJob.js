@@ -159,6 +159,10 @@ const CreateJobService = () => {
         });
         setFileType(null);
     }
+    const handleSourceFormatChange = (value) => {
+        setSourceFormat(value);
+        setSelectedFile(null); 
+    };
 
     const handlePop = () => {
         navigate(-1);
@@ -376,7 +380,7 @@ const CreateJobService = () => {
                             options={field.options}
                             placeholder={`Select ${field.label.toLowerCase()}`}
                             onChange={(value) => {
-                                if (field.stateSetter === "setSourceFormat") setSourceFormat(value);
+                                if (field.stateSetter === "setSourceFormat") handleSourceFormatChange(value);
                                 if (field.stateSetter === "setTargetFormat") setTargetFormat(value);
                                 if (field.stateSetter === "setFileType") setFileType(value);
                             }}
@@ -472,9 +476,8 @@ const CreateJobService = () => {
                             accept={
                                 jobType.value === "quality-metric-tag"
                                     ? { 'application/json': ['.json'] }
-                                    : jobType.value === "osw-convert"
+                                    : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
                                         ? {
-                                            'application/zip': ['.zip'],
                                             'application/octet-stream': ['.pbf', '.osm'],
                                             'application/xml': ['.xml']
                                         }
@@ -483,8 +486,8 @@ const CreateJobService = () => {
                             format={
                                 jobType.value === "quality-metric-tag"
                                     ? ".json"
-                                    : jobType.value === "osw-convert"
-                                        ? ".zip, .pbf, .osm, .xml"
+                                    : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
+                                        ? ".pbf, .osm, .xml"
                                         : ".zip"
                             }
                             selectedFile={selectedFile}

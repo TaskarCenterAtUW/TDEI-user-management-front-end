@@ -35,7 +35,7 @@ const DeleteModal = (props) => {
           onClick={props.handler}
           disabled={props.isLoading}
         >
-          {props.isLoading ? "Deleting" : "Delete"}
+          { props.message.title === "Revoke Permissions" ? props.isLoading ? "Revoking" : "Revoke" : props.isLoading ? "Deleting" : "Delete"}
         </Button>
       </Modal.Footer>
     </Modal>
