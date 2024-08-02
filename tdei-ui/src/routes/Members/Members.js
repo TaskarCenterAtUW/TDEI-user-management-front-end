@@ -14,6 +14,14 @@ import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
+import useRevokePermission from "../../hooks/roles/useRevokePermission";
+import { GET_PROJECT_GROUP_USERS } from "../../utils";
+import { useQueryClient } from "react-query";
+import { useDispatch } from "react-redux";
+import { show } from "../../store/notification.slice";
+import SuccessModal from "../../components/SuccessModal";
+import DeleteModal from "../../components/DeleteModal";
+
 
 const Members = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -22,6 +30,12 @@ const Members = () => {
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
   const [selectedData, setSelectedData] = React.useState({});
+  const [isEdit, setIsEdit] = React.useState(false);
+  const queryClient = useQueryClient();
+  const [showRevokeModal, setShowRevokeModal] = React.useState(false);
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+  const [selectedUser, setSelectedUser] = React.useState("");
+  const dispatch = useDispatch();
   const {
     data = [],
     isError,
@@ -30,6 +44,22 @@ const Members = () => {
     isFetchingNextPage,
     isLoading,
   } = useGetProjectGroupUsers(debounceQuery);
+
+  const onRevokeSuccess = (data) => {
+    setShowRevokeModal(true);
+    setShowConfirmModal(false);
+    queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_USERS] });
+  };
+  const onRevokeError = (err) => {
+    setShowConfirmModal(false);
+    console.error(err);
+    dispatch(show({ message: `Error in revoking poc user`, type: "danger" }));
+  };
+  const { mutate: revokePermission, isLoading: revokePermissionLoading } =
+    useRevokePermission({
+      onError: onRevokeError,
+      onSuccess: onRevokeSuccess,
+    });
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -42,6 +72,7 @@ const Members = () => {
   const handleAssignUser = () => {
     setSelectedData({});
     setShowModal(true);
+    setIsEdit(false);
   };
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
@@ -52,7 +83,16 @@ const Members = () => {
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
     setShowModal(true);
+    setIsEdit(true);
   };
+  const handleRevokePermission = () => {
+    revokePermission({
+      tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
+      user_name: selectedUser.username,
+      roles: [],
+    });
+  };
+  // setShowDeleteModal(true);
   return (
     <Layout>
       <div className={style.header}>
@@ -120,16 +160,22 @@ const Members = () => {
                   <div className={style.roles}>
                     <DisplayRolesList list={list} />
                   </div>
-                  <div className={style.actionItem}>
+                  {user.userId !== list.user_id && (<div className={style.actionItem}>
                     <Dropdown align="end">
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       <Dropdown.Menu align="end">
                         <Dropdown.Item id={list.user_id} onClick={handleUser}>
                           Manage User
                         </Dropdown.Item>
+                        <Dropdown.Item id={list.user_id} onClick={() => {
+                          setShowConfirmModal(true);
+                          setSelectedUser(list);
+                        }}>
+                          Remove User
+                        </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
-                  </div>
+                  </div>)}
                 </div>
               ))}
             </React.Fragment>
@@ -155,6 +201,24 @@ const Members = () => {
         show={showModal}
         onHide={() => setShowModal(false)}
         data={selectedData}
+        isEdit={isEdit}
+      />
+      <SuccessModal
+        show={showRevokeModal}
+        onHide={() => {
+          setShowRevokeModal(false)
+        }}
+        message="User's Permissions revoked successfully"
+      />
+      <DeleteModal
+        show={showConfirmModal}
+        onHide={() => setShowConfirmModal(false)}
+        message={{
+          title: "Revoke Permissions",
+          details: "Are you sure you want to remove the selected user from the project group?",
+        }}
+        handler={handleRevokePermission}
+        isLoading={revokePermissionLoading}
       />
     </Layout>
   );
@@ -171,15 +235,15 @@ const DisplayRolesList = ({ list }) => {
     <>
       {showMore
         ? list.roles.map((role) => (
-            <div className={style.roleBlock} key={role}>
-              {role}
-            </div>
-          ))
+          <div className={style.roleBlock} key={role}>
+            {role}
+          </div>
+        ))
         : list.roles.slice(0, 2).map((role) => (
-            <div className={style.roleBlock} key={role}>
-              {role}
-            </div>
-          ))}
+          <div className={style.roleBlock} key={role}>
+            {role}
+          </div>
+        ))}
       {list.roles.length > 2 && !showMore && (
         //eslint-disable-next-line
         <a className={style.showMore} onClick={handleShowMore}>

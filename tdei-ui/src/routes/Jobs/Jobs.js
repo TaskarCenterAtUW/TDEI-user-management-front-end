@@ -155,7 +155,7 @@ const Jobs = () => {
                 </div>
                 <div>
                     <Button onClick={handleCreate} className="tdei-primary-button">
-                        Create New
+                        Create Job
                     </Button>
                 </div>
             </div>

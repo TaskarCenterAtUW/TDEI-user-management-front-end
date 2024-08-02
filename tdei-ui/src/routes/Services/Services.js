@@ -129,7 +129,7 @@ const Services = () => {
         {user?.isAdmin || isUserPoc ? (
           <div>
             <Button onClick={handleCreate} className="tdei-primary-button">
-              Create New
+              Create Service
             </Button>
           </div>
         ) : null}
