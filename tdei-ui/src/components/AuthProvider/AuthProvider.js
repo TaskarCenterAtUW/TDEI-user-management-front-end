@@ -10,19 +10,26 @@ const AuthProvider = ({ children }) => {
   const origin = location.pathname || "/";
 
   const decodeToken = (accessToken) => {
-    if (!accessToken) return;
-    const decodedToken = JSON.parse(window.atob(accessToken.split(".")[1]));
-    const userObj = {
-      name:
-        decodedToken.name ||
-        decodedToken.email ||
-        decodedToken.preferred_username,
-      roles: decodedToken.realm_access.roles,
-      isAdmin: decodedToken.realm_access.roles?.includes("tdei-admin"),
-      userId: decodedToken.sub,
-      emailId: decodedToken.preferred_username,
-    };
-    setUser(userObj);
+    if (accessToken === "undefined" || !accessToken) return;
+    try {
+      const base64Url = accessToken.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const decodedToken = JSON.parse(window.atob(base64));
+      const userObj = {
+        name:
+          decodedToken.name ||
+          decodedToken.email ||
+          decodedToken.preferred_username,
+        roles: decodedToken.realm_access.roles,
+        isAdmin: decodedToken.realm_access.roles?.includes("tdei-admin"),
+        userId: decodedToken.sub,
+        emailId: decodedToken.preferred_username,
+      };
+      setUser(userObj);
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+      setUser(null);
+    }
   };
 
   React.useEffect(() => {
@@ -43,8 +50,8 @@ const AuthProvider = ({ children }) => {
           password,
         }
       );
-      let accessToken = response.data.access_token;
-      let refreshToken = response.data.refresh_token;
+      const accessToken = response.data.access_token;
+      const refreshToken = response.data.refresh_token;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
@@ -57,7 +64,15 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  let value = { user, signin };
+  const signout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setUser(null);
+    navigate("/login");
+  };
+
+  let value = { user, signin, signout };
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

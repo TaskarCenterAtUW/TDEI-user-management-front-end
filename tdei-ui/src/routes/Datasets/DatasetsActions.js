@@ -29,15 +29,19 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset }) => {
           <Dropdown.Item eventKey="openInWorkspace" className={style.itemRow}>
             <img src={openConsoleIcon} className={style.itemIcon} alt="" />Open in workspaces
           </Dropdown.Item>
-          <Dropdown.Item disabled={isReleasedDataset || status === "Publish"} eventKey="release" className={style.itemRow}>
-            <img src={releaseIcon} className={style.itemIcon} alt="" />Release
-          </Dropdown.Item>
-          <Dropdown.Item disabled={isReleasedDataset || !canDeactivate} eventKey="deactivate" className={style.itemRow}>
-            <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
-          </Dropdown.Item>
-          <Dropdown.Item disabled={isReleasedDataset} eventKey="editMetadata" className={style.itemRow}>
-            <img src={editImage} className={style.itemIcon} alt="" />Edit Metadata
-          </Dropdown.Item>
+          {!isReleasedDataset && (
+            <>
+              <Dropdown.Item disabled={status === "Publish"} eventKey="release" className={style.itemRow}>
+                <img src={releaseIcon} className={style.itemIcon} alt="" />Release
+              </Dropdown.Item>
+              <Dropdown.Item disabled={!canDeactivate} eventKey="deactivate" className={style.itemRow}>
+                <img src={deactivateIcon} className={style.itemIcon} alt="" />Deactivate
+              </Dropdown.Item>
+              <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
+                <img src={editImage} className={style.itemIcon} alt="" />Edit Metadata
+              </Dropdown.Item>
+            </>
+          )}
           <Dropdown.Item disabled={!isDataGenerator && !user.isAdmin} eventKey="cloneDataset" className={style.itemRow}>
             <img src={cloneImg} className={style.itemIcon} alt="" />Clone Dataset
           </Dropdown.Item>

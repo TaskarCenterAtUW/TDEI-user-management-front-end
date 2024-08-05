@@ -41,12 +41,12 @@ const OutlineCircle = styled('div')(({ ownerState }) => ({
   width: 45,
   height: 45,
   borderRadius: '50%',
-  border: `1px solid ${ownerState.completed || ownerState.active ? '#59C3C8' : '#ccc'}`,
+  border: `1px solid ${ownerState.completed || ownerState.active ? 'var(--primary-color)' : '#ddd7e6'}`,
   boxSizing: 'border-box',
 }));
 
 const InnerCircle = styled('div')(({ theme, ownerState }) => ({
-  backgroundColor: ownerState.completed || ownerState.active ? '#59C3C8' : (theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc'),
+  backgroundColor: ownerState.completed || ownerState.active ? 'var(--primary-color)' : (theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ddd7e6'),
   zIndex: 1,
   zIndex: 1,
   color: '#fff',
@@ -164,18 +164,23 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-             const finalData = {
-          ...selectedData,
-          2: {
-            ...selectedData[2],
-            dataset_detail: {
-              ...selectedData[2].dataset_detail,
-              custom_metadata: selectedData[2].dataset_detail.custom_metadata ? JSON.stringify(selectedData[2].dataset_detail.custom_metadata, null, 2) : "",
-              dataset_area: selectedData[2].dataset_detail.dataset_area ? JSON.stringify(selectedData[2].dataset_detail.dataset_area, null, 2) : ""
+        if(!(selectedData[2] instanceof File)){
+          const finalData = {
+            ...selectedData,
+            2: {
+              ...selectedData[2],
+              dataset_detail: {
+                ...selectedData[2].dataset_detail,
+                custom_metadata: selectedData[2].dataset_detail && selectedData[2].dataset_detail.custom_metadata ? JSON.stringify(selectedData[2].dataset_detail.custom_metadata, null, 2) : "",
+                dataset_area: selectedData[2].dataset_detail && selectedData[2].dataset_detail.dataset_area ? JSON.stringify(selectedData[2].dataset_detail.dataset_area, null, 2) : ""
+              }
             }
-          }
-        };
-        onStepsComplete(finalData);
+          };
+          onStepsComplete(finalData);
+        }else{
+          onStepsComplete(selectedData);
+        }
+        
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;

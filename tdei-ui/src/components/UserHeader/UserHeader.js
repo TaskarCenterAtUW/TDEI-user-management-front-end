@@ -23,7 +23,6 @@ const UserHeader = ({ roles }) => {
   };
   const role = getRoles();
   const authorizedUser = user.isAdmin || !!roles?.length;
-  console.log("api key---", data);
   let API_KEY = data?.apiKey;
   const maskedKey = maskString(API_KEY, {
     maskAll: true,
@@ -54,7 +53,7 @@ const UserHeader = ({ roles }) => {
           <div>My API Key </div>
           <div className={style.maskedKey}>
             {isLoading ? (
-              <span class={style.font14}>loading api key...</span>
+              <span className={style.font14}>loading api key...</span>
             ) : (
               <>
                 {show ? (

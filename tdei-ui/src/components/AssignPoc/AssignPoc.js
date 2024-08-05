@@ -16,7 +16,6 @@ const AssignPoc = () => {
     user_name: yup.string().required("Email Id is required"),
   });
   const onSuccess = (data) => {
-    console.log("Assigned POC", data);
     dispatch(show({ message: "Assigned POC successfully", type: "success" }));
   };
 

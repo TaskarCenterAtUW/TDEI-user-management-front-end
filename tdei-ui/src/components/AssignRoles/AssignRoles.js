@@ -8,16 +8,17 @@ import useGetRoles from "../../hooks/roles/useGetRoles";
 import { Field, Formik } from "formik";
 import * as yup from "yup";
 import clsx from "clsx";
-import successIcon from "../../assets/img/success-icon.svg";
+import checkIcon from "../../assets/img/checkIcon-purple.svg";
 import { useQueryClient } from "react-query";
 import { GET_PROJECT_GROUP_USERS } from "../../utils";
 import { getSelectedProjectGroup } from "../../selectors";
+import { useAuth } from "../../hooks/useAuth";
 
 const AssignRoles = (props) => {
   const { data, isLoading: isRolesLoading, isError } = useGetRoles();
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const queryClient = useQueryClient();
-
+  const { user } = useAuth();
   const [rolesData, setRolesData] = React.useState({
     user_name: "",
     tdei_project_group_id: "",
@@ -87,7 +88,7 @@ const AssignRoles = (props) => {
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              Assign Role to New User
+             {props.isEdit ? "Assign Roles" : "Assign Role to New User"} 
             </Modal.Title>
           </Modal.Header>
           {assignRolesError ? (
@@ -122,6 +123,7 @@ const AssignRoles = (props) => {
                       isInvalid={touched.user_name && !!errors.user_name}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      disabled={props.isEdit}
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.user_name}
@@ -186,7 +188,7 @@ const AssignRoles = (props) => {
                               </div>
                               <div className={style.successIcon}>
                                 <img
-                                  src={successIcon}
+                                  src={checkIcon}
                                   className={style.iconSelected}
                                   alt="success-icon"
                                 />

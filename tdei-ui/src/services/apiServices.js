@@ -4,15 +4,22 @@ export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
-const flattenMetadata = (metadata) => {
-  return {
-    ...metadata.dataset_detail,
-    ...metadata.data_provenance,
-    ...metadata.dataset_summary,
-    ...metadata.maintenance,
-    ...metadata.methodology
-  };
-};
+const MAX_PAYLOAD_SIZE = 100 * 1024; 
+
+// Calculate the byte length of the JSON string
+function calculatePayloadSize(payload) {
+  const jsonString = JSON.stringify(payload);
+  return new Blob([jsonString]).size;
+}
+async function checkPayloadSizeAndSendRequest(url, requestBody, headers) {
+  const payloadSize = calculatePayloadSize(requestBody);
+  
+  if (payloadSize > MAX_PAYLOAD_SIZE) {
+    throw new Error("Payload size exceeds the maximum allowed limit of 100kb.");
+  }
+  return axios.post(url, requestBody, { headers });
+}
+
 // Helper function to recursively replace empty strings with null
 function replaceEmptyStringsWithNull(obj) {
   for (const key in obj) {
@@ -153,18 +160,19 @@ export async function getService(tdei_service_id, service_type, tdei_project_gro
     pageParam,
   };
 }
-export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status) {
+export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status,job_show) {
 
   const params = {
     page_no: pageParam,
     page_size: 10,
   };
 
-  // if (isAdmin) {
-  //   params.tdei_project_group_id = null;
-  // } else {
-  //   params.tdei_project_group_id = tdei_project_group_id;
-  // }
+  if(!isAdmin) {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }
+  if(job_show == "all"){
+    params.show_group_jobs = true;
+  }
 
   if (job_type) {
     params.job_type = job_type;
@@ -260,19 +268,97 @@ export async function postCreateStation(data) {
 }
 export async function postCreateJob(data) {
   const formData = new FormData();
-  if(data[0] === "osw/convert"){
-    formData.append('source', data[2]);
-    formData.append('target', data[3]);
-    formData.append('file', data[1]);
-  }else{
-    formData.append('dataset', data[1]);
+  let url;
+  let response;
+  const params = {};
+  const baseUrl = `${osmUrl}/${data[0]}`;
+  let headers = {
+    'Content-Type': 'multipart/form-data',
+  };
+  try {
+    switch (data[0]) {
+      case "osw/convert":
+        formData.append('source', data[2]);
+        formData.append('target', data[3]);
+        formData.append('file', data[1]);
+        url = baseUrl;
+        break;
+      case "osw/confidence":
+        formData.append('file', data[1]);
+        url = `${baseUrl}/${data[2]}`;
+        break;
+      case "osw/quality-metric":
+        formData.append('tdei_dataset_id', data[2]);
+        url = `${baseUrl}/${data[2]}`;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        break;
+      case "osw/dataset-bbox":
+        url = baseUrl;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        break;
+      case "osw/dataset-tag-road":
+        params.source_dataset_id = data[2];
+        params.target_dataset_id = data[3];
+        url = baseUrl;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        break;
+      case "osw/quality-metric/tag":
+        formData.append('tdei_dataset_id', data[2]);
+        formData.append('file', data[1]);
+        url = `${baseUrl}/${data[2]}`;
+        break;
+      case "osw/spatial-join":
+        if (data[2]) {
+          url = baseUrl;
+          const requestBody = JSON.parse(data[2]);
+          headers = { "Content-Type": "application/json" };
+          response = await checkPayloadSizeAndSendRequest(url, requestBody, headers);
+          if (response) return response.data;
+          return;
+        }
+        break;
+      default:
+        formData.append('dataset', data[1]);
+        url = baseUrl;
+    }
+
+    const config = { headers };
+    if (Object.keys(params).length > 0) {
+      config.params = params;
+    }
+
+    if (data[0] === "osw/quality-metric" && data[3]) {
+      const requestBody = JSON.stringify(data[3]);
+      response = await checkPayloadSizeAndSendRequest(url, requestBody, headers);
+    } else if (data[0] === "osw/dataset-bbox") {
+      const bboxParams = [
+        `bbox=${parseFloat(data[4].west)}`,
+        `bbox=${parseFloat(data[4].south)}`,
+        `bbox=${parseFloat(data[4].east)}`,
+        `bbox=${parseFloat(data[4].north)}`
+      ];
+      url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]}&${bboxParams.join('&')}`;
+      response = await axios.post(url);
+    } else if (data[0] === "osw/dataset-tag-road") {
+      response = await axios.post(url, {}, config);
+    } else {
+      response = await axios.post(url, formData, config);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error.message === "Payload size exceeds the maximum allowed limit of 100kb.") {
+      return { error: error.message };
+    } else {
+      throw error.message ?? error;
+    }
   }
-  const response = await axios.post(`${osmUrl}/${data[0]}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data;
 }
 export async function postUploadDataset(data) {
   const formData = new FormData();
@@ -289,7 +375,6 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
-      console.error("Failed to parse customMetadata: ", e);
       metadata.dataset_detail.dataset_area = null;
     }
     try {
@@ -297,7 +382,6 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
-      console.error("Failed to parse customMetadata: ", e);
       metadata.dataset_detail.custom_metadata = null;
     }
     replaceEmptyStringsWithNull(metadata);
@@ -316,7 +400,7 @@ export async function postUploadDataset(data) {
   // Get the endpoint based on the service_type
   const service_type = data[0].service_type;
   const file_end_point = service_type === 'flex' ? 'gtfs-flex' : (service_type === 'pathways' ? 'gtfs-pathways' : 'osw');
-  const url = data[1].derived_from_dataset_id ? 
+  const url = data[1].derived_from_dataset_id ?
     `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}` :
     `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
   try {
@@ -330,7 +414,7 @@ export async function postUploadDataset(data) {
     console.error('Error object:', error);
     if (error.response && error.response.data) {
       throw new Error(error.response.data);
-    }else if (error.data) {
+    } else if (error.data) {
       throw new Error(error.data);
     } else {
       throw new Error(error);
@@ -413,14 +497,14 @@ export async function editMetadata(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
       }
     } catch (e) {
-      console.error("Failed to parse datasetArea: ", e);
+      metadata.dataset_detail.dataset_area = null;
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
         metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
       }
     } catch (e) {
-      console.error("Failed to parse customMetadata: ", e);
+      metadata.dataset_detail.custom_metadata = null;
     }
     // Replace empty strings with null
     replaceEmptyStringsWithNull(metadata);
@@ -447,7 +531,7 @@ export async function cloneDataset(data) {
   if (data.selectedData[1] instanceof File) {
     formData.append('file', data.selectedData[1]);
   } else {
-    const metadata = { ...data.selectedData[1]};
+    const metadata = { ...data.selectedData[1] };
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
@@ -473,7 +557,7 @@ export async function cloneDataset(data) {
     const jsonString = JSON.stringify(metadata, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const file = new File([blob], 'metadata.json', { type: 'application/json' });
-    
+
     formData.append('file', file);
   }
   // if (data.selectedData[2] != null) {
@@ -515,11 +599,11 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
 
   const params = {};
 
-  // if (isAdmin) {
-    params.tdei_project_group_id = null;
-  // } else {
-  //   params.tdei_project_group_id = tdei_project_group_id;
-  // }
+  if (!isAdmin) {
+    params.tdei_project_group_id = tdei_project_group_id;
+  }else{
+    params.show_group_jobs = false;
+  }
   if (job_id) {
     params.job_id = job_id;
   }
@@ -531,3 +615,20 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
   });
   return res.data
 }
+export async function downloadJob(jobId) {
+  try {
+    const response = await axios.get(`${osmUrl}/job/download/${jobId}`, {
+      responseType: 'blob'
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = urlBlob;
+    a.download = `${jobId}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  } catch (error) {
+    console.error('There was a problem with the download operation:', error);
+  }
+};

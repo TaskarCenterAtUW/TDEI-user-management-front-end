@@ -56,7 +56,6 @@ const Services = () => {
   } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
 
   const onSuccess = (data) => {
-    console.log("suucessfull", data);
     queryClient.invalidateQueries({ queryKey: [GET_SERVICES] });
     setShowDeleteModal(false);
     dispatch(showModal({ message: "Service deleted successfully" }));
@@ -130,7 +129,7 @@ const Services = () => {
         {user?.isAdmin || isUserPoc ? (
           <div>
             <Button onClick={handleCreate} className="tdei-primary-button">
-              Create New
+              Create Service
             </Button>
           </div>
         ) : null}

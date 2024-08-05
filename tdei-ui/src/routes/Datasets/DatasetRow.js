@@ -57,7 +57,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
     };
 
     return (
-        <Container className={style.datasetsTableRow} fluid style={leftBorderStyle}>
+        <Container className={style.datasetsTableRow} fluid>
             <Row className={style.datasetCard}>
                 <Col md={5}>
                     <div className="d-flex align-items-center flex-wrap">

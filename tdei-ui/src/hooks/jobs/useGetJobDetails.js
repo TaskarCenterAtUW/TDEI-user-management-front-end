@@ -9,10 +9,6 @@ function useGetJobDetails(isAdmin, job_id = "", enabled = false) {
     const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
     const [refreshKey, setRefreshKey] = useState(0); // for refreshing data
 
-    useEffect(() => {
-        console.log("useGetJobDetails Hook called with job_id:", job_id);
-    }, [job_id]);
-
     const { data, error, isLoading, refetch } = useQuery(
         [GET_JOB_DETAILS, tdei_project_group_id, job_id, isAdmin, refreshKey],
         () => getJobDetails(tdei_project_group_id, job_id, isAdmin),

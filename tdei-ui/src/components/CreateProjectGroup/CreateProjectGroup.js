@@ -36,7 +36,6 @@ const CreateProjectGroup = (props) => {
   });
 
   const onSuccess = (data) => {
-    console.log("suucessfull", data);
     setShowModal(true);
     props.onHide();
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });

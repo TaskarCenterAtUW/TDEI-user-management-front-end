@@ -1,6 +1,6 @@
 .container {
   height: 60px;
-  background-color: #2f3661;
+  background-color: var(--primary-color);
   color: #ffffff;
   display: flex;
   padding: 0px 15px;
@@ -44,6 +44,7 @@
   padding: 0px;
   color: #fff;
   font-size: 14px;
+  font-weight: 600;
 }
 .userProfile > div {
   padding-right: 1rem;

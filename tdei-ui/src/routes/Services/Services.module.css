@@ -57,7 +57,7 @@
   box-shadow: 0px 1px 6px #33333314;
   border-radius: 5px;
   margin-bottom: 20px;
-  border-left: 8px solid #88c8e8;
+  border-left: 8px solid var(--tdei-blue);
 }
 
 .serviceIdBlock {
@@ -68,7 +68,6 @@
 }
 
 .serviceName {
-  color: #162848;
   font-size: 16px;
   font-weight: 700;
   /* margin-bottom: 4px; */
@@ -153,11 +152,11 @@
 }
 .noDataText {
   font-size: 14px;
-  color: #83879b;
+  color: var(--secondary-color);
   margin-left: 5px;
 }
 /* input {
-  color: #83879b !important;
+  color: var(--secondary-color) !important;
 } */
 .layout {
   height: 100%;
