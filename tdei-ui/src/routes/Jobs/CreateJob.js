@@ -656,7 +656,7 @@ const CreateJobService = () => {
                     {showToast && (
                         <CustomModal
                             show={showToast}
-                            message="Dataset Upload Failed!"
+                            message="Job Creation Failed!"
                             content={errorMessage}
                             handler={handleClose}
                             btnlabel="Dismiss"
