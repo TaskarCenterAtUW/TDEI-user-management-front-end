@@ -1,0 +1,34 @@
+.selectedProjectGroupName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+.customElement {
+  cursor: pointer;
+  display: flex;
+  max-width: 165px;
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  color: #fff;
+}
+
+.customElement [data-arrow="upArrow"] {
+  display: none;
+}
+
+:global(.show) .customElement [data-arrow="upArrow"] {
+  display: inline-block;
+}
+
+:global(.show) .customElement [data-arrow="downArrow"] {
+  display: none;
+}
+
+.projectGroupLabel {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}

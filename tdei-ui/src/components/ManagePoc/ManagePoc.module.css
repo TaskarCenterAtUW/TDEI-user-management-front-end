@@ -1,0 +1,113 @@
+.projectGroupDetails {
+  padding: 15px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.projectGroupName {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+
+.address {
+  color: var(--secondary-color);
+  font-size: 14px;
+}
+
+.modalBody {
+  padding: 0px;
+}
+
+.pocDetails {
+  padding: 15px;
+}
+
+.addNew {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.addNew:hover,
+.addNew:active,
+.addNew:focus-visible {
+  color: var(--primary-color-dark) !important;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.pocCardDetails {
+  max-height: 225px;
+  overflow-y: auto;
+}
+
+.pocCard {
+  display: flex;
+  background-color: var(--purple-background-light);
+  border: 1px solid #e3dfef;
+  border-radius: 6px;
+  padding: 15px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.userList {
+  display: flex;
+  align-items: center;
+}
+
+.userImg {
+  width: 33px;
+  height: 33px;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+}
+.userName {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pocUserIcon {
+  width: 26px;
+  height: 26px;
+  margin-right: 8px;
+}
+
+.userImg img {
+  max-width: 100%;
+}
+.trashIcon {
+  cursor: pointer;
+}
+.noPocBlock {
+  border: 1px dashed #ddd;
+  padding: 30px 30px;
+  text-align: center;
+  border-radius: 5px;
+}
+.noPocIcon {
+  width: 32px;
+}
+.noPocText {
+  color: var(--secondary-color);
+  margin-top: 10px;
+  font-size: 14px;
+}

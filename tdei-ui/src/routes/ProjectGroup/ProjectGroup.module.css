@@ -1,0 +1,156 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.searchPanel input {
+  width: 300px;
+}
+
+.projectHeader {
+  background-color: #f8f8f8;
+  font-weight: bold;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px 25px !important;
+}
+
+.projectGroupBlock {
+  border: 1px solid #ddd;
+  box-shadow: 0px 1px 6px #33333314;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border-left: 8px solid var(--tdei-blue);
+}
+
+.projectIdBlock {
+  border-top: 1px dashed #ddd;
+  padding: 8px 25px;
+  background-color: #fbfbfb;
+  border-radius: 0px 0px 5px 5px;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 25% 25% 20% 20% 10%;
+  grid-column-gap: 10px;
+  align-items: center;
+  padding: 25px 25px;
+  font-size: 14px;
+}
+
+.menuVertical {
+  width: 30px;
+  cursor: pointer;
+}
+
+/* .actionItem {
+  width: 28px;
+} */
+
+.actionButton {
+  padding: 2px 2px;
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.address {
+  color: var(--secondary-color);
+  font-size: 14px;
+}
+
+.details {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  margin-right: 15px;
+}
+
+.content {
+  font-size: 16px;
+}
+
+.notAssigned {
+  color: #ffffff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  border-radius: 20px;
+  padding: 5px 15px;
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.notAssigned:hover,
+.notAssigned:active,
+.notAssigned:focus-visible {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.pocList {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.pocIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: 0px 3px 6px #00000029;
+  margin-right: 6px;
+  display: flex;
+  padding: 3px;
+}
+
+.projectGroupIcon {
+  width: 45px;
+  margin-right: 10px;
+}
+
+.pocUserIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+.overlayList {
+  font-weight: 700;
+  cursor: pointer;
+  color: #3470ea;
+  font-size: 16px;
+  padding-left: 2px;
+}

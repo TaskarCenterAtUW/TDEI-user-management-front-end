@@ -1,53 +1,87 @@
-import React from 'react';
-import style from './AssignPoc.module.css';
-import { Button, Form } from 'react-bootstrap'
-import useAssignPoc from '../../hooks/poc/useAssignPoc';
-import { show} from '../../store/notification.slice';
-import { useDispatch } from 'react-redux';
-
+import React from "react";
+import style from "./AssignPoc.module.css";
+import { Button, Form, Alert } from "react-bootstrap";
+import { show } from "../../store/notification.slice";
+import { useDispatch } from "react-redux";
+import ProjectGroupList from "../ProjectGroupList";
+import useAssignRoles from "../../hooks/roles/useAssignRoles";
+import { Formik, Field } from "formik";
+import * as yup from "yup";
 
 const AssignPoc = () => {
-    const dispatch = useDispatch();
-    const [pocData, setPocData] = React.useState({ "org_id": '', "poc_user_name": '' });
-    const onSuccess = (data) => {
-        console.log("Assigned POC", data);
-        dispatch(show({message: 'Assigned POC successfully', type: 'success'}));
-        setPocData({ "org_id": '', "poc_user_name": '' });
-    }
+  const dispatch = useDispatch();
+  const initialvalues = { tdei_project_group_id: "", user_name: "", roles: ["poc"] };
+  const validationSchema = yup.object().shape({
+    tdei_project_group_id: yup.string().required("Project Group Name is required"),
+    user_name: yup.string().required("Email Id is required"),
+  });
+  const onSuccess = (data) => {
+    dispatch(show({ message: "Assigned POC successfully", type: "success" }));
+  };
 
-    const onError = (err) => {
-        dispatch(show({message: 'Error in assigning POC', type: 'danger'}));
-        console.error(err);
+  const onError = (err) => {
+    //dispatch(show({ message: 'Error in assigning POC', type: 'danger' }));
+    console.error(err);
+  };
 
-    }
+  const { isLoading, mutate, isError, error } = useAssignRoles({
+    onError,
+    onSuccess,
+  });
 
-    const {isLoading, mutate} = useAssignPoc({onError, onSuccess});
+  const handleAssignPoc = (values) => {
+    mutate(values);
+  };
 
-    const handlePocData = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setPocData({ ...pocData, [name]: value })
-    }
-
-    const handleAssignPoc = () => {
-        mutate(pocData);
-    }
-    return (
-        <div className={style.card}>
-            <h5 className='mb-4'>ASSIGN POC</h5>
+  return (
+    <div className={style.card}>
+      <h5 className="mb-4">ASSIGN POC</h5>
+      {isError ? (
+        <Alert variant={"danger"}>
+          {error.data || "Error in assigning POC"}
+        </Alert>
+      ) : null}
+      <Formik
+        initialValues={initialvalues}
+        onSubmit={handleAssignPoc}
+        validationSchema={validationSchema}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+        }) => (
+          <Form noValidate onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Username</Form.Label>
-                <Form.Control type="email" placeholder="Enter Username" value={pocData.poc_user_name} name='poc_user_name' onChange={handlePocData}/>
+              <Form.Label>Email Id</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter Email Id"
+                value={values.user_name}
+                name="user_name"
+                isInvalid={touched.user_name && !!errors.user_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.user_name}
+              </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="organisationId">
-                <Form.Label>Organization Id</Form.Label>
-                <Form.Control type="text" placeholder="Enter Organization Id" value={pocData.org_id} name='org_id' onChange={handlePocData}/>
+            <Form.Group className="mb-3" controlId="projectGroupId">
+              <Form.Label>Project Group Name</Form.Label>
+              <Field component={ProjectGroupList} name="tdei_project_group_id" />
             </Form.Group>
-            <Button variant="primary" type="submit" onClick={handleAssignPoc}>
-                {isLoading ? 'loading...' : 'Submit'}
+            <Button variant="primary" type="submit" disabled={isLoading}>
+              {isLoading ? "Assigning..." : "Submit"}
             </Button>
-        </div>
-    )
-}
+          </Form>
+        )}
+      </Formik>
+    </div>
+  );
+};
 
-export default AssignPoc
+export default AssignPoc;

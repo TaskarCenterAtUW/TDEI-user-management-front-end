@@ -1,12 +1,72 @@
 .card {
-    width: 350px;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 1px solid #DDDDDD;
-    border-radius: 5px;
-    padding: 20px;
-    margin-top: 2rem;
+  width: 350px;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 2rem;
 }
 
 .danger {
-    color: red;
+  color: red;
+}
+
+.info {
+  cursor: pointer;
+  margin-left: 8px;
+  margin-top: -2px;
+}
+
+.info img {
+  width: 20px;
+  height: 20px;
+}
+
+.roleListBlock {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.roleListBlock:hover {
+  border-color: var(--primary-color);
+  background: var(--purple-background-light);
+}
+
+.active {
+  border-color: var(--primary-color);
+  background: var(--purple-background-light);
+}
+
+.active .successIcon {
+  display: block;
+}
+
+.successIcon {
+  display: none;
+}
+
+.successIcon img {
+  max-width: 100%;
+}
+
+.roleName {
+  font-size: 16px;
+  font-weight: 600;
+}
+.roleDesc {
+  font-size: 14px;
+  color: var(--secondary-color);
+}
+.iconSelected {
+  width: 25px;
+}
+.roleInfoBlock {
+  text-align: left;
 }

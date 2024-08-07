@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">
+  <g id="Group_173256" data-name="Group 173256" transform="translate(5.938 -6)">
+    <g id="Rectangle_1811" data-name="Rectangle 1811" transform="translate(-5.938 6)" fill="#f7f8fd" stroke="#e4e7f7" stroke-width="1">
+      <rect width="45" height="45" rx="4" stroke="none"/>
+      <rect x="0.5" y="0.5" width="44" height="44" rx="3.5" fill="none"/>
+    </g>
+    <path id="Icon_metro-database" data-name="Icon metro-database" d="M13.571,1.928c-6.075,0-11,1.609-11,3.594V8.4c0,1.985,4.925,3.594,11,3.594s11-1.609,11-3.594V5.522c0-1.985-4.925-3.594-11-3.594Zm0,12.219c-6.075,0-11-1.609-11-3.594v4.313c0,1.985,4.925,3.594,11,3.594s11-1.609,11-3.594V10.553C24.571,12.538,19.646,14.147,13.571,14.147Zm0,6.469c-6.075,0-11-1.609-11-3.594v4.313c0,1.985,4.925,3.594,11,3.594s11-1.609,11-3.594V17.022c0,1.985-4.925,3.594-11,3.594Z" transform="translate(2.991 15.071)" fill="#586ab5"/>
+  </g>
+</svg>

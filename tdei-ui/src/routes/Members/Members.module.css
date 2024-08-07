@@ -1,0 +1,112 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.searchPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.searchPanel input {
+  width: 300px;
+}
+
+.userHeader {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 30% 25% 35% 10%;
+  grid-column-gap: 10px;
+  /* min-height: 70px; */
+  align-items: center;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.menuVertical {
+  width: 28px;
+  cursor: pointer;
+}
+
+.actionItem {
+  width: 28px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #162848;
+}
+
+.address {
+  color: var(--secondary-color);
+  font-size: 14px;
+}
+
+.details {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--tdei-blue);
+  margin-right: 15px;
+}
+
+.content {
+  font-size: 16px;
+  color: #162848;
+}
+
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -10px;
+  align-items: center;
+}
+.roleBlock {
+  background: #f0f1f4;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #162848;
+  padding: 1px 20px 4px 20px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.showMore {
+  margin-top: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0969DA;
+}
+
+.noDataIcon {
+  width: 20px;
+}
+.noDataText {
+  font-size: 14px;
+  color: var(--secondary-color);
+  margin-left: 5px;
+}
