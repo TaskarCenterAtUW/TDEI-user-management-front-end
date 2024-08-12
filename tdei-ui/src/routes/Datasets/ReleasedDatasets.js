@@ -21,9 +21,9 @@ import { useNavigate } from 'react-router-dom';
 const ReleasedDatasets = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [, setQuery] = React.useState("");
-  const [debounceQuery, setDebounceQuery] = React.useState("");
-  const [dataType, setDataType] = React.useState("");
+  const [, setQuery] = useState("");
+  const [debounceQuery, setDebounceQuery] = useState("");
+  const [dataType, setDataType] = useState("");
   const [sortedData, setSortedData] = useState([]);
   const [eventKey, setEventKey] = useState("");
   const navigate = useNavigate();
@@ -36,16 +36,23 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery,dataType);
+  } = useGetReleasedDatasets(debounceQuery, dataType);
 
   useEffect(() => {
     // Check if data is available and update sortedData
     if (data && data.pages && data.pages.length > 0) {
-      const allData = data.pages.reduce((acc, page) => [...acc, ...page.data], []);
-      setSortedData(allData);
+      const allData = data.pages.reduce((acc, page) => {
+        page.data.forEach(dataset => {
+          acc.set(dataset.tdei_dataset_id, dataset);
+        });
+        return acc;
+      }, new Map());
+
+      const sorted = Array.from(allData.values());
+      setSortedData(sorted);
     }
   }, [data]);
-  // Event handler for selecting data type from dropdown
+
   const handleSelectedDataType = (value) => {
     setDataType(value.value);
   };
@@ -81,29 +88,39 @@ const ReleasedDatasets = () => {
   };
 
   const handleDropdownSelect = (eventKey) => {
-    // Logic for handling dropdown selection
+    const sortData = (dataToSort, key) => {
+      return [...dataToSort].sort((a, b) => {
+        const aValue = key === 'metadata.dataset_detail.name'
+          ? a?.metadata?.dataset_detail?.name ?? ''
+          : a[key] ?? '';
+        const bValue = key === 'metadata.dataset_detail.name'
+          ? b?.metadata?.dataset_detail?.name ?? ''
+          : b[key] ?? '';
+
+        return aValue.localeCompare(bValue);
+      });
+    };
+
+    let sorted = [];
     if (eventKey === 'status') {
-      // Sort by status in ascending order
-      const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));
-      setSortedData(sorted);
+      sorted = sortData(sortedData, 'status');
     } else if (eventKey === 'type') {
-      // Sort by type in ascending order
-      const sorted = [...sortedData].sort((a, b) => a.data_type.localeCompare(b.data_type));
-      setSortedData(sorted);
+      sorted = sortData(sortedData, 'data_type');
     } else if (eventKey === 'asc') {
-      // Sort by name in ascending order
-      const sorted = [...sortedData].sort((a, b) => a.metadata?.dataset_detail?.name.localeCompare(b.metadata?.dataset_detail?.name));
-      setSortedData(sorted);
+      sorted = sortData(sortedData, 'metadata.dataset_detail.name');
     }
+
+    setSortedData(sorted);
   };
+
   const onAction = (eventKey, dataset) => {
     setEventKey(eventKey);
-   if(eventKey === 'downLoadDataset'){
-        handleDownloadDataset(dataset)
-    }else if(eventKey === 'cloneDataset'){
-      navigate('/CloneDataset',{ state: { dataset } });
+    if (eventKey === 'downLoadDataset') {
+      handleDownloadDataset(dataset);
+    } else if (eventKey === 'cloneDataset') {
+      navigate('/CloneDataset', { state: { dataset } });
     }
-};
+  };
 
   return (
     <div>
@@ -124,60 +141,57 @@ const ReleasedDatasets = () => {
                 />
               </div>
               <div className={style.filterSection}>
-                  <div className={style.filterLabel}>Type</div>
-                  <div className={style.filterField}>
-                    <Select
-                      isSearchable={false}
-                      defaultValue={{ label: "All", value: "" }}
-                      onChange={handleSelectedDataType}
-                      options={options}
-                      components={{
-                        IndicatorSeparator: () => null
-                      }}
-                      styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
-                    />
-                  </div>
+                <div className={style.filterLabel}>Type</div>
+                <div className={style.filterField}>
+                  <Select
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "" }}
+                    onChange={handleSelectedDataType}
+                    options={options}
+                    components={{
+                      IndicatorSeparator: () => null
+                    }}
+                    styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
+                  />
+                </div>
               </div>
-              
-            </div>
-            
-            <div className='d-flex align-items-center'>
-                <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={true}/>
             </div>
 
+            <div className='d-flex align-items-center'>
+              <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={true} />
+            </div>
           </div>
         </div>
 
-        <DatasetTableHeader isReleasedDataList={true}/>
-        {data?.pages?.map((values, i) => (
-          <React.Fragment key={i}>
-            {values?.data?.length === 0 ? (
-              <div className="d-flex align-items-center mt-2">
-                <img
-                  src={iconNoData}
-                  className={style.noDataIcon}
-                  alt="no-data-icon"
-                />
-                <div className={style.noDataText}>No Dataset found..!</div>
-              </div>
-            ) : null}
-             {sortedData.map((list, index) => (
-               <DatasetRow 
-               key={index}
-               dataset={list}
-               onAction={onAction}
-               isReleasedList={true}
-               />
-            ))}
-          </React.Fragment>
-        ))}
-        {isError ? " Error loading datasets" : null}
-        {isLoading ? (
+        <DatasetTableHeader isReleasedDataList={true} />
+
+        {isLoading ? (  // Show loading spinner if still loading
           <div className="d-flex justify-content-center">
             <Spinner size="md" />
           </div>
-        ) : null}
-        {hasNextPage ? (
+        ) : sortedData.length > 0 ? (  // Show datasets if available
+          sortedData.map((list, index) => (
+            <DatasetRow
+              key={list.tdei_dataset_id}
+              dataset={list}
+              onAction={onAction}
+              isReleasedList={true}
+            />
+          ))
+        ) : (  
+          <div className="d-flex align-items-center mt-2">
+            <img
+              src={iconNoData}
+              className={style.noDataIcon}
+              alt="no-data-icon"
+            />
+            <div className={style.noDataText}>No datasets found..!</div>
+          </div>
+        )}
+
+        {isError ? "Error loading datasets" : null}
+
+        {hasNextPage && !isLoading && ( 
           <Button
             className="tdei-primary-button"
             onClick={() => fetchNextPage()}
@@ -185,7 +199,7 @@ const ReleasedDatasets = () => {
           >
             Load More {isFetchingNextPage && <Spinner size="sm" />}
           </Button>
-        ) : null}
+        )}
       </Form>
     </div>
   );

@@ -6,9 +6,8 @@ import Layout from "../../components/Layout";
 import useGetJobs from "../../hooks/jobs/useGetJobs";
 import style from "./Jobs.module.css";
 import { useAuth } from "../../hooks/useAuth";
-import { GET_JOBS } from "../../utils";
 import { useQueryClient } from "react-query";
-import refreshIcon from "./../../assets/img/icon-refresh.svg"
+import refreshIcon from "./../../assets/img/icon-refresh.svg";
 import { debounce } from "lodash";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -69,10 +68,16 @@ const Jobs = () => {
     } = useGetJobs(user.isAdmin, debounceQuery, jobType.value, jobStatus.value,jobShow.value);
 
     useEffect(() => {
-        // Check if data is available and update sortedData
         if (data && data.pages && data.pages.length > 0) {
-            const allData = data.pages.reduce((acc, page) => [...acc, ...page.data], []);
-            setSortedData(allData);
+            // Accumulate jobs across pages and ensure uniqueness using a Map
+            const allData = data.pages.reduce((acc, page) => {
+                page.data.forEach(job => {
+                    acc.set(job.job_id, job);
+                });
+                return acc;
+            }, new Map());
+            const sorted = Array.from(allData.values());
+            setSortedData(sorted);
         }
     }, [data]);
 
@@ -102,33 +107,29 @@ const Jobs = () => {
     };
 
     const handleDropdownSelect = (eventKey) => {
-        // Logic for handling dropdown selection
-        if (eventKey === 'status') {
-            // Sort by status in ascending order
-            const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));
-            setSortedData(sorted);
-        } else if (eventKey === 'type') {
-            // Sort by type in ascending order
-            const sorted = [...sortedData].sort((a, b) => a.jobType.localeCompare(b.jobType));
-            setSortedData(sorted);
-        } else if (eventKey === 'asc') {
-            // Sort by name in ascending order
-            const sorted = [...sortedData].sort((a, b) => {
-                if (!a.request_input.dataset_name && !b.request_input.dataset_name) {
-                    return 0; // Both are undefined, consider them equal
-                }
-                if (!a.request_input.dataset_name) {
-                    return 1; // a is undefined, move it to the end
-                }
-                if (!b.request_input.dataset_name) {
-                    return -1; // b is undefined, move it to the end
-                }
-                // Both are defined, use localeCompare
-                return a.request_input.dataset_name.localeCompare(b.request_input.dataset_name);
+        const sortData = (dataToSort, key) => {
+            return [...dataToSort].sort((a, b) => {
+                const aValue = key === 'request_input.dataset_name'
+                    ? a?.request_input?.dataset_name ?? ''
+                    : a[key] ?? '';
+                const bValue = key === 'request_input.dataset_name'
+                    ? b?.request_input?.dataset_name ?? ''
+                    : b[key] ?? '';
 
+                return aValue.localeCompare(bValue);
             });
-            setSortedData(sorted);
+        };
+
+        let sorted = [];
+        if (eventKey === 'status') {
+            sorted = sortData(sortedData, 'status');
+        } else if (eventKey === 'type') {
+            sorted = sortData(sortedData, 'jobType');
+        } else if (eventKey === 'asc') {
+            sorted = sortData(sortedData, 'request_input.dataset_name');
         }
+
+        setSortedData(sorted);
     };
 
     const handleRefresh = () => {
@@ -210,32 +211,28 @@ const Jobs = () => {
                         <div>Job Type / Job Id</div>
                         <div>Message</div>
                         <div>Status</div>
-                        {/* <div>Action</div> */}
                     </div>
-                    {data?.pages?.map((values, i) => (
-                        <React.Fragment key={i}>
-                            {values?.data?.length === 0 ? (
-                                <div className="d-flex align-items-center mt-2">
-                                    <img
-                                        src={iconNoData}
-                                        alt="no-data-icon"
-                                        width="20"
-                                    />
-                                    <div className={style.noDataText}>No Jobs Found..!</div>
-                                </div>
-                            ) : null}
-                            {sortedData.map((list, index) => (
-                                <JobListItem jobItem={list} key={list.job_id} />
-                            ))}
-                        </React.Fragment>
-                    ))}
-                    {isError ? " Error loading project group list" : null}
-                    {isLoading ? (
+
+                    {isLoading ? (  
                         <div className="d-flex justify-content-center">
                             <Spinner size="md" />
                         </div>
-                    ) : null}
-                    {hasNextPage ? (
+                    ) : sortedData.length > 0 ? (  
+                        sortedData.map((list, index) => (
+                            <JobListItem jobItem={list} key={list.job_id} />
+                        ))
+                    ) : (
+                        <div className="d-flex align-items-center mt-2">
+                            <img
+                                src={iconNoData}
+                                alt="no-data-icon"
+                                width="20"
+                            />
+                            <div className={style.noDataText}>No Jobs Found..!</div>
+                        </div>
+                    )}
+                    {isError ? " Error loading project group list" : null}
+                    {hasNextPage && !isLoading && (  
                         <Button
                             className="tdei-primary-button"
                             onClick={() => fetchNextPage()}
@@ -243,7 +240,7 @@ const Jobs = () => {
                         >
                             Load More {isFetchingNextPage && <Spinner size="sm" />}
                         </Button>
-                    ) : null}
+                    )}
                 </>
             </Container>
         </div>
