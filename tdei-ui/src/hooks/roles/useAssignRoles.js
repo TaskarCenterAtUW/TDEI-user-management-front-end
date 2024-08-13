@@ -1,9 +1,9 @@
 import { useMutation } from "react-query";
 import { ASSIGN_ROLES } from "../../utils";
-import { postResetPassword } from "../../services";
+import { postAssignRoles } from "../../services";
 
 function useAssignRoles(mutationOptions) {
-  return useMutation([ASSIGN_ROLES], postResetPassword, {
+  return useMutation([ASSIGN_ROLES], postAssignRoles, {
     ...mutationOptions,
     onSuccess: (data) => {
       mutationOptions.onSuccess(data);
