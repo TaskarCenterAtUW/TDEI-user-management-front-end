@@ -37,9 +37,11 @@ const ResetPassword = (props) => {
         message: "Password changed successfully!"
       })
     );
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    window.location.reload();
+    setTimeout(() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.reload();
+    }, 2000);
   };
 
   const onError = (err) => {
@@ -55,9 +57,9 @@ const ResetPassword = (props) => {
   } = useResetPassword({ onError, onSuccess });
 
   const handleResetPassword = (values) => {
-    console.log(`passs userid -> ${user.userId} new pass -> ${values.new_password  }`,)
+    console.log(`passs userid -> ${user.emailId} new pass -> ${values.new_password  }`,)
     mutate({
-        userId: user.userId,
+        username: user.emailId ?? "",
         password: values.new_password  
     });
   };
