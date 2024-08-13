@@ -645,3 +645,9 @@ export async function downloadJob(jobId) {
     console.error('There was a problem with the download operation:', error);
   }
 };
+
+export async function postResetPassword(data) {
+  console.log(data);
+  const res = await axios.post(`${url}/reset-credentials`, data);
+  return res.data;
+}
