@@ -17,9 +17,11 @@ import CustomModal from '../../components/SuccessModal/CustomModal';
 import ResponseToast from '../../components/ToastMessage/ResponseToast';
 import { useNavigate } from 'react-router-dom';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
+import { useAuth } from '../../hooks/useAuth';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
     const [query, setQuery] = useState("");
     const [debounceQuery, setDebounceQuery] = useState("");
     const [dataType, setDataType] = useState("");
@@ -30,7 +32,8 @@ const MyDatasets = () => {
     const [open, setOpen] = useState(false);
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(debounceQuery, status, dataType);
+    const isAdmin = user && user.isAdmin;
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin,debounceQuery, status, dataType);
     const navigate = useNavigate();
 
     useEffect(() => {
