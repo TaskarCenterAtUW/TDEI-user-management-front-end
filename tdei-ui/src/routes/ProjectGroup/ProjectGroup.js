@@ -185,6 +185,7 @@ const ProjectGroup = () => {
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
                             onClick={handleDelete}
+                            disabled={list.project_group_name === "Default"}
                           >
                             Delete Project Group
                           </Dropdown.Item>

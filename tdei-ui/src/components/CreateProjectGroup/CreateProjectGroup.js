@@ -102,6 +102,7 @@ const CreateProjectGroup = (props) => {
                     onBlur={handleBlur}
                     value={values.project_group_name}
                     isInvalid={touched.project_group_name && !!errors.project_group_name}
+                    disabled={project_group_name === "Default"}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.project_group_name}
