@@ -434,7 +434,7 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, status, dataType, tdei_project_group_id) {
+export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, tdei_project_group_id) {
   const params = {
     page_no: pageParam,
     page_size: 10,
@@ -448,7 +448,7 @@ export async function getDatasets(searchText, pageParam = 1, status, dataType, t
   if (dataType) {
     params.data_type = dataType;
   }
-  if (tdei_project_group_id) {
+  if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
   const res = await axios({
@@ -645,3 +645,9 @@ export async function downloadJob(jobId) {
     console.error('There was a problem with the download operation:', error);
   }
 };
+
+export async function postResetPassword(data) {
+  console.log(data);
+  const res = await axios.post(`${url}/reset-credentials`, data);
+  return res.data;
+}

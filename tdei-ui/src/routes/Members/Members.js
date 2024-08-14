@@ -153,7 +153,7 @@ const Members = () => {
                     </div>
                     <div>
                       <div className={style.name}>
-                        {getUserName(list, list.username === user?.emailId)}
+                        {getUserName(list, list.user_id === user?.userId)}
                       </div>
                       <div className={style.address}>{list.username}</div>
                     </div>
