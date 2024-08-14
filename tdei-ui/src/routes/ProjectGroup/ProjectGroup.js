@@ -27,6 +27,7 @@ import { debounce } from "lodash";
 import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/icon-userAvatar.png";
 import ClipboardCopy from "../Services/ClipBoardCopy";
+import { DEFAULT_PROJECT_GROUP_NAME } from "../../utils";
 
 const ProjectGroup = () => {
   const [, setQuery] = React.useState("");
@@ -185,7 +186,7 @@ const ProjectGroup = () => {
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
                             onClick={handleDelete}
-                            disabled={list.project_group_name === "Default"}
+                            disabled={list.project_group_name === DEFAULT_PROJECT_GROUP_NAME}
                           >
                             Delete Project Group
                           </Dropdown.Item>
