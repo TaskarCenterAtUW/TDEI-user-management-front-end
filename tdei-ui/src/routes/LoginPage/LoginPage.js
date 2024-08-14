@@ -127,7 +127,9 @@ const LoginPage = () => {
                           Register Now
                         </Link>
                       </div>
-                    <ForgotPassModal />
+                    <ForgotPassModal 
+                    email={values.username}
+                    />
                     </Form>
                   )}
                 </Formik>

@@ -9,6 +9,7 @@ import { GET_PROJECT_GROUP_LIST, PHONE_REGEX } from "../../utils";
 import { useQueryClient } from "react-query";
 import SuccessModal from "../SuccessModal";
 import useUpdateProjectGroup from "../../hooks/projectGroup/useUpdateProjectGroup";
+import { DEFAULT_PROJECT_GROUP_NAME } from "../../utils";
 
 const CreateProjectGroup = (props) => {
   const [showModal, setShowModal] = React.useState(false);
@@ -102,6 +103,7 @@ const CreateProjectGroup = (props) => {
                     onBlur={handleBlur}
                     value={values.project_group_name}
                     isInvalid={touched.project_group_name && !!errors.project_group_name}
+                    disabled={project_group_name === DEFAULT_PROJECT_GROUP_NAME}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.project_group_name}
