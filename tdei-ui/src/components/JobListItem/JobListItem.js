@@ -48,11 +48,16 @@ const JobListItem = ({ jobItem }) => {
     setShowModal(!showModal);
   };
 
-  const handleClick = (e) => {
-    const { id } = e.target;
-    setJobId(id);
+ 
+const handleClick = (e) => {
+  const { id } = e.target;
+  setJobId(id);
+  if (jobItem.job_type === "Quality-Metric") {
+    window.location.href = jobItem.response_props.qm_dataset_url;
+  } else {
     downloadJob(id);
-  };
+  }
+};
 
   const updatedTime = (time) => {
     const dateTime = new Date(time);
@@ -164,9 +169,11 @@ const JobListItem = ({ jobItem }) => {
               : "Job is in progress"}
           </div>
         )}
-        {(jobItem.job_type === "Dataset-Reformat" || jobItem.job_type === "Dataset-Queries") &&
+        {(jobItem.job_type === "Dataset-Reformat" ||
+          jobItem.job_type === "Dataset-Queries" ||
+          jobItem.job_type === "Quality-Metric") &&
           jobItem.status.toLowerCase() === "completed" &&
-          jobItem.download_url && (
+          (jobItem.download_url || jobItem.job_type === "Quality-Metric") && (
             <div
               id={jobItem.job_id}
               className={style.downloadLink}

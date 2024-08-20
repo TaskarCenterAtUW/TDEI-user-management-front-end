@@ -38,6 +38,7 @@ const Jobs = () => {
         { value: 'Dataset-Validate', label: 'Validate' },
         { value: 'Dataset-Flatten', label: 'Flatten' },
         { value: 'Dataset-Queries', label: 'Queries' },
+        { value: 'Quality-Metric', label: 'Quality Metric' },
     ];
 
     // Options for status
