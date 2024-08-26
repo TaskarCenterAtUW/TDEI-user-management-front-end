@@ -54,7 +54,17 @@ const handleClick = (e) => {
   setJobId(id);
   if (jobItem.job_type === "Quality-Metric") {
     window.location.href = jobItem.response_props.qm_dataset_url;
-  } else {
+  } else if(jobItem.job_type === "Confidence-Calculate"){
+    const confidenceScores = jobItem.response_props.confidence_scores;
+    const blob = new Blob([confidenceScores], { type: 'application/json' });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', `${id}_confidence_scores.geojson`); 
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }else {
     downloadJob(id);
   }
 };
@@ -171,9 +181,11 @@ const handleClick = (e) => {
         )}
         {(jobItem.job_type === "Dataset-Reformat" ||
           jobItem.job_type === "Dataset-Queries" ||
-          jobItem.job_type === "Quality-Metric") &&
+          jobItem.job_type === "Quality-Metric" ||
+          jobItem.job_type === "Confidence-Calculate"
+        ) &&
           jobItem.status.toLowerCase() === "completed" &&
-          (jobItem.download_url || jobItem.job_type === "Quality-Metric") && (
+          (jobItem.download_url || jobItem.job_type === "Quality-Metric" || (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
             <div
               id={jobItem.job_id}
               className={style.downloadLink}
