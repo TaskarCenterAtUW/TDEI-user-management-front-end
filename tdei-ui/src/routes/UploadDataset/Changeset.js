@@ -19,8 +19,10 @@ const Changeset = ({ selectedData, onSelectedFileChange }) => {
        Attach changeset file
       </Typography>
       <Dropzone onDrop={onDrop} accept={{
-        "text/plain": [".txt"]
-      }} format={".txt"} selectedFile={selectedData} />
+          "application/zip": [".zip"],
+          "application/octet-stream": [".osc"]
+        }}
+        format={".zip, .osc"} selectedFile={selectedData} />
     </div>
   );
 };

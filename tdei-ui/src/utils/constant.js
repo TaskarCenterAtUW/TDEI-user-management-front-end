@@ -126,4 +126,4 @@ export const SAMPLE_SPATIAL_JOIN = {
     "ARRAY_AGG(highway) as lamps",
   ]
 };
-export const DEFAULT_PROJECT_GROUP_NAME = "Default";
+export const DEFAULT_PROJECT_GROUP_NAME = "TDEI Default";
