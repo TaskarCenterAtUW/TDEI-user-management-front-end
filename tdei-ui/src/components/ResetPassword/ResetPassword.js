@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Button, Spinner, Alert, Modal } from "react-bootstrap";
 import useResetPassword from "../../hooks/useResetPassword";
 import { useDispatch } from "react-redux";
@@ -8,16 +8,16 @@ import * as yup from "yup";
 import { useAuth } from "../../hooks/useAuth";
 import InfoIcon from '@mui/icons-material/Info';
 import style from './ResetPassword.module.css';
+import axios from "axios";
+import ResponseToast from "../ToastMessage/ResponseToast";
 
 const ResetPassword = (props) => {
   const { user } = useAuth();
-  const [passwordData, setPasswordData] = React.useState({
-    new_password: "",
-    confirm_password: "",
-  });
   const dispatch = useDispatch();
-
+  const [showToast, setShowToast] = useState(false);
+  const [isValidate, setValidate] = useState(false);
   const validationSchema = yup.object().shape({
+    current_password: yup.string().required("Current Password is required"),
     new_password: yup
       .string()
       .required("New Password is required")
@@ -32,20 +32,24 @@ const ResetPassword = (props) => {
 
   const onSuccess = () => {
     props.onHide();
+    setValidate(false);
     dispatch(
       showModal({
         message: "Password changed successfully!"
       })
     );
     setTimeout(() => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        window.location.reload();
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.reload();
     }, 2000);
   };
-
+  const handleToastClose = () => {
+    setShowToast(false);
+  };
   const onError = (err) => {
     console.error(err);
+    setValidate(false);
   };
 
   const {
@@ -56,12 +60,31 @@ const ResetPassword = (props) => {
     reset,
   } = useResetPassword({ onError, onSuccess });
 
-  const handleResetPassword = (values) => {
-    console.log(`passs userid -> ${user.emailId} new pass -> ${values.new_password  }`,)
-    mutate({
-        username: user.emailId ?? "",
-        password: values.new_password  
-    });
+  const handleResetPassword = async (values) => {
+    try {
+      setValidate(true);
+      // Validate the current password
+      const response = await axios.post(
+        `${process.env.REACT_APP_URL}/authenticate`,
+        {
+          username: user.emailId ?? "",
+          password: values.current_password,
+        }
+      );
+
+      // If the current password is valid, proceed with password reset
+      if (response.data) {
+        mutate({
+          username: user.emailId ?? "",
+          password: values.new_password,
+        });
+      }
+    } catch (error) {
+      // If validation fails, show an error message
+      console.error("error message", error);
+      setShowToast(true);
+      setValidate(false);
+    }
   };
 
   const handleExit = () => {
@@ -90,10 +113,13 @@ const ResetPassword = (props) => {
             </Alert>
           ) : null}
           <Formik
-            initialValues={passwordData}
+            initialValues={{
+              current_password: "",
+              new_password: "",
+              confirm_password: "",
+            }}
             onSubmit={handleResetPassword}
             validationSchema={validationSchema}
-            enableReinitialize
           >
             {({
               values,
@@ -106,6 +132,22 @@ const ResetPassword = (props) => {
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
                 <Modal.Body>
+                  <Form.Group className="mb-3" controlId="current_password">
+                    <Form.Label>Current Password</Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Enter current password"
+                      value={values.current_password}
+                      name="current_password"
+                      isInvalid={touched.current_password && !!errors.current_password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      autoComplete="current-password"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.current_password}
+                    </Form.Control.Feedback>
+                  </Form.Group>
                   <Form.Group className="mb-3" controlId="new_password">
                     <Form.Label>New Password</Form.Label>
                     <Form.Control
@@ -118,10 +160,10 @@ const ResetPassword = (props) => {
                       onBlur={handleBlur}
                       autoComplete="new-password"
                     />
-                    <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize:"14px" }} />
+                    <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
                     <Form.Text id="passwordHelpBlock" className={style.description} muted>
                       Password should be at least 8 characters, a number, at least one special character.
-                    </Form.Text>                  
+                    </Form.Text>
                     <Form.Control.Feedback type="invalid">
                       {errors.new_password}
                     </Form.Control.Feedback>
@@ -158,14 +200,20 @@ const ResetPassword = (props) => {
                   <Button
                     type="submit"
                     className="tdei-primary-button"
-                    disabled={isLoading || !isValid}
+                    disabled={isLoading || isValidate}
                   >
-                    {isLoading ? "Submitting..." : "Submit"}
+                    {isLoading || isValidate ? "Submitting..." : "Submit"}
                   </Button>
                 </Modal.Footer>
               </Form>
             )}
           </Formik>
+          <ResponseToast
+            handleClose={handleToastClose}
+            showtoast={showToast}
+            type={"error"}
+            message={"Error! Invalid Current Password."}
+          />
         </Modal>
       ) : null}
     </>
