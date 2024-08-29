@@ -25,17 +25,17 @@ const stepsData = [
   },
   {
     title: 'Data File',
-    subtitle: 'Attach data file (.zip)',
+    subtitle: 'Attach data file',
     component: DataFile,
   },
   {
     title: 'Metadata File',
-    subtitle: 'Attach metadata file (.json)',
+    subtitle: 'Attach metadata file',
     component: Metadata,
   },
   {
     title: 'Changeset',
-    subtitle: 'Attach changeset file (.txt)',
+    subtitle: 'Attach changeset file',
     component: Changeset,
   },
 ];
