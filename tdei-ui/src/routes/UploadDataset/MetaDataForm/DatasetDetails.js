@@ -6,6 +6,7 @@ import DataTypeDropdownForm from "./DropdownComponents/DataTypeDropdown";
 import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
 import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 import * as Yup from "yup";
+import SchemaVersionDropdown from "./DropdownComponents/SchemaVersionDropdown";
 
 
 const DatasetDetails = ({ formData, updateFormData }) => {
@@ -93,6 +94,15 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               </Form.Group>
               <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
                 <Form.Label>Schema Version<span style={{ color: 'red' }}> *</span></Form.Label>
+                <Field 
+                  schemaVersion={formData.schema_version}  
+                  component={SchemaVersionDropdown} 
+                  name="schema_version" 
+                  onChange={(selectedOption) => handleDropdownSelect('schema_version', selectedOption)} 
+                />
+              </Form.Group>
+              {/* <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
+                <Form.Label>Schema Version<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter Schema Version"
@@ -106,7 +116,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   }}
                 />
                 <Form.Control.Feedback type="invalid">{errors.schema_version}</Form.Control.Feedback>
-              </Form.Group>
+              </Form.Group> */}
             </div>
             <div className="col-md-6 column-style"> {/* Use col-md-6 for half-width columns on medium+ screens */}
               <Form.Group controlId="collected_by">

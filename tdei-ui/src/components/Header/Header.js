@@ -7,15 +7,24 @@ import userIcon from "./../../assets/img/user.png";
 import ProjectGroupSwitcher from "../ProjectGroupSwitcher/ProjectGroupSwitcher";
 import { useDispatch } from "react-redux";
 import { toggle } from "../../store/sideMenuBar.slice";
+import resetPasswordIcon from "../../assets/img/reset_pass.svg";
+import logoutIcon from "../../assets/img/logout.svg";
+import ResetPassword from "../ResetPassword/ResetPassword";
+import useResetPassword from "../../hooks/useResetPassword";
 
 const Header = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const authenticated = !!user?.name;
+  const [showModal, setShowModal] = React.useState(false);
+
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     window.location.reload();
+  };
+  const handleResetPassword = () => {
+    setShowModal(true);
   };
   return (
     <div className={style.container}>
@@ -46,12 +55,24 @@ const Header = () => {
                 <div>{user?.name}</div>
               </Dropdown.Toggle>
               <Dropdown.Menu align="end">
-                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                <Dropdown.Item onClick={handleResetPassword}>
+                  <img src={resetPasswordIcon} className="iconImg" />
+                  Reset Password
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={handleLogout}>
+                  <img src={logoutIcon} className="iconImg" />
+                  Logout
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
         </div>
       ) : null}
+      <ResetPassword
+        show={showModal}
+        onHide={() => setShowModal(false)}
+      />
     </div>
   );
 };
