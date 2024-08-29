@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
@@ -11,13 +11,20 @@ function calculatePayloadSize(payload) {
   const jsonString = JSON.stringify(payload);
   return new Blob([jsonString]).size;
 }
-async function checkPayloadSizeAndSendRequest(url, requestBody, headers) {
+async function checkPayloadSizeAndSendRequest(url, requestBody, headers, method = 'post') {
   const payloadSize = calculatePayloadSize(requestBody);
-  
+
   if (payloadSize > MAX_PAYLOAD_SIZE) {
-    throw new Error("Payload size exceeds the maximum allowed limit of 100kb.");
+    return Promise.reject(new AxiosError("Payload size exceeds the maximum allowed limit of 100kb."));
   }
-  return axios.post(url, requestBody, { headers });
+  // Perform the request based on the method
+  if (method.toLowerCase() === 'post') {
+    return axios.post(url, requestBody, { headers });
+  } else if (method.toLowerCase() === 'put') {
+    return axios.put(url, requestBody, { headers });
+  } else {
+    return Promise.reject(new AxiosError("Unsupported request method."));
+  }
 }
 
 // Helper function to recursively replace empty strings with null
@@ -250,11 +257,21 @@ export async function postRevokePermission(data) {
 }
 
 export async function postCreateService(data) {
-  const res = await axios.post(`${url}/service`, data);
+  const token = localStorage.getItem("accessToken");
+  const headers = {
+    'Content-Type': 'application/json',
+     'Authorization': `Bearer ${token}`
+  };
+  const res = await checkPayloadSizeAndSendRequest(`${url}/service`, data, headers);
   return res.data;
 }
 export async function postUpdateService(data) {
-  const res = await axios.put(`${url}/service/${data.tdei_project_group_id}`, data);
+  const token = localStorage.getItem("accessToken");
+  const headers = {
+    'Content-Type': 'application/json',
+     'Authorization': `Bearer ${token}`
+  };
+  const res = await checkPayloadSizeAndSendRequest(`${url}/service/${data.tdei_project_group_id}`, data, headers,'put');
   return res.data;
 }
 export async function postUpdateStation(data) {
@@ -353,11 +370,7 @@ export async function postCreateJob(data) {
 
     return response.data;
   } catch (error) {
-    if (error.message === "Payload size exceeds the maximum allowed limit of 100kb.") {
-      return { error: error.message };
-    } else {
-      throw error.message ?? error;
-    }
+    throw error.message ?? error;
   }
 }
 export async function postUploadDataset(data) {
@@ -421,7 +434,7 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, status, dataType, tdei_project_group_id) {
+export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, tdei_project_group_id) {
   const params = {
     page_no: pageParam,
     page_size: 10,
@@ -435,7 +448,7 @@ export async function getDatasets(searchText, pageParam = 1, status, dataType, t
   if (dataType) {
     params.data_type = dataType;
   }
-  if (tdei_project_group_id) {
+  if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
   const res = await axios({
@@ -632,3 +645,9 @@ export async function downloadJob(jobId) {
     console.error('There was a problem with the download operation:', error);
   }
 };
+
+export async function postResetPassword(data) {
+  console.log(data);
+  const res = await axios.post(`${url}/reset-credentials`, data);
+  return res.data;
+}

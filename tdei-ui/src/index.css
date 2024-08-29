@@ -231,3 +231,8 @@ input[type=checkbox] {
       border: 1.5px solid var(--primary-color);
   }
 }
+
+.iconImg {
+  width: 15px;
+  margin-right: 15px !important;
+}

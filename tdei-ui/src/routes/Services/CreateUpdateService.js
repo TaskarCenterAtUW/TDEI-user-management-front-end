@@ -64,7 +64,7 @@ const CreateUpdateService = () => {
         dispatch(
             show({
                 message: `Error in ${serviceData?.tdei_service_id ? "updating" : "creating"
-                    } Service. ${err.data.message ?? err.data}`,
+                    } Service. ${err.message ?? err.data ?? err.data.message}`,
                 type: "danger",
             })
         );

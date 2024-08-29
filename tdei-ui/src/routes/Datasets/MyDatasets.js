@@ -17,9 +17,11 @@ import CustomModal from '../../components/SuccessModal/CustomModal';
 import ResponseToast from '../../components/ToastMessage/ResponseToast';
 import { useNavigate } from 'react-router-dom';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
+import { useAuth } from '../../hooks/useAuth';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
     const [query, setQuery] = useState("");
     const [debounceQuery, setDebounceQuery] = useState("");
     const [dataType, setDataType] = useState("");
@@ -30,13 +32,21 @@ const MyDatasets = () => {
     const [open, setOpen] = useState(false);
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(debounceQuery, status, dataType);
+    const isAdmin = user && user.isAdmin;
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin,debounceQuery, status, dataType);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
-            const allData = data.pages.reduce((acc, page) => [...acc, ...page.data], []);
-            setSortedData(allData);
+            const allData = data.pages.reduce((acc, page) => {
+                page.data.forEach(dataset => {
+                    acc.set(dataset.tdei_dataset_id, dataset);
+                });
+                return acc;
+            }, new Map());
+
+            const sorted = Array.from(allData.values());
+            setSortedData(sorted);
         }
     }, [data]);
 
@@ -103,13 +113,9 @@ const MyDatasets = () => {
             navigate('/EditMetadata', { state: { dataset } });
         } else if(eventKey === 'cloneDataset'){
             navigate('/CloneDataset',{ state: { dataset } });
-        
-        }  else if(eventKey === 'cloneDataset'){
-            navigate('/CloneDataset',{ state: { dataset } });
-        }else if(eventKey === 'downLoadDataset'){
+        } else if(eventKey === 'downLoadDataset'){
             handleDownloadDataset(dataset)
-        }
-        else {
+        } else {
             setShowSuccessModal(true);
         }
     };
@@ -119,16 +125,29 @@ const MyDatasets = () => {
     };
 
     const handleDropdownSelect = (eventKey) => {
+        const sortData = (dataToSort, key) => {
+            return [...dataToSort].sort((a, b) => {
+                const aValue = key === 'metadata.dataset_detail.name'
+                    ? a?.metadata?.dataset_detail?.name ?? ''
+                    : a[key] ?? '';
+                const bValue = key === 'metadata.dataset_detail.name'
+                    ? b?.metadata?.dataset_detail?.name ?? ''
+                    : b[key] ?? '';
+
+                return aValue.localeCompare(bValue);
+            });
+        };
+
+        let sorted = [];
         if (eventKey === 'status') {
-            const sorted = [...sortedData].sort((a, b) => a.status.localeCompare(b.status));
-            setSortedData(sorted);
+            sorted = sortData(sortedData, 'status');
         } else if (eventKey === 'type') {
-            const sorted = [...sortedData].sort((a, b) => a.data_type.localeCompare(b.data_type));
-            setSortedData(sorted);
+            sorted = sortData(sortedData, 'data_type');
         } else if (eventKey === 'asc') {
-            const sorted = [...sortedData].sort((a, b) => a.metadata.data_provenance.full_dataset_name.localeCompare(b.metadata.data_provenance.full_dataset_name));
-            setSortedData(sorted);
+            sorted = sortData(sortedData, 'metadata.dataset_detail.name');
         }
+
+        setSortedData(sorted);
     };
 
     const handleToast = () => {
@@ -191,35 +210,33 @@ const MyDatasets = () => {
                     </div>
                 </div>
                 <DatasetTableHeader isReleasedDataList={false} />
-                {data.pages?.map((values, i) => (
-                    <React.Fragment key={i}>
-                        {values?.data?.length === 0 ? (
-                            <div className="d-flex align-items-center mt-2">
-                                <img
-                                    src={iconNoData}
-                                    className={style.noDataIcon}
-                                    alt="no-data-icon"
-                                />
-                                <div className={style.noDataText}>No Dataset found..!</div>
-                            </div>
-                        ) : null}
-                        {sortedData.map((list, index) => (
-                            <DatasetRow
-                                key={index}
-                                dataset={list}
-                                onAction={onAction}
-                                isReleasedList={false}
-                            />
-                        ))}
-                    </React.Fragment>
-                ))}
-                {isError ? " Error loading datasets" : null}
-                {isLoading ? (
+
+                {isLoading ? ( 
                     <div className="d-flex justify-content-center">
                         <Spinner size="md" />
                     </div>
-                ) : null}
-                {hasNextPage ? (
+                ) : sortedData.length > 0 ? (  
+                    sortedData.map((list, index) => (
+                        <DatasetRow
+                            key={list.tdei_dataset_id}
+                            dataset={list}
+                            onAction={onAction}
+                            isReleasedList={false}
+                        />
+                    ))
+                ) : (  
+                    <div className="d-flex align-items-center mt-2">
+                        <img
+                            src={iconNoData}
+                            className={style.noDataIcon}
+                            alt="no-data-icon"
+                        />
+                        <div className={style.noDataText}>No datasets found..!</div>
+                    </div>
+                )}
+
+                {isError && "Error loading datasets"}  
+                {hasNextPage && !isLoading && ( 
                     <Button
                         className="tdei-primary-button"
                         onClick={() => fetchNextPage()}
@@ -227,7 +244,7 @@ const MyDatasets = () => {
                     >
                         Load More {isFetchingNextPage && <Spinner size="sm" />}
                     </Button>
-                ) : null}
+                )}                
                 <CustomModal
                     show={showSuccessModal}
                     message={eventKey === 'release' ? `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?` : `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`}

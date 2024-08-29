@@ -505,3 +505,8 @@
 .itemIcon {
   margin-left: 10px;
 }
+.createJobLayout {
+  height: 100%;
+  padding: 20px;
+  background-color: #f8f8f8;
+}
