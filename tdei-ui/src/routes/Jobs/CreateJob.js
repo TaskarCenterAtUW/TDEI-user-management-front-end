@@ -588,7 +588,7 @@ const CreateJobService = () => {
 
 
     return (
-        <Layout>
+        <div className={style.createJobLayout}>
             <div className={` ${jobType ? style.createJobContainer : style.createJobContainerWithJobType}`}>
                 <>
                     <div className={style.createJobTitle}>Create New Job</div>
@@ -703,7 +703,7 @@ const CreateJobService = () => {
                     )}
                 </>
             </div>
-        </Layout>
+        </div>
     );
 };
 
