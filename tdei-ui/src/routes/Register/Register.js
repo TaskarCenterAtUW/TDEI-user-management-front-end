@@ -1,5 +1,5 @@
-import React from "react";
-import { Row, Form, Button, Card, Col } from "react-bootstrap";
+import React, { useState } from "react";
+import { Row, Form, Button, Card, Col, InputGroup } from "react-bootstrap";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
@@ -10,9 +10,14 @@ import { show } from "../../store/notification.slice";
 import { PHONE_REGEX } from "../../utils";
 import { Formik } from "formik";
 import * as yup from "yup";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Register = () => {
   const [loading, setLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const auth = useAuth();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -172,36 +177,53 @@ const Register = () => {
                       </Form.Group>
                       <Form.Group className="mb-3" controlId="registerPassword">
                         <Form.Label>Password*</Form.Label>
-                        <Form.Control
-                          placeholder="Enter Password"
-                          value={values.password}
-                          name="password"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          type="password"
-                          autoComplete="new-password"
-                          isInvalid={touched.password && !!errors.password}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                          {errors.password}
-                        </Form.Control.Feedback>
+                        <InputGroup>
+                          <Form.Control
+                            placeholder="Enter Password"
+                            value={values.password}
+                            name="password"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            type={showPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            isInvalid={touched.password && !!errors.password}
+                          />
+                          <InputGroup.Text
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                          >
+                            {showPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
+                          </InputGroup.Text>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.password}
+                          </Form.Control.Feedback>
+                        </InputGroup>
                       </Form.Group>
                       <Form.Group className="mb-3" controlId="confirmPassword">
                         <Form.Label>Confirm Password*</Form.Label>
-                        <Form.Control
-                          placeholder="Enter Password"
-                          value={values.confirm}
-                          name="confirm"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          type="password"
-                          autoComplete="new-password"
-                          isInvalid={touched.confirm && !!errors.confirm}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                          {errors.confirm}
-                        </Form.Control.Feedback>
+                        <InputGroup>
+                          <Form.Control
+                            placeholder="Enter Password"
+                            value={values.confirm}
+                            name="confirm"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            type={showConfirmPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            isInvalid={touched.confirm && !!errors.confirm}
+                          />
+                          <InputGroup.Text
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                          >
+                            {showConfirmPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
+                          </InputGroup.Text>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.confirm}
+                          </Form.Control.Feedback>
+                        </InputGroup>
                       </Form.Group>
+
                       <Button
                         className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
@@ -217,8 +239,7 @@ const Register = () => {
                         </Link>
                       </div>
                     </Form>
-                  )
-                  }
+                  )}
                 </Formik>
               </>
             </Card.Body>
