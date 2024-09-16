@@ -133,7 +133,7 @@ const CreateJobService = () => {
         setLoading(false);
         console.error("error message", err);
         setToast(true);
-        setErrorMessage(err.data ?? err);
+        setErrorMessage(err.data ?? err.message.message ?? err);
     };
 
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
