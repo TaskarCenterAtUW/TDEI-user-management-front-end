@@ -671,13 +671,13 @@ const CreateJobService = () => {
                     { showJsonSuccessModal &&(
                         <JobJsonResponseModal
                         show={showJsonSuccessModal}
-                            message="Job has been created!"
+                            message="Job has been completed!"
                             content={JSON.stringify(jobSuccessJson, null, 2) ?? ""}
                             handler={() => {
                                 setShowJsonSuccessModal(false);
                                 navigate('/jobs', { replace: true });
                             }}
-                            btnlabel="Go Back Jobs page"
+                            btnlabel="Back to jobs page"
                             modaltype="success"
                             title="Success"
                         />
