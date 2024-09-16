@@ -182,7 +182,7 @@ const CreateUpdateService = () => {
                                             type="text"
                                             placeholder="Enter Project Group ID"
                                             name="tdei_project_group_id"
-                                            value={selectedProjectGroup.name === undefined ? values.tdei_project_group_id : selectedProjectGroup.name}
+                                            value={user.isAdmin && idData['id'] !== undefined  ? values.tdei_project_group_id : selectedProjectGroup.name}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             disabled
