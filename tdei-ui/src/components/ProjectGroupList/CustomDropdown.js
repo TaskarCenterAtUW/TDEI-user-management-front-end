@@ -103,7 +103,10 @@ const CustomDropdown = ({
               {options.map((option) => (
                 <a
                   href="#"
-                  onClick={() => onItemClick(option)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onItemClick(option)
+                  }}
                   key={option}
                   className={clsx(style.dropdownItem, {
                     [style.selected]: isSelected(option),

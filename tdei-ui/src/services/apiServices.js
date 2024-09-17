@@ -331,9 +331,14 @@ export async function postCreateJob(data) {
         url = `${baseUrl}/${data[2]}`;
         break;
       case "osw/spatial-join":
+        let requestBody;
         if (data[2]) {
           url = baseUrl;
-          const requestBody = JSON.parse(data[2]);
+          try {
+             requestBody = JSON.parse(data[2]);
+          } catch (e) {
+            return Promise.reject(new AxiosError(e));
+          }
           headers = { "Content-Type": "application/json" };
           response = await checkPayloadSizeAndSendRequest(url, requestBody, headers);
           if (response) return response.data;
@@ -388,14 +393,18 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
-      metadata.dataset_detail.dataset_area = null;
+      if(metadata.dataset_detail.dataset_area !== ""){
+      return Promise.reject(new AxiosError(e));
+      }
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
         metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
-      metadata.dataset_detail.custom_metadata = null;
+      if(metadata.dataset_detail.custom_metadata !== ""){
+        return Promise.reject(new AxiosError(e));
+      }
     }
     replaceEmptyStringsWithNull(metadata);
     if (Array.isArray(metadata.maintenance.official_maintainer) && metadata.maintenance.official_maintainer.length === 0) {
@@ -510,14 +519,18 @@ export async function editMetadata(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
       }
     } catch (e) {
-      metadata.dataset_detail.dataset_area = null;
+      if(metadata.dataset_detail.dataset_area !== ""){
+      return Promise.reject(new AxiosError(e));
+      }
     }
     try {
       if (typeof metadata.dataset_detail.custom_metadata === 'string') {
         metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
       }
     } catch (e) {
-      metadata.dataset_detail.custom_metadata = null;
+      if( metadata.dataset_detail.custom_metadata !== ""){
+        return Promise.reject(new AxiosError(e));
+        }
     }
     // Replace empty strings with null
     replaceEmptyStringsWithNull(metadata);

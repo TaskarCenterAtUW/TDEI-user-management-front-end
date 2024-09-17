@@ -58,7 +58,7 @@ const CreateUpdateService = () => {
                     } successfully.`,
             })
         );
-        navigate( user.isAdmin && idData['id'] === undefined ? -2 : !user.isAdmin  && idData['id'] === undefined  ? -2 : -1);
+        navigate(-1);
     };
     const onError = (err) => {
         dispatch(
@@ -68,7 +68,6 @@ const CreateUpdateService = () => {
                 type: "danger",
             })
         );
-        navigate(-1);
     };
     const { isLoading, mutate } = useCreateService({ onSuccess, onError });
     const { isLoading: isUpdateLoading, mutate: updateService } = useUpdateSevice(
@@ -76,7 +75,15 @@ const CreateUpdateService = () => {
     );
 
     const handleCreateService = (values) => {
-        const parsedData = geoJson ? JSON.parse(geoJson) : GEOJSON;
+        let parsedData;
+        try {
+            parsedData = geoJson ? JSON.parse(geoJson) : GEOJSON;
+        } catch (err) {
+            onError({
+                message: err ? `Invalid JSON format. Error: ${err.message}` : "Invalid JSON format. Please ensure the GeoJSON data is correct.",
+            });
+            return;
+        }
         if (serviceData?.tdei_service_id) {
             updateService({
                 service_name: values.service_name ? values.service_name : "",
@@ -94,7 +101,7 @@ const CreateUpdateService = () => {
                 service_type : values.service_type
             });
         }
-    };
+    };    
 
     const getText = () => {
         if (idData['id'] !== undefined) {
