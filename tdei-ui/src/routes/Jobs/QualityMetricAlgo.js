@@ -11,9 +11,7 @@ const QualityMetricAlgo = ({ onUpdate }) => {
     ];
 
     const updateParent = (selectedAlgorithm) => {
-        const updatedConfig = {
-            algorithm: selectedAlgorithm ? selectedAlgorithm.value : null,
-        };
+        const updatedConfig = selectedAlgorithm ? selectedAlgorithm.value : null
         onUpdate(updatedConfig);
     };
 
@@ -28,7 +26,7 @@ const QualityMetricAlgo = ({ onUpdate }) => {
     return (
         <div >
                 <Select
-                    className={style.qualityMetricDropdown}
+                    className={style.createJobSelectType}
                     options={algorithmOptions}
                     placeholder="Select algorithm"
                     value={selectedAlgorithm}

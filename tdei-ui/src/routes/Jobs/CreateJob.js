@@ -235,6 +235,10 @@ const CreateJobService = () => {
         const path = getPathFromJobType("quality-metric");
         if (label === "Tdei Dataset Id") {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        }else if (label === "Attach GeoJson file"){
+            return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
+        }else{
+            return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.algorithm?.description || "";
         }
     }
     const getQualityMetricTagDescription = (label) => {
@@ -263,8 +267,8 @@ const CreateJobService = () => {
             return;
         }
 
-        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !(!algorithmConfig))) {
-            setValidateErrorMessage("Tdei Dataset Id and Algorithm fields required for Quality Metric Calculation job");
+        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !algorithmConfig)) {
+            setValidateErrorMessage("Tdei Dataset Id and Algorithm fields are required for Quality Metric Calculation job");
             setShowValidateToast(true);
             return;
         }
@@ -432,6 +436,11 @@ const CreateJobService = () => {
                     <div key={index} style={{ marginTop: '20px' }}>
                         <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
                         <QualityMetricAlgo onUpdate={handleAlgorithmUpdate} />
+                        <div className="d-flex align-items-start mt-2">
+                                <Form.Text id="passwordHelpBlock" className={style.description}>
+                                    {extractLinks(getDescriptionForField('algorithm'))}
+                                </Form.Text>
+                            </div>
                     </div>
                 );
                 case "textarea":
@@ -493,9 +502,9 @@ const CreateJobService = () => {
                                 selectedFile={selectedFile}
                             />
                             <div className="d-flex align-items-start mt-2">
-                                {/* <Form.Text id="passwordHelpBlock" className={style.description}>
+                                <Form.Text id="passwordHelpBlock" className={style.description}>
                                     {extractLinks(getDescriptionForField(field.label))}
-                                </Form.Text> */}
+                                </Form.Text>
                             </div>
                         </div>
                     );                
