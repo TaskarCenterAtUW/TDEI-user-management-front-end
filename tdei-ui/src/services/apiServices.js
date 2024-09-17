@@ -305,11 +305,12 @@ export async function postCreateJob(data) {
         url = `${baseUrl}/${data[2]}`;
         break;
       case "osw/quality-metric":
+        if(data[1]){
+          formData.append('file', data[1]);
+        }
         formData.append('tdei_dataset_id', data[2]);
+        formData.append('algorithm', data[3]);
         url = `${baseUrl}/${data[2]}`;
-        headers = {
-          'Content-Type': 'application/json',
-        };
         break;
       case "osw/dataset-bbox":
         url = baseUrl;
@@ -356,8 +357,7 @@ export async function postCreateJob(data) {
     }
 
     if (data[0] === "osw/quality-metric" && data[3]) {
-      const requestBody = JSON.stringify(data[3]);
-      response = await checkPayloadSizeAndSendRequest(url, requestBody, headers);
+      response = await axios.post(url, formData, headers);
     } else if (data[0] === "osw/dataset-bbox") {
       const bboxParams = [
         `bbox=${parseFloat(data[4].west)}`,
