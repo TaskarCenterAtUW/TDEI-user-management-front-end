@@ -58,7 +58,8 @@ const formConfig = {
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Algorithms & Optional Persistence", type: "dropdown", stateSetter: "setAlgorithmConfig" }
+        { label: "Algorithm", type: "dropdown", stateSetter: "setAlgorithmConfig" },
+        { label: "Attach GeoJson file", type: "dropzone" }
     ],
     "dataset-bbox": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
@@ -109,10 +110,7 @@ const CreateJobService = () => {
         north: ""
     });
     const [fileType, setFileType] = React.useState(null);
-    const [algorithmConfig, setAlgorithmConfig] = useState({
-        algorithms: [],
-        persist: {}
-    });
+    const [algorithmConfig, setAlgorithmConfig] = useState(null);
     const [spatialRequestBody, setSpatialRequestBody] = React.useState(JSON.stringify(SPATIAL_JOIN, null, 2));
     const [showModal, setShowModal] = useState(false);
     const handleAlgorithmUpdate = (updatedConfig) => {
@@ -265,8 +263,8 @@ const CreateJobService = () => {
             return;
         }
 
-        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !(algorithmConfig.algorithms.length > 0))) {
-            setValidateErrorMessage("Tdei Dataset Id and Algorithms, Persist are required for Quality Metric Calculation job");
+        if (jobType.value === "quality-metric" && (!tdeiDatasetId || !(!algorithmConfig))) {
+            setValidateErrorMessage("Tdei Dataset Id and Algorithm fields required for Quality Metric Calculation job");
             setShowValidateToast(true);
             return;
         }
@@ -433,9 +431,7 @@ const CreateJobService = () => {
                 return (
                     <div key={index} style={{ marginTop: '20px' }}>
                         <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
-                        <div className="jsonContent">
                         <QualityMetricAlgo onUpdate={handleAlgorithmUpdate} />
-                        </div>
                     </div>
                 );
                 case "textarea":
@@ -469,7 +465,7 @@ const CreateJobService = () => {
                         <div key={index} className={style.formItems}>
                             <p className={style.formLabelP}>
                                 {field.label}
-                                <span style={{ color: jobType.value === "confidence" ? 'white' : 'red' }}> *</span>
+                                <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>
                             </p>
                             <Dropzone
                                 onDrop={onDrop}
@@ -481,7 +477,7 @@ const CreateJobService = () => {
                                                 'application/octet-stream': ['.pbf', '.osm'],
                                                 'application/xml': ['.xml']
                                               }
-                                            : jobType.value === "confidence"
+                                            : jobType.value === "confidence" || jobType.value === "quality-metric"
                                                 ? { 'application/geo+json': ['.geojson'] }
                                                 : { 'application/zip': ['.zip'] }
                                 }
@@ -490,16 +486,16 @@ const CreateJobService = () => {
                                         ? ".json"
                                         : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
                                             ? ".pbf, .osm, .xml"
-                                            : jobType.value === "confidence"
+                                            : jobType.value === "confidence" || jobType.value === "quality-metric"
                                                 ? ".geojson"
                                                 : ".zip"
                                 }
                                 selectedFile={selectedFile}
                             />
                             <div className="d-flex align-items-start mt-2">
-                                <Form.Text id="passwordHelpBlock" className={style.description}>
+                                {/* <Form.Text id="passwordHelpBlock" className={style.description}>
                                     {extractLinks(getDescriptionForField(field.label))}
-                                </Form.Text>
+                                </Form.Text> */}
                             </div>
                         </div>
                     );                
