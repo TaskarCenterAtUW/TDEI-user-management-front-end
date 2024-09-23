@@ -137,10 +137,11 @@ const LoginPage = () => {
                         <Link className="tdei-primary-link" to={"/register"}>
                           Register Now
                         </Link>
+                        
                       </div>
-                    <ForgotPassModal 
-                    email={values.username}
-                    />
+                      <Link className="tdei-primary-link" to={"/ForgotPassword"}>
+                        Forgot Password?
+                        </Link>
                     </Form>
                   )}
                 </Formik>
