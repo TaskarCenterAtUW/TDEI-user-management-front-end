@@ -4,11 +4,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import style from "./style.module.css";
 import ResponseToast from "../ToastMessage/ResponseToast";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
 
 const EmailVerification = () => {
     const location = useLocation();
-    const { heading, actionText, email, checkLink } = location.state || {};
+    const {actionText, email } = location.state || {};
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [maskedEmail, setMaskedEmail] = useState("");
@@ -28,10 +27,25 @@ const EmailVerification = () => {
     }, [email]);
 
     const handleResendEmail = async () => {
-        navigate(-1);
-    };
-    const handleSignIn = () => {
-        navigate("/login", { replace: true });
+        try {
+            setLoading(true);
+            const response = await axios.post(`${process.env.REACT_APP_OSM_URL}/verify-email`, email,
+                {
+                    headers: {
+                        "Content-Type": "text/plain",
+                    },
+                }
+            );
+            setToastMessage("Email verification link sent successfully");
+            setToastType("success");
+            setShowToast(true);
+        } catch (error) {
+            setToastMessage("Error resending link. Please try again.");
+            setToastType("error");
+            setShowToast(true);
+        } finally {
+            setLoading(false);
+        }
     };
     const handleCloseToast = () => {
         setShowToast(false);
@@ -43,10 +57,12 @@ const EmailVerification = () => {
                 <div className={style.registerCard}>
                     <Card>
                         <Card.Body>
-                            <h2>{heading || "Reset Password Request"}</h2>
+                            <br />
+                            <h2 className="formTitle">Email Verification</h2>
+                            <br />
+                            <br />
                             <p>
-                                We emailed a {actionText || "password reset"} link to <b>{maskedEmail}</b>. <br />
-                                Please follow the instructions in that email.
+                            {actionText}
                             </p>
                             Didn’t receive an email?{"   "}
                             <Button
@@ -55,7 +71,7 @@ const EmailVerification = () => {
                                 onClick={handleResendEmail}
                                 disabled={loading}
                             >
-                                {loading ? "Sending..." : "Check if your username is correct"}
+                                {loading ? "Sending..." : "Resend Email Verification"}
                             </Button>
                             <br></br>
                             <br></br>

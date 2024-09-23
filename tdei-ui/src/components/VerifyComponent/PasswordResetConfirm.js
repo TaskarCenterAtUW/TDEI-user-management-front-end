@@ -43,7 +43,9 @@ const PasswordResetConfirm = () => {
                 <div className={style.registerCard}>
                     <Card>
                         <Card.Body>
-                            <h2>{heading || "Reset Password Request"}</h2>
+                        <br />
+                            <h2 className="formTitle">Password Recovery Request</h2>
+                            <br />
                             <p>
                                 We emailed a {actionText || "password reset"} link to <b>{maskedEmail}</b>. <br />
                                 Please follow the instructions in that email.

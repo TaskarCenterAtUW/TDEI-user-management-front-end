@@ -39,7 +39,7 @@ const ForgotPassword = () => {
         }
       );
       // Dispatch success notification
-      dispatch(show({ message: "Reset request successful", type: "success" }));
+      dispatch(show({ message: "Password recovery email sent successfully", type: "success" }));
       setLoading(false);
 
        // On success navigate to the VerifyComponent and pass state
@@ -49,7 +49,7 @@ const ForgotPassword = () => {
           actionText: "password reset",   
           checkLink: "/check-username",    
           email                            
-        }
+        },
       });
       
     } catch (err) {

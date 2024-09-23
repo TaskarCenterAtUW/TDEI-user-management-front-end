@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Form, Button, Card, InputGroup } from "react-bootstrap";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
 import tempLogo from "./../../assets/img/tdei_logo.svg";
@@ -18,7 +18,7 @@ const LoginPage = () => {
   const location = useLocation();
   const auth = useAuth();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate(); 
   const initialValues = {
     username: "",
     password: "",
@@ -39,7 +39,16 @@ const LoginPage = () => {
       (err) => {
         console.error(err);
         setLoading(false);
-        dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
+        if(err.status === 403){
+           navigate("/emailVerify", {
+            state: {  
+              actionText: "Your email address has not been verified. Please verify your email before logging in.",
+              email: values.username 
+            }
+          });
+        } else {
+          dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
+        }
       }
     );
   };

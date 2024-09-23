@@ -73,7 +73,12 @@ const Register = () => {
       setToastType("success");
       setShowToast(true);
       setTimeout(() => {
-        navigate("/login");
+        navigate("/emailVerify", {
+          state: {  
+            actionText: "Your email verification link has been sent. Please verify your email before logging in.",
+            email: email
+          }
+        });
       }, 2000);
     } catch (err) {
       setLoading(false);
