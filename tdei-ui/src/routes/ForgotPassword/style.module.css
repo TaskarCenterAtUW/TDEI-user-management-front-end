@@ -1,0 +1,20 @@
+.registerCard {
+    width: 450px;
+    margin-top: 50px;
+    padding: 15px;
+  }
+  .registerContainer {
+    background-image: url(./../../assets/img/bg_login.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: calc(100vh - 60px);
+  }
+  .loginLogo {
+    width: 100px;
+    margin: 25px 0px;
+  }
+  .loginTitle {
+    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: 300;
+  }

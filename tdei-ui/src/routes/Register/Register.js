@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Form, Button, Card, Col, InputGroup } from "react-bootstrap";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
@@ -12,15 +12,19 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ResponseToast from "../../components/ToastMessage/ResponseToast";
 
 const Register = () => {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showToast, setShowToast] = useState(false); 
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
 
   const auth = useAuth();
   const dispatch = useDispatch();
-  const location = useLocation();
+  const navigate = useNavigate(); 
 
   const initialValues = {
     firstName: "",
@@ -65,25 +69,27 @@ const Register = () => {
         phone,
         password,
       });
-      auth.signin(
-        { username: email, password },
-        (data) => {
-          setLoading(false);
-        },
-        (err) => {
-          console.error(err);
-          setLoading(false);
-        }
-      );
+      setToastMessage("Registration successful!");
+      setToastType("success");
+      setShowToast(true);
+      setTimeout(() => {
+        navigate("/emailVerify", {
+          state: {  
+            actionText: "Your email verification link has been sent. Please verify your email before logging in.",
+            email: email
+          }
+        });
+      }, 2000);
     } catch (err) {
       setLoading(false);
-      dispatch(show({ message: err.data ?? "Error in registering", type: "danger" }));
+      setToastMessage(err.response?.data ?? "Error in registering");
+      setToastType("error");
+      setShowToast(true);
     }
   };
-
-  if (auth.user) {
-    return <Navigate to={location.state?.from?.pathname || "/"} replace />;
-  }
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
 
   return (
     <div className={style.registerContainer}>
@@ -246,8 +252,14 @@ const Register = () => {
           </Card>
         </div>
       </Row>
+      <ResponseToast
+        showtoast={showToast}
+        handleClose={handleCloseToast}
+        message={toastMessage}
+        type={toastType}
+      />
     </div>
   );
 };
 
-export default Register;
+export default Register
