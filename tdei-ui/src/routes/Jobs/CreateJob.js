@@ -25,7 +25,7 @@ const jobTypeOptions = [
     { value: 'pathways-validate', label: 'Pathways - Validate' },
     { value: 'osw-convert', label: 'OSW - Convert' },
     { value: 'confidence', label: 'Confidence Calculation' },
-    { value: 'quality-metric', label: 'Quality Metric Calculation' },
+    { value: 'quality-metric', label: 'Quality Metric IXN Calculation' },
     { value: 'dataset-bbox', label: 'Dataset BBox' },
     { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
@@ -58,7 +58,7 @@ const formConfig = {
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Algorithm", type: "dropdown", stateSetter: "setAlgorithmConfig" },
+        // { label: "Algorithm", type: "dropdown", stateSetter: "setAlgorithmConfig" },
         { label: "Attach GeoJson file", type: "dropzone" }
     ],
     "dataset-bbox": [
@@ -190,7 +190,7 @@ const CreateJobService = () => {
             "pathways-validate": "/api/v1/gtfs-pathways/validate",
             "osw-convert": "/api/v1/osw/convert",
             "confidence": "/api/v1/osw/confidence/{tdei_dataset_id}",
-            "quality-metric": "/api/v1/osw/quality-metric/{tdei_dataset_id}",
+            "quality-metric": "/api/v1/osw/quality-metric/ixn/{tdei_dataset_id}",
             "dataset-bbox": "/api/v1/osw/dataset-bbox",
             "dataset-tag-road": "/api/v1/osw/dataset-tag-road",
             "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}",
@@ -321,7 +321,7 @@ const CreateJobService = () => {
                 urlPath = "osw/confidence";
                 break;
             case "quality-metric":
-                urlPath = "osw/quality-metric";
+                urlPath = "osw/quality-metric/ixn";
                 break;
             case "dataset-bbox":
                 urlPath = "osw/dataset-bbox";
@@ -343,7 +343,7 @@ const CreateJobService = () => {
         } else if (jobType.value === "confidence" || jobType.value === "quality-metric-tag") {
             uploadData.push(tdeiDatasetId);
         } else if (jobType.value === "quality-metric") {
-            uploadData.push(tdeiDatasetId, algorithmConfig);
+            uploadData.push(tdeiDatasetId);
         } else if (jobType.value === "dataset-bbox") {
             uploadData.push(tdeiDatasetId, fileType.value, bboxValues);
         } else if (jobType.value === "dataset-tag-road") {

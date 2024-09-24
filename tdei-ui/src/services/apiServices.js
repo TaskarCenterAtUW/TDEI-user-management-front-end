@@ -304,12 +304,12 @@ export async function postCreateJob(data) {
         formData.append('file', data[1]);
         url = `${baseUrl}/${data[2]}`;
         break;
-      case "osw/quality-metric":
+      case "osw/quality-metric/ixn":
         if(data[1]){
           formData.append('file', data[1]);
         }
         formData.append('tdei_dataset_id', data[2]);
-        formData.append('algorithm', data[3]);
+        // formData.append('algorithm', data[3]);
         url = `${baseUrl}/${data[2]}`;
         break;
       case "osw/dataset-bbox":

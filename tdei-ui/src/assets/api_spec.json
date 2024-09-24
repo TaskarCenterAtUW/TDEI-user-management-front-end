@@ -1416,13 +1416,13 @@
                 }
             }
         },
-        "/api/v1/osw/quality-metric/{tdei_dataset_id}": {
+        "/api/v1/osw/quality-metric/ixn/{tdei_dataset_id}": {
             "post": {
                 "tags": [
                     "OSW"
                 ],
-                "summary": "Initiate Quality metric calculation for a dataset",
-                "description": "Initiates the Quality calculation for requested tdei_dataset_id with list of algorithms and optional persistence. Returns the job_id for quality metric calculation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "summary": "Initiate Intersection Quality metric calculation for a dataset",
+                "description": "Initiates the Intersection Quality calculation for requested tdei_dataset_id with optional intersection polygon file. Returns the job_id for quality metric calculation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
                 "operationId": "oswQualityCalculate",
                 "parameters": [
                     {
@@ -1444,16 +1444,7 @@
                                    "file": {
                                        "type":"string",
                                        "format":"binary",
-                                       "description": "(Optional) GeoJSON polygon file to be used to calculate Quality Metric"
-                                   },
-                                   "algorithm" :{
-                                       "type":"string",
-                                       "enum":[
-                                           "ixn",
-                                           "fixed"
-                                       ],
-                                       "default":"ixn",
-                                       "description":"Algorithm to be used to calculate Quality Metric"
+                                       "description": "(Optional) GeoJSON intersection polygon file to be used to calculate Quality Metric"
                                    }
                                }
                            }
