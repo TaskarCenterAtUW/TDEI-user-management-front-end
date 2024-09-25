@@ -1,6 +1,6 @@
 import axios from "axios";
 import { url, osmUrl } from "./apiServices";
-
+import { onTokenExpired } from "./tokenEventEmitter";
 let isRefreshing = false;
 
 /**
@@ -30,10 +30,14 @@ async function refreshRequest() {
     }
   } catch (e) {
     console.error("Error refreshing token", e);
-    localStorage.removeItem("accessToken"); 
-    localStorage.removeItem("refreshToken");
-    // Reload the page to redirect the user
-    window.location.reload(); 
+    if(e.status === 401){
+      onTokenExpired(); 
+    }else{
+      localStorage.removeItem("accessToken"); 
+      localStorage.removeItem("refreshToken");
+      // Reload the page to redirect the user
+      window.location.reload(); 
+    }
     throw e; 
   } finally {
     isRefreshing = false; 
@@ -103,16 +107,22 @@ axios.interceptors.response.use(
           try {
             await refreshRequest(); 
           } catch (error) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.reload(); 
+            // localStorage.removeItem("accessToken");
+            // localStorage.removeItem("refreshToken");
+            // window.location.reload(); 
+            // Emit event for token expiration
+            onTokenExpired(); 
             return Promise.reject(new Error("Session expired. Please log in again."));
           }
         }
         return await axios(originalRequest);
       } catch (e) {
         console.error("Error retrying request after refreshing token", e);
-        return Promise.reject(e); 
+        if(e.status === 401){
+          onTokenExpired(); 
+        }else{
+          return Promise.reject(e); 
+        }
       }
     }
     return Promise.reject(error.response ?? error); 
