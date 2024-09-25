@@ -16,6 +16,11 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    window.location.reload();
+  };
 
   return (
     <Modal 
@@ -25,22 +30,22 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
     backdrop="static"
     keyboard={false} 
     >
-      <Modal.Header closeButton>
-        <Modal.Title>Re-Login Required</Modal.Title>
+      <Modal.Header closeButton={false}>
+        <Modal.Title>Session Expired</Modal.Title>
       </Modal.Header>
       <Formik
         initialValues={{ password: "" }}
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => {
-          // Call onReLogin and manage button disable state
-          setSubmitting(true); // Disable button
+       
+          setSubmitting(true); 
 
           onReLogin(values.password)
             .then(() => {
-              setSubmitting(false); // Enable button again
+              setSubmitting(false); 
             })
             .catch(() => {
-              setSubmitting(false); // Ensure button is re-enabled even on error
+              setSubmitting(false); 
             });
         }}
       >
@@ -55,7 +60,10 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Modal.Body>
-              <Form.Group controlId="email">
+            <Form.Text className={style.disclaimer}>
+                You need to re-login with your password to continue your session.
+              </Form.Text>
+              {/* <Form.Group controlId="email">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="email"
@@ -63,7 +71,7 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
                   disabled
                   readOnly
                 />
-              </Form.Group>
+              </Form.Group> */}
               <Form.Group controlId="password" className="mt-3">
                 <Form.Label>Password</Form.Label>
                 <InputGroup>
@@ -87,18 +95,20 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
-
+<br />
               {errors.password && touched.password && (
                 <Alert variant="danger" className="mt-3">
                   {errors.password}
                 </Alert>
               )}
-              <Form.Text className={style.disclaimer}>
-                You need to re-login with your password to continue your session.
-              </Form.Text>
+             
             </Modal.Body>
 
             <Modal.Footer>
+            <Button  variant="ouline-secondary"
+                className="tdei-secondary-button" onClick={handleLogout}>
+              Logout
+              </Button>
               <Button type="submit" variant="primary" disabled={isSubmitting} className="tdei-primary-button">
                 {isSubmitting ? "Submitting..." : "Re-Login"}
               </Button>

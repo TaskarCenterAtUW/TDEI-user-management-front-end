@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { AuthContext } from "../../context";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import ReLoginModal from "../ReLoginModal/ReLoginModal"; 
+import ReLoginModal from "../ReLoginModal/ReLoginModal";
 import { setTokenExpiredCallback } from "../../services/tokenEventEmitter";
-
+import ResponseToast from "../ToastMessage/ResponseToast";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = React.useState(null);
-  const [isReLoginOpen, setIsReLoginOpen] = React.useState(false); 
+  const [user, setUser] = useState(null);
+  const [isReLoginOpen, setIsReLoginOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ showtoast: false, message: '', type: '' }); 
   const origin = location.pathname || "/";
 
   const decodeToken = (accessToken) => {
@@ -19,6 +20,20 @@ const AuthProvider = ({ children }) => {
       const base64Url = accessToken.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const decodedToken = JSON.parse(window.atob(base64));
+      // Check if the token is expired
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (decodedToken.exp < currentTime) {
+        // Show a toast message for token expiration
+        setToastMessage({
+          showtoast: true,
+          message: "Session expired. You have been logged out.",
+          type: "warning",
+        });
+        setTimeout(() => {
+          signout(); 
+        }, 2000); 
+        return;
+      }
       const userObj = {
         name:
           decodedToken.name ||
@@ -39,10 +54,10 @@ const AuthProvider = ({ children }) => {
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     decodeToken(accessToken);
-       // Register the token expired event handler
-       setTokenExpiredCallback(() => {
-        setIsReLoginOpen(true); 
-      });
+    // Register the token expired event handler
+    setTokenExpiredCallback(() => {
+      setIsReLoginOpen(true);
+    });
   }, []);
 
   const signin = async (
@@ -72,7 +87,6 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Re-login mechanism
   const handleReLogin = async (password) => {
     const email = user?.emailId; 
     if (!email) return;
@@ -100,6 +114,10 @@ const AuthProvider = ({ children }) => {
     navigate("/login");
   };
 
+  const handleCloseToast = () => {
+    setToastMessage({ ...toastMessage, showtoast: false });
+  };
+
   let value = { user, signin, signout, setIsReLoginOpen };
   
 
@@ -111,6 +129,12 @@ const AuthProvider = ({ children }) => {
         onClose={() => setIsReLoginOpen(false)}
         onReLogin={handleReLogin}
         email={user?.emailId}
+      />
+      <ResponseToast
+        showtoast={toastMessage.showtoast}
+        handleClose={handleCloseToast}
+        type={toastMessage.type}
+        message={toastMessage.message}
       />
     </AuthContext.Provider>
   );
