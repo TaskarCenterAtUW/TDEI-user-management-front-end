@@ -94,7 +94,7 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
               )}
             </Modal.Body>
             <Modal.Footer>
-              <a href="#logout" className="tdei-primary-link" onClick={handleLogout}>
+              <a href="#logout" className="tdei-primary-link" onClick={handleLogout} style={{paddingRight:'16px'}}>
                 Logout
               </a>
               <Button type="submit" variant="primary" disabled={isSubmitting} className="tdei-primary-button">
