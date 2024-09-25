@@ -23,12 +23,12 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
   };
 
   return (
-    <Modal 
-    show={open} 
-    onHide={onClose} 
-    centered 
-    backdrop="static"
-    keyboard={false} 
+    <Modal
+      show={open}
+      onHide={onClose}
+      centered
+      backdrop="static"
+      keyboard={false}
     >
       <Modal.Header closeButton={false}>
         <Modal.Title>Session Expired</Modal.Title>
@@ -37,15 +37,15 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
         initialValues={{ password: "" }}
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => {
-       
-          setSubmitting(true); 
+
+          setSubmitting(true);
 
           onReLogin(values.password)
             .then(() => {
-              setSubmitting(false); 
+              setSubmitting(false);
             })
             .catch(() => {
-              setSubmitting(false); 
+              setSubmitting(false);
             });
         }}
       >
@@ -60,18 +60,9 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Modal.Body>
-            <Form.Text className={style.disclaimer}>
+              <Form.Text className={style.disclaimer}>
                 You need to re-login with your password to continue your session.
               </Form.Text>
-              {/* <Form.Group controlId="email">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={email}
-                  disabled
-                  readOnly
-                />
-              </Form.Group> */}
               <Form.Group controlId="password" className="mt-3">
                 <Form.Label>Password</Form.Label>
                 <InputGroup>
@@ -95,20 +86,17 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
-<br />
+              <br />
               {errors.password && touched.password && (
                 <Alert variant="danger" className="mt-3">
                   {errors.password}
                 </Alert>
               )}
-             
             </Modal.Body>
-
             <Modal.Footer>
-            <Button  variant="ouline-secondary"
-                className="tdei-secondary-button" onClick={handleLogout}>
-              Logout
-              </Button>
+              <a href="#logout" className="tdei-primary-link" onClick={handleLogout}>
+                Logout
+              </a>
               <Button type="submit" variant="primary" disabled={isSubmitting} className="tdei-primary-button">
                 {isSubmitting ? "Submitting..." : "Re-Login"}
               </Button>
