@@ -19,6 +19,9 @@ import UploadDataset from "./UploadDataset/UploadDataset";
 import Jobs from "./Jobs";
 import EditMetadata from "./EditMetaData/EditMetaData";
 import CloneDataset from "./CloneDataset/CloneDataset";
+import ForgotPassword from "./ForgotPassword/ForgotPassword";
+import PasswordResetConfirm from "../components/VerifyComponent/PasswordResetConfirm";
+import EmailVerification from "../components/VerifyComponent/EmailVerification";
 
 const Router = () => {
   const { user } = useAuth();
@@ -28,6 +31,9 @@ const Router = () => {
       <>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/ForgotPassword" element={<ForgotPassword />}/>
+        <Route path="/passwordReset" element={<PasswordResetConfirm />}/>
+        <Route path="/emailVerify" element={<EmailVerification />}/>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />

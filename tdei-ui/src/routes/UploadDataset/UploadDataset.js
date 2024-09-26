@@ -68,7 +68,7 @@ const UploadDataset = () => {
     // resetting current step
     setCurrentStep(0);
     setToast(true);
-    setErrorMessage(err.message)
+    setErrorMessage(err.message.message ?? err.message ?? err.data ?? err.data.message)
   };
   // Using useUploadDataset hook to get mutate function
   const { isLoading, mutate } = useUploadDataset({ onSuccess, onError });

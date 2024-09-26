@@ -173,14 +173,24 @@ export default function EditMetadata() {
         setLoading(false);
         console.error("error message", err);
         setShowErrorModal(true);
-        setError(err.data)
+        setError(err.data ?? err.message.message);
         if (selectedData) {
+            const { custom_metadata, dataset_area } = selectedData.dataset_detail;
+            // if custom_metadata is not JSON and stringify it
+            const formattedCustomMetadata = (typeof custom_metadata === 'object' && custom_metadata !== null)
+                ? JSON.stringify(custom_metadata, null, 2)
+                : custom_metadata
+            // if dataset_area is not JSON and stringify it
+            const formattedDatasetArea = (typeof dataset_area === 'object' && dataset_area !== null)
+                ? JSON.stringify(dataset_area, null, 2)
+                : dataset_area
+    
             const parsedDataset = {
                 ...selectedData,
                 dataset_detail: {
                     ...selectedData.dataset_detail,
-                    custom_metadata: selectedData.dataset_detail.custom_metadata ? JSON.stringify(selectedData.dataset_detail.custom_metadata, null, 2) : "",
-                    dataset_area: selectedData.dataset_detail.dataset_area ? JSON.stringify(selectedData.dataset_detail.dataset_area, null, 2) : ""
+                    custom_metadata: formattedCustomMetadata,
+                    dataset_area: formattedDatasetArea
                 }
             };
             setSelectedData(parsedDataset);

@@ -125,7 +125,10 @@ const Dropdown = ({
                     // eslint-disable-next-line
                     <a
                       href="#"
-                      onClick={() => onItemClick(option)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onItemClick(option);
+                      }}
                       key={option.tdei_project_group_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
@@ -141,7 +144,10 @@ const Dropdown = ({
                     // eslint-disable-next-line
                     <a
                       href="#"
-                      onClick={() => onItemClick(option)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onItemClick(option)
+                      }}
                       key={option.tdei_project_group_id}
                       className={clsx(style.dropdownItem, [
                         isSelected(option) && style.selected,
