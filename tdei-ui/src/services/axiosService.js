@@ -72,20 +72,10 @@ function isRefreshTokenExpiring() {
 
 axios.interceptors.request.use(
   async (config) => {
-    // Check if the refresh token is expiring and a refresh is not already in progress
-    if (isRefreshTokenExpiring() && !isRefreshing) {
-      try {
-        const newToken = await refreshRequest(); 
-        config.headers.Authorization = `Bearer ${newToken}`; 
-      } catch (error) {
-        console.error("Error refreshing the token", error);
-      }
-    } else {
       const token = localStorage.getItem("accessToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`; 
       }
-    }
     return config;
   },
   (error) => Promise.reject(error.response ?? error) 
@@ -103,19 +93,14 @@ axios.interceptors.response.use(
       originalRequest._retry = true; 
       try {
         console.log("401 error received. Attempting to refresh token...");
-        if (isRefreshTokenExpiring()) {
           try {
             await refreshRequest(); 
-          } catch (error) {
-            // localStorage.removeItem("accessToken");
-            // localStorage.removeItem("refreshToken");
-            // window.location.reload(); 
+            return await axios(originalRequest);
+          } catch (error) { 
             // Emit event for token expiration
             onTokenExpired(); 
             return Promise.reject(new Error("Session expired. Please log in again."));
-          }
-        }
-        return await axios(originalRequest);
+          } 
       } catch (e) {
         console.error("Error retrying request after refreshing token", e);
         if(e.status === 401){
