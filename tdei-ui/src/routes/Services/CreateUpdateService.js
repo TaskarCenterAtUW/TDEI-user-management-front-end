@@ -19,6 +19,7 @@ import { GET_SERVICES } from "../../utils";
 import { getService } from "../../services";
 import ServiceTypeDropdownForm from "./ServiceTypeDropdownForm";
 import { toPascalCase } from "../../utils";
+import ResponseToast from "../../components/ToastMessage/ResponseToast";
 
 const CreateUpdateService = () => {
     const queryClient = useQueryClient();
@@ -34,10 +35,20 @@ const CreateUpdateService = () => {
         polygon: JSON.stringify(GEOJSON, null, 2),
     });
     const { user } = useAuth();
+    const [toastMessage, setToastMessage] = useState({
+        showtoast: false,
+        type: '',
+        message: '',
+        autoHideDuration: 0
+    });
+
+    const handleCloseToast = () => {
+        setToastMessage({ ...toastMessage, showtoast: false });
+    };
 
     React.useEffect(() => {
         if (idData['id'] !== undefined && idData['serviceType'] !== undefined) {
-            getService(idData['id'],idData['serviceType']).then((services) => {
+            getService(idData['id'], idData['serviceType']).then((services) => {
                 setServiceData(services.data[0]);
                 setGeoJson(JSON.stringify(services.data[0].polygon, null, 2))
             })
@@ -61,13 +72,12 @@ const CreateUpdateService = () => {
         navigate(-1);
     };
     const onError = (err) => {
-        dispatch(
-            show({
-                message: `Error in ${serviceData?.tdei_service_id ? "updating" : "creating"
-                    } Service. ${err.message ?? err.data ?? err.data.message}`,
-                type: "danger",
-            })
-        );
+        setToastMessage({
+            showtoast: true,
+            type: 'error',
+            message: err.message ?? err.data ?? err.data.message ?? 'An unknown error occurred',
+            autoHideDuration: null 
+        });
     };
     const { isLoading, mutate } = useCreateService({ onSuccess, onError });
     const { isLoading: isUpdateLoading, mutate: updateService } = useUpdateSevice(
@@ -78,19 +88,26 @@ const CreateUpdateService = () => {
         let parsedData;
         try {
             parsedData = geoJson ? JSON.parse(geoJson) : GEOJSON;
+
+            // Check if the coordinates are a valid polygon (start and end points should be the same)
+            const coordinates = parsedData.features[0].geometry.coordinates[0];
+            const firstCoord = coordinates[0];
+            const lastCoord = coordinates[coordinates.length - 1];
+            if (JSON.stringify(firstCoord) !== JSON.stringify(lastCoord)) {
+                onError({ message: "Invalid service boundary provided. The first and last coordinates must be the same." });
+                return;
+            }
         } catch (err) {
-            onError({
-                message: err ? `Invalid JSON format. Error: ${err.message}` : "Invalid JSON format. Please ensure the GeoJSON data is correct.",
-            });
+            onError({ message: "Invalid GeoJSON format. Please ensure the GeoJSON data is correct." });
             return;
         }
         if (serviceData?.tdei_service_id) {
             updateService({
-                service_name: values.service_name ? values.service_name : "",
-                tdei_service_id: serviceData?.tdei_service_id ? serviceData?.tdei_service_id : "",
-                tdei_project_group_id: values.tdei_project_group_id ? values.tdei_project_group_id : "",
+                service_name: values.service_name || "",
+                tdei_service_id: serviceData?.tdei_service_id || "",
+                tdei_project_group_id: values.tdei_project_group_id || "",
                 polygon: parsedData.features.length === 0 ? GEOJSON : parsedData,
-                service_type : values.service_type ? values.service_type : ""
+                service_type: values.service_type || "",
             });
         } else {
             mutate({
@@ -101,7 +118,7 @@ const CreateUpdateService = () => {
                 service_type : values.service_type
             });
         }
-    };    
+    };
 
     const getText = () => {
         if (idData['id'] !== undefined) {
@@ -235,6 +252,13 @@ const CreateUpdateService = () => {
                                         />
                                     </div>
                                 </div>
+                                <ResponseToast
+                                    showtoast={toastMessage.showtoast}
+                                    handleClose={handleCloseToast}
+                                    type={toastMessage.type}
+                                    message={toastMessage.message}
+                                    autoHideDuration={toastMessage.autoHideDuration}
+                                />
                             </Container>
                         </Form>
                     </>
