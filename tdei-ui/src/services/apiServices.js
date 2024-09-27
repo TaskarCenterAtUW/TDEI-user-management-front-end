@@ -656,6 +656,10 @@ export async function downloadJob(jobId) {
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
     console.error('There was a problem with the download operation:', error);
+    if(error.status === 404){
+      return Promise.reject(new AxiosError("Download File Not Found!"));
+    }
+    return Promise.reject(new AxiosError(error));
   }
 };
 
