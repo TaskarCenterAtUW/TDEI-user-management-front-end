@@ -36,6 +36,7 @@ const JobListItem = ({ jobItem }) => {
   const onError = (err) => {
     console.error("error message", err);
     setEventKey("error")
+    setError(err.message ?? err)
     handleToast();
   };
   const { mutate: downloadJob, isLoading: isDownloadingJob } = useDownloadJob({ onSuccess, onError });
@@ -52,9 +53,7 @@ const JobListItem = ({ jobItem }) => {
 const handleClick = (e) => {
   const { id } = e.target;
   setJobId(id);
-  if (jobItem.job_type === "Quality-Metric") {
-    window.location.href = jobItem.response_props.qm_dataset_url;
-  } else if(jobItem.job_type === "Confidence-Calculate"){
+ if(jobItem.job_type === "Confidence-Calculate"){
     const confidenceScores = jobItem.response_props.confidence_scores;
     const blob = new Blob([confidenceScores], { type: 'application/json' });
     const downloadUrl = URL.createObjectURL(blob);
@@ -232,7 +231,7 @@ const handleClick = (e) => {
         showtoast={open}
         handleClose={handleClose}
         type={eventKey === "success" ? "success" : "error"}
-        message={eventKey === 'success' ? "Success! Download has been initiated." : "Error! Failed to initiate download."}
+        message={eventKey === 'success' ? "Success! Download has been initiated." : `Error! ${error}`}
       />
     </div>
   );
