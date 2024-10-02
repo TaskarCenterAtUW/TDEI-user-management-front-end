@@ -5,6 +5,7 @@ import style from "./SuccessModal.module.css";
 import ErrorIcon from '@mui/icons-material/Error';
 import datasetReleaseIcon from "../../assets/img/dataset-publish-confirmation.svg";
 import datasetDeleteIcon from "../../assets/img/dataset-delete-confirmation.svg";
+import NorthEastIcon from '@mui/icons-material/NorthEast';
 
 // CustomModal component displays a modal with success or error message
 const CustomModal = (props) => {
@@ -29,6 +30,11 @@ const CustomModal = (props) => {
       break;
     case "deactivate":
       iconComponent = <img src={datasetDeleteIcon} alt="deactivate-icon" className={style.modalHeaderIcon}/>;
+      titleColor = "#162848";
+      contentColor = '';
+      break;
+    case "inclination":
+      iconComponent = <NorthEastIcon sx={{fontSize:'40px'}} />
       titleColor = "#162848";
       contentColor = '';
       break;
@@ -71,7 +77,7 @@ const CustomModal = (props) => {
             onClick={props.handler}
             disabled={props.isLoading}
             variant="outline-secondary"
-            className={`tdei-${props.modaltype === "release" || props.modaltype === "deactivate" ? 'primary' : 'rounded'}-button ${props.modaltype === "error" ? 'maroon-bg' : ''}`}
+            className={`tdei-${props.modaltype === "release" || props.modaltype === "deactivate" || props.modaltype === "inclination" ? 'primary' : 'rounded'}-button ${props.modaltype === "error" ? 'maroon-bg' : ''}`}
           >
             {props.btnlabel}
           </Button>

@@ -235,4 +235,10 @@
   .itemIcon {
     margin-right: 10px;
   }
+  .inclinationIcon {
+    color: #83879B;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+  }
 }
