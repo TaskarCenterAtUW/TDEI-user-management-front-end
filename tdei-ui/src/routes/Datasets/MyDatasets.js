@@ -18,6 +18,7 @@ import ResponseToast from '../../components/ToastMessage/ResponseToast';
 import { useNavigate } from 'react-router-dom';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 import { useAuth } from '../../hooks/useAuth';
+import useCreateInclinationJob from '../../hooks/jobs/useCreateInclinationJob';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -33,8 +34,10 @@ const MyDatasets = () => {
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin,debounceQuery, status, dataType);
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType);
     const navigate = useNavigate();
+    const [customErrorMessage, setCustomErrorMessage] = useState("");
+
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -85,15 +88,18 @@ const MyDatasets = () => {
     };
 
     const onError = (err) => {
-        console.error("error message", err);
-        setShowSuccessModal(false);
-        handleToast();
+        const errorMessage = err.data || "An unexpected error occurred";
+        console.error("Error message:", errorMessage);
         setOperationResult("error");
+        setOpen(true);
+        setCustomErrorMessage(errorMessage);
+        setShowSuccessModal(false);
     };
 
     const { isLoading: isPublishing, mutate } = usePublishDataset({ onSuccess, onError });
     const { mutate: deactivateDataset, isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
     const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
+    const { mutate: createInclinationJob, isLoading: isCreatingJob } = useCreateInclinationJob({ onSuccess, onError });
 
     const handlePublishDataset = () => {
         mutate({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
@@ -102,18 +108,21 @@ const MyDatasets = () => {
     const handleDeactivate = () => {
         deactivateDataset(selectedDataset.tdei_dataset_id);
     };
+    const handleCreateInclinationJob = () => {
+        createInclinationJob(selectedDataset.tdei_dataset_id);
+    };
     const handleDownloadDataset = (dataset) => {
-        downloadDataset({tdei_dataset_id : dataset.tdei_dataset_id, data_type: dataset.data_type});
+        downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
     };
 
     const onAction = (eventKey, dataset) => {
         setSelectedDataset(dataset);
         setEventKey(eventKey);
-        if(eventKey === 'editMetadata'){
+        if (eventKey === 'editMetadata') {
             navigate('/EditMetadata', { state: { dataset } });
-        } else if(eventKey === 'cloneDataset'){
-            navigate('/CloneDataset',{ state: { dataset } });
-        } else if(eventKey === 'downLoadDataset'){
+        } else if (eventKey === 'cloneDataset') {
+            navigate('/CloneDataset', { state: { dataset } });
+        } else if (eventKey === 'downLoadDataset') {
             handleDownloadDataset(dataset)
         } else {
             setShowSuccessModal(true);
@@ -156,6 +165,52 @@ const MyDatasets = () => {
 
     const handleClose = () => {
         setOpen(false);
+    };
+    // Modal configuration based on eventKey
+    const modalConfig = {
+        release: {
+            message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+            content: "Release job will take around 4 to 6 hours. You can find the status in the jobs page.",
+            handler: handlePublishDataset,
+            btnlabel: "Release",
+            modaltype: "release"
+        },
+        deactivate: {
+            message: `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+            content: "Deactivation will remove the dataset from the system.",
+            handler: handleDeactivate,
+            btnlabel: "Deactivate",
+            modaltype: "deactivate"
+        },
+        inclination: {
+            message: `Are you sure you want to add an inclination job for dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+            content: "Adding incline may take around 10-15 mins of time depending on the size of the dataset. You can find the status in the jobs page.",
+            handler: handleCreateInclinationJob,
+            btnlabel: "Add Incline",
+            modaltype: "inclination"
+        }
+    };
+
+    const currentModalConfig = modalConfig[eventKey];
+
+    // Toast message handler
+    const getToastMessage = () => {
+        switch (eventKey) {
+            case 'release':
+                return operationResult === "success"
+                    ? "Success! Dataset release job has been initiated."
+                    : "Error! Failed to initiate dataset release job.";
+            case 'deactivate':
+                return operationResult === "success"
+                    ? "Success! Dataset has been deactivated."
+                    : "Error! Failed to deactivate dataset.";
+            case 'inclination':
+                return operationResult === "success"
+                    ? "Success! Inclination job has been initiated."
+                    : customErrorMessage;
+            default:
+                return "";
+        }
     };
 
     return (
@@ -211,11 +266,11 @@ const MyDatasets = () => {
                 </div>
                 <DatasetTableHeader isReleasedDataList={false} />
 
-                {isLoading ? ( 
+                {isLoading ? (
                     <div className="d-flex justify-content-center">
                         <Spinner size="md" />
                     </div>
-                ) : sortedData.length > 0 ? (  
+                ) : sortedData.length > 0 ? (
                     sortedData.map((list, index) => (
                         <DatasetRow
                             key={list.tdei_dataset_id}
@@ -224,7 +279,7 @@ const MyDatasets = () => {
                             isReleasedList={false}
                         />
                     ))
-                ) : (  
+                ) : (
                     <div className="d-flex align-items-center mt-2">
                         <img
                             src={iconNoData}
@@ -235,8 +290,8 @@ const MyDatasets = () => {
                     </div>
                 )}
 
-                {isError && "Error loading datasets"}  
-                {hasNextPage && !isLoading && ( 
+                {isError && "Error loading datasets"}
+                {hasNextPage && !isLoading && (
                     <Button
                         className="tdei-primary-button"
                         onClick={() => fetchNextPage()}
@@ -244,23 +299,22 @@ const MyDatasets = () => {
                     >
                         Load More {isFetchingNextPage && <Spinner size="sm" />}
                     </Button>
-                )}                
+                )}
                 <CustomModal
                     show={showSuccessModal}
-                    message={eventKey === 'release' ? `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?` : `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`}
-                    content={eventKey === 'release' ? "Release job will take around 4 to 6 hours. You can find the status in the jobs page." : "Deactivation will remove the dataset from the system."}
-                    handler={eventKey === 'release' ? handlePublishDataset : handleDeactivate}
-                    btnlabel={eventKey === 'release' ? "Release" : "Deactivate"}
-                    modaltype={eventKey === 'release' ? "release" : "deactivate"}
+                    message={currentModalConfig?.message}
+                    content={currentModalConfig?.content}
+                    handler={currentModalConfig?.handler}
+                    btnlabel={currentModalConfig?.btnlabel}
+                    modaltype={currentModalConfig?.modaltype}
                     onHide={() => setShowSuccessModal(false)}
-                    title={eventKey === 'release' ? "Release Dataset" : "Deactivate Dataset"}
-                    isLoading={isPublishing || isDeletingDataset}
+                    isLoading={isPublishing || isDeletingDataset || isCreatingJob}
                 />
                 <ResponseToast
                     showtoast={open}
                     handleClose={handleClose}
                     type={operationResult === "success" ? "success" : "error"}
-                    message={eventKey === 'release' ? (operationResult === "success" ? "Success! Dataset release job has been initiated." : "Error! Failed to initiate dataset release job.") : (operationResult === "success" ? "Success! Dataset has been deactivated." : "Error! Failed to deactivate dataset.")}
+                    message={getToastMessage()}
                 />
             </Form>
         </div>
