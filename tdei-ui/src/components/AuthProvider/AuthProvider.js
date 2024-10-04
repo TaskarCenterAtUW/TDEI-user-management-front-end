@@ -64,8 +64,12 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   React.useEffect(() => {
+    //----------------------------
+    //Case when the page gets refreshed then we ensure that authenticated page is not displayed to the user without access token
+    //----------------------------
+
     const accessToken = localStorage.getItem("accessToken");
-    // anonymous paths
+    // Anonymous paths
     const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify"];
     if (!accessToken && !excludePaths.includes(location.pathname)) {
       setToastMessage({
@@ -114,7 +118,7 @@ const AuthProvider = ({ children }) => {
         `${process.env.REACT_APP_URL}/authenticate`,
         { username: email, password },
         {
-          session_timeout_login: true
+          session_timeout_login_request: true
         }
       );
       const accessToken = response.data.access_token;

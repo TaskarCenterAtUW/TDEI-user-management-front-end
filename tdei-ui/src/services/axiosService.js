@@ -3,13 +3,6 @@ import { url, osmUrl } from "./apiServices";
 import { onTokenExpired } from "./tokenEventEmitter";
 let isRefreshing = false;
 
-function getRefreshToken() {
-  const token = localStorage.getItem("refreshToken");
-  if (token && token !== "undefined")
-    return token;
-  else
-    return undefined;
-}
 /**
  * Function to refresh the access token using the refresh token.
  */
@@ -20,25 +13,6 @@ async function refreshRequest(originalRequest) {
   isRefreshing = true;
   try {
     const token = localStorage.getItem("refreshToken");
-    // if (!token) {
-    let data = { refresh_token: token };
-    // let info = {};
-    // if (originalRequest.session_timeout_login) {
-    //   info.session_timeout_login = originalRequest.session_timeout_login;
-    // }
-    // if (originalRequest._retry) {
-    //   info._retry = originalRequest._retry;
-    // }
-    // console.log("Attempting to refresh token...");
-    // const response = await axios({
-    //   url: `${osmUrl}/refresh-token`,
-    //   method: "POST",
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   data
-    // });
-
     const response = await axios.post(
       `${osmUrl}/refresh-token`,
       token,
@@ -46,7 +20,7 @@ async function refreshRequest(originalRequest) {
         headers: {
           "Content-Type": "application/json",
         },
-        session_timeout_login: originalRequest.session_timeout_login ?? false,
+        session_timeout_login_request: originalRequest.session_timeout_login_request ?? false,
         _retry: originalRequest._retry ?? false
       }
     );
@@ -90,6 +64,9 @@ axios.interceptors.response.use(
 
     // Check if the error is 401 and the request hasn't been retried
     if ((error.status === 401 || error.response?.status === 401) && !originalRequest._retry) {
+      //----------------------------
+      // Case when  access token is expired
+      //--------------------------
       // Mark the request as retried
       originalRequest._retry = true;
 
@@ -109,38 +86,43 @@ axios.interceptors.response.use(
         // If refreshing the token also fails with a 401, trigger the re-login modal
         if (refreshError.status === 401 || refreshError.response?.status === 401) {
           console.log("Token refresh failed (401), triggering the re-login modal");
-          if (originalRequest.session_timeout_login != undefined && originalRequest.session_timeout_login) {
+          if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
             return Promise.reject(error);
           }
           else {
             onTokenExpired();
           }
         } else {
-          // If it's a different error (not related to token refresh), remove tokens and reload the page
-          console.log("Non-401 error while refreshing token, session expiry token removal");
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          window.location.reload();
+          //----------------------------
+          //Case when bad request is made after refresh token
+          //----------------------------
+          return Promise.reject(error);
         }
       }
     } else if ((error.status === 401 || error.response?.status === 401) && originalRequest._retry) {
+      //----------------------------
+      //Case when both access token and refresh token are expired
+      //----------------------------
+
       // If refreshing the token also fails with a 401, trigger the re-login modal
-      if (error.status === 401 || error.response?.status === 401) {
+      //----------------------------
+      //Removing local storage items so that when user refreshes or clicks on back button, user will be logged out
+      //----------------------------
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
+        //----------------------------
+        //Case when re login fails on session timeout popup
+        //----------------------------
+        return Promise.reject(error);
+      }
+      else {
+        //----------------------------
+        //Case when both access token and refresh token are expired
+        //----------------------------
         console.log("Token refresh failed (401), triggering the re-login modal");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        if (originalRequest.session_timeout_login != undefined && originalRequest.session_timeout_login) {
-          return Promise.reject(error);
-        }
-        else {
-          onTokenExpired();
-        }
-      } else {
-        // If it's a different error (not related to token refresh), remove tokens and reload the page
-        console.log("Non-401 error while refreshing token, session expiry token removal");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        window.location.reload();
+        onTokenExpired();
       }
     } else {
       // If it's a non-401 error, throw the error as-is
