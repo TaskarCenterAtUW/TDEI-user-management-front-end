@@ -40,29 +40,6 @@ const AuthProvider = ({ children }) => {
     setUser(userObj);
   };
 
-  const checkTokenExpired = (accessToken) => {
-    try {
-      const base64Url = accessToken.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const decodedToken = JSON.parse(window.atob(base64));
-      // Check if the token is expired
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decodedToken.exp < currentTime) {
-        // Show a toast message for token expiration
-        setToastMessage({
-          showtoast: true,
-          message: "Session expired. You have been logged out.",
-          type: "warning",
-        });
-        setTimeout(() => {
-          signout();
-        }, 2000);
-        return;
-      }
-    } catch (error) {
-      console.error("Failed to check token expiry:", error);
-    }
-  };
 
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -83,19 +60,20 @@ const AuthProvider = ({ children }) => {
     });
   }, []);
 
-  // React.useEffect(() => {
-  //   const accessToken = localStorage.getItem("accessToken");
-  //   if (!accessToken) {
-  //     setToastMessage({
-  //       showtoast: true,
-  //       message: "Session expired. You have been logged out.",
-  //       type: "warning",
-  //     });
-  //     setTimeout(() => {
-  //       signout();
-  //     }, 2000);
-  //   }
-  // }, [location]);
+  React.useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    // anonymous paths
+    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify"];
+    if (!accessToken && !excludePaths.includes(location.pathname)) {
+      setToastMessage({
+        showtoast: true,
+        message: "Session expired. You have been logged out.",
+        type: "warning",
+      });
+      window.location.href = "/login";
+
+    }
+  }, [location]);
 
   const signin = async (
     { username, password },
