@@ -53,7 +53,10 @@ const AuthProvider = ({ children }) => {
         signout();
       }, 2000);
     }
-    decodeToken(accessToken);
+    else {
+      let tokenDetails = decodeToken(accessToken);
+      setUserContext(tokenDetails);
+    }
     // Register the token expired event handler
     setTokenExpiredCallback(() => {
       setIsReLoginOpen(true);
@@ -71,7 +74,6 @@ const AuthProvider = ({ children }) => {
         type: "warning",
       });
       window.location.href = "/login";
-
     }
   }, [location]);
 
