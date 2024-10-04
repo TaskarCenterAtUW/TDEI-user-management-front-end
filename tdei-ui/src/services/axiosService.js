@@ -21,85 +21,85 @@ async function refreshRequest() {
         headers: {
           'Content-Type': 'application/json',
         },
-        data: token 
+        data: { refresh_token: token }, 
       });
+
       const { access_token, refresh_token } = response.data; 
       localStorage.setItem("accessToken", access_token); 
       localStorage.setItem("refreshToken", refresh_token); 
       console.log("Token refreshed successfully");
+      // Return new access token to use it for retrying
+      return access_token; 
     }
-  } catch (e) {
-    console.error("Error refreshing token", e);
-    // if(e.status === 401){
-    //   onTokenExpired(); 
-    // }else{
-    //   localStorage.removeItem("accessToken"); 
-    //   localStorage.removeItem("refreshToken");
-    //   // Reload the page to redirect the user
-    //   window.location.reload(); 
-    // }
-    throw e; 
+  } catch (error) {
+    console.error("Error refreshing token", error);
+    // Let the error be caught in the response interceptor
+    throw error; 
   } finally {
+    console.log("Token refreshing finally");
     isRefreshing = false; 
   }
 }
+
 axios.interceptors.request.use(
   async (config) => {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`; 
-      }
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; 
+    }
     return config;
   },
-  (error) => Promise.reject(error.response ?? error) 
+  (error) => Promise.reject(error.response ?? error)
 );
 
 axios.interceptors.response.use(
   (response) => {
+    // If the response is successful, just return it
     return response; 
   },
   async (error) => {
     const originalRequest = error.config; 
-    if (error.status === 401 && !originalRequest._retry) {
-      // Check if the error is a 401 and the request has not been retried yet
+
+    // Check if the error is 401 and the request hasn't been retried
+    if ((error.status === 401 || error.response?.status === 401) && !originalRequest._retry) {
       // Mark the request as retried
       originalRequest._retry = true; 
-      // try {
-      //   console.log("401 error received. Attempting to refresh token...");
-      //     try {
-      //       await refreshRequest(); 
-      //       return await axios(originalRequest);
-      //     } catch (error) { 
-      //       // Emit event for token expiration
-      //       onTokenExpired(); 
-      //       return Promise.reject(new Error("Session expired. Please log in again."));
-      //     } 
-      // } catch (e) {
-      //   console.error("Error retrying request after refreshing token", e);
-      //   if(e.status === 401){
-      //     onTokenExpired(); 
-      //   }else{
-      //     return Promise.reject(e); 
-      //   }
-      // }
+      
       try {
-        //refreshing the token and retrying the request
-        await refreshRequest();
-        return await axios(originalRequest);
-      } catch (error) {
-        if (error.status === 401) {
-          // If token refresh also fails (another 401), trigger the re-login modal
-          onTokenExpired();
+        console.log("401 error received. Attempting to refresh token...");
+        // Attempt to refresh the token
+        const newAccessToken = await refreshRequest(); 
+        if (newAccessToken) {
+          // Set the new token
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; 
+          // Retry the original request
+          return await axios(originalRequest); 
+        }
+
+      } catch (refreshError) {
+        // If refreshing the token also fails with a 401, trigger the re-login modal
+        if (refreshError.status === 401 || refreshError.response?.status === 401) {
+          console.log("Token refresh failed (401), triggering the re-login modal");
+          onTokenExpired(); 
         } else {
-          // If it's another error, clear tokens and reload
+          // If it's a different error (not related to token refresh), remove tokens and reload the page
+          console.log("Non-401 error while refreshing token, session expiry token removal");
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
-          window.location.reload();
+          window.location.reload(); 
         }
-        return Promise.reject(error);
       }
-    
+    } else if ((error.status === 401 || error.response?.status === 401) && originalRequest._retry) {
+      // If we already retried and it's still a 401, remove tokens and force login
+      console.log("401 after retry, clearing tokens and reloading");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.reload();
+    } else {
+      // If it's a non-401 error, throw the error as-is
+        return Promise.reject(error);
     }
-    return Promise.reject(error.response ?? error); 
+    // Final fallback in case of unhandled errors
+    return Promise.reject(error); 
   }
 );

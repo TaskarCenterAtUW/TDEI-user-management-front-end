@@ -104,6 +104,11 @@ const AuthProvider = ({ children }) => {
       setIsReLoginOpen(false);  
     } catch (err) {
       console.error("Re-login failed", err);
+      setToastMessage({
+        showtoast: true,
+        message: "Error while trying to re-login. Please try again!",
+        type: "warning",
+      });
     }
   };
 
