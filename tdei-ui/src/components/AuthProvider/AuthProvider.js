@@ -128,7 +128,7 @@ const AuthProvider = ({ children }) => {
       console.error("Re-login failed", err);
       setToastMessage({
         showtoast: true,
-        message: "Error while trying to re-login. Please try again!",
+        message: "Error while trying to re-login. Please verify your credentials and try again!",
         type: "warning",
       });
     }
