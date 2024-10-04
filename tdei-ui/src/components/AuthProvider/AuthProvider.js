@@ -11,11 +11,36 @@ const AuthProvider = ({ children }) => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isReLoginOpen, setIsReLoginOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState({ showtoast: false, message: '', type: '' }); 
+  const [toastMessage, setToastMessage] = useState({ showtoast: false, message: '', type: '' });
   const origin = location.pathname || "/";
 
   const decodeToken = (accessToken) => {
     if (accessToken === "undefined" || !accessToken) return;
+    try {
+      const base64Url = accessToken.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const decodedToken = JSON.parse(window.atob(base64));
+      return decodedToken;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  };
+
+  const setUserContext = (tokenDetails) => {
+    const userObj = {
+      name:
+        tokenDetails.name ||
+        tokenDetails.email ||
+        tokenDetails.preferred_username,
+      roles: tokenDetails.realm_access.roles,
+      isAdmin: tokenDetails.realm_access.roles?.includes("tdei-admin"),
+      userId: tokenDetails.sub,
+      emailId: tokenDetails.preferred_username,
+    };
+    setUser(userObj);
+  };
+
+  const checkTokenExpired = (accessToken) => {
     try {
       const base64Url = accessToken.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -30,35 +55,47 @@ const AuthProvider = ({ children }) => {
           type: "warning",
         });
         setTimeout(() => {
-          signout(); 
-        }, 2000); 
+          signout();
+        }, 2000);
         return;
       }
-      const userObj = {
-        name:
-          decodedToken.name ||
-          decodedToken.email ||
-          decodedToken.preferred_username,
-        roles: decodedToken.realm_access.roles,
-        isAdmin: decodedToken.realm_access.roles?.includes("tdei-admin"),
-        userId: decodedToken.sub,
-        emailId: decodedToken.preferred_username,
-      };
-      setUser(userObj);
     } catch (error) {
-      console.error("Failed to decode token:", error);
-      setUser(null);
+      console.error("Failed to check token expiry:", error);
     }
   };
 
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      setToastMessage({
+        showtoast: true,
+        message: "Session expired. You have been logged out.",
+        type: "warning",
+      });
+      setTimeout(() => {
+        signout();
+      }, 2000);
+    }
     decodeToken(accessToken);
     // Register the token expired event handler
     setTokenExpiredCallback(() => {
       setIsReLoginOpen(true);
     });
   }, []);
+
+  // React.useEffect(() => {
+  //   const accessToken = localStorage.getItem("accessToken");
+  //   if (!accessToken) {
+  //     setToastMessage({
+  //       showtoast: true,
+  //       message: "Session expired. You have been logged out.",
+  //       type: "warning",
+  //     });
+  //     setTimeout(() => {
+  //       signout();
+  //     }, 2000);
+  //   }
+  // }, [location]);
 
   const signin = async (
     { username, password },
@@ -78,7 +115,8 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
-      decodeToken(accessToken);
+      let tokenDetails = decodeToken(accessToken);
+      setUserContext(tokenDetails);
       successCallback(response);
       navigate(origin);
     } catch (err) {
@@ -88,20 +126,24 @@ const AuthProvider = ({ children }) => {
   };
 
   const handleReLogin = async (password) => {
-    const email = user?.emailId; 
+    const email = user?.emailId;
     if (!email) return;
 
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_URL}/authenticate`,
-        { username: email, password }
+        { username: email, password },
+        {
+          session_timeout_login: true
+        }
       );
       const accessToken = response.data.access_token;
       const refreshToken = response.data.refresh_token;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      decodeToken(accessToken);
-      setIsReLoginOpen(false);  
+      let tokenDetails = decodeToken(accessToken);
+      setUserContext(tokenDetails);
+      setIsReLoginOpen(false);
     } catch (err) {
       console.error("Re-login failed", err);
       setToastMessage({
@@ -124,7 +166,7 @@ const AuthProvider = ({ children }) => {
   };
 
   let value = { user, signin, signout, setIsReLoginOpen };
-  
+
 
   return (
     <AuthContext.Provider value={value}>
