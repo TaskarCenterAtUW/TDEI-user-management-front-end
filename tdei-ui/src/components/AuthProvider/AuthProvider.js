@@ -79,7 +79,7 @@ const AuthProvider = ({ children }) => {
         message: "Session expired. You have been logged out.",
         type: "warning",
       });
-      window.location.href = "/login";
+      window.location.href = "/";
     }
   }, [location]);
 
