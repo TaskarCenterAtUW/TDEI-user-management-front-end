@@ -96,7 +96,7 @@ axios.interceptors.response.use(
           //----------------------------
           //Case when bad request is made after refresh token
           //----------------------------
-          return Promise.reject(error);
+          return Promise.reject(refreshError);
         }
       }
     } else if ((error.status === 401 || error.response?.status === 401) && originalRequest._retry) {
