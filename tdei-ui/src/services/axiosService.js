@@ -84,7 +84,8 @@ axios.interceptors.response.use(
 
       } catch (refreshError) {
         // If refreshing the token also fails with a 401, trigger the re-login modal
-        if (refreshError.status === 401 || refreshError.response?.status === 401) {
+        console.log(originalRequest)
+        if ((refreshError.status === 401 || refreshError.response?.status === 401) && originalRequest.url.indexOf("/authenticate") === -1) {
           console.log("Token refresh failed (401), triggering the re-login modal");
           if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
             return Promise.reject(error);
@@ -99,7 +100,7 @@ axios.interceptors.response.use(
           return Promise.reject(refreshError);
         }
       }
-    } else if ((error.status === 401 || error.response?.status === 401) && originalRequest._retry) {
+    } else if ((error.status === 401 || error.response?.status === 401) && originalRequest._retry && originalRequest.url.indexOf("/authenticate") == -1) {
       //----------------------------
       //Case when both access token and refresh token are expired
       //----------------------------
@@ -110,7 +111,6 @@ axios.interceptors.response.use(
       //----------------------------
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-
       if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
         //----------------------------
         //Case when re login fails on session timeout popup

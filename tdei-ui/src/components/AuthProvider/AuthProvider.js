@@ -60,6 +60,7 @@ const AuthProvider = ({ children }) => {
     // Register the token expired event handler
     setTokenExpiredCallback(() => {
       setIsReLoginOpen(true);
+      // localStorage.setItem("relogin", true);
     });
   }, []);
 
@@ -69,9 +70,10 @@ const AuthProvider = ({ children }) => {
     //----------------------------
 
     const accessToken = localStorage.getItem("accessToken");
+    // const relogin = localStorage.getItem("relogin");
     // Anonymous paths
     const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify"];
-    if (!accessToken && !excludePaths.includes(location.pathname)) {
+    if (!accessToken && location && !excludePaths.includes(location.pathname) && location.pathname !== '/') {
       setToastMessage({
         showtoast: true,
         message: "Session expired. You have been logged out.",
@@ -125,6 +127,7 @@ const AuthProvider = ({ children }) => {
       const refreshToken = response.data.refresh_token;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      // localStorage.removeItem("relogin");
       let tokenDetails = decodeToken(accessToken);
       setUserContext(tokenDetails);
       setIsReLoginOpen(false);
@@ -149,7 +152,7 @@ const AuthProvider = ({ children }) => {
     setToastMessage({ ...toastMessage, showtoast: false });
   };
 
-  let value = { user, signin, signout, setIsReLoginOpen };
+  let value = { user, signin, signout, setIsReLoginOpen, isReLoginOpen };
 
 
   return (
