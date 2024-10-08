@@ -131,6 +131,8 @@ const AuthProvider = ({ children }) => {
       let tokenDetails = decodeToken(accessToken);
       setUserContext(tokenDetails);
       setIsReLoginOpen(false);
+      /// Reloading the window after successful relogin
+      window.location.reload();
     } catch (err) {
       console.error("Re-login failed", err);
       setToastMessage({
