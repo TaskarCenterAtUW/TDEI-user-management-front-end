@@ -54,7 +54,7 @@ const ForgotPassword = () => {
       
     } catch (err) {
       setLoading(false);
-      if (err.status === 400) {
+      if (err.status === 400 || err.response.status === 400) {
         dispatch(show({ message: "We couldn't recognize your account! Please verify your email", type: "danger" }));
       }
     }

@@ -39,7 +39,7 @@ const LoginPage = () => {
       (err) => {
         console.error(err);
         setLoading(false);
-        if(err.status === 403){
+        if(err.status === 403 || err.response.status === 403){
            navigate("/emailVerify", {
             state: {  
               actionText: "Your email address has not been verified. Please verify your email before logging in.",

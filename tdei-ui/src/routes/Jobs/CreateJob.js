@@ -130,8 +130,9 @@ const CreateJobService = () => {
     const onError = (err) => {
         setLoading(false);
         console.error("error message", err);
+        const error = err.data ?? err.message ?? err ?? "An unexpected error occurred";
+        setErrorMessage(error);
         setToast(true);
-        setErrorMessage(err.data ?? err.message.message ?? err);
     };
 
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
