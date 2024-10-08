@@ -27,6 +27,7 @@ const ReleasedDatasets = () => {
   const [sortedData, setSortedData] = useState([]);
   const [eventKey, setEventKey] = useState("");
   const navigate = useNavigate();
+  const [debounceProjectId, setDebounceProjectId] = useState("");
 
   const {
     data = [],
@@ -36,7 +37,7 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery, dataType);
+  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId);
 
   useEffect(() => {
     // Check if data is available and update sortedData
@@ -52,6 +53,14 @@ const ReleasedDatasets = () => {
       setSortedData(sorted);
     }
   }, [data]);
+
+  // Event handler for searching Project ID
+  const debouncedHandleProjectIdSearch = React.useMemo(
+    () => debounce((e) => {
+      setDebounceProjectId(e.target.value);  
+    }, 300),
+    []
+  );
 
   const handleSelectedDataType = (value) => {
     setDataType(value.value);
@@ -138,6 +147,14 @@ const ReleasedDatasets = () => {
                     setQuery(e.target.value);
                     debouncedHandleSearch(e);
                   }}
+                />
+              </div>
+              <div className={style.filterSection}>
+                <Form.Control
+                  className={style.customFormControl}
+                  aria-label="Search Project ID"
+                  placeholder="Search Project ID" 
+                  onChange={debouncedHandleProjectIdSearch}  
                 />
               </div>
               <div className={style.filterSection}>

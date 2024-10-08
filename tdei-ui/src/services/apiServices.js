@@ -470,7 +470,7 @@ export async function getDatasets(searchText, pageParam = 1, isAdmin, status, da
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId) {
   const params = {
     status: "Publish",
     page_no: pageParam,
@@ -482,6 +482,9 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
   if (dataType) {
     params.data_type = dataType;
   }
+  if (projectId) {
+    params.tdei_project_group_id = projectId;
+  }
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,
@@ -492,6 +495,7 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
     pageParam,
   };
 }
+
 export async function postPublishDataset(data) {
   var file_end_point = ''
   var service_type = data.service_type.toLowerCase();
