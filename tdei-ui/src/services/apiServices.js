@@ -668,3 +668,8 @@ export async function postResetPassword(data) {
   const res = await axios.post(`${url}/reset-credentials`, data);
   return res.data;
 }
+
+export async function createInclinationJob(tdei_dataset_id) {
+  const res = await axios.post(`${osmUrl}/osw/dataset-inclination/${tdei_dataset_id}`);
+  return res.data;
+}
