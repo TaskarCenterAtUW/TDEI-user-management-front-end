@@ -1,17 +1,18 @@
 import { useInfiniteQuery } from "react-query";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import { GET_DATASETS } from "../../utils";
-import { getDatasets, getReleasedDatasets } from "../../services";
+import { getDatasets } from "../../services";
 
-function useGetDatasets(isAdmin,searchText = "", status = "All", dataType) {
+function useGetDatasets(isAdmin, searchText = "", status = "All", dataType, validFrom, validTo, tdeiServiceId) {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
-  const [refreshKey, setRefreshKey] = useState(0); // for refeshing data
+  const [refreshKey, setRefreshKey] = useState(0); // for refreshing data
+  
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    [GET_DATASETS, searchText, status, dataType, tdei_project_group_id, refreshKey],
+    [GET_DATASETS, searchText, status, dataType, validFrom, validTo, tdeiServiceId, tdei_project_group_id, refreshKey],
     ({ pageParam }) =>
-    getDatasets(searchText, pageParam, isAdmin, status, dataType,tdei_project_group_id),
+      getDatasets(searchText, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, tdei_project_group_id),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10
@@ -20,10 +21,12 @@ function useGetDatasets(isAdmin,searchText = "", status = "All", dataType) {
       },
     }
   );
+
   // Function to refresh data
   const refreshData = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };
+
   return { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData };
 }
 

@@ -19,6 +19,10 @@ import { useNavigate } from 'react-router-dom';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 import { useAuth } from '../../hooks/useAuth';
 import useCreateInclinationJob from '../../hooks/jobs/useCreateInclinationJob';
+import DatePicker from '../../components/DatePicker/DatePicker';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import dayjs from 'dayjs';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -27,6 +31,9 @@ const MyDatasets = () => {
     const [debounceQuery, setDebounceQuery] = useState("");
     const [dataType, setDataType] = useState("");
     const [status, setStatus] = useState("All");
+    const [validFrom, setValidFrom] = useState(null);
+    const [validTo, setValidTo] = useState(null);
+    const [tdeiServiceId, setTdeiServiceId] = useState("");
     const [sortedData, setSortedData] = useState([]);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [selectedDataset, setSelectedDataset] = useState(null);
@@ -34,10 +41,10 @@ const MyDatasets = () => {
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType);
+
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId);
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
-
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -67,6 +74,12 @@ const MyDatasets = () => {
 
     const debouncedHandleSearch = debounce(handleSearch, 300);
 
+    const handleChangeDatePicker = (date, setter) => {
+        const dateString = date ? dayjs(date).format('MM-DD-YYYY') : null;
+        setter(dateString);
+        refreshData();
+    };
+
     const options = [
         { value: '', label: 'All' },
         { value: 'flex', label: 'Flex' },
@@ -80,11 +93,11 @@ const MyDatasets = () => {
         { value: 'Pre-Release', label: 'Pre-Release' },
     ];
 
-    const onSuccess = (data) => {
+    const onSuccess = () => {
         setOperationResult("success");
         setShowSuccessModal(false);
-        handleToast();
         queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
+        handleToast();
     };
 
     const onError = (err) => {
@@ -96,21 +109,23 @@ const MyDatasets = () => {
         setShowSuccessModal(false);
     };
 
-    const { isLoading: isPublishing, mutate } = usePublishDataset({ onSuccess, onError });
+    const { mutate: publishDataset, isLoading: isPublishing } = usePublishDataset({ onSuccess, onError });
     const { mutate: deactivateDataset, isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
     const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
     const { mutate: createInclinationJob, isLoading: isCreatingJob } = useCreateInclinationJob({ onSuccess, onError });
 
     const handlePublishDataset = () => {
-        mutate({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
+        publishDataset({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
     };
 
     const handleDeactivate = () => {
         deactivateDataset(selectedDataset.tdei_dataset_id);
     };
+
     const handleCreateInclinationJob = () => {
         createInclinationJob(selectedDataset.tdei_dataset_id);
     };
+
     const handleDownloadDataset = (dataset) => {
         downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
     };
@@ -123,7 +138,7 @@ const MyDatasets = () => {
         } else if (eventKey === 'cloneDataset') {
             navigate('/CloneDataset', { state: { dataset } });
         } else if (eventKey === 'downLoadDataset') {
-            handleDownloadDataset(dataset)
+            handleDownloadDataset(dataset);
         } else {
             setShowSuccessModal(true);
         }
@@ -158,14 +173,6 @@ const MyDatasets = () => {
 
         setSortedData(sorted);
     };
-
-    const handleToast = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
     // Modal configuration based on eventKey
     const modalConfig = {
         release: {
@@ -193,7 +200,14 @@ const MyDatasets = () => {
 
     const currentModalConfig = modalConfig[eventKey];
 
-    // Toast message handler
+    const handleToast = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const getToastMessage = () => {
         switch (eventKey) {
             case 'release':
@@ -217,8 +231,8 @@ const MyDatasets = () => {
         <div>
             <Form noValidate>
                 <div className='mt-4 mb-3'>
-                    <div className="d-flex justify-content-between flex-wrap">
-                        <div className='d-flex mb-2'>
+                    <div className={style.filterWrapper}>
+                        <div className={style.filtersContainer}>
                             <div className={style.filterSection}>
                                 <Form.Control
                                     className={style.customFormControl}
@@ -228,6 +242,14 @@ const MyDatasets = () => {
                                         setQuery(e.target.value);
                                         debouncedHandleSearch(e);
                                     }}
+                                />
+                            </div>
+                            <div className={style.filterSection}>
+                                <Form.Control
+                                    className={style.customFormControl}
+                                    aria-label="Search Service ID"
+                                    placeholder="Search By Service ID"
+                                    onChange={(e) => setTdeiServiceId(e.target.value)}
                                 />
                             </div>
                             <div className={style.filterSection}>
@@ -258,9 +280,35 @@ const MyDatasets = () => {
                                     />
                                 </div>
                             </div>
+                            <div className={style.dateSection}>
+                                <DatePicker
+                                    label="Valid From"
+                                    onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                                    dateValue={validFrom}
+                                />
+                                <IconButton aria-label="clear valid from" onClick={() => {
+                                    setValidFrom(null);
+                                    refreshData();
+                                }}>
+                                    <ClearIcon />
+                                </IconButton>
+                            </div>
+                            <div className={style.dateSection}>
+                                <DatePicker
+                                    label="Valid To"
+                                    onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                                    dateValue={validTo}
+                                />
+                                <IconButton aria-label="clear valid to" onClick={() => {
+                                    setValidTo(null);
+                                    refreshData();
+                                }}>
+                                    <ClearIcon />
+                                </IconButton>
+                            </div>
                         </div>
-                        <div className='d-flex align-items-center mb-2'>
-                            <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false} />
+                        <div className={style.sortContainer}>
+                            <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} />
                         </div>
                     </div>
                 </div>

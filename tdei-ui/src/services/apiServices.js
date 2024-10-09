@@ -443,34 +443,52 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, tdei_project_group_id) {
+export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, validFrom, validTo, tdei_service_id, tdei_project_group_id) {
   const params = {
     page_no: pageParam,
     page_size: 10,
   };
+
   if (status) {
     params.status = status;
   }
+
   if (searchText) {
     params.name = searchText;
   }
+
   if (dataType) {
     params.data_type = dataType;
   }
+
+  if (validFrom) {
+    params.valid_from = validFrom;
+  }
+
+  if (validTo) {
+    params.valid_to = validTo;
+  }
+
+  if (tdei_service_id) {
+    params.tdei_service_id = tdei_service_id;
+  }
+
   if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
+
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,
     method: "GET",
   });
+
   return {
     data: res.data,
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId) {
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdei_service_id) {
   const params = {
     status: "Publish",
     page_no: pageParam,
@@ -485,6 +503,16 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType, p
   if (projectId) {
     params.tdei_project_group_id = projectId;
   }
+  if (validFrom) {
+    params.valid_from = validFrom;
+  }
+  if (validTo) {
+    params.valid_to = validTo;
+  }
+  if (tdei_service_id) {
+    params.tdei_service_id = tdei_service_id;
+  }
+
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,

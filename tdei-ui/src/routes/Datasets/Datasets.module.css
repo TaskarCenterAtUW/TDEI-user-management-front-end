@@ -127,9 +127,6 @@
     margin-bottom: 15px;
     font-size: 14px;
   }
-  .customFormControl {
-    width: 300px; 
-  }
   .statusContainer{
     padding: 10px;
     width: 100px;
@@ -167,14 +164,6 @@
   color: #0969DA;
   opacity: 1;
 }
-.iconBtn{
-  background: #F8F8F8 0% 0% no-repeat padding-box !important;
-  border: 1px solid #CED4DA !important;
-  border-radius: 8px !important;
-  opacity: 1 !important; 
-  width: 35px;
-  height: 35px;
-}
 .divider {
   border-left: 1px solid #CED4DA;
   height: 30px;
@@ -187,7 +176,7 @@
   margin-right: 20px;
 }
 .filterField {
-  width: 220px;
+  width: 250px;
   margin-left: 10px;
 }
 .dropdownToggleSort {
@@ -241,4 +230,49 @@
     height: 16px;
     margin-right: 10px;
   }
+}
+.dateSection{
+  width: 330px; 
+}
+.filterWrapper {
+  display: flex;
+  flex-wrap: wrap;  
+  justify-content: space-between; 
+  align-items: flex-start; 
+}
+
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 20px; 
+  align-items: center;
+  flex: 1;
+}
+
+.dateSection {
+  display: flex;
+  align-items: center;
+  width: 330px; 
+}
+
+.sortContainer {
+  align-self: flex-start; 
+}
+
+.customFormControl {
+  width: 300px;
+  margin-right: 10px;
+}
+
+.dateSection .MuiFormControl-root {
+  margin-right: 10px;
+}
+
+.iconBtn {
+  background: #F8F8F8 0% 0% no-repeat padding-box !important;
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  opacity: 1 !important; 
+  width: 35px;
+  height: 35px;
 }

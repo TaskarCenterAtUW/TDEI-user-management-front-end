@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-const DatePicker = ({ field, form, label, onChange, dateValue }) => {
+const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
   const [isOpen, setIsOpen] = useState(false);
@@ -13,26 +13,26 @@ const DatePicker = ({ field, form, label, onChange, dateValue }) => {
 
   const handleOpen = () => {
     setIsOpen(true);
-    setFieldValue(name, parsedDate);
+    if (setFieldValue) setFieldValue(name, parsedDate);
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    if (!dateValue) {
+    if (!dateValue && setFieldValue) {
       setFieldValue(name, '');
-      setFieldTouched(name, true);
+      if (setFieldTouched) setFieldTouched(name, true);
     }
   };
 
   const handleChange = (date) => {
     const dateString = date ? date.toISOString() : null;
-    setFieldValue(name, dateString);
-    setFieldTouched(name, true);
+    if (setFieldValue) setFieldValue(name, dateString); 
+    if (setFieldTouched) setFieldTouched(name, true);
     onChange(dateString);
   };
 
   useEffect(() => {
-    if (dateValue) {
+    if (dateValue && setFieldTouched) {
       setFieldTouched(name, false);
     }
   }, [dateValue, setFieldTouched, name]);
@@ -68,8 +68,8 @@ const DatePicker = ({ field, form, label, onChange, dateValue }) => {
         slotProps={{
           textField: {
             placeholder: label,
-            error: form.touched[name] && !!form.errors[name],
-            onBlur: () => setFieldTouched(name, true),
+            error: touched?.[name] && !!errors?.[name],
+            onBlur: () => setFieldTouched && setFieldTouched(name, true),
           }
         }}
         onChange={handleChange}

@@ -5,14 +5,14 @@ import { getSelectedProjectGroup } from "../../selectors";
 import { GET_DATASETS } from "../../utils";
 import { getReleasedDatasets } from "../../services";
 
-function useGetReleasedDatasets(searchText = "", dataType, projectId = "") {
+function useGetReleasedDatasets(searchText = "", dataType, projectId = "", validFrom = null, validTo = null, tdeiServiceId) {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    [GET_DATASETS, searchText, dataType, tdei_project_group_id, refreshKey,projectId],
+    [GET_DATASETS, searchText, dataType, tdei_project_group_id, refreshKey, projectId, validFrom, validTo,tdeiServiceId],
     ({ pageParam }) =>
-      getReleasedDatasets(searchText, pageParam, dataType, projectId),
+      getReleasedDatasets(searchText, pageParam, dataType, projectId, validFrom, validTo,tdeiServiceId),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10

@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
-import DatasetsActions from "./DatasetsActions";
 import { useQueryClient } from 'react-query';
 import { useAuth } from '../../hooks/useAuth';
-import { GET_DATASETS } from '../../utils';
 import { debounce } from "lodash";
-import Typography from '@mui/material/Typography';
 import { Button, Form, Spinner, Col, Row } from "react-bootstrap";
-import style from "./Datasets.module.css"
+import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { toPascalCase, formatDate } from '../../utils';
@@ -16,11 +13,12 @@ import SortRefreshComponent from './SortRefreshComponent';
 import useGetReleasedDatasets from '../../hooks/service/useGetReleaseDatasets';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 import { useNavigate } from 'react-router-dom';
-
+import DatePicker from '../../components/DatePicker/DatePicker';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import dayjs from 'dayjs';
 
 const ReleasedDatasets = () => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
   const [, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
   const [dataType, setDataType] = useState("");
@@ -28,6 +26,19 @@ const ReleasedDatasets = () => {
   const [eventKey, setEventKey] = useState("");
   const navigate = useNavigate();
   const [debounceProjectId, setDebounceProjectId] = useState("");
+  const [tdeiServiceId, setTdeiServiceId] = useState(""); 
+
+  // Date range state
+  const [validFrom, setValidFrom] = useState(null);
+  const [validTo, setValidTo] = useState(null);
+
+  // Options for data type dropdown
+  const options = [
+    { value: '', label: 'All' },
+    { value: 'flex', label: 'Flex' },
+    { value: 'pathways', label: 'Pathways' },
+    { value: 'osw', label: 'OSW' },
+  ];
 
   const {
     data = [],
@@ -37,7 +48,7 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId);
+  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId, validFrom, validTo, tdeiServiceId);
 
   useEffect(() => {
     // Check if data is available and update sortedData
@@ -57,7 +68,7 @@ const ReleasedDatasets = () => {
   // Event handler for searching Project ID
   const debouncedHandleProjectIdSearch = React.useMemo(
     () => debounce((e) => {
-      setDebounceProjectId(e.target.value);  
+      setDebounceProjectId(e.target.value);
     }, 300),
     []
   );
@@ -77,13 +88,6 @@ const ReleasedDatasets = () => {
     []
   );
 
-  // Options for data type dropdown
-  const options = [
-    { value: '', label: 'All' },
-    { value: 'flex', label: 'Flex' },
-    { value: 'pathways', label: 'Pathways' },
-    { value: 'osw', label: 'OSW' },
-  ];
   const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
   const handleDownloadDataset = (dataset) => {
     downloadDataset({tdei_dataset_id : dataset.tdei_dataset_id, data_type: dataset.data_type});
@@ -130,14 +134,18 @@ const ReleasedDatasets = () => {
       navigate('/CloneDataset', { state: { dataset } });
     }
   };
+  const handleChangeDatePicker = (date, setter) => {
+    const dateString = date ? dayjs(date).format('MM-DD-YYYY') : null;
+    setter(dateString);
+    refreshData();
+};
 
   return (
     <div>
       <Form noValidate>
-        <div className='my-4'>
-          <div className="d-flex justify-content-between">
-
-            <div className='d-flex'>
+        <div className="my-4">
+          <div className={style.filterWrapper}>
+            <div className={style.filtersContainer}>
               <div className={style.filterSection}>
                 <Form.Control
                   className={style.customFormControl}
@@ -153,8 +161,16 @@ const ReleasedDatasets = () => {
                 <Form.Control
                   className={style.customFormControl}
                   aria-label="Search Project ID"
-                  placeholder="Search Project ID" 
-                  onChange={debouncedHandleProjectIdSearch}  
+                  placeholder="Search Project ID"
+                  onChange={debouncedHandleProjectIdSearch}
+                />
+              </div>
+              <div className={style.filterSection}>
+                <Form.Control
+                  className={style.customFormControl}
+                  aria-label="Search Service ID" 
+                  placeholder="Search By Service ID"
+                  onChange={(e) => setTdeiServiceId(e.target.value)}
                 />
               </div>
               <div className={style.filterSection}>
@@ -172,10 +188,39 @@ const ReleasedDatasets = () => {
                   />
                 </div>
               </div>
+              <div className={style.dateSection}>
+                <DatePicker
+                  label="Valid From"
+                  onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                  dateValue={validFrom}
+                />
+                <IconButton aria-label="clear valid from" onClick={() => {
+                  setValidFrom(null);
+                  refreshData();
+                }}>
+                  <ClearIcon />
+                </IconButton>
+              </div>
+              <div className={style.dateSection}>
+                <DatePicker
+                  label="Valid To"
+                  onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                  dateValue={validTo}
+                />
+                <IconButton aria-label="clear valid to" onClick={() => {
+                  setValidTo(null);
+                  refreshData();
+                }}>
+                  <ClearIcon />
+                </IconButton>
+              </div>
             </div>
-
-            <div className='d-flex align-items-center'>
-              <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={true} />
+            <div className={style.sortContainer}>
+              <SortRefreshComponent
+                handleRefresh={handleRefresh}
+                handleDropdownSelect={handleDropdownSelect}
+                isReleasedDataset={true}
+              />
             </div>
           </div>
         </div>
