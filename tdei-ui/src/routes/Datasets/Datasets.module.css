@@ -276,10 +276,10 @@
   border: 1px solid #CED4DA !important;
   border-radius: 8px !important;
   opacity: 1 !important; 
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
 }
 .sortByField {
-  width: 250px;
+  width: 300px;
   margin-right: 10px;
 }

@@ -26,7 +26,7 @@ const ReleasedDatasets = () => {
   const [eventKey, setEventKey] = useState("");
   const navigate = useNavigate();
   const [debounceProjectId, setDebounceProjectId] = useState("");
-  const [tdeiServiceId, setTdeiServiceId] = useState(""); 
+  const [tdeiServiceId, setTdeiServiceId] = useState("");
   const [sortField, setSortField] = useState('uploaded_timestamp');
   const [sortOrder, setSortOrder] = useState('DESC');
   // Date range state
@@ -49,7 +49,7 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId, validFrom, validTo, tdeiServiceId,sortField,sortOrder);
+  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId, validFrom, validTo, tdeiServiceId, sortField, sortOrder);
 
   useEffect(() => {
     // Check if data is available and update sortedData
@@ -91,10 +91,10 @@ const ReleasedDatasets = () => {
 
   const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
   const handleDownloadDataset = (dataset) => {
-    downloadDataset({tdei_dataset_id : dataset.tdei_dataset_id, data_type: dataset.data_type});
-};
+    downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
+  };
   // Event handler for selecting action button on a dataset
-  const onInspect = () => {}
+  const onInspect = () => { }
 
   const handleRefresh = () => {
     // Logic for refreshing
@@ -139,98 +139,102 @@ const ReleasedDatasets = () => {
     const dateString = date ? dayjs(date).format('MM-DD-YYYY') : null;
     setter(dateString);
     refreshData();
-};
-const handleSortChange = (field, order) => {
-  setSortField(field);
-  setSortOrder(order);
-  refreshData();  
-}
+  };
+  const handleSortChange = (field, order) => {
+    setSortField(field);
+    setSortOrder(order);
+    refreshData();
+  }
 
   return (
     <div>
       <Form noValidate>
-        <div className="my-4">
-          <div className={style.filterWrapper}>
-            <div className={style.filtersContainer}>
-              <div className={style.filterSection}>
-                <Form.Control
-                  className={style.customFormControl}
-                  aria-label="Text input with dropdown button"
-                  placeholder="Search Dataset"
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    debouncedHandleSearch(e);
-                  }}
-                />
-              </div>
-              <div className={style.filterSection}>
-                <Form.Control
-                  className={style.customFormControl}
-                  aria-label="Search Project ID"
-                  placeholder="Search Project ID"
-                  onChange={debouncedHandleProjectIdSearch}
-                />
-              </div>
-              <div className={style.filterSection}>
-                <Form.Control
-                  className={style.customFormControl}
-                  aria-label="Search Service ID" 
-                  placeholder="Search By Service ID"
-                  onChange={(e) => setTdeiServiceId(e.target.value)}
-                />
-              </div>
-              <div className={style.filterSection}>
-                <div className={style.filterLabel}>Type</div>
-                <div className={style.filterField}>
-                  <Select
-                    isSearchable={false}
-                    defaultValue={{ label: "All", value: "" }}
-                    onChange={handleSelectedDataType}
-                    options={options}
-                    components={{
-                      IndicatorSeparator: () => null
-                    }}
-                    styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
-                  />
-                </div>
-              </div>
-              <div className={style.dateSection}>
-                <DatePicker
-                  label="Valid From"
-                  onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
-                  dateValue={validFrom}
-                />
-                <IconButton aria-label="clear valid from" onClick={() => {
-                  setValidFrom(null);
-                  refreshData();
-                }}>
-                  <ClearIcon />
-                </IconButton>
-              </div>
-              <div className={style.dateSection}>
-                <DatePicker
-                  label="Valid To"
-                  onChange={(date) => handleChangeDatePicker(date, setValidTo)}
-                  dateValue={validTo}
-                />
-                <IconButton aria-label="clear valid to" onClick={() => {
-                  setValidTo(null);
-                  refreshData();
-                }}>
-                  <ClearIcon />
-                </IconButton>
-              </div>
-            </div>
-            <div className={style.sortContainer}>
+        <Row className="mb-3 d-flex justify-content-start" style={{ marginTop: '20px' }}>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>Type</Form.Label>
+              <Select
+                isSearchable={false}
+                defaultValue={{ label: "All", value: "" }}
+                onChange={handleSelectedDataType}
+                options={options}
+                components={{ IndicatorSeparator: () => null }}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={4}>
             <SortRefreshComponent
-                                handleRefresh={handleRefresh}
-                                handleSortChange={handleSortChange}
-                                sortField={sortField}
-                                sortOrder={sortOrder}
-                            />
-            </div>
-          </div>
-        </div>
+              handleRefresh={handleRefresh}
+              handleSortChange={handleSortChange}
+              sortField={sortField}
+              sortOrder={sortOrder}
+            />
+          </Col>
+        </Row>
+        <Row className="mb-3 d-flex justify-content-start">
+          <Col md={4} className="mb-2">
+            <Form.Group>
+              <Form.Control
+                aria-label="Search Dataset"
+                placeholder="Search Dataset"
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  debouncedHandleSearch(e);
+                }}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={4} className="mb-2">
+            <Form.Group>
+              <Form.Control
+                aria-label="Search Project ID"
+                placeholder="Search Project ID"
+                onChange={debouncedHandleProjectIdSearch}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={4} className="mb-2">
+            <Form.Group>
+              <Form.Control
+                aria-label="Search Service ID"
+                placeholder="Search By Service ID"
+                onChange={(e) => setTdeiServiceId(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row className="mb-4">
+          <Col md={12} className="d-flex align-items-center">
+            <Form.Group className="mb-0 d-flex align-items-center" style={{ marginRight: '42px' }}>
+              <DatePicker
+                label="Valid From"
+                onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                dateValue={validFrom}
+              />
+              <IconButton aria-label="clear valid from" onClick={() => {
+                setValidFrom(null);
+                refreshData();
+              }}>
+                <ClearIcon />
+              </IconButton>
+            </Form.Group>
+
+            <Form.Group className="mb-0 d-flex align-items-center">
+              <DatePicker
+                label="Valid To"
+                onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                dateValue={validTo}
+              />
+              <IconButton aria-label="clear valid to" onClick={() => {
+                setValidTo(null);
+                refreshData();
+              }}>
+                <ClearIcon />
+              </IconButton>
+            </Form.Group>
+          </Col>
+        </Row>
 
         <DatasetTableHeader isReleasedDataList={true} />
 
@@ -247,7 +251,7 @@ const handleSortChange = (field, order) => {
               isReleasedList={true}
             />
           ))
-        ) : (  
+        ) : (
           <div className="d-flex align-items-center mt-2">
             <img
               src={iconNoData}
@@ -260,7 +264,7 @@ const handleSortChange = (field, order) => {
 
         {isError ? "Error loading datasets" : null}
 
-        {hasNextPage && !isLoading && ( 
+        {hasNextPage && !isLoading && (
           <Button
             className="tdei-primary-button"
             onClick={() => fetchNextPage()}

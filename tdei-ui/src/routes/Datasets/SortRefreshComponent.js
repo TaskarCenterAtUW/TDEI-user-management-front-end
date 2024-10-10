@@ -4,6 +4,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SortIcon from '@mui/icons-material/Sort';
 import Select from 'react-select';
 import style from "./Datasets.module.css";
+import { Form, Row, Col } from "react-bootstrap";
 
 const SortRefreshComponent = ({ handleRefresh, handleSortChange, sortField, sortOrder }) => {
   const [order, setOrder] = useState(sortOrder);
@@ -29,13 +30,10 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, sortField, sort
   const selectedSortOption = sortOptions.find(option => option.value === sortField);
 
   return (
-    <div className="d-flex align-items-center">
-      <IconButton className={style.iconBtn} onClick={handleRefresh}>
-        <RefreshIcon style={{ fontSize: 20 }} />
-      </IconButton>
-      <div className={style.divider}></div>
-      <div className="d-flex align-items-center">
+    <Row className="align-items-center">
+      <Col className="d-flex align-items-center" md={10}>
         <div className={style.sortByField}>
+          <Form.Label>Sort By</Form.Label>
           <Select
             placeholder={"Sort By"}
             isSearchable={false}
@@ -49,11 +47,16 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, sortField, sort
             }}
           />
         </div>
-        <IconButton className={style.iconBtn} onClick={toggleSortOrder}>
+        <IconButton className={style.iconBtn} onClick={toggleSortOrder} style={{marginTop:'30px'}}>
           <SortIcon style={{ transform: `rotate(${order === 'DESC' ? 0 : 180}deg)` }} />
         </IconButton>
-      </div>
-    </div>
+      </Col>
+      <Col className="d-flex justify-content-end" md={2} style={{marginTop:'30px'}}>
+        <IconButton className={style.iconBtn} onClick={handleRefresh}>
+          <RefreshIcon style={{ fontSize: 20 }} />
+        </IconButton>
+      </Col>
+    </Row>
   );
 };
 

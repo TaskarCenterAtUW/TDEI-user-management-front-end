@@ -5,7 +5,6 @@ import { useQueryClient } from 'react-query';
 import useGetDatasets from '../../hooks/service/useGetDatasets';
 import { GET_DATASETS, PUBLISH_DATASETS } from '../../utils';
 import { debounce } from "lodash";
-import { Button, Form, Spinner } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
@@ -23,6 +22,7 @@ import DatePicker from '../../components/DatePicker/DatePicker';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
+import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -44,7 +44,7 @@ const MyDatasets = () => {
     const [debounceProjectId, setDebounceProjectId] = useState("");
     const [sortField, setSortField] = useState('uploaded_timestamp');
     const [sortOrder, setSortOrder] = useState('DESC');
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId,debounceProjectId,sortField,sortOrder);
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId, debounceProjectId, sortField, sortOrder);
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
 
@@ -84,8 +84,8 @@ const MyDatasets = () => {
     const handleSortChange = (field, order) => {
         setSortField(field);
         setSortOrder(order);
-        refreshData();  
-      }
+        refreshData();
+    }
 
     const options = [
         { value: '', label: 'All' },
@@ -154,32 +154,6 @@ const MyDatasets = () => {
     const handleRefresh = () => {
         refreshData();
     };
-
-    const handleDropdownSelect = (eventKey) => {
-        const sortData = (dataToSort, key) => {
-            return [...dataToSort].sort((a, b) => {
-                const aValue = key === 'metadata.dataset_detail.name'
-                    ? a?.metadata?.dataset_detail?.name ?? ''
-                    : a[key] ?? '';
-                const bValue = key === 'metadata.dataset_detail.name'
-                    ? b?.metadata?.dataset_detail?.name ?? ''
-                    : b[key] ?? '';
-
-                return aValue.localeCompare(bValue);
-            });
-        };
-
-        let sorted = [];
-        if (eventKey === 'status') {
-            sorted = sortData(sortedData, 'status');
-        } else if (eventKey === 'type') {
-            sorted = sortData(sortedData, 'data_type');
-        } else if (eventKey === 'asc') {
-            sorted = sortData(sortedData, 'metadata.dataset_detail.name');
-        }
-
-        setSortedData(sorted);
-    };
     // Modal configuration based on eventKey
     const modalConfig = {
         release: {
@@ -233,8 +207,8 @@ const MyDatasets = () => {
                 return "";
         }
     };
-      // To show Project ID search if the user is an admin
-      const debouncedHandleProjectIdSearch = React.useMemo(
+    // To show Project ID search if the user is an admin
+    const debouncedHandleProjectIdSearch = React.useMemo(
         () => debounce((e) => setDebounceProjectId(e.target.value), 300),
         []
     );
@@ -242,103 +216,106 @@ const MyDatasets = () => {
     return (
         <div>
             <Form noValidate>
-                <div className='mt-4 mb-3'>
-                    <div className={style.filterWrapper}>
-                        <div className={style.filtersContainer}>
-                            <div className={style.filterSection}>
-                                <Form.Control
-                                    className={style.customFormControl}
-                                    aria-label="Text input with dropdown button"
-                                    placeholder="Search Dataset"
-                                    onChange={(e) => {
-                                        setQuery(e.target.value);
-                                        debouncedHandleSearch(e);
-                                    }}
-                                />
-                            </div>
-                            {isAdmin && (
-                                <div className={style.filterSection}>
-                                    <Form.Control
-                                        className={style.customFormControl}
-                                        aria-label="Search Project ID"
-                                        placeholder="Search Project ID"
-                                        onChange={debouncedHandleProjectIdSearch}
-                                    />
-                                </div>
-                            )}
-                            <div className={style.filterSection}>
-                                <Form.Control
-                                    className={style.customFormControl}
-                                    aria-label="Search Service ID"
-                                    placeholder="Search By Service ID"
-                                    onChange={(e) => setTdeiServiceId(e.target.value)}
-                                />
-                            </div>
-                            <div className={style.filterSection}>
-                                <div className={style.filterLabel}>Type</div>
-                                <div className={style.filterField}>
-                                    <Select
-                                        isSearchable={false}
-                                        defaultValue={{ label: "All", value: "" }}
-                                        onChange={handleSelectedDataType}
-                                        options={options}
-                                        components={{
-                                            IndicatorSeparator: () => null
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className={style.filterSection}>
-                                <div className={style.filterLabel}>Status</div>
-                                <div className={style.filterField}>
-                                    <Select
-                                        isSearchable={false}
-                                        defaultValue={{ label: "All", value: "" }}
-                                        onChange={handleSelectedStatus}
-                                        options={statusOptions}
-                                        components={{
-                                            IndicatorSeparator: () => null
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className={style.dateSection}>
-                                <DatePicker
-                                    label="Valid From"
-                                    onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
-                                    dateValue={validFrom}
-                                />
-                                <IconButton aria-label="clear valid from" onClick={() => {
-                                    setValidFrom(null);
-                                    refreshData();
-                                }}>
-                                    <ClearIcon />
-                                </IconButton>
-                            </div>
-                            <div className={style.dateSection}>
-                                <DatePicker
-                                    label="Valid To"
-                                    onChange={(date) => handleChangeDatePicker(date, setValidTo)}
-                                    dateValue={validTo}
-                                />
-                                <IconButton aria-label="clear valid to" onClick={() => {
-                                    setValidTo(null);
-                                    refreshData();
-                                }}>
-                                    <ClearIcon />
-                                </IconButton>
-                            </div>
-                        </div>
-                        <div className={style.sortContainer}>
-                            <SortRefreshComponent
-                                handleRefresh={handleRefresh}
-                                handleSortChange={handleSortChange}
-                                sortField={sortField}
-                                sortOrder={sortOrder}
+                <Row className="mb-3" style={{ marginTop: '20px' }}>
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Label>Type</Form.Label>
+                            <Select
+                                isSearchable={false}
+                                defaultValue={{ label: "All", value: "" }}
+                                onChange={handleSelectedDataType}
+                                options={options}
+                                components={{ IndicatorSeparator: () => null }}
                             />
-                        </div>
-                    </div>
-                </div>
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Label>Status</Form.Label>
+                            <Select
+                                isSearchable={false}
+                                defaultValue={{ label: "All", value: "All" }}
+                                onChange={handleSelectedStatus}
+                                options={statusOptions}
+                                components={{ IndicatorSeparator: () => null }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <SortRefreshComponent
+                            handleRefresh={handleRefresh}
+                            handleSortChange={handleSortChange}
+                            sortField={sortField}
+                            sortOrder={sortOrder}
+                        />
+                    </Col>
+                </Row>
+                <Row className="mb-3 d-flex justify-content-start">
+                    <Col md={4} className="mb-2">
+                        <Form.Group>
+                            <Form.Control
+                                aria-label="Search Dataset"
+                                placeholder="Search Dataset"
+                                onChange={(e) => {
+                                    setQuery(e.target.value);
+                                    debouncedHandleSearch(e);
+                                }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    {isAdmin && (
+                        <Col md={4} className="mb-2">
+                            <Form.Group>
+                                <Form.Control
+                                    aria-label="Search Project ID"
+                                    placeholder="Search Project ID"
+                                    onChange={debouncedHandleProjectIdSearch}
+                                />
+                            </Form.Group>
+                        </Col>
+                    )}
+                    <Col md={4} className="mb-2">
+                        <Form.Group>
+                            <Form.Control
+                                aria-label="Search Service ID"
+                                placeholder="Search By Service ID"
+                                onChange={(e) => setTdeiServiceId(e.target.value)}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="mb-4">
+                    <Col md={12} className="d-flex align-items-center">
+                        <Form.Group className="mb-0 d-flex align-items-center" style={{ marginRight: '42px' }}>
+                            <DatePicker
+                                label="Valid From"
+                                onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                                dateValue={validFrom}
+                            />
+                            <IconButton aria-label="clear valid from" onClick={() => {
+                                setValidFrom(null);
+                                refreshData();
+                            }}>
+                                <ClearIcon />
+                            </IconButton>
+                        </Form.Group>
+
+                        <Form.Group className="mb-0 d-flex align-items-center">
+                            <DatePicker
+                                label="Valid To"
+                                onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                                dateValue={validTo}
+                            />
+                            <IconButton aria-label="clear valid to" onClick={() => {
+                                setValidTo(null);
+                                refreshData();
+                            }}>
+                                <ClearIcon />
+                            </IconButton>
+                        </Form.Group>
+                    </Col>
+                </Row>
                 <DatasetTableHeader isReleasedDataList={false} />
 
                 {isLoading ? (
