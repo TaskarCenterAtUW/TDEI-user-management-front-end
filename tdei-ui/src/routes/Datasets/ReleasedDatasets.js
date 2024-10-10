@@ -27,7 +27,8 @@ const ReleasedDatasets = () => {
   const navigate = useNavigate();
   const [debounceProjectId, setDebounceProjectId] = useState("");
   const [tdeiServiceId, setTdeiServiceId] = useState(""); 
-
+  const [sortField, setSortField] = useState('uploaded_timestamp');
+  const [sortOrder, setSortOrder] = useState('DESC');
   // Date range state
   const [validFrom, setValidFrom] = useState(null);
   const [validTo, setValidTo] = useState(null);
@@ -48,7 +49,7 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId, validFrom, validTo, tdeiServiceId);
+  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId, validFrom, validTo, tdeiServiceId,sortField,sortOrder);
 
   useEffect(() => {
     // Check if data is available and update sortedData
@@ -139,6 +140,11 @@ const ReleasedDatasets = () => {
     setter(dateString);
     refreshData();
 };
+const handleSortChange = (field, order) => {
+  setSortField(field);
+  setSortOrder(order);
+  refreshData();  
+}
 
   return (
     <div>
@@ -216,11 +222,12 @@ const ReleasedDatasets = () => {
               </div>
             </div>
             <div className={style.sortContainer}>
-              <SortRefreshComponent
-                handleRefresh={handleRefresh}
-                handleDropdownSelect={handleDropdownSelect}
-                isReleasedDataset={true}
-              />
+            <SortRefreshComponent
+                                handleRefresh={handleRefresh}
+                                handleSortChange={handleSortChange}
+                                sortField={sortField}
+                                sortOrder={sortOrder}
+                            />
             </div>
           </div>
         </div>

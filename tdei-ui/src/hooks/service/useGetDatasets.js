@@ -5,14 +5,14 @@ import { getSelectedProjectGroup } from "../../selectors";
 import { GET_DATASETS } from "../../utils";
 import { getDatasets } from "../../services";
 
-function useGetDatasets(isAdmin, searchText = "", status = "All", dataType, validFrom, validTo, tdeiServiceId, projectId = "") {
+function useGetDatasets(isAdmin, searchText = "", status = "All", dataType, validFrom, validTo, tdeiServiceId, projectId = "",sortField, sortOrder) {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
   const [refreshKey, setRefreshKey] = useState(0); // for refreshing data
   
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    [GET_DATASETS, searchText, status, dataType, validFrom, validTo, tdeiServiceId, projectId, tdei_project_group_id, refreshKey],
+    [GET_DATASETS, searchText, status, dataType, validFrom, validTo, tdeiServiceId, projectId, tdei_project_group_id, sortField, sortOrder,refreshKey],
     ({ pageParam }) =>
-      getDatasets(searchText, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, projectId, tdei_project_group_id),
+      getDatasets(searchText, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, projectId, tdei_project_group_id,sortField, sortOrder),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10

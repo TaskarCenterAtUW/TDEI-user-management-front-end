@@ -176,15 +176,18 @@
   margin-right: 20px;
 }
 .filterField {
-  width: 250px;
+  width: 300px;
   margin-left: 10px;
 }
 .dropdownToggleSort {
-  background-color: transparent !important; 
-  border: none !important; 
-  padding: 0 !important; 
+  background-color: white;
+  border: none;
+  color: black;
   display: flex;
   align-items: center;
+}
+.noDataIcon {
+  margin-right: 0.25rem;
 }
 .dropdownToggleSort::after {
   display: none; 
@@ -275,4 +278,8 @@
   opacity: 1 !important; 
   width: 35px;
   height: 35px;
+}
+.sortByField {
+  width: 250px;
+  margin-right: 10px;
 }

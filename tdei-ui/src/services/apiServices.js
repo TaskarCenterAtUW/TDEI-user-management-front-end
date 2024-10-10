@@ -443,10 +443,25 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, validFrom, validTo, tdei_service_id, projectId, tdei_project_group_id) {
+export async function getDatasets(
+  searchText,
+  pageParam = 1,
+  isAdmin,
+  status,
+  dataType,
+  validFrom,
+  validTo,
+  tdei_service_id,
+  projectId,
+  tdei_project_group_id,
+  sortField = 'uploaded_timestamp', 
+  sortOrder = 'DESC'              
+) {
   const params = {
     page_no: pageParam,
     page_size: 10,
+    sort_field: sortField,
+    sort_order: sortOrder
   };
 
   if (status) {
@@ -491,11 +506,14 @@ export async function getDatasets(searchText, pageParam = 1, isAdmin, status, da
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdei_service_id) {
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdei_service_id,sortField = 'uploaded_timestamp', 
+  sortOrder = 'DESC'    ) {
   const params = {
     status: "Publish",
     page_no: pageParam,
     page_size: 10,
+    sort_field: sortField,
+    sort_order: sortOrder
   };
   if (searchText) {
     params.name = searchText;

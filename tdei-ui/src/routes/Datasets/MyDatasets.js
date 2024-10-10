@@ -42,7 +42,9 @@ const MyDatasets = () => {
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
     const [debounceProjectId, setDebounceProjectId] = useState("");
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId,debounceProjectId);
+    const [sortField, setSortField] = useState('uploaded_timestamp');
+    const [sortOrder, setSortOrder] = useState('DESC');
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId,debounceProjectId,sortField,sortOrder);
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
 
@@ -79,6 +81,11 @@ const MyDatasets = () => {
         setter(dateString);
         refreshData();
     };
+    const handleSortChange = (field, order) => {
+        setSortField(field);
+        setSortOrder(order);
+        refreshData();  
+      }
 
     const options = [
         { value: '', label: 'All' },
@@ -323,7 +330,12 @@ const MyDatasets = () => {
                             </div>
                         </div>
                         <div className={style.sortContainer}>
-                            <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} />
+                            <SortRefreshComponent
+                                handleRefresh={handleRefresh}
+                                handleSortChange={handleSortChange}
+                                sortField={sortField}
+                                sortOrder={sortOrder}
+                            />
                         </div>
                     </div>
                 </div>
