@@ -41,8 +41,8 @@ const MyDatasets = () => {
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
-
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId);
+    const [debounceProjectId, setDebounceProjectId] = useState("");
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId,debounceProjectId);
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
 
@@ -226,6 +226,11 @@ const MyDatasets = () => {
                 return "";
         }
     };
+      // To show Project ID search if the user is an admin
+      const debouncedHandleProjectIdSearch = React.useMemo(
+        () => debounce((e) => setDebounceProjectId(e.target.value), 300),
+        []
+    );
 
     return (
         <div>
@@ -244,6 +249,16 @@ const MyDatasets = () => {
                                     }}
                                 />
                             </div>
+                            {isAdmin && (
+                                <div className={style.filterSection}>
+                                    <Form.Control
+                                        className={style.customFormControl}
+                                        aria-label="Search Project ID"
+                                        placeholder="Search Project ID"
+                                        onChange={debouncedHandleProjectIdSearch}
+                                    />
+                                </div>
+                            )}
                             <div className={style.filterSection}>
                                 <Form.Control
                                     className={style.customFormControl}

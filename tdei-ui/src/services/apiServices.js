@@ -443,7 +443,7 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, validFrom, validTo, tdei_service_id, tdei_project_group_id) {
+export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, validFrom, validTo, tdei_service_id, projectId, tdei_project_group_id) {
   const params = {
     page_no: pageParam,
     page_size: 10,
@@ -473,7 +473,10 @@ export async function getDatasets(searchText, pageParam = 1, isAdmin, status, da
     params.tdei_service_id = tdei_service_id;
   }
 
-  if (!isAdmin) {
+  //Project ID if the user is admin
+  if (isAdmin && projectId) {
+    params.tdei_project_group_id = projectId;
+  } else if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
 
