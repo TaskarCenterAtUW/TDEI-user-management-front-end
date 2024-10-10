@@ -12,7 +12,7 @@ import { debounce } from "lodash";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import JobListItem from "../../components/JobListItem/JobListItem";
-import SortRefreshComponent from "../Datasets/SortRefreshComponent";
+import JobSortRefreshComponent from "./JobSortRefreshComponent";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { width } from "@mui/system";
@@ -202,7 +202,7 @@ const Jobs = () => {
                             </div>
                         </div>
                         <div className="d-flex">
-                            <SortRefreshComponent handleRefresh={handleRefresh}
+                            <JobSortRefreshComponent handleRefresh={handleRefresh}
                                 handleDropdownSelect={handleDropdownSelect}
                                 isReleasedDataset={false} />
                         </div>

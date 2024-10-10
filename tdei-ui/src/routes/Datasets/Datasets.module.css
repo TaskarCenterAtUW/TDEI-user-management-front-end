@@ -283,3 +283,13 @@
   width: 300px;
   margin-right: 10px;
 }
+.jobDropdownToggleSort {
+  background-color: transparent !important; 
+  border: none !important; 
+  padding: 0 !important; 
+  display: flex;
+  align-items: center;
+}
+.jobDropdownToggleSort::after {
+  display: none; 
+}
