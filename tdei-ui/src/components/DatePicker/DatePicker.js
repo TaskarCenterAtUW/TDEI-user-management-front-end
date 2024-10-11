@@ -8,24 +8,23 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
-  const [isOpen, setIsOpen] = useState(false);
-  const parsedDate = dateValue ? new Date(dateValue) : '';
+  const [internalDate, setInternalDate] = useState(null);
 
-  const handleOpen = () => {
-    setIsOpen(true);
-    if (setFieldValue) setFieldValue(name, parsedDate);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    if (!dateValue && setFieldValue) {
-      setFieldValue(name, '');
-      if (setFieldTouched) setFieldTouched(name, true);
+  // Sync internal date state with the dateValue prop
+  useEffect(() => {
+    if (dateValue) {
+      const newDate = new Date(dateValue);
+      if (!isNaN(newDate.getTime())) {
+        setInternalDate(dayjs(newDate));
+      }
+    } else {
+      setInternalDate(null);
     }
-  };
+  }, [dateValue]);
 
   const handleChange = (date) => {
     const dateString = date ? date.toISOString() : null;
+    setInternalDate(date);  
     if (setFieldValue) setFieldValue(name, dateString); 
     if (setFieldTouched) setFieldTouched(name, true);
     onChange(dateString);
@@ -61,10 +60,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
             fontSize: '16px',
           },
         }}
-        open={isOpen}
-        onOpen={handleOpen}
-        onClose={handleClose}
-        value={parsedDate ? dayjs(parsedDate) : null}
+        value={internalDate}
         slotProps={{
           textField: {
             placeholder: label,
