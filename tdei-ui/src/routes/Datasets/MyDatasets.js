@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
 import { useQueryClient } from 'react-query';
@@ -8,7 +8,6 @@ import { debounce } from "lodash";
 import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
-import { toPascalCase } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import usePublishDataset from '../../hooks/datasets/usePublishDataset';
 import useDeactivateDataset from '../../hooks/datasets/useDeactivateDataset';
@@ -23,6 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
 import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
+import ProjectAutocomplete from '../../components/ProjectAutocomplete/ProjectAutocomplete';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -41,10 +41,22 @@ const MyDatasets = () => {
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
-    const [debounceProjectId, setDebounceProjectId] = useState("");
+    const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
     const [sortField, setSortField] = useState('uploaded_timestamp');
     const [sortOrder, setSortOrder] = useState('DESC');
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId, debounceProjectId, sortField, sortOrder);
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(
+        isAdmin,
+        debounceQuery,
+        status,
+        dataType,
+        validFrom,
+        validTo,
+        tdeiServiceId,
+        selectedProjectGroupId,
+        sortField,
+        sortOrder
+    );
+
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
 
@@ -62,6 +74,10 @@ const MyDatasets = () => {
         }
     }, [data]);
 
+    useEffect(() => {
+        console.log("Selected Project Group ID in MyDatasets:", selectedProjectGroupId);
+    }, [selectedProjectGroupId]);
+
     const handleSelectedDataType = (value) => {
         setDataType(value.value);
     };
@@ -74,18 +90,22 @@ const MyDatasets = () => {
         setDebounceQuery(e.target.value);
     };
 
-    const debouncedHandleSearch = debounce(handleSearch, 300);
+    const debouncedHandleSearch = useCallback(
+        debounce(handleSearch, 300),
+        []
+    );
 
     const handleChangeDatePicker = (date, setter) => {
         const dateString = date ? dayjs(date).format('MM-DD-YYYY') : null;
         setter(dateString);
         refreshData();
     };
+
     const handleSortChange = (field, order) => {
         setSortField(field);
         setSortOrder(order);
         refreshData();
-    }
+    };
 
     const options = [
         { value: '', label: 'All' },
@@ -207,11 +227,6 @@ const MyDatasets = () => {
                 return "";
         }
     };
-    // To show Project ID search if the user is an admin
-    const debouncedHandleProjectIdSearch = React.useMemo(
-        () => debounce((e) => setDebounceProjectId(e.target.value), 300),
-        []
-    );
 
     return (
         <div>
@@ -266,10 +281,8 @@ const MyDatasets = () => {
                     {isAdmin && (
                         <Col md={4} className="mb-2">
                             <Form.Group>
-                                <Form.Control
-                                    aria-label="Search Project ID"
-                                    placeholder="Search Project ID"
-                                    onChange={debouncedHandleProjectIdSearch}
+                                <ProjectAutocomplete
+                                    onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
                                 />
                             </Form.Group>
                         </Col>

@@ -452,7 +452,7 @@ export async function getDatasets(
   validFrom,
   validTo,
   tdei_service_id,
-  projectId,
+  selectedProjectGroupId,
   tdei_project_group_id,
   sortField = 'uploaded_timestamp', 
   sortOrder = 'DESC'              
@@ -489,8 +489,8 @@ export async function getDatasets(
   }
 
   //Project ID if the user is admin
-  if (isAdmin && projectId) {
-    params.tdei_project_group_id = projectId;
+  if (isAdmin && selectedProjectGroupId) {
+    params.tdei_project_group_id = selectedProjectGroupId;
   } else if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
