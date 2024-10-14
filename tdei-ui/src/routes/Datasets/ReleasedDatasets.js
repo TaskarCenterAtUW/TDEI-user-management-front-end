@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
 import { useQueryClient } from 'react-query';
@@ -17,15 +17,18 @@ import DatePicker from '../../components/DatePicker/DatePicker';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
+import ProjectAutocomplete from './../../components/ProjectAutocomplete/ProjectAutocomplete';
 
 const ReleasedDatasets = () => {
-  const [, setQuery] = useState("");
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
   const [dataType, setDataType] = useState("");
   const [sortedData, setSortedData] = useState([]);
   const [eventKey, setEventKey] = useState("");
   const navigate = useNavigate();
-  const [debounceProjectId, setDebounceProjectId] = useState("");
+  const [projectGroupId, setProjectGroupId] = useState(""); 
   const [tdeiServiceId, setTdeiServiceId] = useState("");
   const [sortField, setSortField] = useState('uploaded_timestamp');
   const [sortOrder, setSortOrder] = useState('DESC');
@@ -49,7 +52,16 @@ const ReleasedDatasets = () => {
     isFetchingNextPage,
     isLoading,
     refreshData
-  } = useGetReleasedDatasets(debounceQuery, dataType, debounceProjectId, validFrom, validTo, tdeiServiceId, sortField, sortOrder);
+  } = useGetReleasedDatasets(
+    debounceQuery,
+    dataType,
+    projectGroupId,
+    validFrom,
+    validTo,
+    tdeiServiceId,
+    sortField,
+    sortOrder
+  );
 
   useEffect(() => {
     // Check if data is available and update sortedData
@@ -66,16 +78,9 @@ const ReleasedDatasets = () => {
     }
   }, [data]);
 
-  // Event handler for searching Project ID
-  const debouncedHandleProjectIdSearch = React.useMemo(
-    () => debounce((e) => {
-      setDebounceProjectId(e.target.value);
-    }, 300),
-    []
-  );
-
   const handleSelectedDataType = (value) => {
     setDataType(value.value);
+    refreshData();
   };
 
   // Event handler for searching services
@@ -101,32 +106,6 @@ const ReleasedDatasets = () => {
     refreshData();
   };
 
-  const handleDropdownSelect = (eventKey) => {
-    const sortData = (dataToSort, key) => {
-      return [...dataToSort].sort((a, b) => {
-        const aValue = key === 'metadata.dataset_detail.name'
-          ? a?.metadata?.dataset_detail?.name ?? ''
-          : a[key] ?? '';
-        const bValue = key === 'metadata.dataset_detail.name'
-          ? b?.metadata?.dataset_detail?.name ?? ''
-          : b[key] ?? '';
-
-        return aValue.localeCompare(bValue);
-      });
-    };
-
-    let sorted = [];
-    if (eventKey === 'status') {
-      sorted = sortData(sortedData, 'status');
-    } else if (eventKey === 'type') {
-      sorted = sortData(sortedData, 'data_type');
-    } else if (eventKey === 'asc') {
-      sorted = sortData(sortedData, 'metadata.dataset_detail.name');
-    }
-
-    setSortedData(sorted);
-  };
-
   const onAction = (eventKey, dataset) => {
     setEventKey(eventKey);
     if (eventKey === 'downLoadDataset') {
@@ -145,6 +124,12 @@ const ReleasedDatasets = () => {
     setSortOrder(order);
     refreshData();
   }
+
+  // Callback to handle project group selection from ProjectAutocomplete
+  const handleProjectGroupSelect = useCallback((selectedId) => {
+    setProjectGroupId(selectedId || "");
+    refreshData(); 
+  }, [refreshData]);
 
   return (
     <div>
@@ -186,10 +171,8 @@ const ReleasedDatasets = () => {
           </Col>
           <Col md={4} className="mb-2">
             <Form.Group>
-              <Form.Control
-                aria-label="Search Project ID"
-                placeholder="Search Project ID"
-                onChange={debouncedHandleProjectIdSearch}
+              <ProjectAutocomplete
+                onSelectProjectGroup={handleProjectGroupSelect}
               />
             </Form.Group>
           </Col>
