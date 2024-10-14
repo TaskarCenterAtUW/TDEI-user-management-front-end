@@ -5,7 +5,6 @@ import { useQueryClient } from 'react-query';
 import useGetDatasets from '../../hooks/service/useGetDatasets';
 import { GET_DATASETS, PUBLISH_DATASETS } from '../../utils';
 import { debounce } from "lodash";
-import { Button, Form, Spinner } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
@@ -19,6 +18,11 @@ import { useNavigate } from 'react-router-dom';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 import { useAuth } from '../../hooks/useAuth';
 import useCreateInclinationJob from '../../hooks/jobs/useCreateInclinationJob';
+import DatePicker from '../../components/DatePicker/DatePicker';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import dayjs from 'dayjs';
+import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -27,6 +31,9 @@ const MyDatasets = () => {
     const [debounceQuery, setDebounceQuery] = useState("");
     const [dataType, setDataType] = useState("");
     const [status, setStatus] = useState("All");
+    const [validFrom, setValidFrom] = useState(null);
+    const [validTo, setValidTo] = useState(null);
+    const [tdeiServiceId, setTdeiServiceId] = useState("");
     const [sortedData, setSortedData] = useState([]);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [selectedDataset, setSelectedDataset] = useState(null);
@@ -34,10 +41,12 @@ const MyDatasets = () => {
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType);
+    const [debounceProjectId, setDebounceProjectId] = useState("");
+    const [sortField, setSortField] = useState('uploaded_timestamp');
+    const [sortOrder, setSortOrder] = useState('DESC');
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin, debounceQuery, status, dataType, validFrom, validTo, tdeiServiceId, debounceProjectId, sortField, sortOrder);
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
-
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -67,6 +76,17 @@ const MyDatasets = () => {
 
     const debouncedHandleSearch = debounce(handleSearch, 300);
 
+    const handleChangeDatePicker = (date, setter) => {
+        const dateString = date ? dayjs(date).format('MM-DD-YYYY') : null;
+        setter(dateString);
+        refreshData();
+    };
+    const handleSortChange = (field, order) => {
+        setSortField(field);
+        setSortOrder(order);
+        refreshData();
+    }
+
     const options = [
         { value: '', label: 'All' },
         { value: 'flex', label: 'Flex' },
@@ -80,11 +100,11 @@ const MyDatasets = () => {
         { value: 'Pre-Release', label: 'Pre-Release' },
     ];
 
-    const onSuccess = (data) => {
+    const onSuccess = () => {
         setOperationResult("success");
         setShowSuccessModal(false);
-        handleToast();
         queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
+        handleToast();
     };
 
     const onError = (err) => {
@@ -96,21 +116,23 @@ const MyDatasets = () => {
         setShowSuccessModal(false);
     };
 
-    const { isLoading: isPublishing, mutate } = usePublishDataset({ onSuccess, onError });
+    const { mutate: publishDataset, isLoading: isPublishing } = usePublishDataset({ onSuccess, onError });
     const { mutate: deactivateDataset, isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
     const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
     const { mutate: createInclinationJob, isLoading: isCreatingJob } = useCreateInclinationJob({ onSuccess, onError });
 
     const handlePublishDataset = () => {
-        mutate({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
+        publishDataset({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
     };
 
     const handleDeactivate = () => {
         deactivateDataset(selectedDataset.tdei_dataset_id);
     };
+
     const handleCreateInclinationJob = () => {
         createInclinationJob(selectedDataset.tdei_dataset_id);
     };
+
     const handleDownloadDataset = (dataset) => {
         downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
     };
@@ -123,7 +145,7 @@ const MyDatasets = () => {
         } else if (eventKey === 'cloneDataset') {
             navigate('/CloneDataset', { state: { dataset } });
         } else if (eventKey === 'downLoadDataset') {
-            handleDownloadDataset(dataset)
+            handleDownloadDataset(dataset);
         } else {
             setShowSuccessModal(true);
         }
@@ -131,40 +153,6 @@ const MyDatasets = () => {
 
     const handleRefresh = () => {
         refreshData();
-    };
-
-    const handleDropdownSelect = (eventKey) => {
-        const sortData = (dataToSort, key) => {
-            return [...dataToSort].sort((a, b) => {
-                const aValue = key === 'metadata.dataset_detail.name'
-                    ? a?.metadata?.dataset_detail?.name ?? ''
-                    : a[key] ?? '';
-                const bValue = key === 'metadata.dataset_detail.name'
-                    ? b?.metadata?.dataset_detail?.name ?? ''
-                    : b[key] ?? '';
-
-                return aValue.localeCompare(bValue);
-            });
-        };
-
-        let sorted = [];
-        if (eventKey === 'status') {
-            sorted = sortData(sortedData, 'status');
-        } else if (eventKey === 'type') {
-            sorted = sortData(sortedData, 'data_type');
-        } else if (eventKey === 'asc') {
-            sorted = sortData(sortedData, 'metadata.dataset_detail.name');
-        }
-
-        setSortedData(sorted);
-    };
-
-    const handleToast = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
     };
     // Modal configuration based on eventKey
     const modalConfig = {
@@ -193,7 +181,14 @@ const MyDatasets = () => {
 
     const currentModalConfig = modalConfig[eventKey];
 
-    // Toast message handler
+    const handleToast = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const getToastMessage = () => {
         switch (eventKey) {
             case 'release':
@@ -212,58 +207,115 @@ const MyDatasets = () => {
                 return "";
         }
     };
+    // To show Project ID search if the user is an admin
+    const debouncedHandleProjectIdSearch = React.useMemo(
+        () => debounce((e) => setDebounceProjectId(e.target.value), 300),
+        []
+    );
 
     return (
         <div>
             <Form noValidate>
-                <div className='mt-4 mb-3'>
-                    <div className="d-flex justify-content-between flex-wrap">
-                        <div className='d-flex mb-2'>
-                            <div className={style.filterSection}>
+                <Row className="mb-3" style={{ marginTop: '20px' }}>
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Label>Type</Form.Label>
+                            <Select
+                                isSearchable={false}
+                                defaultValue={{ label: "All", value: "" }}
+                                onChange={handleSelectedDataType}
+                                options={options}
+                                components={{ IndicatorSeparator: () => null }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Label>Status</Form.Label>
+                            <Select
+                                isSearchable={false}
+                                defaultValue={{ label: "All", value: "All" }}
+                                onChange={handleSelectedStatus}
+                                options={statusOptions}
+                                components={{ IndicatorSeparator: () => null }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <SortRefreshComponent
+                            handleRefresh={handleRefresh}
+                            handleSortChange={handleSortChange}
+                            sortField={sortField}
+                            sortOrder={sortOrder}
+                        />
+                    </Col>
+                </Row>
+                <Row className="mb-3 d-flex justify-content-start">
+                    <Col md={4} className="mb-2">
+                        <Form.Group>
+                            <Form.Control
+                                aria-label="Search Dataset"
+                                placeholder="Search Dataset"
+                                onChange={(e) => {
+                                    setQuery(e.target.value);
+                                    debouncedHandleSearch(e);
+                                }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    {isAdmin && (
+                        <Col md={4} className="mb-2">
+                            <Form.Group>
                                 <Form.Control
-                                    className={style.customFormControl}
-                                    aria-label="Text input with dropdown button"
-                                    placeholder="Search Dataset"
-                                    onChange={(e) => {
-                                        setQuery(e.target.value);
-                                        debouncedHandleSearch(e);
-                                    }}
+                                    aria-label="Search Project ID"
+                                    placeholder="Search Project ID"
+                                    onChange={debouncedHandleProjectIdSearch}
                                 />
-                            </div>
-                            <div className={style.filterSection}>
-                                <div className={style.filterLabel}>Type</div>
-                                <div className={style.filterField}>
-                                    <Select
-                                        isSearchable={false}
-                                        defaultValue={{ label: "All", value: "" }}
-                                        onChange={handleSelectedDataType}
-                                        options={options}
-                                        components={{
-                                            IndicatorSeparator: () => null
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className={style.filterSection}>
-                                <div className={style.filterLabel}>Status</div>
-                                <div className={style.filterField}>
-                                    <Select
-                                        isSearchable={false}
-                                        defaultValue={{ label: "All", value: "" }}
-                                        onChange={handleSelectedStatus}
-                                        options={statusOptions}
-                                        components={{
-                                            IndicatorSeparator: () => null
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className='d-flex align-items-center mb-2'>
-                            <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false} />
-                        </div>
-                    </div>
-                </div>
+                            </Form.Group>
+                        </Col>
+                    )}
+                    <Col md={4} className="mb-2">
+                        <Form.Group>
+                            <Form.Control
+                                aria-label="Search Service ID"
+                                placeholder="Search By Service ID"
+                                onChange={(e) => setTdeiServiceId(e.target.value)}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="mb-4">
+                    <Col md={12} className="d-flex align-items-center">
+                        <Form.Group className="mb-0 d-flex align-items-center" style={{ marginRight: '42px' }}>
+                            <DatePicker
+                                label="Valid From"
+                                onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                                dateValue={validFrom}
+                            />
+                            <IconButton aria-label="clear valid from" onClick={() => {
+                                setValidFrom(null);
+                                refreshData();
+                            }}>
+                                <ClearIcon />
+                            </IconButton>
+                        </Form.Group>
+
+                        <Form.Group className="mb-0 d-flex align-items-center">
+                            <DatePicker
+                                label="Valid To"
+                                onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                                dateValue={validTo}
+                            />
+                            <IconButton aria-label="clear valid to" onClick={() => {
+                                setValidTo(null);
+                                refreshData();
+                            }}>
+                                <ClearIcon />
+                            </IconButton>
+                        </Form.Group>
+                    </Col>
+                </Row>
                 <DatasetTableHeader isReleasedDataList={false} />
 
                 {isLoading ? (

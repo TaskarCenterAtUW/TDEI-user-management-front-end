@@ -5,34 +5,33 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-const DatePicker = ({ field, form, label, onChange, dateValue }) => {
+const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
-  const [isOpen, setIsOpen] = useState(false);
-  const parsedDate = dateValue ? new Date(dateValue) : '';
+  const [internalDate, setInternalDate] = useState(null);
 
-  const handleOpen = () => {
-    setIsOpen(true);
-    setFieldValue(name, parsedDate);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    if (!dateValue) {
-      setFieldValue(name, '');
-      setFieldTouched(name, true);
+  // Sync internal date state with the dateValue prop
+  useEffect(() => {
+    if (dateValue) {
+      const newDate = new Date(dateValue);
+      if (!isNaN(newDate.getTime())) {
+        setInternalDate(dayjs(newDate));
+      }
+    } else {
+      setInternalDate(null);
     }
-  };
+  }, [dateValue]);
 
   const handleChange = (date) => {
     const dateString = date ? date.toISOString() : null;
-    setFieldValue(name, dateString);
-    setFieldTouched(name, true);
+    setInternalDate(date);  
+    if (setFieldValue) setFieldValue(name, dateString); 
+    if (setFieldTouched) setFieldTouched(name, true);
     onChange(dateString);
   };
 
   useEffect(() => {
-    if (dateValue) {
+    if (dateValue && setFieldTouched) {
       setFieldTouched(name, false);
     }
   }, [dateValue, setFieldTouched, name]);
@@ -61,15 +60,12 @@ const DatePicker = ({ field, form, label, onChange, dateValue }) => {
             fontSize: '16px',
           },
         }}
-        open={isOpen}
-        onOpen={handleOpen}
-        onClose={handleClose}
-        value={parsedDate ? dayjs(parsedDate) : null}
+        value={internalDate}
         slotProps={{
           textField: {
             placeholder: label,
-            error: form.touched[name] && !!form.errors[name],
-            onBlur: () => setFieldTouched(name, true),
+            error: touched?.[name] && !!errors?.[name],
+            onBlur: () => setFieldTouched && setFieldTouched(name, true),
           }
         }}
         onChange={handleChange}

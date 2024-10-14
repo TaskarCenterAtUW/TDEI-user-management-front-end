@@ -443,38 +443,77 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, tdei_project_group_id) {
+export async function getDatasets(
+  searchText,
+  pageParam = 1,
+  isAdmin,
+  status,
+  dataType,
+  validFrom,
+  validTo,
+  tdei_service_id,
+  projectId,
+  tdei_project_group_id,
+  sortField = 'uploaded_timestamp', 
+  sortOrder = 'DESC'              
+) {
   const params = {
     page_no: pageParam,
     page_size: 10,
+    sort_field: sortField,
+    sort_order: sortOrder
   };
+
   if (status) {
     params.status = status;
   }
+
   if (searchText) {
     params.name = searchText;
   }
+
   if (dataType) {
     params.data_type = dataType;
   }
-  if (!isAdmin) {
+
+  if (validFrom) {
+    params.valid_from = validFrom;
+  }
+
+  if (validTo) {
+    params.valid_to = validTo;
+  }
+
+  if (tdei_service_id) {
+    params.tdei_service_id = tdei_service_id;
+  }
+
+  //Project ID if the user is admin
+  if (isAdmin && projectId) {
+    params.tdei_project_group_id = projectId;
+  } else if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
+
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,
     method: "GET",
   });
+
   return {
     data: res.data,
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdei_service_id,sortField = 'uploaded_timestamp', 
+  sortOrder = 'DESC'    ) {
   const params = {
     status: "Publish",
     page_no: pageParam,
     page_size: 10,
+    sort_field: sortField,
+    sort_order: sortOrder
   };
   if (searchText) {
     params.name = searchText;
@@ -482,6 +521,19 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
   if (dataType) {
     params.data_type = dataType;
   }
+  if (projectId) {
+    params.tdei_project_group_id = projectId;
+  }
+  if (validFrom) {
+    params.valid_from = validFrom;
+  }
+  if (validTo) {
+    params.valid_to = validTo;
+  }
+  if (tdei_service_id) {
+    params.tdei_service_id = tdei_service_id;
+  }
+
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,
@@ -492,6 +544,7 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
     pageParam,
   };
 }
+
 export async function postPublishDataset(data) {
   var file_end_point = ''
   var service_type = data.service_type.toLowerCase();
