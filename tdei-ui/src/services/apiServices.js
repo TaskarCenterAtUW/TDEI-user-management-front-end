@@ -452,7 +452,7 @@ export async function getDatasets(
   validFrom,
   validTo,
   tdei_service_id,
-  projectId,
+  selectedProjectGroupId,
   tdei_project_group_id,
   sortField = 'uploaded_timestamp', 
   sortOrder = 'DESC'              
@@ -489,8 +489,8 @@ export async function getDatasets(
   }
 
   //Project ID if the user is admin
-  if (isAdmin && projectId) {
-    params.tdei_project_group_id = projectId;
+  if (isAdmin && selectedProjectGroupId) {
+    params.tdei_project_group_id = selectedProjectGroupId;
   } else if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
@@ -506,7 +506,7 @@ export async function getDatasets(
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdei_service_id,sortField = 'uploaded_timestamp', 
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId,sortField = 'uploaded_timestamp', 
   sortOrder = 'DESC'    ) {
   const params = {
     status: "Publish",
@@ -530,8 +530,8 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType, p
   if (validTo) {
     params.valid_to = validTo;
   }
-  if (tdei_service_id) {
-    params.tdei_service_id = tdei_service_id;
+  if (tdeiServiceId) {
+    params.tdei_service_id = tdeiServiceId;
   }
 
   const res = await axios({
