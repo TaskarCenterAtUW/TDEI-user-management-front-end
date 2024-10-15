@@ -506,7 +506,7 @@ export async function getDatasets(
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdei_service_id,sortField = 'uploaded_timestamp', 
+export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId,sortField = 'uploaded_timestamp', 
   sortOrder = 'DESC'    ) {
   const params = {
     status: "Publish",
@@ -530,8 +530,8 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType, p
   if (validTo) {
     params.valid_to = validTo;
   }
-  if (tdei_service_id) {
-    params.tdei_service_id = tdei_service_id;
+  if (tdeiServiceId) {
+    params.tdei_service_id = tdeiServiceId;
   }
 
   const res = await axios({

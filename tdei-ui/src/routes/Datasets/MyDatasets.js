@@ -23,6 +23,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
 import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 import ProjectAutocomplete from '../../components/ProjectAutocomplete/ProjectAutocomplete';
+import ServiceAutocomplete from '../../components/ServiceAutocomplete/ServiceAutocomplete';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
@@ -227,6 +228,11 @@ const MyDatasets = () => {
                 return "";
         }
     };
+    // Callback to handle service selection from ServiceAutocomplete
+    const handleServiceSelect = useCallback((serviceId) => {
+        setTdeiServiceId(serviceId || "");
+        refreshData();
+    }, [refreshData]);
 
     return (
         <div>
@@ -287,12 +293,11 @@ const MyDatasets = () => {
                             </Form.Group>
                         </Col>
                     )}
-                    <Col md={4} className="mb-2">
+                    <Col md={4} className="mb-3">
                         <Form.Group>
-                            <Form.Control
-                                aria-label="Search Service ID"
-                                placeholder="Search By Service ID"
-                                onChange={(e) => setTdeiServiceId(e.target.value)}
+                            <ServiceAutocomplete
+                                onSelectService={handleServiceSelect}
+                                isAdmin={user && user.isAdmin}
                             />
                         </Form.Group>
                     </Col>

@@ -1,57 +1,67 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Form, Spinner, InputGroup } from "react-bootstrap";
-import useGetProjectGroup from "../../hooks/projectGroup/useGetProjectGroup";
-import styles from "./ProjectAutocomplete.module.css";
+import useGetAllServices from "../../hooks/service/useGetAllServices";
+import styles from "./ServiceAutocomplete.module.css";
 import { debounce } from "lodash";
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 
-const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
+const ServiceAutocomplete = ({ onSelectService, isAdmin, service_type }) => {
   const [searchText, setSearchText] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const { loading, projectGroupList, hasMore } = useGetProjectGroup(searchText, pageNo);
-  const [selectedProjectGroup, setSelectedProjectGroup] = useState(null);
+  const { loading, error, serviceList, hasMore, setPageNumber } = useGetAllServices(searchText, isAdmin, service_type);
+  const [selectedService, setSelectedService] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-
   const observer = useRef();
   const autocompleteRef = useRef();
-
-  const lastProjectGroup = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPageNo((prevPageNumber) => prevPageNumber + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
 
   const debouncedSearch = useMemo(
     () =>
       debounce((value) => {
         setSearchText(value);
-        setPageNo(1);
-      }, 300), 
-    []
+        setPageNo(1); 
+        setPageNumber(1); 
+      }, 50), 
+    [setPageNumber]
+  );
+
+  const serviceItems = useMemo(() => {
+    return serviceList || [];
+  }, [serviceList]);
+
+  const lastServiceElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNo((prevPageNo) => prevPageNo + 1);
+          setPageNumber(prev => prev + 1); 
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, setPageNumber]
   );
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    setSelectedProjectGroup(null); 
-    setSearchText(value); 
+    setSelectedService(null); 
     debouncedSearch(value);
     setShowDropdown(true);
   };
 
-  const handleSelect = (projectGroup) => {
-    setSelectedProjectGroup(projectGroup);
+  const handleSelect = (service) => {
+    setSelectedService(service);
+    onSelectService(service.tdei_service_id); 
     setShowDropdown(false);
-    onSelectProjectGroup(projectGroup.tdei_project_group_id);
-    console.log("Selected Project Group ID:", projectGroup.tdei_project_group_id); 
+  };
+
+  const handleClearSelection = () => {
+    setSelectedService(null);
+    onSelectService(null);
+    setSearchText("");
+    setShowDropdown(false);
   };
 
   const handleClickOutside = useCallback(
@@ -66,7 +76,7 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      debouncedSearch.cancel();
+      debouncedSearch.cancel(); 
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleClickOutside, debouncedSearch]);
@@ -76,22 +86,17 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
       <InputGroup>
         <Form.Control
           type="text"
-          placeholder="Search Project Group"
+          placeholder="Search Service"
           onChange={handleInputChange}
-          value={selectedProjectGroup ? selectedProjectGroup.project_group_name : searchText}
+          value={selectedService ? selectedService.service_name : searchText}
           onFocus={() => setShowDropdown(true)}
           autoComplete="off"
         />
-        {selectedProjectGroup && (
+        {selectedService && (
           <InputGroup.Text>
             <IconButton
               aria-label="clear selection"
-              onClick={() => {
-                setSelectedProjectGroup(null);
-                onSelectProjectGroup(null);
-                setSearchText("");
-                setShowDropdown(false);
-              }}
+              onClick={handleClearSelection}
               size="small"
             >
               <ClearIcon fontSize="small" />
@@ -104,34 +109,32 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
           </InputGroup.Text>
         )}
       </InputGroup>
-      {showDropdown && projectGroupList.length > 0 && (
+      {showDropdown && serviceItems.length > 0 && (
         <div className={styles.dropdownList}>
-          {projectGroupList.map((group, index) => {
-            if (projectGroupList.length === index + 1) {
+          {serviceItems.map((service, index) => {
+            if (serviceItems.length === index + 1) {
               return (
                 <div
-                  key={group.tdei_project_group_id}
-                  id={group.tdei_project_group_id}
+                  key={service.tdei_service_id}
                   className={`${styles.dropdownItem} ${
-                    selectedProjectGroup?.tdei_project_group_id === group.tdei_project_group_id ? styles.active : ""
+                    selectedService?.tdei_service_id === service.tdei_service_id ? styles.active : ""
                   }`}
-                  onClick={() => handleSelect(group)}
-                  ref={lastProjectGroup}
+                  onClick={() => handleSelect(service)}
+                  ref={lastServiceElementRef}
                 >
-                  {group.project_group_name}
+                  {service.service_name}
                 </div>
               );
             } else {
               return (
                 <div
-                  key={group.tdei_project_group_id}
-                  id={group.tdei_project_group_id}
+                  key={service.tdei_service_id}
                   className={`${styles.dropdownItem} ${
-                    selectedProjectGroup?.tdei_project_group_id === group.tdei_project_group_id ? styles.active : ""
+                    selectedService?.tdei_service_id === service.tdei_service_id ? styles.active : ""
                   }`}
-                  onClick={() => handleSelect(group)}
+                  onClick={() => handleSelect(service)}
                 >
-                  {group.project_group_name}
+                  {service.service_name}
                 </div>
               );
             }
@@ -143,11 +146,11 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
           )}
         </div>
       )}
-      {showDropdown && projectGroupList.length === 0 && !loading && (
-        <div className={styles.noResults}>No project groups found.</div>
+      {showDropdown && serviceItems.length === 0 && !loading && (
+        <div className={styles.noResults}>No services found.</div>
       )}
     </div>
   );
 };
 
-export default React.memo(ProjectAutocomplete);
+export default React.memo(ServiceAutocomplete);

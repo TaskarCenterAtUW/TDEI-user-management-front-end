@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
 import ProjectAutocomplete from './../../components/ProjectAutocomplete/ProjectAutocomplete';
+import ServiceAutocomplete from '../../components/ServiceAutocomplete/ServiceAutocomplete';
 
 const ReleasedDatasets = () => {
   const queryClient = useQueryClient();
@@ -131,6 +132,12 @@ const ReleasedDatasets = () => {
     refreshData(); 
   }, [refreshData]);
 
+  // Callback to handle service selection from ServiceAutocomplete
+  const handleServiceSelect = useCallback((serviceId) => {
+    setTdeiServiceId(serviceId || "");
+    refreshData(); 
+  }, [refreshData]);
+
   return (
     <div>
       <Form noValidate>
@@ -178,10 +185,9 @@ const ReleasedDatasets = () => {
           </Col>
           <Col md={4} className="mb-2">
             <Form.Group>
-              <Form.Control
-                aria-label="Search Service ID"
-                placeholder="Search By Service ID"
-                onChange={(e) => setTdeiServiceId(e.target.value)}
+            <ServiceAutocomplete
+                onSelectService={handleServiceSelect}
+                isAdmin={true} 
               />
             </Form.Group>
           </Col>
