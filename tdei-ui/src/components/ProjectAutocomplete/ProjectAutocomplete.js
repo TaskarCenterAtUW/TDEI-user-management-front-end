@@ -8,13 +8,52 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
   const [searchText, setSearchText] = useState("");
+  const [debouncedValue, setDebouncedValue] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const { loading, projectGroupList, hasMore } = useGetProjectGroup(searchText, pageNo);
+  const { loading, projectGroupList, hasMore } = useGetProjectGroup(debouncedValue, pageNo);
   const [selectedProjectGroup, setSelectedProjectGroup] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const observer = useRef();
   const autocompleteRef = useRef();
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value) => {
+        // Only trigger search if input has at least 3 characters
+        if (value.length >= 3) {
+          setDebouncedValue(value);
+          setPageNo(1);
+        }
+      }, 150),
+    []
+  );
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value); 
+    // If the input is cleared, reset the search and hide the dropdown
+    if (value.trim() === "") {
+      setSelectedProjectGroup(null);
+      onSelectProjectGroup(null);
+      setSearchText("");
+      setShowDropdown(false);
+      return;
+    }
+    debouncedSearch(value);
+    setShowDropdown(true);
+  }
+
+  const deduplicatedProjectGroups = useMemo(() => {
+    const seen = new Set();
+    return (projectGroupList || []).filter(group => {
+      if (seen.has(group.tdei_project_group_id)) {
+        return false;
+      }
+      seen.add(group.tdei_project_group_id);
+      return true;
+    });
+  }, [projectGroupList]);
 
   const lastProjectGroup = useCallback(
     (node) => {
@@ -29,23 +68,6 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
     },
     [loading, hasMore]
   );
-
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((value) => {
-        setSearchText(value);
-        setPageNo(1);
-      }, 300), 
-    []
-  );
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSelectedProjectGroup(null); 
-    setSearchText(value); 
-    debouncedSearch(value);
-    setShowDropdown(true);
-  };
 
   const handleSelect = (projectGroup) => {
     setSelectedProjectGroup(projectGroup);
@@ -104,10 +126,10 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
           </InputGroup.Text>
         )}
       </InputGroup>
-      {showDropdown && projectGroupList.length > 0 && (
+      {showDropdown && deduplicatedProjectGroups.length > 0 && (
         <div className={styles.dropdownList}>
-          {projectGroupList.map((group, index) => {
-            if (projectGroupList.length === index + 1) {
+          {deduplicatedProjectGroups.map((group, index) => {
+            if (deduplicatedProjectGroups.length === index + 1) {
               return (
                 <div
                   key={group.tdei_project_group_id}
@@ -143,7 +165,7 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
           )}
         </div>
       )}
-      {showDropdown && projectGroupList.length === 0 && !loading && (
+      {showDropdown && deduplicatedProjectGroups.length === 0 && !loading && (
         <div className={styles.noResults}>No project groups found.</div>
       )}
     </div>

@@ -9,7 +9,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 const ServiceAutocomplete = ({ onSelectService, isAdmin, service_type }) => {
   const [searchText, setSearchText] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const { loading, error, serviceList, hasMore, setPageNumber } = useGetAllServices(searchText, isAdmin, service_type);
+  const [debouncedValue, setDebouncedValue] = useState("");
+  const { loading, error, serviceList, hasMore, setPageNumber } = useGetAllServices(debouncedValue, isAdmin, service_type);
   const [selectedService, setSelectedService] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const observer = useRef();
@@ -18,15 +19,39 @@ const ServiceAutocomplete = ({ onSelectService, isAdmin, service_type }) => {
   const debouncedSearch = useMemo(
     () =>
       debounce((value) => {
-        setSearchText(value);
-        setPageNo(1); 
-        setPageNumber(1); 
-      }, 50), 
+        // Only trigger search if input has at least 3 characters
+        if (value.length >= 3) {  
+          setDebouncedValue(value);
+          setPageNo(1);
+          setPageNumber(1);
+        }
+      }, 150), 
     [setPageNumber]
   );
 
-  const serviceItems = useMemo(() => {
-    return serviceList || [];
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+    if (value.trim() === "") {
+      setSelectedService(null);
+      onSelectService(null);
+      setSearchText("");
+      setShowDropdown(false);
+      return;
+    }
+    debouncedSearch(value);
+    setShowDropdown(true);
+  };
+
+  const deduplicatedServiceItems = useMemo(() => {
+    const seen = new Set();
+    return (serviceList || []).filter(service => {
+      if (seen.has(service.tdei_service_id)) {
+        return false;
+      }
+      seen.add(service.tdei_service_id);
+      return true;
+    });
   }, [serviceList]);
 
   const lastServiceElementRef = useCallback(
@@ -43,13 +68,6 @@ const ServiceAutocomplete = ({ onSelectService, isAdmin, service_type }) => {
     },
     [loading, hasMore, setPageNumber]
   );
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSelectedService(null); 
-    debouncedSearch(value);
-    setShowDropdown(true);
-  };
 
   const handleSelect = (service) => {
     setSelectedService(service);
@@ -109,10 +127,10 @@ const ServiceAutocomplete = ({ onSelectService, isAdmin, service_type }) => {
           </InputGroup.Text>
         )}
       </InputGroup>
-      {showDropdown && serviceItems.length > 0 && (
+      {showDropdown && deduplicatedServiceItems.length > 0 && (
         <div className={styles.dropdownList}>
-          {serviceItems.map((service, index) => {
-            if (serviceItems.length === index + 1) {
+          {deduplicatedServiceItems.map((service, index) => {
+            if (deduplicatedServiceItems.length === index + 1) {
               return (
                 <div
                   key={service.tdei_service_id}
@@ -146,7 +164,7 @@ const ServiceAutocomplete = ({ onSelectService, isAdmin, service_type }) => {
           )}
         </div>
       )}
-      {showDropdown && serviceItems.length === 0 && !loading && (
+      {showDropdown && deduplicatedServiceItems.length === 0 && !loading && (
         <div className={styles.noResults}>No services found.</div>
       )}
     </div>
