@@ -510,3 +510,26 @@
   padding: 20px;
   background-color: #f8f8f8;
 }
+.requestInputContainer {
+  margin-top: 20px;
+}
+
+.requestInputTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.requestInputTable th,
+.requestInputTable td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+}
+
+.requestInputTable th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+.requestInputTable td {
+  font-size: 14px;
+}
