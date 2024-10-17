@@ -133,10 +133,12 @@ const MyDatasets = () => {
         setIsLoadingDownload(false);
         handleToast();
         setShowDownloadModal(false);
+        setSelectedFormat(null);
+        setSelectedFileVersion(null);
     };
 
     const onError = (err) => {
-        const errorMessage = err.data || "An unexpected error occurred";
+        const errorMessage = err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : "An unexpected error occurred";
         console.error("Error message:", errorMessage);
         setOperationResult("error");
         setOpen(true);
@@ -144,6 +146,8 @@ const MyDatasets = () => {
         setShowSuccessModal(false);
         setIsLoadingDownload(false); 
         setShowDownloadModal(false);
+        setSelectedFormat(null);
+        setSelectedFileVersion(null);
     };
 
     const { mutate: publishDataset, isLoading: isPublishing } = usePublishDataset({ onSuccess, onError });
@@ -165,27 +169,20 @@ const MyDatasets = () => {
 
     const handleDownloadDataset = (dataset) => {
         setIsLoadingDownload(true);
-        if (selectedDataset && selectedFormat && selectedFileVersion && selectedDataset.data_type === 'osw') {
+        if (selectedDataset && selectedDataset.data_type === 'osw') {
+            const format = selectedFormat ? selectedFormat.value : 'osw';
+            const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
             downloadDataset({
                 tdei_dataset_id: selectedDataset.tdei_dataset_id,
                 data_type: selectedDataset.data_type,
-                format: selectedFormat.value,
-                file_version: selectedFileVersion.value
+                format: format,
+                file_version: fileVersion
             });
-            // setShowDownloadModal(false);
-            setSelectedFormat(null);
-            setSelectedFileVersion(null);
         } else {
-            if (selectedDataset && selectedDataset.data_type === 'osw') {
-                downloadDataset({ tdei_dataset_id: selectedDataset.tdei_dataset_id, data_type: selectedDataset.data_type });
-                // setShowDownloadModal(false);
-            } else {
-                downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
-            }
+            downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
         }
         setSelectedDataset(null);
-    };
-
+    };    
     const onAction = (eventKey, dataset) => {
         setSelectedDataset(dataset);
         setEventKey(eventKey);

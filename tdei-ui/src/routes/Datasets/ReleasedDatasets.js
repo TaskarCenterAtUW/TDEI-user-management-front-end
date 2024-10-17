@@ -112,39 +112,40 @@ const ReleasedDatasets = () => {
       setShowDownloadModal(false);
       setOperationResult("success");
       handleToast();
+      setSelectedFormat(null);
+      setSelectedFileVersion(null);
     },
     onError: (err) => {
       console.error("Error downloading dataset:", err);
       setIsLoadingDownload(false);
       setShowDownloadModal(false);
       setOperationResult("error");
-      setCustomErrorMessage(err.data || "Only latest version of the file can be downloaded");
+      setCustomErrorMessage(err.data || showDownloadModal ? "Only latest version of the file can be downloaded": 'An unexpected error occurred');
       handleToast();
+      setSelectedFormat(null);
+      setSelectedFileVersion(null);
     }
   });
 
 
   const handleDownloadDataset = (dataset) => {
     setIsLoadingDownload(true);
-    if (selectedDataset && selectedFormat && selectedFileVersion && selectedDataset.data_type === 'osw') {
-      downloadDataset({
-        tdei_dataset_id: selectedDataset.tdei_dataset_id,
-        data_type: selectedDataset.data_type,
-        format: selectedFormat.value,
-        file_version: selectedFileVersion.value
-      });
-      setSelectedFormat(null);
-      setSelectedFileVersion(null);
-    } else if (selectedDataset && selectedDataset.data_type === 'osw') {
-      downloadDataset({
-        tdei_dataset_id: selectedDataset.tdei_dataset_id,
-        data_type: selectedDataset.data_type
-      });
+    if (selectedDataset && selectedDataset.data_type === 'osw') {
+        // Set default format as 'osw' and version as 'latest' if not selected
+        const format = selectedFormat ? selectedFormat.value : 'osw';
+        const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
+
+        downloadDataset({
+            tdei_dataset_id: selectedDataset.tdei_dataset_id,
+            data_type: selectedDataset.data_type,
+            format: format,
+            file_version: fileVersion
+        });
     } else {
-      downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
+        downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
     }
     setSelectedDataset(null);
-  };
+};  
   // Event handler for selecting action button on a dataset
   const onInspect = () => { }
 

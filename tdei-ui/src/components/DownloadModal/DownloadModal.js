@@ -12,8 +12,12 @@ const DownloadModal = ({
     setSelectedFormat,
     selectedFileVersion,
     setSelectedFileVersion,
-    isLoading 
+    isLoading
 }) => {
+    // Set default format as 'osw' and file version as 'latest'
+    const defaultFormat = { value: 'osw', label: 'OSW' };
+    const defaultFileVersion = { value: 'latest', label: 'Latest' };
+
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton={!isLoading}> 
@@ -25,18 +29,20 @@ const DownloadModal = ({
                     <Select
                         options={formatOptions}
                         onChange={(option) => setSelectedFormat(option)}
-                        value={selectedFormat}
+                        value={selectedFormat || defaultFormat}
                         isDisabled={isLoading} 
                     />
+                    <div className="tdei-hint-text">(File format to download. Default to osw.)</div>
                 </Form.Group>
                 <Form.Group className="mt-3">
                     <Form.Label>Select File Version</Form.Label>
                     <Select
                         options={fileVersionOptions}
                         onChange={(option) => setSelectedFileVersion(option)}
-                        value={selectedFileVersion}
+                        value={selectedFileVersion || defaultFileVersion}
                         isDisabled={isLoading} 
                     />
+                     <div className="tdei-hint-text">(The Latest version includes recent modifications; the Original version is the initial upload.)</div>
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
