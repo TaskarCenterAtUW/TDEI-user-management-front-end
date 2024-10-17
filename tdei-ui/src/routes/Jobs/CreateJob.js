@@ -635,12 +635,15 @@ const CreateJobService = () => {
                 case "quality-metric-tag":
                     return { 'application/json': ['.json'] };
                 case "osw-convert":
-                    return (sourceFormat && sourceFormat.value === "osm")
-                        ? {
+                    if (sourceFormat && sourceFormat.value === "osm") {
+                        return {
                             'application/octet-stream': ['.pbf', '.osm'],
                             'application/xml': ['.xml']
-                        }
-                        : { 'application/zip': ['.zip'] };
+                        };
+                    } else if (!sourceFormat) {
+                        return "";
+                    }
+                    return { 'application/zip': ['.zip'] };
                 case "confidence":
                 case "quality-metric":
                     return { 'application/geo+json': ['.geojson'] };
@@ -658,9 +661,12 @@ const CreateJobService = () => {
                 case "quality-metric-tag":
                     return ".json";
                 case "osw-convert":
-                    return (sourceFormat && sourceFormat.value === "osm")
-                        ? ".pbf, .osm, .xml"
-                        : ".zip";
+                    if (sourceFormat && sourceFormat.value === "osm") {
+                        return ".pbf, .osm, .xml";
+                    } else if (!sourceFormat) {
+                        return "-";
+                    }
+                    return ".zip";
                 case "confidence":
                 case "quality-metric":
                     return ".geojson";
