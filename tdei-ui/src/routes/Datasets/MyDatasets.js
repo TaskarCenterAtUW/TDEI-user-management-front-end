@@ -24,10 +24,12 @@ import dayjs from 'dayjs';
 import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 import ProjectAutocomplete from '../../components/ProjectAutocomplete/ProjectAutocomplete';
 import ServiceAutocomplete from '../../components/ServiceAutocomplete/ServiceAutocomplete';
+import DownloadModal from '../../components/DownloadModal/DownloadModal';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
+    const [isLoadingDownload, setIsLoadingDownload] = useState(false); 
     const [query, setQuery] = useState("");
     const [debounceQuery, setDebounceQuery] = useState("");
     const [dataType, setDataType] = useState("");
@@ -45,6 +47,9 @@ const MyDatasets = () => {
     const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
     const [sortField, setSortField] = useState('uploaded_timestamp');
     const [sortOrder, setSortOrder] = useState('DESC');
+    const [showDownloadModal, setShowDownloadModal] = useState(false); 
+    const [selectedFormat, setSelectedFormat] = useState(null);
+    const [selectedFileVersion, setSelectedFileVersion] = useState(null);
     const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(
         isAdmin,
         debounceQuery,
@@ -125,21 +130,29 @@ const MyDatasets = () => {
         setOperationResult("success");
         setShowSuccessModal(false);
         queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
+        setIsLoadingDownload(false);
         handleToast();
+        setShowDownloadModal(false);
+        setSelectedFormat(null);
+        setSelectedFileVersion(null);
     };
 
     const onError = (err) => {
-        const errorMessage = err.data || "An unexpected error occurred";
+        const errorMessage = err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : "An unexpected error occurred";
         console.error("Error message:", errorMessage);
         setOperationResult("error");
         setOpen(true);
         setCustomErrorMessage(errorMessage);
         setShowSuccessModal(false);
+        setIsLoadingDownload(false); 
+        setShowDownloadModal(false);
+        setSelectedFormat(null);
+        setSelectedFileVersion(null);
     };
 
     const { mutate: publishDataset, isLoading: isPublishing } = usePublishDataset({ onSuccess, onError });
     const { mutate: deactivateDataset, isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
-    const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
+    const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset({ onSuccess, onError });
     const { mutate: createInclinationJob, isLoading: isCreatingJob } = useCreateInclinationJob({ onSuccess, onError });
 
     const handlePublishDataset = () => {
@@ -155,9 +168,21 @@ const MyDatasets = () => {
     };
 
     const handleDownloadDataset = (dataset) => {
-        downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
-    };
-
+        setIsLoadingDownload(true);
+        if (selectedDataset && selectedDataset.data_type === 'osw') {
+            const format = selectedFormat ? selectedFormat.value : 'osw';
+            const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
+            downloadDataset({
+                tdei_dataset_id: selectedDataset.tdei_dataset_id,
+                data_type: selectedDataset.data_type,
+                format: format,
+                file_version: fileVersion
+            });
+        } else {
+            downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
+        }
+        setSelectedDataset(null);
+    };    
     const onAction = (eventKey, dataset) => {
         setSelectedDataset(dataset);
         setEventKey(eventKey);
@@ -166,11 +191,24 @@ const MyDatasets = () => {
         } else if (eventKey === 'cloneDataset') {
             navigate('/CloneDataset', { state: { dataset } });
         } else if (eventKey === 'downLoadDataset') {
-            handleDownloadDataset(dataset);
+            if (dataset.data_type === 'osw') {
+                setShowDownloadModal(true);
+            } else {
+                handleDownloadDataset(dataset);
+            }
         } else {
             setShowSuccessModal(true);
         }
     };
+    const formatOptions = [
+        { value: 'osm', label: 'OSM' },
+        { value: 'osw', label: 'OSW' }
+    ];
+
+    const fileVersionOptions = [
+        { value: 'latest', label: 'Latest' },
+        { value: 'original', label: 'Original' }
+    ];
 
     const handleRefresh = () => {
         refreshData();
@@ -223,6 +261,10 @@ const MyDatasets = () => {
             case 'inclination':
                 return operationResult === "success"
                     ? "Success! Inclination job has been initiated."
+                    : customErrorMessage;
+            case 'downLoadDataset':
+                return operationResult === "success"
+                    ? "Success! Download has been initiated."
                     : customErrorMessage;
             default:
                 return "";
@@ -379,6 +421,25 @@ const MyDatasets = () => {
                     modaltype={currentModalConfig?.modaltype}
                     onHide={() => setShowSuccessModal(false)}
                     isLoading={isPublishing || isDeletingDataset || isCreatingJob}
+                />
+                <DownloadModal
+                    show={showDownloadModal}
+                    handleClose={() => {
+                        if (!isLoadingDownload) { 
+                            setShowDownloadModal(false);
+                            setSelectedFormat(null);
+                            setSelectedFileVersion(null);
+                            setSelectedDataset(null);
+                        }
+                    }}
+                    handleDownload={handleDownloadDataset}
+                    formatOptions={formatOptions}
+                    fileVersionOptions={fileVersionOptions}
+                    selectedFormat={selectedFormat}
+                    setSelectedFormat={setSelectedFormat}
+                    selectedFileVersion={selectedFileVersion}
+                    setSelectedFileVersion={setSelectedFileVersion}
+                    isLoading={isLoadingDownload}
                 />
                 <ResponseToast
                     showtoast={open}

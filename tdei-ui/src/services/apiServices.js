@@ -664,13 +664,22 @@ export async function cloneDataset(data) {
 
 export async function downloadDataset(data) {
   var file_end_point = ''
+  const params = {};
   var service_type = data.data_type
   if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
   else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
   else { file_end_point = 'osw' }
+  if(service_type === 'osw'){
+    if (data.format) {
+      params.format = data.format;
+    }
+    if (data.file_version) {
+      params.file_version = data.file_version;
+    }
+  }
   try {
     const response = await axios.get(`${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`, {
-      responseType: 'blob'
+      responseType: 'blob',params:params
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const a = document.createElement('a');
@@ -681,6 +690,7 @@ export async function downloadDataset(data) {
     a.remove();
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
+    return Promise.reject(new AxiosError(error));
     console.error('There was a problem with the download operation:', error);
   }
 };

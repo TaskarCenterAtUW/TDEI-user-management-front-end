@@ -24,7 +24,8 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
             setMyFiles([...acceptedFiles]);
             onDrop(acceptedFiles);
         },
-        maxFiles: 1
+        maxFiles: 1,
+        noClick: accept === ""
     });
     // Function to remove a file from myFiles state
     const removeFile = fileToRemove => () => {
