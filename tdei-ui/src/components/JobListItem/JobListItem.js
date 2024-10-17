@@ -190,7 +190,10 @@ const handleClick = (e) => {
           </div>
         )}
         {(jobItem.job_type === "Dataset-Reformat" ||
-          jobItem.job_type === "Dataset-Queries" ||
+          jobItem.job_type === "Dataset-BBox" ||
+          jobItem.job_type === "Dataset-Road-Tag" ||
+          jobItem.job_type === "Dataset-Spatial-Join" ||
+          jobItem.job_type === "Dataset-Union" ||
           jobItem.job_type === "Quality-Metric" ||
           jobItem.job_type === "Confidence-Calculate"
         ) &&

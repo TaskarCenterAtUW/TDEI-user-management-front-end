@@ -128,18 +128,13 @@ const CreateJobService = () => {
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
 
-    /**
-     * Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
-     * @param {Object} updatedConfig - The updated algorithm configuration.
-     */
+    // Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
     const handleAlgorithmUpdate = (updatedConfig) => {
         setAlgorithmConfig(updatedConfig);
     };
 
-    /**
-     * Callback function invoked when a job creation API call is successful.
-     * @param {Object|Array} data - The response data from the API.
-     */
+
+    // Callback function invoked when a job creation API call is successful.
     const onSuccess = (data) => {
         setLoading(false);
         if (Array.isArray(data)) {
@@ -152,10 +147,7 @@ const CreateJobService = () => {
         }
     };
 
-    /**
-     * Callback function invoked when a job creation API call fails.
-     * @param {Object} err - The error object from the API.
-     */
+    // Callback function invoked when a job creation API call fails.
     const onError = (err) => {
         setLoading(false);
         console.error("error message", err);
@@ -171,7 +163,6 @@ const CreateJobService = () => {
     /**
      * Handles the selection of a job type from the dropdown.
      * Resets all dependent states to their initial values.
-     * @param {Object} type - The selected job type option.
      */
     function handleJobTypeSelect(type) {
         setJobType(type);
@@ -199,7 +190,6 @@ const CreateJobService = () => {
     /**
      * Handles changes to the source format dropdown in the OSW-Convert job type.
      * Resets the selected file when the source format changes.
-     * @param {Object} value - The selected source format option.
      */
     const handleSourceFormatChange = (value) => {
         setSourceFormat(value);
@@ -214,7 +204,6 @@ const CreateJobService = () => {
     /**
      * Handles the file drop event from the Dropzone component.
      * Sets the selected file in the state.
-     * @param {Array} files - Array of dropped files.
      */
     const onDrop = (files) => {
         const selectedFile = files[0];
@@ -239,11 +228,7 @@ const CreateJobService = () => {
         setShowValidateToast(false);
     };
 
-    /**
-     * Maps a job type to its corresponding API endpoint path.
-     * @param {string} jobType - The selected job type value.
-     * @returns {string} - The API path for the selected job type.
-     */
+    // Maps a job type to its corresponding API endpoint path.
     const getPathFromJobType = (jobType) => {
         const jobTypePathMap = {
             "osw-validate": "/api/v1/osw/validate",
@@ -262,21 +247,13 @@ const CreateJobService = () => {
         return jobTypePathMap[jobType] || "";
     };
 
-    /**
-     * Retrieves the description for a given job type from the API specification.
-     * @param {string} jobType - The selected job type value.
-     * @returns {string} - The description of the job type.
-     */
+    // Retrieves the description for a given job type from the API specification.
     const getDescription = (jobType) => {
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
     };
 
-    /**
-     * Retrieves descriptions for bounding box related fields based on the label.
-     * @param {string} label - The label of the bounding box field.
-     * @returns {string} - The description of the bounding box field.
-     */
+    // Retrieves descriptions for bounding box related fields based on the label.
     const getBBoxDescription = (label) => {
         const path = getPathFromJobType("dataset-bbox");
         if (label === "Tdei Dataset Id") {
@@ -288,11 +265,7 @@ const CreateJobService = () => {
         }
     };
 
-    /**
-     * Retrieves descriptions for dataset tag road related fields based on the label.
-     * @param {string} label - The label of the dataset tag road field.
-     * @returns {string} - The description of the dataset tag road field.
-     */
+    // Retrieves descriptions for dataset tag road related fields based on the label.
     const getDatasetTagInputDescription = (label) => {
         const path = getPathFromJobType("dataset-tag-road");
         if (label === "Source Dataset Id") {
@@ -302,11 +275,7 @@ const CreateJobService = () => {
         }
     };
 
-    /**
-     * Retrieves descriptions for confidence calculation related fields based on the label.
-     * @param {string} label - The label of the confidence calculation field.
-     * @returns {string} - The description of the confidence calculation field.
-     */
+    // Retrieves descriptions for confidence calculation related fields based on the label.
     const getConfidenceInputDescription = (label) => {
         const path = getPathFromJobType("confidence");
         if (label === "Tdei Dataset Id") {
@@ -316,11 +285,7 @@ const CreateJobService = () => {
         }
     };
 
-    /**
-     * Retrieves descriptions for quality metric calculation related fields based on the label.
-     * @param {string} label - The label of the quality metric calculation field.
-     * @returns {string} - The description of the quality metric calculation field.
-     */
+    // Retrieves descriptions for quality metric calculation related fields based on the label.
     const getQualityMetricDescription = (label) => {
         const path = getPathFromJobType("quality-metric");
         if (label === "Tdei Dataset Id") {
@@ -332,11 +297,7 @@ const CreateJobService = () => {
         }
     };
 
-    /**
-     * Retrieves descriptions for quality metric tag calculation related fields based on the label.
-     * @param {string} label - The label of the quality metric tag calculation field.
-     * @returns {string} - The description of the quality metric tag calculation field.
-     */
+    // Retrieves descriptions for quality metric tag calculation related fields based on the label.
     const getQualityMetricTagDescription = (label) => {
         const path = getPathFromJobType("quality-metric-tag");
         if (label === "Tdei Dataset Id") {
@@ -483,19 +444,12 @@ const CreateJobService = () => {
     /**
      * Renders a form field based on its type and configuration.
      * Supports various field types such as select, text, dropzone, textarea, and bounding box.
-     * @param {Object} field - The field configuration object.
-     * @param {number} index - The index of the field in the form configuration.
-     * @returns {JSX.Element|null} - The rendered form field or null if type is unsupported.
-     */
+  */
     const renderField = (field, index) => {
         // Determine if the current job type is a special one requiring additional styling
         const isSpecialJobType = ["confidence", "quality-metric", "quality-metric-tag"].includes(jobType?.value);
 
-        /**
-         * Retrieves the description text for a given field label based on the job type.
-         * @param {string} label - The label of the form field.
-         * @returns {string} - The description text for the field.
-         */
+        // Retrieves the description text for a given field label based on the job type.
         const getDescriptionForField = (label) => {
             switch (jobType.value) {
                 case "dataset-bbox":
@@ -515,10 +469,7 @@ const CreateJobService = () => {
             }
         };
 
-        /**
-         * Updates the corresponding state based on the field's stateSetter property.
-         * @param {Object} e - The event object from the input change.
-         */
+        // Updates the corresponding state based on the field's stateSetter property.
         const handleInputChange = (e) => {
             const value = e.target.value;
             switch (field.stateSetter) {
@@ -541,11 +492,7 @@ const CreateJobService = () => {
                     break;
             }
         };
-
-        /**
-         * Renders a text input field with appropriate state management.
-         * @returns {JSX.Element} - The rendered text input field.
-         */
+        // Renders a text input field with appropriate state management.
         const renderTextField = () => {
             // Map state setters to their corresponding state values for easier access
             const stateValues = {
@@ -578,10 +525,7 @@ const CreateJobService = () => {
             );
         };
 
-        /**
-         * Renders a select dropdown field with appropriate options and state management.
-         * @returns {JSX.Element} - The rendered select dropdown field.
-         */
+        // Renders a select dropdown field with appropriate options and state management.
         const renderSelectField = () => (
             <div key={index} className={style.formItem}>
                 <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
@@ -601,11 +545,7 @@ const CreateJobService = () => {
                 </div>
             </div>
         );
-
-        /**
-         * Renders a Dropzone component for file uploads with appropriate accepted file types and state management.
-         * @returns {JSX.Element} - The rendered Dropzone field.
-         */
+        // Renders a Dropzone component for file uploads with appropriate accepted file types and state management.
         const renderDropzoneField = () => (
             <div key={index} className={style.formItems}>
                 <p className={style.formLabelP}>
@@ -626,10 +566,8 @@ const CreateJobService = () => {
             </div>
         );
 
-        /**
-         * Determines the accepted file types based on the selected job type and source format.
-         * @returns {Object} - An object defining accepted MIME types and file extensions.
-         */
+
+        // Determines the accepted file types based on the selected job type and source format.
         const getAcceptedFileTypes = () => {
             switch (jobType.value) {
                 case "quality-metric-tag":
@@ -652,10 +590,8 @@ const CreateJobService = () => {
             }
         };
 
-        /**
-         * Determines the file format string based on the selected job type and source format.
-         * @returns {string} - A string representing the accepted file formats.
-         */
+
+        // Determines the file format string based on the selected job type and source format.
         const getFileFormat = () => {
             switch (jobType.value) {
                 case "quality-metric-tag":
@@ -675,12 +611,7 @@ const CreateJobService = () => {
             }
         };
 
-        /**
-         * Renders the bounding box input fields (West, South, East, North) with state management.
-         * @param {number} index - The index of the field in the form configuration.
-         * @param {Object} field - The field configuration object.
-         * @returns {JSX.Element} - The rendered bounding box input fields.
-         */
+        // Renders the bounding box input fields (West, South, East, North) with state management.
         const renderBBoxField = (index, field) => (
             <div key={index} style={{ paddingTop: "25px" }}>
                 <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
