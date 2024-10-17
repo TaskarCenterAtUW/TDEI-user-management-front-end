@@ -30,7 +30,7 @@ const jobTypeOptions = [
     { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
     { value: 'spatial-join', label: 'Spatial Join' },
-    { value: 'job-union', label: 'Union' },
+    { value: 'dataset-union', label: 'Dataset Union' },
 ];
 
 // Options for the Format dropdown (e.g., OSW, OSM)
@@ -86,7 +86,7 @@ const formConfig = {
     "spatial-join": [
         { label: "Spatial join operation request body", type: "textarea", stateSetter: "setSpatialRequestBody" }
     ],
-    "job-union": [
+    "dataset-union": [
         { label: "First Dataset Id", type: "text", stateSetter: "setDatasetIdOne" },
         { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" }
     ],
@@ -255,7 +255,8 @@ const CreateJobService = () => {
             "dataset-bbox": "/api/v1/osw/dataset-bbox",
             "dataset-tag-road": "/api/v1/osw/dataset-tag-road",
             "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}",
-            "spatial-join": "/api/v1/osw/spatial-join"
+            "spatial-join": "/api/v1/osw/spatial-join",
+            "dataset-union": "/api/v1/osw/union",
         };
 
         return jobTypePathMap[jobType] || "";
@@ -344,6 +345,14 @@ const CreateJobService = () => {
             return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
         }
     };
+    const getUnionDescription = (label) => {
+        const path = getPathFromJobType("dataset-union");
+        if (label === "First Dataset Id ") {
+            return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_one?.description || "";
+        } else {
+            return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_two?.description || "";
+        }
+    };
 
     /**
      * Validates the form inputs and triggers the job creation process.
@@ -403,7 +412,7 @@ const CreateJobService = () => {
             setShowValidateToast(true);
             return;
         }
-        if (jobType.value === "job-union" && (!firstDatasetId || !secondDatasetId)) {
+        if (jobType.value === "dataset-union" && (!firstDatasetId || !secondDatasetId)) {
             setValidateErrorMessage("First and Second Dataset Ids are required for Job Union");
             setShowValidateToast(true);
             return;
@@ -442,7 +451,7 @@ const CreateJobService = () => {
             case "spatial-join":
                 urlPath = "osw/spatial-join";
                 break;
-            case "job-union":
+            case "dataset-union":
                 urlPath = "osw/union";
                 break;
             default:
@@ -463,7 +472,7 @@ const CreateJobService = () => {
             uploadData.push(sourceDatasetId, targetDatasetId);
         } else if (jobType.value === "spatial-join") {
             uploadData.push(spatialRequestBody);
-        } else if (jobType.value === "job-union") {
+        } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId);
         }
 
@@ -499,6 +508,8 @@ const CreateJobService = () => {
                     return getQualityMetricDescription(label);
                 case "quality-metric-tag":
                     return getQualityMetricTagDescription(label);
+                case "dataset-union":
+                    return getUnionDescription(label);
                 default:
                     return "";
             }
@@ -768,7 +779,7 @@ const CreateJobService = () => {
         if (!fields) return null; 
 
         // Specific layout handling for certain job types
-        if (["osw-convert", "dataset-tag-road", "dataset-bbox", "job-union"].includes(jobType.value)) {
+        if (["osw-convert", "dataset-tag-road", "dataset-bbox", "dataset-union"].includes(jobType.value)) {
             return (
                 <div>
                     <div className={style.formRow}>

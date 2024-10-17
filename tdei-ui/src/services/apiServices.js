@@ -347,13 +347,16 @@ export async function postCreateJob(data) {
         }
         break;
         case "osw/union":
-          params.tdei_dataset_id_one = data[2];
-          params.tdei_dataset_id_two = data[3];
+          const unionRequestBody = {
+            tdei_dataset_id_one: data[2],
+            tdei_dataset_id_two: data[3],
+          };
           url = baseUrl;
           headers = {
             'Content-Type': 'application/json',
           };
-          break;
+          response = await axios.post(url, unionRequestBody, { headers });
+          return response.data;
       default:
         formData.append('dataset', data[1]);
         url = baseUrl;
