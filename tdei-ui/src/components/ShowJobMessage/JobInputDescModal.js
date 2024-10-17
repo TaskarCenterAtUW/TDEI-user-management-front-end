@@ -8,10 +8,23 @@ const JobInputDescModal = (props) => {
     const handleClose = () => {
         props.onHide();
     };
-    // To convert the request_input object into an array of [key, value] pairs
+
+    // Function to handle nested objects and arrays
+    const flattenRequestInput = (input, prefix = '') => {
+        if (!input || typeof input !== 'object') return [];
+        return Object.entries(input).reduce((acc, [key, value]) => {
+            const newKey = prefix + key.replace(/_/g, ' ');
+            if (typeof value === 'object' && !Array.isArray(value)) {
+                acc.push(...flattenRequestInput(value, newKey + ' '));
+            } else {
+                acc.push([toPascalCase(newKey), Array.isArray(value) ? value.join(', ') : value]);
+            }
+            return acc;
+        }, []);
+    };
+
     const getFilteredRequestInput = () => {
-        if (!request_input || typeof request_input !== 'object') return [];
-        return Object.entries(request_input).filter(([key]) => key !== 'user_id').map(([key, value]) => [key.replace(/_/g, ' '), value]);;
+        return flattenRequestInput(request_input).filter(([key]) => !key.toLowerCase().includes('user id'));
     };
 
     return (

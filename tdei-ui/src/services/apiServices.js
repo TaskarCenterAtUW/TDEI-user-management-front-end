@@ -346,6 +346,17 @@ export async function postCreateJob(data) {
           return;
         }
         break;
+        case "osw/union":
+          const unionRequestBody = {
+            tdei_dataset_id_one: data[2],
+            tdei_dataset_id_two: data[3],
+          };
+          url = baseUrl;
+          headers = {
+            'Content-Type': 'application/json',
+          };
+          response = await axios.post(url, unionRequestBody, { headers });
+          return response.data;
       default:
         formData.append('dataset', data[1]);
         url = baseUrl;
@@ -367,7 +378,7 @@ export async function postCreateJob(data) {
       ];
       url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]}&${bboxParams.join('&')}`;
       response = await axios.post(url);
-    } else if (data[0] === "osw/dataset-tag-road") {
+    } else if (data[0] === "osw/dataset-tag-road" || data[0] === "osw/union" ) {
       response = await axios.post(url, {}, config);
     } else {
       response = await axios.post(url, formData, config);

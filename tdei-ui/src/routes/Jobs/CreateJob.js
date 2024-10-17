@@ -11,14 +11,14 @@ import { Spinner, Form } from "react-bootstrap";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import apiSpec from "../../assets/api_spec.json";
-import notSelectedIcon from "../../assets/img/notSelectedIcon.png"
+import notSelectedIcon from "../../assets/img/notSelectedIcon.png";
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 
-
+// Options for the Job Type dropdown
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
     { value: 'flex-validate', label: 'Flex - Validate' },
@@ -29,14 +29,17 @@ const jobTypeOptions = [
     { value: 'dataset-bbox', label: 'Dataset BBox' },
     { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
-    { value: 'spatial-join', label: 'Spatial Join' }
+    { value: 'spatial-join', label: 'Spatial Join' },
+    { value: 'dataset-union', label: 'Dataset Union' },
 ];
 
+// Options for the Format dropdown (e.g., OSW, OSM)
 const formatOptions = [
     { value: 'osw', label: 'OSW' },
     { value: 'osm', label: 'OSM' }
 ];
 
+// Configuration object defining form fields for each job type
 const formConfig = {
     "osw-convert": [
         { label: "Source Format", type: "select", options: formatOptions, stateSetter: "setSourceFormat" },
@@ -58,7 +61,6 @@ const formConfig = {
     ],
     "quality-metric": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        // { label: "Algorithm", type: "dropdown", stateSetter: "setAlgorithmConfig" },
         { label: "Attach GeoJson file", type: "dropzone" }
     ],
     "dataset-bbox": [
@@ -81,64 +83,90 @@ const formConfig = {
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
         { label: "Attach File", type: "dropzone" }
     ],
-    "spatial-join" : [
+    "spatial-join": [
         { label: "Spatial join operation request body", type: "textarea", stateSetter: "setSpatialRequestBody" }
-    ]
+    ],
+    "dataset-union": [
+        { label: "First Dataset Id", type: "text", stateSetter: "setDatasetIdOne" },
+        { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" }
+    ],
 };
 
+/**
+ * This component provides a form for creating various types of jobs.
+ * It dynamically renders form fields based on the selected job type.
+ */
 const CreateJobService = () => {
     const navigate = useNavigate();
-    const [jobType, setJobType] = React.useState(null);
-    const [selectedFile, setSelectedFile] = React.useState(null);
+
+    // State variables to manage form inputs and UI states
+    const [jobType, setJobType] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [showToast, setToast] = useState(false);
-    const [sourceFormat, setSourceFormat] = React.useState(null);
-    const [targetFormat, setTargetFormat] = React.useState(null);
+    const [sourceFormat, setSourceFormat] = useState(null);
+    const [targetFormat, setTargetFormat] = useState(null);
     const [showValidateToast, setShowValidateToast] = useState(false);
     const [validateErrorMessage, setValidateErrorMessage] = useState("");
-    const [tdeiDatasetId, setTdeiDatasetId] = React.useState("");
-    const [sourceDatasetId, setSourceDatasetId] = React.useState("");
-    const [targetDatasetId, setTargetDatasetId] = React.useState("");
-    const [showJsonSuccessModal, setShowJsonSuccessModal] = React.useState(false);
-    const [jobSuccessJson, setJobSuccessJson] = React.useState("");
-    const [bboxValues, setBboxValues] = React.useState({
+    const [tdeiDatasetId, setTdeiDatasetId] = useState("");
+    const [sourceDatasetId, setSourceDatasetId] = useState("");
+    const [targetDatasetId, setTargetDatasetId] = useState("");
+    const [showJsonSuccessModal, setShowJsonSuccessModal] = useState(false);
+    const [jobSuccessJson, setJobSuccessJson] = useState("");
+    const [bboxValues, setBboxValues] = useState({
         west: "",
         south: "",
         east: "",
         north: ""
     });
-    const [fileType, setFileType] = React.useState(null);
+    const [fileType, setFileType] = useState(null);
     const [algorithmConfig, setAlgorithmConfig] = useState(null);
-    const [spatialRequestBody, setSpatialRequestBody] = React.useState(JSON.stringify(SPATIAL_JOIN, null, 2));
+    const [spatialRequestBody, setSpatialRequestBody] = useState(JSON.stringify(SPATIAL_JOIN, null, 2));
     const [showModal, setShowModal] = useState(false);
+    const [firstDatasetId, setFirstDatasetId] = useState("");
+    const [secondDatasetId, setSecondDatasetId] = useState("");
+
+    // Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
     const handleAlgorithmUpdate = (updatedConfig) => {
         setAlgorithmConfig(updatedConfig);
     };
 
+
+    // Callback function invoked when a job creation API call is successful.
     const onSuccess = (data) => {
         setLoading(false);
-        if (Array.isArray(data)){
+        if (Array.isArray(data)) {
+            // If the response is an array, show the JSON success modal
             setShowJsonSuccessModal(true);
-            setJobSuccessJson(data)
-        }else{
+            setJobSuccessJson(data);
+        } else {
+            // Otherwise, show a standard success modal
             setShowSuccessModal(true);
         }
     };
 
+    // Callback function invoked when a job creation API call fails.
     const onError = (err) => {
         setLoading(false);
         console.error("error message", err);
+        // Extract a meaningful error message
         const error = err.data ?? err.message ?? err ?? "An unexpected error occurred";
         setErrorMessage(error);
-        setToast(true);
+        setToast(true); // Show error toast
     };
 
+    // Custom hook to handle job creation via API
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
 
+    /**
+     * Handles the selection of a job type from the dropdown.
+     * Resets all dependent states to their initial values.
+     */
     function handleJobTypeSelect(type) {
         setJobType(type);
+        // Reset dependent states
         setSelectedFile(null);
         setSourceFormat(null);
         setTargetFormat(null);
@@ -158,32 +186,49 @@ const CreateJobService = () => {
         });
         setFileType(null);
     }
+
+    /**
+     * Handles changes to the source format dropdown in the OSW-Convert job type.
+     * Resets the selected file when the source format changes.
+     */
     const handleSourceFormatChange = (value) => {
         setSourceFormat(value);
-        setSelectedFile(null); 
+        setSelectedFile(null);
     };
 
+    // Navigates back to the previous page in the browser history.
     const handlePop = () => {
         navigate(-1);
     };
 
+    /**
+     * Handles the file drop event from the Dropzone component.
+     * Sets the selected file in the state.
+     */
     const onDrop = (files) => {
         const selectedFile = files[0];
         setSelectedFile(selectedFile);
     };
 
+   //Closes the toast message by setting its visibility to false.
     const handleClose = () => {
         setToast(false);
     };
+
+   //Closes the sample spatial join request modal.
     const handleModalClose = () => setShowModal(false);
+
+    //Opens the sample spatial join request modal.
     const handleShow = () => {
         setShowModal(true);
-      };
-    
+    };
 
+    //Closes the validation error toast message.
     const handleCloseToast = () => {
         setShowValidateToast(false);
     };
+
+    // Maps a job type to its corresponding API endpoint path.
     const getPathFromJobType = (jobType) => {
         const jobTypePathMap = {
             "osw-validate": "/api/v1/osw/validate",
@@ -195,17 +240,20 @@ const CreateJobService = () => {
             "dataset-bbox": "/api/v1/osw/dataset-bbox",
             "dataset-tag-road": "/api/v1/osw/dataset-tag-road",
             "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}",
-            "spatial-join": "/api/v1/osw/spatial-join"
+            "spatial-join": "/api/v1/osw/spatial-join",
+            "dataset-union": "/api/v1/osw/union",
         };
 
         return jobTypePathMap[jobType] || "";
     };
 
+    // Retrieves the description for a given job type from the API specification.
     const getDescription = (jobType) => {
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
     };
-    // Handle file input specific cases for description
+
+    // Retrieves descriptions for bounding box related fields based on the label.
     const getBBoxDescription = (label) => {
         const path = getPathFromJobType("dataset-bbox");
         if (label === "Tdei Dataset Id") {
@@ -216,6 +264,8 @@ const CreateJobService = () => {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "bbox")?.description || "";
         }
     };
+
+    // Retrieves descriptions for dataset tag road related fields based on the label.
     const getDatasetTagInputDescription = (label) => {
         const path = getPathFromJobType("dataset-tag-road");
         if (label === "Source Dataset Id") {
@@ -223,7 +273,9 @@ const CreateJobService = () => {
         } else {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "target_dataset_id")?.description || "";
         }
-    }
+    };
+
+    // Retrieves descriptions for confidence calculation related fields based on the label.
     const getConfidenceInputDescription = (label) => {
         const path = getPathFromJobType("confidence");
         if (label === "Tdei Dataset Id") {
@@ -231,26 +283,44 @@ const CreateJobService = () => {
         } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
         }
-    }
+    };
+
+    // Retrieves descriptions for quality metric calculation related fields based on the label.
     const getQualityMetricDescription = (label) => {
         const path = getPathFromJobType("quality-metric");
         if (label === "Tdei Dataset Id") {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
-        }else if (label === "Attach GeoJson file"){
+        } else if (label === "Attach GeoJson file") {
             return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
-        }else{
+        } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.algorithm?.description || "";
         }
-    }
+    };
+
+    // Retrieves descriptions for quality metric tag calculation related fields based on the label.
     const getQualityMetricTagDescription = (label) => {
         const path = getPathFromJobType("quality-metric-tag");
         if (label === "Tdei Dataset Id") {
             return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
-        }else{
+        } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["multipart/form-data"]?.schema?.properties?.file?.description || "";
         }
-    }
+    };
+    const getUnionDescription = (label) => {
+        const path = getPathFromJobType("dataset-union");
+        if (label === "First Dataset Id ") {
+            return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_one?.description || "";
+        } else {
+            return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_two?.description || "";
+        }
+    };
+
+    /**
+     * Validates the form inputs and triggers the job creation process.
+     * Constructs the API endpoint and payload based on the selected job type and inputs.
+     */
     const handleCreate = () => {
+        // Validate required fields based on job type
         if (!jobType) {
             setValidateErrorMessage("Job type is required");
             setShowValidateToast(true);
@@ -302,8 +372,14 @@ const CreateJobService = () => {
             setValidateErrorMessage("A valid request body is required for the spatial join calculation job.");
             setShowValidateToast(true);
             return;
-        }        
+        }
+        if (jobType.value === "dataset-union" && (!firstDatasetId || !secondDatasetId)) {
+            setValidateErrorMessage("First and Second Dataset Ids are required for Job Union");
+            setShowValidateToast(true);
+            return;
+        }
 
+        // Determine the API path based on the job type
         let urlPath = "";
         switch (jobType?.value) {
             case "osw-validate":
@@ -336,12 +412,18 @@ const CreateJobService = () => {
             case "spatial-join":
                 urlPath = "osw/spatial-join";
                 break;
+            case "dataset-union":
+                urlPath = "osw/union";
+                break;
+            default:
+                break;
         }
 
+        // Construct the payload for the API call based on job type
         const uploadData = [urlPath, selectedFile];
         if (jobType.value === "osw-convert") {
             uploadData.push(sourceFormat.value, targetFormat.value);
-        } else if (jobType.value === "confidence" || jobType.value === "quality-metric-tag") {
+        } else if (["confidence", "quality-metric-tag"].includes(jobType.value)) {
             uploadData.push(tdeiDatasetId);
         } else if (jobType.value === "quality-metric") {
             uploadData.push(tdeiDatasetId);
@@ -349,102 +431,249 @@ const CreateJobService = () => {
             uploadData.push(tdeiDatasetId, fileType.value, bboxValues);
         } else if (jobType.value === "dataset-tag-road") {
             uploadData.push(sourceDatasetId, targetDatasetId);
-        }else if (jobType.value === "spatial-join"){
+        } else if (jobType.value === "spatial-join") {
             uploadData.push(spatialRequestBody);
+        } else if (jobType.value === "dataset-union") {
+            uploadData.push(firstDatasetId, secondDatasetId);
         }
 
-        setLoading(true);
+        setLoading(true); 
         mutate(uploadData);
     };
 
+    /**
+     * Renders a form field based on its type and configuration.
+     * Supports various field types such as select, text, dropzone, textarea, and bounding box.
+  */
     const renderField = (field, index) => {
-        const isSpecialJobType = ["confidence", "quality-metric","quality-metric-tag"].includes(jobType?.value);
+        // Determine if the current job type is a special one requiring additional styling
+        const isSpecialJobType = ["confidence", "quality-metric", "quality-metric-tag"].includes(jobType?.value);
+
+        // Retrieves the description text for a given field label based on the job type.
         const getDescriptionForField = (label) => {
-            if (jobType.value === "dataset-bbox") {
-                return getBBoxDescription(label);
-            } else if (jobType.value === "dataset-tag-road") {
-                return getDatasetTagInputDescription(label);
-            } else if (jobType.value === "confidence") {
-                return getConfidenceInputDescription(label);
-            } else if (jobType.value === "quality-metric") {
-                return getQualityMetricDescription(label);
-            }else if (jobType.value === "quality-metric-tag"){
-                return getQualityMetricTagDescription(label);
+            switch (jobType.value) {
+                case "dataset-bbox":
+                    return getBBoxDescription(label);
+                case "dataset-tag-road":
+                    return getDatasetTagInputDescription(label);
+                case "confidence":
+                    return getConfidenceInputDescription(label);
+                case "quality-metric":
+                    return getQualityMetricDescription(label);
+                case "quality-metric-tag":
+                    return getQualityMetricTagDescription(label);
+                case "dataset-union":
+                    return getUnionDescription(label);
+                default:
+                    return "";
             }
-            return "";
         };
 
+        // Updates the corresponding state based on the field's stateSetter property.
+        const handleInputChange = (e) => {
+            const value = e.target.value;
+            switch (field.stateSetter) {
+                case "setTdeiDatasetId":
+                    setTdeiDatasetId(value);
+                    break;
+                case "setSourceDatasetId":
+                    setSourceDatasetId(value);
+                    break;
+                case "setTargetDatasetId":
+                    setTargetDatasetId(value);
+                    break;
+                case "setDatasetIdOne":
+                    setFirstDatasetId(value);
+                    break;
+                case "setDatasetIdTwo":
+                    setSecondDatasetId(value);
+                    break;
+                default:
+                    break;
+            }
+        };
+        // Renders a text input field with appropriate state management.
+        const renderTextField = () => {
+            // Map state setters to their corresponding state values for easier access
+            const stateValues = {
+                setTdeiDatasetId: tdeiDatasetId,
+                setSourceDatasetId: sourceDatasetId,
+                setTargetDatasetId: targetDatasetId,
+                setDatasetIdOne: firstDatasetId,
+                setDatasetIdTwo: secondDatasetId
+            };
+
+            return (
+                <Form.Group key={index} controlId={field.label} className={style.formItem}>
+                    <Form.Label>
+                        {field.label}<span style={{ color: 'red' }}> *</span>
+                    </Form.Label>
+                    <Form.Control
+                        placeholder={`Enter ${field.label}`}
+                        type="text"
+                        className={isSpecialJobType ? style.createJobSelectType : ''}
+                        name={field.label}
+                        onChange={handleInputChange}
+                        value={stateValues[field.stateSetter] || ""}
+                    />
+                    <div className="d-flex align-items-start mt-2">
+                        <Form.Text id="passwordHelpBlock" className={style.description}>
+                            {getDescriptionForField(field.label)}
+                        </Form.Text>
+                    </div>
+                </Form.Group>
+            );
+        };
+
+        // Renders a select dropdown field with appropriate options and state management.
+        const renderSelectField = () => (
+            <div key={index} className={style.formItem}>
+                <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                <Select
+                    options={field.options}
+                    placeholder={`Select ${field.label.toLowerCase()}`}
+                    onChange={(value) => {
+                        if (field.stateSetter === "setSourceFormat") handleSourceFormatChange(value);
+                        if (field.stateSetter === "setTargetFormat") setTargetFormat(value);
+                        if (field.stateSetter === "setFileType") setFileType(value);
+                    }}
+                />
+                <div className="d-flex align-items-start mt-2">
+                    <Form.Text id="passwordHelpBlock" className={style.description}>
+                        {getDescriptionForField(field.label)}
+                    </Form.Text>
+                </div>
+            </div>
+        );
+        // Renders a Dropzone component for file uploads with appropriate accepted file types and state management.
+        const renderDropzoneField = () => (
+            <div key={index} className={style.formItems}>
+                <p className={style.formLabelP}>
+                    {field.label}
+                    <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>
+                </p>
+                <Dropzone
+                    onDrop={onDrop}
+                    accept={getAcceptedFileTypes()}
+                    format={getFileFormat()}
+                    selectedFile={selectedFile}
+                />
+                <div className="d-flex align-items-start mt-2">
+                    <Form.Text id="passwordHelpBlock" className={style.description}>
+                        {extractLinks(getDescriptionForField(field.label))}
+                    </Form.Text>
+                </div>
+            </div>
+        );
+
+
+        // Determines the accepted file types based on the selected job type and source format.
+        const getAcceptedFileTypes = () => {
+            switch (jobType.value) {
+                case "quality-metric-tag":
+                    return { 'application/json': ['.json'] };
+                case "osw-convert":
+                    if (sourceFormat && sourceFormat.value === "osm") {
+                        return {
+                            'application/octet-stream': ['.pbf', '.osm'],
+                            'application/xml': ['.xml']
+                        };
+                    } else if (!sourceFormat) {
+                        return "";
+                    }
+                    return { 'application/zip': ['.zip'] };
+                case "confidence":
+                case "quality-metric":
+                    return { 'application/geo+json': ['.geojson'] };
+                default:
+                    return { 'application/zip': ['.zip'] };
+            }
+        };
+
+
+        // Determines the file format string based on the selected job type and source format.
+        const getFileFormat = () => {
+            switch (jobType.value) {
+                case "quality-metric-tag":
+                    return ".json";
+                case "osw-convert":
+                    if (sourceFormat && sourceFormat.value === "osm") {
+                        return ".pbf, .osm, .xml";
+                    } else if (!sourceFormat) {
+                        return "-";
+                    }
+                    return ".zip";
+                case "confidence":
+                case "quality-metric":
+                    return ".geojson";
+                default:
+                    return ".zip";
+            }
+        };
+
+        // Renders the bounding box input fields (West, South, East, North) with state management.
+        const renderBBoxField = (index, field) => (
+            <div key={index} style={{ paddingTop: "25px" }}>
+                <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                <div className={style.bBoxContainer}>
+                    <Form.Group controlId="west" className={style.bboxFormGroup}>
+                        <Form.Label className={style.bboxLabel}>West</Form.Label>
+                        <Form.Control
+                            className={style.bboxForm}
+                            type="text"
+                            placeholder="Enter Coordinates"
+                            onChange={(e) => setBboxValues({ ...bboxValues, west: e.target.value })}
+                            value={bboxValues.west}
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="south" className={style.bboxFormGroup}>
+                        <Form.Label className={style.bboxLabel}>South</Form.Label>
+                        <Form.Control
+                            className={style.bboxForm}
+                            type="text"
+                            placeholder="Enter Coordinates"
+                            onChange={(e) => setBboxValues({ ...bboxValues, south: e.target.value })}
+                            value={bboxValues.south}
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="east" className={style.bboxFormGroup}>
+                        <Form.Label className={style.bboxLabel}>East</Form.Label>
+                        <Form.Control
+                            className={style.bboxForm}
+                            type="text"
+                            placeholder="Enter Coordinates"
+                            onChange={(e) => setBboxValues({ ...bboxValues, east: e.target.value })}
+                            value={bboxValues.east}
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="north" className={style.bboxFormGroup}>
+                        <Form.Label className={style.bboxLabel}>North</Form.Label>
+                        <Form.Control
+                            className={style.bboxForm}
+                            type="text"
+                            placeholder="Enter Coordinates"
+                            onChange={(e) => setBboxValues({ ...bboxValues, north: e.target.value })}
+                            value={bboxValues.north}
+                        />
+                    </Form.Group>
+                </div>
+                <div className="d-flex align-items-start mt-2">
+                    <Form.Text id="passwordHelpBlock" className={style.description}>
+                        {getDescriptionForField(field.label)}
+                    </Form.Text>
+                </div>
+            </div>
+        );
+
+        // Render the appropriate form field based on its type
         switch (field.type) {
             case "select":
-                return (
-                    <div key={index} className={style.formItem}>
-                        <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
-                        <Select
-                            options={field.options}
-                            placeholder={`Select ${field.label.toLowerCase()}`}
-                            onChange={(value) => {
-                                if (field.stateSetter === "setSourceFormat") handleSourceFormatChange(value);
-                                if (field.stateSetter === "setTargetFormat") setTargetFormat(value);
-                                if (field.stateSetter === "setFileType") setFileType(value);
-                            }}
-                        />
-                        <div className="d-flex align-items-start mt-2">
-                            {/* {jobType !== null && jobType.value === "dataset-bbox" && (
-                                <InfoIcon className="infoIconImg" />
-                            )} */}
-                            <Form.Text id="passwordHelpBlock" className={style.description}>
-                                {getDescriptionForField(field.label)}
-                            </Form.Text>
-                        </div>
-                    </div>
-                );
+                return renderSelectField();
             case "text":
-                return (
-                    <Form.Group key={index} controlId={field.label} className={style.formItem}>
-                        <Form.Label>
-                            {field.label}<span style={{ color: 'red' }}> *</span>
-                        </Form.Label>
-                        <Form.Control
-                            placeholder={`Enter ${field.label}`}
-                            type="text"
-                            className={isSpecialJobType ? style.createJobSelectType : ''}
-                            name={field.label}
-                            onChange={(e) => {
-                                if (field.stateSetter === "setTdeiDatasetId") setTdeiDatasetId(e.target.value);
-                                if (field.stateSetter === "setSourceDatasetId") setSourceDatasetId(e.target.value);
-                                if (field.stateSetter === "setTargetDatasetId") setTargetDatasetId(e.target.value);
-                            }}
-                            value={
-                                field.stateSetter === "setTdeiDatasetId"
-                                    ? tdeiDatasetId
-                                    : field.stateSetter === "setSourceDatasetId"
-                                        ? sourceDatasetId
-                                        : field.stateSetter === "setTargetDatasetId"
-                                            ? targetDatasetId
-                                            : ""
-                            }
-                        />
-                        <div className="d-flex align-items-start mt-2">
-                            {/* <InfoIcon className="infoIconImg" /> */}
-                            <Form.Text id="passwordHelpBlock" className={style.description}>
-                                {getDescriptionForField(field.label)}
-                            </Form.Text>
-                        </div>
-                    </Form.Group>
-                );
-            case "dropdown":
-                return (
-                    <div key={index} style={{ marginTop: '20px' }}>
-                        <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
-                        <QualityMetricAlgo onUpdate={handleAlgorithmUpdate} />
-                        <div className="d-flex align-items-start mt-2">
-                                <Form.Text id="passwordHelpBlock" className={style.description}>
-                                    {extractLinks(getDescriptionForField('algorithm'))}
-                                </Form.Text>
-                            </div>
-                    </div>
-                );
-                case "textarea":
+                return renderTextField();
+            case "dropzone":
+                return renderDropzoneField();
+            case "textarea":
                 return (
                     <div key={index} style={{ marginTop: '20px' }}>
                         <Form.Label>{field.label}<span style={{ color: 'red' }}> *</span></Form.Label>
@@ -466,133 +695,41 @@ const CreateJobService = () => {
                                         here
                                     </a>)
                                 </div>
-                        </div>
-                        </div>
-                    </div>
-                );
-                case "dropzone":
-                    return (
-                        <div key={index} className={style.formItems}>
-                            <p className={style.formLabelP}>
-                                {field.label}
-                                <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>
-                            </p>
-                            <Dropzone
-                                onDrop={onDrop}
-                                accept={
-                                    jobType.value === "osw-convert" && sourceFormat == null
-                                        ? "" 
-                                        : jobType.value === "quality-metric-tag"
-                                            ? { 'application/json': ['.json'] }
-                                            : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
-                                                ? {
-                                                    'application/octet-stream': ['.pbf', '.osm'],
-                                                    'application/xml': ['.xml']
-                                                  }
-                                                : jobType.value === "confidence" || jobType.value === "quality-metric"
-                                                    ? { 'application/geo+json': ['.geojson'] }
-                                                    : { 'application/zip': ['.zip'] }
-                                }                                
-                                format={
-                                    jobType.value === "quality-metric-tag"
-                                        ? ".json"
-                                        : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
-                                            ? ".pbf, .osm, .xml"
-                                            : jobType.value === "osw-convert" && sourceFormat == null
-                                                ? "-"
-                                                : jobType.value === "confidence" || jobType.value === "quality-metric"
-                                                    ? ".geojson"
-                                                    : ".zip"
-                                }
-                                selectedFile={selectedFile}
-                            />
-                            <div className="d-flex align-items-start mt-2">
-                                <Form.Text id="passwordHelpBlock" className={style.description}>
-                                    {extractLinks(getDescriptionForField(field.label))}
-                                </Form.Text>
                             </div>
                         </div>
-                    );                
-            case "bbox":
-                return (
-                    <div key={index} style={{ paddingTop: "25px" }}>
-                        <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
-                        <div className={style.bBoxContainer}>
-                            <Form.Group controlId="west" className={style.bboxFormGroup}>
-                                <Form.Label className={style.bboxLabel}>West</Form.Label>
-                                <Form.Control
-                                    className={style.bboxForm}
-                                    type="text"
-                                    placeholder="Enter Coordinates"
-                                    onChange={(e) => setBboxValues({ ...bboxValues, west: e.target.value })}
-                                    value={bboxValues.west}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="south" className={style.bboxFormGroup}>
-                                <Form.Label className={style.bboxLabel}>South</Form.Label>
-                                <Form.Control
-                                    className={style.bboxForm}
-                                    type="text"
-                                    placeholder="Enter Coordinates"
-                                    onChange={(e) => setBboxValues({ ...bboxValues, south: e.target.value })}
-                                    value={bboxValues.south}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="east" className={style.bboxFormGroup}>
-                                <Form.Label className={style.bboxLabel}>East</Form.Label>
-                                <Form.Control
-                                    className={style.bboxForm}
-                                    type="text"
-                                    placeholder="Enter Coordinates"
-                                    onChange={(e) => setBboxValues({ ...bboxValues, east: e.target.value })}
-                                    value={bboxValues.east}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="north" className={style.bboxFormGroup}>
-                                <Form.Label className={style.bboxLabel}>North</Form.Label>
-                                <Form.Control
-                                    className={style.bboxForm}
-                                    type="text"
-                                    placeholder="Enter Coordinates"
-                                    onChange={(e) => setBboxValues({ ...bboxValues, north: e.target.value })}
-                                    value={bboxValues.north}
-                                />
-                            </Form.Group>
-
-                        </div>
-                        <div className="d-flex align-items-start mt-2">
-                            {/* {jobType !== null && jobType.value === "dataset-bbox" && (
-                                <InfoIcon className="infoIconImg" />
-                            )} */}
-                            <Form.Text id="passwordHelpBlock" className={style.description}>
-                                {getDescriptionForField(field.label)}
-                            </Form.Text>
-                        </div>
                     </div>
                 );
+            case "bbox":
+                return renderBBoxField(index, field);
             default:
                 return null;
         }
     };
 
-
+    /**
+     * Renders all the form fields based on the selected job type and its configuration.
+     * Handles specific layout arrangements for certain job types.
+     */
     const renderFormFields = () => {
         if (!jobType) return null;
-
         const fields = formConfig[jobType.value];
-        if (!fields) return null;
+        if (!fields) return null; 
 
-        if (jobType.value === "osw-convert" || jobType.value === "dataset-tag-road" || jobType.value === "dataset-bbox") {
+        // Specific layout handling for certain job types
+        if (["osw-convert", "dataset-tag-road", "dataset-bbox", "dataset-union"].includes(jobType.value)) {
             return (
                 <div>
                     <div className={style.formRow}>
+                        {/* Render select and text fields in a row */}
                         {fields.filter(field => field.type === "select" || field.type === "text").map(renderField)}
                     </div>
+                    {/* Render dropzone and bounding box fields below */}
                     {fields.filter(field => field.type === "dropzone" || field.type === "bbox").map(renderField)}
                 </div>
             );
         }
 
+        // Default rendering for other job types
         return fields.map(renderField);
     };
 
@@ -644,7 +781,6 @@ const CreateJobService = () => {
                             Create
                         </Button>
                     </div>
-
                     {loading && (
                         <div className={style.loaderOverlay}>
                             <div className={style.spinnerContainer}>
@@ -678,9 +814,9 @@ const CreateJobService = () => {
                             title="Error"
                         />
                     )}
-                    { showJsonSuccessModal &&(
+                    {showJsonSuccessModal && (
                         <JobJsonResponseModal
-                        show={showJsonSuccessModal}
+                            show={showJsonSuccessModal}
                             message="Job has been completed!"
                             content={JSON.stringify(jobSuccessJson, null, 2) ?? ""}
                             handler={() => {
@@ -698,9 +834,9 @@ const CreateJobService = () => {
                         onClose={handleCloseToast}
                         isSuccess={false}
                     />
-                       { showModal &&(
+                    {showModal && (
                         <JobJsonResponseModal
-                        show={showModal}
+                            show={showModal}
                             message=""
                             content={JSON.stringify(SAMPLE_SPATIAL_JOIN, null, 2) ?? ""}
                             handler={() => {
