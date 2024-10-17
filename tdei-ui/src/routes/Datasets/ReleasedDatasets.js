@@ -19,23 +19,34 @@ import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
 import ProjectAutocomplete from './../../components/ProjectAutocomplete/ProjectAutocomplete';
 import ServiceAutocomplete from '../../components/ServiceAutocomplete/ServiceAutocomplete';
+import DownloadModal from '../../components/DownloadModal/DownloadModal';
+import ResponseToast from '../../components/ToastMessage/ResponseToast';
 
 const ReleasedDatasets = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
   const [dataType, setDataType] = useState("");
   const [sortedData, setSortedData] = useState([]);
   const [eventKey, setEventKey] = useState("");
   const navigate = useNavigate();
-  const [projectGroupId, setProjectGroupId] = useState(""); 
+  const [projectGroupId, setProjectGroupId] = useState("");
   const [tdeiServiceId, setTdeiServiceId] = useState("");
   const [sortField, setSortField] = useState('uploaded_timestamp');
   const [sortOrder, setSortOrder] = useState('DESC');
   // Date range state
   const [validFrom, setValidFrom] = useState(null);
   const [validTo, setValidTo] = useState(null);
+  const [selectedDataset, setSelectedDataset] = useState(null);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState(null);
+  const [selectedFileVersion, setSelectedFileVersion] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [operationResult, setOperationResult] = useState("");
+  const [customErrorMessage, setCustomErrorMessage] = useState("");
+
 
   // Options for data type dropdown
   const options = [
@@ -95,10 +106,46 @@ const ReleasedDatasets = () => {
     []
   );
 
-  const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
+  const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset({
+    onSuccess: () => {
+      setIsLoadingDownload(false);
+      setShowDownloadModal(false);
+      setOperationResult("success");
+      handleToast();
+      setSelectedFormat(null);
+      setSelectedFileVersion(null);
+    },
+    onError: (err) => {
+      console.error("Error downloading dataset:", err);
+      setIsLoadingDownload(false);
+      setShowDownloadModal(false);
+      setOperationResult("error");
+      setCustomErrorMessage(err.data || showDownloadModal ? "Only latest version of the file can be downloaded": 'An unexpected error occurred');
+      handleToast();
+      setSelectedFormat(null);
+      setSelectedFileVersion(null);
+    }
+  });
+
+
   const handleDownloadDataset = (dataset) => {
-    downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
-  };
+    setIsLoadingDownload(true);
+    if (selectedDataset && selectedDataset.data_type === 'osw') {
+        // Set default format as 'osw' and version as 'latest' if not selected
+        const format = selectedFormat ? selectedFormat.value : 'osw';
+        const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
+
+        downloadDataset({
+            tdei_dataset_id: selectedDataset.tdei_dataset_id,
+            data_type: selectedDataset.data_type,
+            format: format,
+            file_version: fileVersion
+        });
+    } else {
+        downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
+    }
+    setSelectedDataset(null);
+};  
   // Event handler for selecting action button on a dataset
   const onInspect = () => { }
 
@@ -108,8 +155,11 @@ const ReleasedDatasets = () => {
   };
 
   const onAction = (eventKey, dataset) => {
+    setSelectedDataset(dataset);
     setEventKey(eventKey);
-    if (eventKey === 'downLoadDataset') {
+    if (eventKey === 'downLoadDataset' && dataset.data_type === 'osw') {
+      setShowDownloadModal(true);
+    } else if (eventKey === 'downLoadDataset') {
       handleDownloadDataset(dataset);
     } else if (eventKey === 'cloneDataset') {
       navigate('/CloneDataset', { state: { dataset } });
@@ -125,17 +175,44 @@ const ReleasedDatasets = () => {
     setSortOrder(order);
     refreshData();
   }
+  const formatOptions = [
+    { value: 'osm', label: 'OSM' },
+    { value: 'osw', label: 'OSW' }
+  ];
+
+  const fileVersionOptions = [
+    { value: 'latest', label: 'Latest' },
+    { value: 'original', label: 'Original' }
+  ];
+
+  const handleToast = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const getToastMessage = () => {
+    switch (eventKey) {
+      case 'downLoadDataset':
+        return operationResult === "success"
+          ? "Success! Download has been initiated."
+          : customErrorMessage;
+      default:
+        return "";
+    }
+  };
 
   // Callback to handle project group selection from ProjectAutocomplete
   const handleProjectGroupSelect = useCallback((selectedId) => {
     setProjectGroupId(selectedId || "");
-    refreshData(); 
+    refreshData();
   }, [refreshData]);
 
   // Callback to handle service selection from ServiceAutocomplete
   const handleServiceSelect = useCallback((serviceId) => {
     setTdeiServiceId(serviceId || "");
-    refreshData(); 
+    refreshData();
   }, [refreshData]);
 
   return (
@@ -185,9 +262,9 @@ const ReleasedDatasets = () => {
           </Col>
           <Col md={4} className="mb-2">
             <Form.Group>
-            <ServiceAutocomplete
+              <ServiceAutocomplete
                 onSelectService={handleServiceSelect}
-                isAdmin={true} 
+                isAdmin={true}
               />
             </Form.Group>
           </Col>
@@ -262,6 +339,31 @@ const ReleasedDatasets = () => {
             Load More {isFetchingNextPage && <Spinner size="sm" />}
           </Button>
         )}
+        <DownloadModal
+          show={showDownloadModal}
+          handleClose={() => {
+            if (!isLoadingDownload) {
+              setShowDownloadModal(false);
+              setSelectedFormat(null);
+              setSelectedFileVersion(null);
+              setSelectedDataset(null);
+            }
+          }}
+          handleDownload={handleDownloadDataset}
+          formatOptions={formatOptions}
+          fileVersionOptions={fileVersionOptions}
+          selectedFormat={selectedFormat}
+          setSelectedFormat={setSelectedFormat}
+          selectedFileVersion={selectedFileVersion}
+          setSelectedFileVersion={setSelectedFileVersion}
+          isLoading={isLoadingDownload}
+        />
+        <ResponseToast
+          showtoast={open}
+          handleClose={handleClose}
+          type={operationResult === "success" ? "success" : "error"}
+          message={getToastMessage()}
+        />
       </Form>
     </div>
   );

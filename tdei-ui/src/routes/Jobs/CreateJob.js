@@ -480,25 +480,29 @@ const CreateJobService = () => {
                             <Dropzone
                                 onDrop={onDrop}
                                 accept={
-                                    jobType.value === "quality-metric-tag"
-                                        ? { 'application/json': ['.json'] }
-                                        : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
-                                            ? {
-                                                'application/octet-stream': ['.pbf', '.osm'],
-                                                'application/xml': ['.xml']
-                                              }
-                                            : jobType.value === "confidence" || jobType.value === "quality-metric"
-                                                ? { 'application/geo+json': ['.geojson'] }
-                                                : { 'application/zip': ['.zip'] }
-                                }
+                                    jobType.value === "osw-convert" && sourceFormat == null
+                                        ? "" 
+                                        : jobType.value === "quality-metric-tag"
+                                            ? { 'application/json': ['.json'] }
+                                            : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
+                                                ? {
+                                                    'application/octet-stream': ['.pbf', '.osm'],
+                                                    'application/xml': ['.xml']
+                                                  }
+                                                : jobType.value === "confidence" || jobType.value === "quality-metric"
+                                                    ? { 'application/geo+json': ['.geojson'] }
+                                                    : { 'application/zip': ['.zip'] }
+                                }                                
                                 format={
                                     jobType.value === "quality-metric-tag"
                                         ? ".json"
                                         : jobType.value === "osw-convert" && (sourceFormat && sourceFormat.value === "osm")
                                             ? ".pbf, .osm, .xml"
-                                            : jobType.value === "confidence" || jobType.value === "quality-metric"
-                                                ? ".geojson"
-                                                : ".zip"
+                                            : jobType.value === "osw-convert" && sourceFormat == null
+                                                ? "-"
+                                                : jobType.value === "confidence" || jobType.value === "quality-metric"
+                                                    ? ".geojson"
+                                                    : ".zip"
                                 }
                                 selectedFile={selectedFile}
                             />
