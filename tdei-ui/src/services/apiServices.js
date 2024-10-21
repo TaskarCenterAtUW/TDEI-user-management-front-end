@@ -456,6 +456,7 @@ export async function postUploadDataset(data) {
 }
 export async function getDatasets(
   searchText,
+  searchDatasetId,
   pageParam = 1,
   isAdmin,
   status,
@@ -481,6 +482,9 @@ export async function getDatasets(
 
   if (searchText) {
     params.name = searchText;
+  }
+  if (searchDatasetId) {
+    params.tdei_dataset_id = searchDatasetId;
   }
 
   if (dataType) {
