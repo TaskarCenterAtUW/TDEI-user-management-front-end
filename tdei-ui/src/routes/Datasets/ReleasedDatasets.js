@@ -28,6 +28,8 @@ const ReleasedDatasets = () => {
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
+  const [datasetIdQuery, setDatasetIdQuery] = useState("");
+  const [debounceDatasetIdQuery, setDebounceDatasetIdQuery] = useState("");
   const [dataType, setDataType] = useState("");
   const [sortedData, setSortedData] = useState([]);
   const [eventKey, setEventKey] = useState("");
@@ -66,6 +68,7 @@ const ReleasedDatasets = () => {
     refreshData
   } = useGetReleasedDatasets(
     debounceQuery,
+    debounceDatasetIdQuery,
     dataType,
     projectGroupId,
     validFrom,
@@ -120,7 +123,7 @@ const ReleasedDatasets = () => {
       setIsLoadingDownload(false);
       setShowDownloadModal(false);
       setOperationResult("error");
-      setCustomErrorMessage(err.data || showDownloadModal ? "Only latest version of the file can be downloaded": 'An unexpected error occurred');
+      setCustomErrorMessage(err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : 'An unexpected error occurred');
       handleToast();
       setSelectedFormat(null);
       setSelectedFileVersion(null);
@@ -131,21 +134,21 @@ const ReleasedDatasets = () => {
   const handleDownloadDataset = (dataset) => {
     setIsLoadingDownload(true);
     if (selectedDataset && selectedDataset.data_type === 'osw') {
-        // Set default format as 'osw' and version as 'latest' if not selected
-        const format = selectedFormat ? selectedFormat.value : 'osw';
-        const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
+      // Set default format as 'osw' and version as 'latest' if not selected
+      const format = selectedFormat ? selectedFormat.value : 'osw';
+      const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
 
-        downloadDataset({
-            tdei_dataset_id: selectedDataset.tdei_dataset_id,
-            data_type: selectedDataset.data_type,
-            format: format,
-            file_version: fileVersion
-        });
+      downloadDataset({
+        tdei_dataset_id: selectedDataset.tdei_dataset_id,
+        data_type: selectedDataset.data_type,
+        format: format,
+        file_version: fileVersion
+      });
     } else {
-        downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
+      downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
     }
     setSelectedDataset(null);
-};  
+  };
   // Event handler for selecting action button on a dataset
   const onInspect = () => { }
 
@@ -215,6 +218,16 @@ const ReleasedDatasets = () => {
     refreshData();
   }, [refreshData]);
 
+
+  // Debounced event handler for searching dataset ID
+  const handleDatasetIdSearch = (e) => {
+    setDebounceDatasetIdQuery(e.target.value);
+  };
+  const debouncedHandleDatasetIdSearch = React.useMemo(
+    () => debounce(handleDatasetIdSearch, 300),
+    []
+  );
+
   return (
     <div>
       <Form noValidate>
@@ -271,8 +284,21 @@ const ReleasedDatasets = () => {
         </Row>
 
         <Row className="mb-4">
-          <Col md={12} className="d-flex align-items-center">
-            <Form.Group className="mb-0 d-flex align-items-center" style={{ marginRight: '42px' }}>
+
+          <Col md={4}>
+            <Form.Group>
+              <Form.Control
+                aria-label="Search by Dataset ID"
+                placeholder="Search by Dataset ID"
+                onChange={(e) => {
+                  setDatasetIdQuery(e.target.value);
+                  debouncedHandleDatasetIdSearch(e);
+                }}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group className="d-flex align-items-center">
               <DatePicker
                 label="Valid From"
                 onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
@@ -285,8 +311,9 @@ const ReleasedDatasets = () => {
                 <ClearIcon />
               </IconButton>
             </Form.Group>
-
-            <Form.Group className="mb-0 d-flex align-items-center">
+          </Col>
+          <Col md={4}>
+            <Form.Group className="d-flex align-items-center">
               <DatePicker
                 label="Valid To"
                 onChange={(date) => handleChangeDatePicker(date, setValidTo)}
