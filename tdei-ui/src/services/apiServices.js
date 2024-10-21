@@ -456,6 +456,7 @@ export async function postUploadDataset(data) {
 }
 export async function getDatasets(
   searchText,
+  searchDatasetId,
   pageParam = 1,
   isAdmin,
   status,
@@ -481,6 +482,9 @@ export async function getDatasets(
 
   if (searchText) {
     params.name = searchText;
+  }
+  if (searchDatasetId) {
+    params.tdei_dataset_id = searchDatasetId;
   }
 
   if (dataType) {
@@ -517,7 +521,7 @@ export async function getDatasets(
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId,sortField = 'uploaded_timestamp', 
+export async function getReleasedDatasets(searchText,searchDatasetId, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId,sortField = 'uploaded_timestamp', 
   sortOrder = 'DESC'    ) {
   const params = {
     status: "Publish",
@@ -528,6 +532,9 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType, p
   };
   if (searchText) {
     params.name = searchText;
+  }
+  if (searchDatasetId) {
+    params.tdei_dataset_id = searchDatasetId;
   }
   if (dataType) {
     params.data_type = dataType;
