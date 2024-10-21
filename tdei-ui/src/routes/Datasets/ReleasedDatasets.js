@@ -288,8 +288,8 @@ const ReleasedDatasets = () => {
           <Col md={4}>
             <Form.Group>
               <Form.Control
-                aria-label="Search by Dataset ID"
-                placeholder="Search by Dataset ID"
+                aria-label="Search Dataset ID"
+                placeholder="Search Dataset ID"
                 onChange={(e) => {
                   setDatasetIdQuery(e.target.value);
                   debouncedHandleDatasetIdSearch(e);
