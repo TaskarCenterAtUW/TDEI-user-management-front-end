@@ -384,6 +384,7 @@ const ReleasedDatasets = () => {
           selectedFileVersion={selectedFileVersion}
           setSelectedFileVersion={setSelectedFileVersion}
           isLoading={isLoadingDownload}
+          isReleasedDataset={true}
         />
         <ResponseToast
           showtoast={open}
