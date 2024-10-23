@@ -7,9 +7,7 @@ export default function ChipInput({ initialChips, onChipsChange }) {
     const [chips, setChips] = useState([]);
 
     useEffect(() => {
-        if (initialChips.length > 0) {
-            setChips(initialChips);
-        }
+    setChips(initialChips ? initialChips : []);
     }, [initialChips]);
 
     const handleChipsChange = (event, value) => {

@@ -310,8 +310,8 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       return "Please attach metadata file!!";
     }
 
-    if (!(metadata instanceof File)) {
-      const { dataset_detail, data_provenance } = metadata;
+    if (!(metadata && metadata.file instanceof File)) {
+      const { dataset_detail, data_provenance } = metadata && metadata.file instanceof File ? metadata.formData : metadata;
       if (!dataset_detail) {
         return "Metadata details are missing!";
       }

@@ -204,7 +204,7 @@ export default function EditMetadata() {
     const handleNext = () => {
         let errorMessage = validateMetadata();
         if (!errorMessage) {
-            const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, metadata: selectedData };
+            const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, metadata: selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData };
             mutate(dataToMutate);
         } else {
             setErrorMessage(errorMessage);
@@ -221,8 +221,8 @@ export default function EditMetadata() {
         if (!metadata) {
             return "Please attach metadata file!";
         }
-        if (!(metadata instanceof File)) {
-            const { dataset_detail, data_provenance } = metadata;
+        // if (!(metadata && metadata.file instanceof File)) {
+            const { dataset_detail, data_provenance } = metadata && metadata.file instanceof File ? metadata.formData : metadata;
             if (!dataset_detail) {
                 return "Metadata details are missing!";
             }
@@ -243,7 +243,7 @@ export default function EditMetadata() {
             if (!data_provenance || !data_provenance.full_dataset_name) {
                 return "Full Dataset Name in Data Provenance is required";
             }
-        }
+        // }
         return null;
     };
 
