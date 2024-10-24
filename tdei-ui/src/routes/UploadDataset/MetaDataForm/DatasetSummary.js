@@ -62,7 +62,8 @@ const DatasetSummary = ({ formData, updateFormData }) => {
               <Form.Group controlId="release_notes" style={{ marginTop: '15px' }}>
                 <Form.Label>Release Notes</Form.Label>
                 <Form.Control
-                  type="text"
+                  as="textarea"
+                  rows={3}
                   placeholder="Release Notes"
                   name="release_notes"
                   value={formData.release_notes}
