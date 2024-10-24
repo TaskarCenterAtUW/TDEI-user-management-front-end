@@ -58,7 +58,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
             "city": "",
             "region": "",
             "county": "",
-            "key_limitations_of_the_dataset": "",
+            "key_limitations": "",
             "challenges": ""
         },
         "maintenance": {

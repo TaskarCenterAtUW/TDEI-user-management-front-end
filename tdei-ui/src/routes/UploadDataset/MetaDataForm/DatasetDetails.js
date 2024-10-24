@@ -25,7 +25,9 @@ const DatasetDetails = ({ formData, updateFormData }) => {
     collected_by: Yup.string().required('Collected By is required'),
     collection_date: Yup.string().required('Collection Date is required').nullable(),
     data_source: Yup.string().required('Data Source is required'),
-    schema_version: Yup.string().required('Schema Version is required')
+    schema_version: Yup.string().required('Schema Version is required'),
+    valid_to: Yup.string().required('Valid to date is required'),
+    valid_from: Yup.string().required('Valid from date is required')
   });
 
   const handleDropdownSelect = (fieldName, selectedOption) => {
@@ -151,7 +153,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 <ErrorMessage name="collection_date" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="valid_from" style={{ marginTop: '15px' }}>
-                <Form.Label>Valid From</Form.Label>
+                <Form.Label>Valid From<span style={{ color: 'red' }}> *</span> </Form.Label>
                 <Field
                   name="valid_from"
                   component={DatePicker}
@@ -166,7 +168,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 <ErrorMessage name="valid_from" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="valid_to" style={{ marginTop: '15px' }}>
-                <Form.Label>Valid To</Form.Label>
+                <Form.Label>Valid To <span style={{ color: 'red' }}> *</span></Form.Label>
                 <Field
                   name="valid_to"
                   component={DatePicker}

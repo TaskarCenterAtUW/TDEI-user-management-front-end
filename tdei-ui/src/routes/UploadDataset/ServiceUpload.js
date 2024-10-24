@@ -15,7 +15,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
   const { user } = useAuth();
   const [, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
-  const [serviceType, setServiceType] = useState(fromCloneDataset ? dataset.data_type : "");
+  const [serviceType, setServiceType] = useState(fromCloneDataset ? dataset ? dataset.data_type : "" : "");
   const [selectedService, setSelectedService] = useState({});
   const [previousProjectGroupId, setPreviousProjectGroupId] = useState( selectedData && selectedData.tdei_project_group_id ? selectedData.tdei_project_group_id :"");
 
@@ -34,7 +34,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     if (Array.isArray(data.pages) && data.pages.length > 0) {
       const firstPageData = data.pages[0]?.data ?? [];
       const newProjectGroupId = firstPageData.length > 0 ? firstPageData[0]?.tdei_project_group_id : "";
-      if (newProjectGroupId !== previousProjectGroupId) {
+      if (!user.isAdmin && newProjectGroupId !== previousProjectGroupId) {
           setSelectedService({
             tdei_project_group_id: "",
             tdei_service_id: "",
