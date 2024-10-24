@@ -41,7 +41,8 @@ const MetaDataForm = ({ selectedData, onUpdateFormData }) => {
             "city": "",
             "region": "",
             "county": "",
-            "key_limitations_of_the_dataset": "",
+            "key_limitations": "",
+            "release_notes":"",
             "challenges": ""
         },
         "maintenance": {
@@ -123,7 +124,8 @@ const MetaDataForm = ({ selectedData, onUpdateFormData }) => {
                     "city": "",
                     "region": "",
                     "county": "",
-                    "key_limitations_of_the_dataset": "",
+                    "key_limitations": "",
+                    "release_notes":"",
                     "challenges": ""
                 },
                 "maintenance": {

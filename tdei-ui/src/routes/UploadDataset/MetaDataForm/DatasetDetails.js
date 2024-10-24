@@ -151,7 +151,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                 <ErrorMessage name="collection_date" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="valid_from" style={{ marginTop: '15px' }}>
-                <Form.Label>Valid From</Form.Label>
+                <Form.Label>Valid From </Form.Label>
                 <Field
                   name="valid_from"
                   component={DatePicker}

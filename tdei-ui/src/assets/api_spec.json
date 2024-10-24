@@ -381,7 +381,7 @@
                         }
                     },
                     {
-                        "name": "key_limitations_of_the_dataset",
+                        "name": "key_limitations",
                         "in": "query",
                         "description": "Key limitations of the dataset",
                         "required": false,
@@ -3390,7 +3390,7 @@
                                 "type": "string",
                                 "description": "Name of the county"
                             },
-                            "key_limitations_of_the_dataset": {
+                            "key_limitations": {
                                 "type": "string",
                                 "description": "Key limitations of the dataset"
                             },
