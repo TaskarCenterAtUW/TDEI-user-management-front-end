@@ -32,6 +32,8 @@ const MyDatasets = () => {
     const [isLoadingDownload, setIsLoadingDownload] = useState(false); 
     const [query, setQuery] = useState("");
     const [debounceQuery, setDebounceQuery] = useState("");
+    const [datasetIdQuery, setDatasetIdQuery] = useState("");
+    const [debounceDatasetIdQuery, setDebounceDatasetIdQuery] = useState("");
     const [dataType, setDataType] = useState("");
     const [status, setStatus] = useState("All");
     const [validFrom, setValidFrom] = useState(null);
@@ -53,6 +55,7 @@ const MyDatasets = () => {
     const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(
         isAdmin,
         debounceQuery,
+        debounceDatasetIdQuery,
         status,
         dataType,
         validFrom,
@@ -98,6 +101,15 @@ const MyDatasets = () => {
 
     const debouncedHandleSearch = useCallback(
         debounce(handleSearch, 300),
+        []
+    );
+
+    const handleDatasetIdSearch = (e) => {
+        setDebounceDatasetIdQuery(e.target.value);
+    };
+
+    const debouncedHandleDatasetIdSearch = useCallback(
+        debounce(handleDatasetIdSearch, 300),
         []
     );
 
@@ -313,8 +325,8 @@ const MyDatasets = () => {
                         />
                     </Col>
                 </Row>
-                <Row className="mb-3 d-flex justify-content-start">
-                    <Col md={4} className="mb-2">
+                <Row className="mb-3">
+                    <Col md={4}>
                         <Form.Group>
                             <Form.Control
                                 aria-label="Search Dataset"
@@ -326,16 +338,29 @@ const MyDatasets = () => {
                             />
                         </Form.Group>
                     </Col>
-                    {isAdmin && (
-                        <Col md={4} className="mb-2">
+                    {isAdmin ? (
+                        <Col md={4}>
                             <Form.Group>
                                 <ProjectAutocomplete
                                     onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
                                 />
                             </Form.Group>
                         </Col>
+                    ) : (
+                        <Col md={4}>
+                            <Form.Group>
+                                <Form.Control
+                                    aria-label="Search Dataset ID"
+                                    placeholder="Search Dataset ID"
+                                    onChange={(e) => {
+                                        setDatasetIdQuery(e.target.value);
+                                        debouncedHandleDatasetIdSearch(e);
+                                    }}
+                                />
+                            </Form.Group>
+                        </Col>
                     )}
-                    <Col md={4} className="mb-3">
+                    <Col md={4}>
                         <Form.Group>
                             <ServiceAutocomplete
                                 onSelectService={handleServiceSelect}
@@ -344,10 +369,23 @@ const MyDatasets = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-
-                <Row className="mb-4">
-                    <Col md={12} className="d-flex align-items-center">
-                        <Form.Group className="mb-0 d-flex align-items-center" style={{ marginRight: '42px' }}>
+                <Row className="mb-3 d-flex justify-content-start">
+                    {isAdmin && (
+                        <Col md={4}>
+                            <Form.Group>
+                                <Form.Control
+                                    aria-label="Search Dataset ID"
+                                    placeholder="Search Dataset ID"
+                                    onChange={(e) => {
+                                        setDatasetIdQuery(e.target.value);
+                                        debouncedHandleDatasetIdSearch(e);
+                                    }}
+                                />
+                            </Form.Group>
+                        </Col>
+                    )}
+                    <Col md={4}>
+                        <Form.Group className="d-flex align-items-center">
                             <DatePicker
                                 label="Valid From"
                                 onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
@@ -360,8 +398,9 @@ const MyDatasets = () => {
                                 <ClearIcon />
                             </IconButton>
                         </Form.Group>
-
-                        <Form.Group className="mb-0 d-flex align-items-center">
+                    </Col>
+                    <Col md={4}>
+                        <Form.Group className="d-flex align-items-center">
                             <DatePicker
                                 label="Valid To"
                                 onChange={(date) => handleChangeDatePicker(date, setValidTo)}
