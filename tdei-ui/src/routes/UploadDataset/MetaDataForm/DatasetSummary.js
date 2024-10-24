@@ -46,7 +46,7 @@ const DatasetSummary = ({ formData, updateFormData }) => {
                 <ErrorMessage name="department_name" component="div" />
               </Form.Group>
               <Form.Group controlId="key_limitations" style={{ marginTop: '15px' }}>
-                <Form.Label>Key limitations of the dataset</Form.Label>
+                <Form.Label>Key limitations</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Key limitations of the dataset"
