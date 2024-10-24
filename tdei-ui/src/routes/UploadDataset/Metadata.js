@@ -59,6 +59,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
             "region": "",
             "county": "",
             "key_limitations": "",
+            "release_notes":"",
             "challenges": ""
         },
         "maintenance": {

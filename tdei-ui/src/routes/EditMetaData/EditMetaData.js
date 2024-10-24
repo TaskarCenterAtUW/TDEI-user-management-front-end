@@ -110,6 +110,7 @@ export default function EditMetadata() {
             "region": "",
             "county": "",
             "key_limitations": "",
+            "release_notes":"",
             "challenges": ""
         },
         "maintenance": {

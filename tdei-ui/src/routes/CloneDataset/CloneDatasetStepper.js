@@ -137,6 +137,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
                 "region": "",
                 "county": "",
                 "key_limitations": "",
+                "release_notes":"",
                 "challenges": ""
             },
             "maintenance": {
