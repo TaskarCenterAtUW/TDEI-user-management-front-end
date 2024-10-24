@@ -327,8 +327,6 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         { field: 'collection_date', message: 'Collection Date is required' },
         { field: 'data_source', message: 'Data Source is required' },
         { field: 'schema_version', message: 'Schema Version is required' },
-        { field: 'valid_to', message: 'Valid to date is required' },
-        { field: 'valid_from', message: 'Valid from date is required' }
       ];
       for (const { field, message } of requiredFields) {
         if (!dataset_detail[field]) {
