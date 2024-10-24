@@ -51,7 +51,7 @@ const DatasetSummary = ({ formData, updateFormData }) => {
                   type="text"
                   placeholder="Key limitations of the dataset"
                   name="key_limitations"
-                  value={formData.key_limitations_of_the_dataset}
+                  value={formData.key_limitations}
                   onChange={(e) => {
                     handleFieldChange(e);
                     handleChange(e);
