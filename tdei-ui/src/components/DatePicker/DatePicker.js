@@ -26,7 +26,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
     const dateString = date ? date.toISOString() : null;
     setInternalDate(date);  
     if (setFieldValue) setFieldValue(name, dateString); 
-    if (setFieldTouched) setFieldTouched(name, true);
+    setFieldTouched(name, true);
     onChange(dateString);
   };
 
@@ -66,6 +66,9 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
             placeholder: label,
             error: touched?.[name] && !!errors?.[name],
             onBlur: () => setFieldTouched && setFieldTouched(name, true),
+            inputProps: {
+              readOnly: true,
+            },
           }
         }}
         onChange={handleChange}

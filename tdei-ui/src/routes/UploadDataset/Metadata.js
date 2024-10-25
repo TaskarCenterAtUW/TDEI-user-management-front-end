@@ -4,7 +4,7 @@ import Dropzone from '../../components/DropZone/Dropzone';
 import MetaDataForm from './MetaDataForm/MetaDataForm';
 import style from './MetaDataForm/MetaDataForm.module.css';
 
-const Metadata = ({ selectedData, onSelectedFileChange }) => {
+const Metadata = ({ selectedData, onSelectedFileChange, isDatasetPublished = false }) => {
   const onDrop = (files) => {
     const selectedFile = files[0];
     if(selectedFile){
@@ -116,7 +116,7 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>
-      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData}/>
+      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished}/>
     </div>
   );
 };
