@@ -174,7 +174,7 @@ export default function EditMetadata() {
         setLoading(false);
         console.error("error message", err);
         setShowErrorModal(true);
-        setError(err.data ?? err.message.message);
+        setError(err.data ?? err.response.data ?? err.message.message);
         if (selectedData) {
             const { custom_metadata, dataset_area } = selectedData.dataset_detail;
             // if custom_metadata is not JSON and stringify it
@@ -206,6 +206,7 @@ export default function EditMetadata() {
         let errorMessage = validateMetadata();
         if (!errorMessage) {
             const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, metadata: selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData };
+            setLoading(true);
             mutate(dataToMutate);
         } else {
             setErrorMessage(errorMessage);
@@ -282,8 +283,8 @@ export default function EditMetadata() {
                                                     Cancel
                                                 </Button>
                                                 <Box sx={{ flex: '1 1 auto' }} />
-                                                <Button className={`tdei-primary-button ${style.textUnset}`} disabled={isLoading} onClick={handleNext}>
-                                                    {isLoading ? "Submitting..." : "Submit"}
+                                                <Button className={`tdei-primary-button ${style.textUnset}`} disabled={loading} onClick={handleNext}>
+                                                    {loading ? "Submitting..." : "Submit"}
                                                 </Button>
                                                 <ToastMessage showToast={showToast} toastMessage={errorMessage} onClose={handleClose} isSuccess={false} />
                                             </Box>

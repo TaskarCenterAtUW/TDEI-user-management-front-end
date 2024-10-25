@@ -167,8 +167,16 @@ const MyDatasets = () => {
     const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset({ onSuccess, onError });
     const { mutate: createInclinationJob, isLoading: isCreatingJob } = useCreateInclinationJob({ onSuccess, onError });
 
-    const handlePublishDataset = () => {
-        publishDataset({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
+    const handlePublishDataset = (dataset) => {
+        // Check if valid_from and valid_to dates are present
+        if (!dataset?.metadata?.dataset_detail?.valid_from || !dataset?.metadata?.dataset_detail?.valid_to) {
+            setEventKey("missingDates");
+            setShowSuccessModal(true);
+            return;
+        }
+        // If validation passes, show the release confirmation modal
+        setEventKey("release");
+        setShowSuccessModal(true);
     };
 
     const handleDeactivate = () => {
@@ -208,6 +216,8 @@ const MyDatasets = () => {
             } else {
                 handleDownloadDataset(dataset);
             }
+        } else if (eventKey === 'release') {
+            handlePublishDataset(dataset);
         } else {
             setShowSuccessModal(true);
         }
@@ -230,7 +240,7 @@ const MyDatasets = () => {
         release: {
             message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
             content: "Release job will take around 4 to 6 hours. You can find the status in the jobs page.",
-            handler: handlePublishDataset,
+            handler: () => publishDataset({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id }),
             btnlabel: "Release",
             modaltype: "release"
         },
@@ -247,6 +257,13 @@ const MyDatasets = () => {
             handler: handleCreateInclinationJob,
             btnlabel: "Add Incline",
             modaltype: "inclination"
+        },
+        missingDates: {
+            message: "Valid From and Valid To dates are mandatory for publishing the dataset.",
+            content: "Please edit the metadata information before proceeding.",
+            handler: () => setShowSuccessModal(false),
+            btnlabel: "Close",
+            modaltype: "error"
         }
     };
 
