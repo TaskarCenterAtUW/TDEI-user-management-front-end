@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
+const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilter = false }) => {
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
   const [internalDate, setInternalDate] = useState(null);
@@ -26,15 +26,17 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
     const dateString = date ? date.toISOString() : null;
     setInternalDate(date);  
     if (setFieldValue) setFieldValue(name, dateString); 
-    setFieldTouched(name, true);
+    if(!isFilter){
+      setFieldTouched(name, true);
+    }
     onChange(dateString);
   };
 
-  useEffect(() => {
-    if (dateValue && setFieldTouched) {
-      setFieldTouched(name, false);
+  const handleBlur = () => {
+    if (!internalDate) {
+      setFieldTouched(name, true);
     }
-  }, [dateValue, setFieldTouched, name]);
+  };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DesktopDatePicker
@@ -65,7 +67,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
           textField: {
             placeholder: label,
             error: touched?.[name] && !!errors?.[name],
-            onBlur: () => setFieldTouched && setFieldTouched(name, true),
+            onBlur: handleBlur,
             inputProps: {
               readOnly: true,
             },

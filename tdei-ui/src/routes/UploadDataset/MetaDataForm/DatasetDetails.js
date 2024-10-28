@@ -7,6 +7,8 @@ import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
 import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 import * as Yup from "yup";
 import SchemaVersionDropdown from "./DropdownComponents/SchemaVersionDropdown";
+import { ClearIcon } from "@mui/x-date-pickers";
+import { IconButton } from "@mui/material";
 
 
 const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData }) => {
@@ -108,7 +110,7 @@ const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData })
                 />
               </Form.Group>
             </div>
-            <div className="col-md-6 column-style"> {/* Use col-md-6 for half-width columns on medium+ screens */}
+            <div className="col-md-6 column-style">
               <Form.Group controlId="collected_by">
                 <Form.Label>Collected By<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
@@ -134,11 +136,20 @@ const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData })
                   dateValue={formData.collection_date}
                   onChange={(date) => {
                     handleDateSelect('collection_date', date);
-                    // setFieldTouched('collection_date', true, false);
                     setFieldValue('collection_date', date);
                   }}
-                  onBlur={handleBlur}
+                  onBlur={(e) => {
+                    if (!formData.collection_date) {
+                      setFieldTouched('collection_date', true);
+                    }
+                  }}
                 />
+                <IconButton aria-label="clear valid to" onClick={() => {
+                     handleDateSelect('collection_date', null);
+                    setFieldValue('collection_date', null);
+                }}>
+                  <ClearIcon />
+                </IconButton>
                 <ErrorMessage name="collection_date" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="valid_from" style={{ marginTop: '15px' }}>
@@ -150,7 +161,7 @@ const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData })
                   dateValue={formData.valid_from}
                   onChange={(date) => {
                     handleDateSelect('valid_from', date);
-                    // setFieldTouched('valid_from', true, false);
+                    setFieldTouched('valid_from', true, false);
                     setFieldValue('valid_from', date);
                   }}
                   onBlur={handleBlur}
@@ -166,7 +177,7 @@ const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData })
                   dateValue={formData.valid_to}
                   onChange={(date) => {
                     handleDateSelect('valid_to', date);
-                    // setFieldTouched('valid_to', true, false);
+                    setFieldTouched('valid_to', true, false);
                     setFieldValue('valid_to', date);
                   }}
                   onBlur={handleBlur}

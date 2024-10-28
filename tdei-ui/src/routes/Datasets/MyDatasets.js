@@ -407,6 +407,7 @@ const MyDatasets = () => {
                                 label="Valid From"
                                 onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
                                 dateValue={validFrom}
+                                isFilter={true}
                             />
                             <IconButton aria-label="clear valid from" onClick={() => {
                                 setValidFrom(null);
@@ -422,6 +423,7 @@ const MyDatasets = () => {
                                 label="Valid To"
                                 onChange={(date) => handleChangeDatePicker(date, setValidTo)}
                                 dateValue={validTo}
+                                isFilter={true}
                             />
                             <IconButton aria-label="clear valid to" onClick={() => {
                                 setValidTo(null);
