@@ -4,6 +4,8 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { IconButton } from "@mui/material";
+import { Clear as ClearIcon } from "@mui/icons-material";
 
 const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilter = false }) => {
   const { name } = field;
@@ -33,7 +35,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
   };
 
   const handleBlur = () => {
-    if (!internalDate) {
+    if (!internalDate && !isFilter) {
       setFieldTouched(name, true);
     }
   };
@@ -43,7 +45,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
         sx={{
           "& .MuiInputBase-input": {
             height: "5px",
-            width: "20vw"
+            width: "21vw"
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {

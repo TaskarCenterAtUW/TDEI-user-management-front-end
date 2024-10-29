@@ -150,7 +150,7 @@ const MyDatasets = () => {
     };
 
     const onError = (err) => {
-        const errorMessage = err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : "An unexpected error occurred";
+        const errorMessage = err.data || "Unknown error occured! Please try again!";
         console.error("Error message:", errorMessage);
         setOperationResult("error");
         setOpen(true);

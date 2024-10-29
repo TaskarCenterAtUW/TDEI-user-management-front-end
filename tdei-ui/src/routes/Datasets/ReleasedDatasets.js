@@ -123,7 +123,7 @@ const ReleasedDatasets = () => {
       setIsLoadingDownload(false);
       setShowDownloadModal(false);
       setOperationResult("error");
-      setCustomErrorMessage(err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : 'An unexpected error occurred');
+      setCustomErrorMessage(err.data || "Unknown error occured! Please try again!");
       handleToast();
       setSelectedFormat(null);
       setSelectedFileVersion(null);
