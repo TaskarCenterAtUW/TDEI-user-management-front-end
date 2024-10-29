@@ -35,7 +35,7 @@ const DownloadModal = ({
                     />
                     <div className="tdei-hint-text">(File format to download. Default to osw.)</div>
                 </Form.Group>
-                {!isReleasedDataset && (
+                {/* {!isReleasedDataset && (
                 <Form.Group className="mt-3">
                     <Form.Label>Select File Version</Form.Label>
                     <Select
@@ -45,7 +45,7 @@ const DownloadModal = ({
                         isDisabled={isLoading} 
                     />
                      <div className="tdei-hint-text">(The Latest version includes recent modifications; the Original version is the initial upload.)</div>
-                </Form.Group> )}
+                </Form.Group> )} */}
             </Modal.Body>
             <Modal.Footer>
                 <Button

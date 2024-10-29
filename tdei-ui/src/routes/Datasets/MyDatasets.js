@@ -150,7 +150,7 @@ const MyDatasets = () => {
     };
 
     const onError = (err) => {
-        const errorMessage = err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : "An unexpected error occurred";
+        const errorMessage = err.data || "Unknown error occured! Please try again!";
         console.error("Error message:", errorMessage);
         setOperationResult("error");
         setOpen(true);
@@ -407,6 +407,7 @@ const MyDatasets = () => {
                                 label="Valid From"
                                 onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
                                 dateValue={validFrom}
+                                isFilter={true}
                             />
                             <IconButton aria-label="clear valid from" onClick={() => {
                                 setValidFrom(null);
@@ -422,6 +423,7 @@ const MyDatasets = () => {
                                 label="Valid To"
                                 onChange={(date) => handleChangeDatePicker(date, setValidTo)}
                                 dateValue={validTo}
+                                isFilter={true}
                             />
                             <IconButton aria-label="clear valid to" onClick={() => {
                                 setValidTo(null);

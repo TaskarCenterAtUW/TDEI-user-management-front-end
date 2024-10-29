@@ -123,7 +123,7 @@ const ReleasedDatasets = () => {
       setIsLoadingDownload(false);
       setShowDownloadModal(false);
       setOperationResult("error");
-      setCustomErrorMessage(err.data || showDownloadModal ? "Only latest version of the file can be downloaded" : 'An unexpected error occurred');
+      setCustomErrorMessage(err.data || "Unknown error occured! Please try again!");
       handleToast();
       setSelectedFormat(null);
       setSelectedFileVersion(null);
@@ -303,6 +303,7 @@ const ReleasedDatasets = () => {
                 label="Valid From"
                 onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
                 dateValue={validFrom}
+                isFilter={true}
               />
               <IconButton aria-label="clear valid from" onClick={() => {
                 setValidFrom(null);
@@ -318,6 +319,7 @@ const ReleasedDatasets = () => {
                 label="Valid To"
                 onChange={(date) => handleChangeDatePicker(date, setValidTo)}
                 dateValue={validTo}
+                isFilter={true}
               />
               <IconButton aria-label="clear valid to" onClick={() => {
                 setValidTo(null);

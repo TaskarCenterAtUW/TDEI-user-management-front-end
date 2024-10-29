@@ -4,6 +4,8 @@ import { Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 import DatePicker from '../../../components/DatePicker/DatePicker';
 import ChipInput from '../../../components/ChipInput/ChipInput';
+import { ClearIcon } from "@mui/x-date-pickers";
+import { IconButton } from "@mui/material";
 
 const Maintenance = ({ formData, updateFormData }) => {
 
@@ -46,17 +48,24 @@ const Maintenance = ({ formData, updateFormData }) => {
               </Form.Group>
               <Form.Group controlId="last_updated" style={{ marginTop: '15px' }}>
                 <Form.Label>Last Updated</Form.Label>
-                <Field
-                  name="last_updated"
-                  component={DatePicker}
-                  label="Last Updated Date"
-                  dateValue={formData.last_updated}
-                  onChange={(date) => {
-                    handleDateSelect('last_updated', date);
-                    setFieldTouched('last_updated', true, false);
-                  }}
-                  onBlur={handleBlur}
-                />
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Field
+                    name="last_updated"
+                    component={DatePicker}
+                    label="Last Updated Date"
+                    dateValue={formData.last_updated}
+                    onChange={(date) => {
+                      handleDateSelect('last_updated', date);
+                      setFieldTouched('last_updated', true, false);
+                    }}
+                    onBlur={handleBlur}
+                  />
+                  <IconButton aria-label="clear last_updated" onClick={() => {
+                    handleDateSelect('last_updated', null);
+                  }}>
+                    <ClearIcon />
+                  </IconButton>
+                </div>
                 <ErrorMessage name="last_updated" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="update_frequency" style={{ marginTop: '15px' }}>

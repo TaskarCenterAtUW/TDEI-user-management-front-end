@@ -4,8 +4,10 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { IconButton } from "@mui/material";
+import { Clear as ClearIcon } from "@mui/icons-material";
 
-const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
+const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilter = false }) => {
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
   const [internalDate, setInternalDate] = useState(null);
@@ -26,22 +28,24 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
     const dateString = date ? date.toISOString() : null;
     setInternalDate(date);  
     if (setFieldValue) setFieldValue(name, dateString); 
-    setFieldTouched(name, true);
+    if(!isFilter){
+      setFieldTouched(name, true);
+    }
     onChange(dateString);
   };
 
-  useEffect(() => {
-    if (dateValue && setFieldTouched) {
-      setFieldTouched(name, false);
+  const handleBlur = () => {
+    if (!internalDate && !isFilter) {
+      setFieldTouched(name, true);
     }
-  }, [dateValue, setFieldTouched, name]);
+  };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DesktopDatePicker
         sx={{
           "& .MuiInputBase-input": {
             height: "5px",
-            width: "20vw"
+            width: "21vw"
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
@@ -63,9 +67,9 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue }) => {
         value={internalDate}
         slotProps={{
           textField: {
-            placeholder: label,
+            placeholder: dateValue ? '' : label,
             error: touched?.[name] && !!errors?.[name],
-            onBlur: () => setFieldTouched && setFieldTouched(name, true),
+            onBlur: handleBlur,
             inputProps: {
               readOnly: true,
             },
