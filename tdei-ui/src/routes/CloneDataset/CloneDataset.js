@@ -84,7 +84,6 @@ const CloneDataset = () => {
         );
     }
     if (!dataset) {
-        console.log("Dataset is undefined, redirecting to /datasets");
         return <Navigate to="/datasets" replace />;
     }
 

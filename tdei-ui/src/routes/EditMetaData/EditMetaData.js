@@ -261,7 +261,6 @@ export default function EditMetadata() {
         return null;
     };
     if (!dataset) {
-        console.log("Dataset is undefined, redirecting to /datasets");
         return <Navigate to="/datasets" replace />;
     }
     return (
