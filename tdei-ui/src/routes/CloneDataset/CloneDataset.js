@@ -4,7 +4,7 @@ import ServiceUpload from '../UploadDataset/ServiceUpload';
 import Metadata from '../UploadDataset/Metadata';
 import Changeset from '../UploadDataset/Changeset';
 import useUploadDataset from "../../hooks/useUploadDataset";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { GET_DATASETS } from '../../utils';
 import { useQueryClient } from "react-query";
 import CustomModal from '../../components/SuccessModal/CustomModal';
@@ -82,6 +82,9 @@ const CloneDataset = () => {
                 </div>
             </div>
         );
+    }
+    if (!dataset) {
+        return <Navigate to="/datasets" replace />;
     }
 
     return (

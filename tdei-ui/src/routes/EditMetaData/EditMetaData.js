@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { useQueryClient } from "react-query";
 import PropTypes from 'prop-types';
@@ -260,7 +260,9 @@ export default function EditMetadata() {
         }
         return null;
     };
-
+    if (!dataset) {
+        return <Navigate to="/datasets" replace />;
+    }
     return (
         <div className={style.layout}>
             <Container>
