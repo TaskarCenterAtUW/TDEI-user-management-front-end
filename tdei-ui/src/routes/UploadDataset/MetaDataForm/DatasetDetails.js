@@ -7,9 +7,11 @@ import CollectedMethodDropdownForm from './DropdownComponents/CollectedMethod';
 import DataSourceDropdownForm from "./DropdownComponents/DataSource";
 import * as Yup from "yup";
 import SchemaVersionDropdown from "./DropdownComponents/SchemaVersionDropdown";
+import { ClearIcon } from "@mui/x-date-pickers";
+import { IconButton } from "@mui/material";
 
 
-const DatasetDetails = ({ formData, updateFormData }) => {
+const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData }) => {
   const handleDateSelect = (fieldName, date) => {
     updateFormData({ [fieldName]: date });
   };
@@ -25,7 +27,13 @@ const DatasetDetails = ({ formData, updateFormData }) => {
     collected_by: Yup.string().required('Collected By is required'),
     collection_date: Yup.string().required('Collection Date is required').nullable(),
     data_source: Yup.string().required('Data Source is required'),
-    schema_version: Yup.string().required('Schema Version is required')
+    schema_version: Yup.string().required('Schema Version is required'),
+    valid_from: isDatasetPublished
+      ? Yup.date().required('Valid From is required').nullable()
+      : Yup.date().nullable(),
+    valid_to: isDatasetPublished
+      ? Yup.date().required('Valid To is required').nullable()
+      : Yup.date().nullable(),
   });
 
   const handleDropdownSelect = (fieldName, selectedOption) => {
@@ -101,24 +109,8 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   onChange={(selectedOption) => handleDropdownSelect('schema_version', selectedOption)} 
                 />
               </Form.Group>
-              {/* <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
-                <Form.Label>Schema Version<span style={{ color: 'red' }}> *</span></Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Schema Version"
-                  name="schema_version"
-                  isInvalid={touched.schema_version && errors.schema_version && (formData.schema_version === '')}
-                  onBlur={handleBlur}
-                  value={formData.schema_version}
-                  onChange={(e) => {
-                    handleFieldChange(e);
-                    handleChange(e);
-                  }}
-                />
-                <Form.Control.Feedback type="invalid">{errors.schema_version}</Form.Control.Feedback>
-              </Form.Group> */}
             </div>
-            <div className="col-md-6 column-style"> {/* Use col-md-6 for half-width columns on medium+ screens */}
+            <div className="col-md-6 column-style">
               <Form.Group controlId="collected_by">
                 <Form.Label>Collected By<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
@@ -137,6 +129,7 @@ const DatasetDetails = ({ formData, updateFormData }) => {
               </Form.Group>
               <Form.Group controlId="collection_date" style={{ marginTop: '15px' }}>
                 <Form.Label>Collection Date<span style={{ color: 'red' }}> *</span></Form.Label>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Field
                   name="collection_date"
                   component={DatePicker}
@@ -144,42 +137,70 @@ const DatasetDetails = ({ formData, updateFormData }) => {
                   dateValue={formData.collection_date}
                   onChange={(date) => {
                     handleDateSelect('collection_date', date);
-                    setFieldTouched('collection_date', true, false);
+                    setFieldValue('collection_date', date);
                   }}
-                  onBlur={handleBlur}
+                  onBlur={(e) => {
+                    if (!formData.collection_date) {
+                      setFieldTouched('collection_date', true);
+                    }
+                  }}
                 />
+                <IconButton aria-label="clear collection_date" onClick={() => {
+                     handleDateSelect('collection_date', null);
+                    setFieldValue('collection_date', null);
+                }}>
+                  <ClearIcon />
+                </IconButton>
+                </div>
                 <ErrorMessage name="collection_date" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="valid_from" style={{ marginTop: '15px' }}>
-                <Form.Label>Valid From</Form.Label>
-                <Field
-                  name="valid_from"
-                  component={DatePicker}
-                  label="Select valid from date"
-                  dateValue={formData.valid_from}
-                  onChange={(date) => {
-                    handleDateSelect('valid_from', date);
-                    setFieldTouched('valid_from', true, false);
-                  }}
-                  onBlur={handleBlur}
-                />
+                <Form.Label>Valid From {isDatasetPublished ? <span style={{ color: 'red' }}> *</span> : null}</Form.Label>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Field
+                    name="valid_from"
+                    component={DatePicker}
+                    label="Select valid from date"
+                    dateValue={formData.valid_from}
+                    onChange={(date) => {
+                      handleDateSelect('valid_from', date);
+                      setFieldTouched('valid_from', true, false);
+                      setFieldValue('valid_from', date);
+                    }}
+                  />
+                  <IconButton aria-label="clear valid from" onClick={() => {
+                    handleDateSelect('valid_from', null);
+                    setFieldValue('valid_from', null);
+                  }}>
+                    <ClearIcon />
+                  </IconButton>
+                </div>
                 <ErrorMessage name="valid_from" component="div" className="invalid-feedback d-block" />
               </Form.Group>
               <Form.Group controlId="valid_to" style={{ marginTop: '15px' }}>
-                <Form.Label>Valid To</Form.Label>
-                <Field
-                  name="valid_to"
-                  component={DatePicker}
-                  label="Select valid to date"
-                  dateValue={formData.valid_to}
-                  onChange={(date) => {
-                    handleDateSelect('valid_to', date);
-                    setFieldTouched('valid_to', true, false);
-                  }}
-                  onBlur={handleBlur}
-                />
+                <Form.Label>Valid To {isDatasetPublished ? <span style={{ color: 'red' }}> *</span> : null}</Form.Label>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Field
+                    name="valid_to"
+                    component={DatePicker}
+                    label="Select valid to date"
+                    dateValue={formData.valid_to}
+                    onChange={(date) => {
+                      handleDateSelect('valid_to', date);
+                      setFieldTouched('valid_to', true, false);
+                      setFieldValue('valid_to', date);
+                    }}
+                  />
+                  <IconButton aria-label="clear valid to" onClick={() => {
+                    handleDateSelect('valid_to', null);
+                    setFieldValue('valid_to', null);
+                  }}>
+                    <ClearIcon />
+                  </IconButton>
+                </div>
                 <ErrorMessage name="valid_to" component="div" className="invalid-feedback d-block" />
               </Form.Group>
+
               <Form.Group controlId="collection_method" style={{ marginTop: '10px' }}>
                 <Form.Label>Collected Method</Form.Label>
                 <Field 

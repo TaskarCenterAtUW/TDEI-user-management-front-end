@@ -29,7 +29,9 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
       centered
       backdrop="static"
       keyboard={false}
-      style={{ zIndex: 1050 }}
+      style={{ zIndex: 1100 }} 
+      enforceFocus={true}
+      autoFocus={true} 
     >
       <Modal.Header closeButton={false}>
         <Modal.Title>Session Expired</Modal.Title>

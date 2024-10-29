@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { useQueryClient } from "react-query";
 import PropTypes from 'prop-types';
@@ -109,7 +109,8 @@ export default function EditMetadata() {
             "city": "",
             "region": "",
             "county": "",
-            "key_limitations_of_the_dataset": "",
+            "key_limitations": "",
+            "release_notes":"",
             "challenges": ""
         },
         "maintenance": {
@@ -173,7 +174,7 @@ export default function EditMetadata() {
         setLoading(false);
         console.error("error message", err);
         setShowErrorModal(true);
-        setError(err.data ?? err.message.message);
+        setError(err.data ?? err.response.data ?? err.message.message);
         if (selectedData) {
             const { custom_metadata, dataset_area } = selectedData.dataset_detail;
             // if custom_metadata is not JSON and stringify it
@@ -204,7 +205,8 @@ export default function EditMetadata() {
     const handleNext = () => {
         let errorMessage = validateMetadata();
         if (!errorMessage) {
-            const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, metadata: selectedData };
+            const dataToMutate = { tdei_dataset_id: dataset.tdei_dataset_id, metadata: selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData };
+            setLoading(true);
             mutate(dataToMutate);
         } else {
             setErrorMessage(errorMessage);
@@ -221,32 +223,46 @@ export default function EditMetadata() {
         if (!metadata) {
             return "Please attach metadata file!";
         }
-        if (!(metadata instanceof File)) {
-            const { dataset_detail, data_provenance } = metadata;
+            const { dataset_detail, data_provenance } = metadata && metadata.file instanceof File ? metadata.formData : metadata;
             if (!dataset_detail) {
                 return "Metadata details are missing!";
             }
-
-            const requiredFields = [
-                { field: 'name', message: 'Dataset Name is required' },
-                { field: 'version', message: 'Dataset Version is required' },
-                { field: 'collected_by', message: 'Collected By is required' },
-                { field: 'collection_date', message: 'Collection Date is required' },
-                { field: 'data_source', message: 'Data Source is required' },
-                { field: 'schema_version', message: 'Schema Version is required' }
-            ];
-            for (const { field, message } of requiredFields) {
+        const requiredFields = [
+            { field: 'name', message: 'Dataset Name is required' },
+            { field: 'version', message: 'Dataset Version is required' },
+            { field: 'collected_by', message: 'Collected By is required' },
+            { field: 'collection_date', message: 'Collection Date is required' },
+            { field: 'data_source', message: 'Data Source is required' },
+            { field: 'schema_version', message: 'Schema Version is required' },
+            ...(dataset.status === 'Publish' ? [
+                { field: 'valid_to', message: 'Valid to date is required' },
+                { field: 'valid_from', message: 'Valid from date is required' }
+              ] : [])
+        ];
+        for (const { field, message } of requiredFields) {
+            if (field.includes('.')) {
+                const fieldParts = field.split('.');
+                let value = dataset_detail;
+                for (const part of fieldParts) {
+                    value = value ? value[part] : undefined;
+                }
+                if (!value) {
+                    return message;
+                }
+            } else {
                 if (!dataset_detail[field]) {
                     return message;
                 }
             }
-            if (!data_provenance || !data_provenance.full_dataset_name) {
-                return "Full Dataset Name in Data Provenance is required";
-            }
+        }
+        if (!data_provenance || !data_provenance.full_dataset_name) {
+            return "Full Dataset Name in Data Provenance is required";
         }
         return null;
     };
-
+    if (!dataset) {
+        return <Navigate to="/datasets" replace />;
+    }
     return (
         <div className={style.layout}>
             <Container>
@@ -269,7 +285,7 @@ export default function EditMetadata() {
                             <Grid container>
                                 <Grid item xs={12}>
                                     <div className={style.stepsTabContainer}>
-                                        <Metadata onSelectedFileChange={handleSelectedDataChange} selectedData={selectedData} />
+                                        <Metadata onSelectedFileChange={handleSelectedDataChange} selectedData={selectedData} isDatasetPublished={dataset.status === 'Publish'} />
                                     </div>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -283,8 +299,8 @@ export default function EditMetadata() {
                                                     Cancel
                                                 </Button>
                                                 <Box sx={{ flex: '1 1 auto' }} />
-                                                <Button className={`tdei-primary-button ${style.textUnset}`} disabled={isLoading} onClick={handleNext}>
-                                                    {isLoading ? "Submitting..." : "Submit"}
+                                                <Button className={`tdei-primary-button ${style.textUnset}`} disabled={loading} onClick={handleNext}>
+                                                    {loading ? "Submitting..." : "Submit"}
                                                 </Button>
                                                 <ToastMessage showToast={showToast} toastMessage={errorMessage} onClose={handleClose} isSuccess={false} />
                                             </Box>

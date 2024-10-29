@@ -346,6 +346,17 @@ export async function postCreateJob(data) {
           return;
         }
         break;
+        case "osw/union":
+          const unionRequestBody = {
+            tdei_dataset_id_one: data[2],
+            tdei_dataset_id_two: data[3],
+          };
+          url = baseUrl;
+          headers = {
+            'Content-Type': 'application/json',
+          };
+          response = await axios.post(url, unionRequestBody, { headers });
+          return response.data;
       default:
         formData.append('dataset', data[1]);
         url = baseUrl;
@@ -367,7 +378,7 @@ export async function postCreateJob(data) {
       ];
       url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]}&${bboxParams.join('&')}`;
       response = await axios.post(url);
-    } else if (data[0] === "osw/dataset-tag-road") {
+    } else if (data[0] === "osw/dataset-tag-road" || data[0] === "osw/union" ) {
       response = await axios.post(url, {}, config);
     } else {
       response = await axios.post(url, formData, config);
@@ -375,7 +386,7 @@ export async function postCreateJob(data) {
 
     return response.data;
   } catch (error) {
-    throw error.message ?? error;
+    throw error.response.data ?? error;
   }
 }
 export async function postUploadDataset(data) {
@@ -443,45 +454,104 @@ export async function postUploadDataset(data) {
     }
   }
 }
-export async function getDatasets(searchText, pageParam = 1, isAdmin, status, dataType, tdei_project_group_id) {
+export async function getDatasets(
+  searchText,
+  searchDatasetId,
+  pageParam = 1,
+  isAdmin,
+  status,
+  dataType,
+  validFrom,
+  validTo,
+  tdei_service_id,
+  selectedProjectGroupId,
+  tdei_project_group_id,
+  sortField = 'uploaded_timestamp', 
+  sortOrder = 'DESC'              
+) {
   const params = {
     page_no: pageParam,
     page_size: 10,
+    sort_field: sortField,
+    sort_order: sortOrder
   };
+
   if (status) {
     params.status = status;
   }
+
   if (searchText) {
     params.name = searchText;
   }
+  if (searchDatasetId) {
+    params.tdei_dataset_id = searchDatasetId;
+  }
+
   if (dataType) {
     params.data_type = dataType;
   }
-  if (!isAdmin) {
+
+  if (validFrom) {
+    params.valid_from = validFrom;
+  }
+
+  if (validTo) {
+    params.valid_to = validTo;
+  }
+
+  if (tdei_service_id) {
+    params.tdei_service_id = tdei_service_id;
+  }
+
+  //Project ID if the user is admin
+  if (isAdmin && selectedProjectGroupId) {
+    params.tdei_project_group_id = selectedProjectGroupId;
+  } else if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
+
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,
     method: "GET",
   });
+
   return {
     data: res.data,
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
+export async function getReleasedDatasets(searchText,searchDatasetId, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId,sortField = 'uploaded_timestamp', 
+  sortOrder = 'DESC'    ) {
   const params = {
     status: "Publish",
     page_no: pageParam,
     page_size: 10,
+    sort_field: sortField,
+    sort_order: sortOrder
   };
   if (searchText) {
     params.name = searchText;
   }
+  if (searchDatasetId) {
+    params.tdei_dataset_id = searchDatasetId;
+  }
   if (dataType) {
     params.data_type = dataType;
   }
+  if (projectId) {
+    params.tdei_project_group_id = projectId;
+  }
+  if (validFrom) {
+    params.valid_from = validFrom;
+  }
+  if (validTo) {
+    params.valid_to = validTo;
+  }
+  if (tdeiServiceId) {
+    params.tdei_service_id = tdeiServiceId;
+  }
+
   const res = await axios({
     url: `${osmUrl}/datasets`,
     params: params,
@@ -492,6 +562,7 @@ export async function getReleasedDatasets(searchText, pageParam = 1, dataType) {
     pageParam,
   };
 }
+
 export async function postPublishDataset(data) {
   var file_end_point = ''
   var service_type = data.service_type.toLowerCase();
@@ -600,13 +671,22 @@ export async function cloneDataset(data) {
 
 export async function downloadDataset(data) {
   var file_end_point = ''
+  const params = {};
   var service_type = data.data_type
   if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
   else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
   else { file_end_point = 'osw' }
+  if(service_type === 'osw'){
+    if (data.format) {
+      params.format = data.format;
+    }
+    if (data.file_version) {
+      params.file_version = data.file_version;
+    }
+  }
   try {
     const response = await axios.get(`${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`, {
-      responseType: 'blob'
+      responseType: 'blob',params:params
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const a = document.createElement('a');
@@ -617,6 +697,7 @@ export async function downloadDataset(data) {
     a.remove();
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
+    return Promise.reject(new AxiosError(error));
     console.error('There was a problem with the download operation:', error);
   }
 };

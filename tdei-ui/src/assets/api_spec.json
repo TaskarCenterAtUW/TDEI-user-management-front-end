@@ -95,6 +95,9 @@
                     "401": {
                         "description": "This request is unauthenticated."
                     },
+                    "403": {
+                        "description": "Email is not verified."
+                    },
                     "500": {
                         "description": "An server error occurred."
                     }
@@ -240,6 +243,15 @@
                         }
                     },
                     {
+                        "name": "tdei_service_id",
+                        "in": "query",
+                        "description": "tdei service id.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "valid_from",
                         "in": "query",
                         "description": "Valid from date time. date-time for which the caller is interested in obtaining files.",
@@ -369,7 +381,7 @@
                         }
                     },
                     {
-                        "name": "key_limitations_of_the_dataset",
+                        "name": "key_limitations",
                         "in": "query",
                         "description": "Key limitations of the dataset",
                         "required": false,
@@ -626,6 +638,37 @@
                             "format": "int32",
                             "default": 10
                         }
+                    },
+                    {
+                        "name": "sort_field",
+                        "in": "query",
+                        "description": "Sort field. By default, it is by uploaded timestamp.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "status",
+                                "valid_from",
+                                "valid_to",
+                                "uploaded_timestamp",
+                                "project_group_name"
+                            ],
+                            "default": "uploaded_timestamp"
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "in": "query",
+                        "description": "Sort order. By default, it is in descending order.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ],
+                            "default": "desc"
+                        }
                     }
                 ],
                 "responses": {
@@ -846,12 +889,18 @@
                         "schema": {
                             "type": "string",
                             "enum": [
+                                "Clone-Dataset",
                                 "Confidence-Calculate",
-                                "Dataset-Reformat",
-                                "Dataset-Upload",
+                                "Dataset-BBox",
+                                "Dataset-Incline-Tag",
                                 "Dataset-Publish",
+                                "Dataset-Reformat",
+                                "Dataset-Road-Tag",
+                                "Dataset-Spatial-Join",
+                                "Dataset-Union",
+                                "Dataset-Upload",
                                 "Dataset-Validate",
-                                "Dataset-Queries",
+                                "Edit-Metadata",
                                 "Quality-Metric"
                             ]
                         }
@@ -1437,20 +1486,19 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "multipart/form-data":{
-                           "schema":{
-                               "type":"object",
-                               "properties":{
-                                   "file": {
-                                       "type":"string",
-                                       "format":"binary",
-                                       "description": "(Optional) GeoJSON intersection polygon file to be used to calculate Quality Metric"
-                                   }
-                               }
-                           }
-           
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "(Optional) GeoJSON intersection polygon file to be used to calculate Quality Metric"
+                                    }
+                                }
+                            }
                         }
-                     }
+                    }
                 },
                 "responses": {
                     "202": {
@@ -1946,6 +1994,140 @@
                     },
                     "403": {
                         "description": "This request is unauthorized."
+                    },
+                    "500": {
+                        "description": "An server error occurred."
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKey": []
+                    },
+                    {
+                        "AuthorizationToken": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/osw/dataset-inclination/{tdei_dataset_id}": {
+            "post": {
+                "tags": [
+                    "OSW"
+                ],
+                "summary": "Adds the incline tag to the dataset",
+                "description": "Adds the \"incline\" tag to a specified dataset identified by the tdei_dataset_id. It takes the dataset ID as a parameter, processes the dataset to calculate the incline information, and updates the dataset with the incline tag. Returns the job_id for the incline calculation request.",
+                "operationId": "datasetTagIncline",
+                "parameters": [
+                    {
+                        "name": "tdei_dataset_id",
+                        "in": "path",
+                        "description": "tdei_dataset_id for a dataset, represented as a uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for the request.",
+                        "content": {
+                            "application/text": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Location": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "description": "Location api to find the status of request processing"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The request was invalid."
+                    },
+                    "401": {
+                        "description": "This request is unauthenticated."
+                    },
+                    "403": {
+                        "description": "This request is unauthorized."
+                    },
+                    "500": {
+                        "description": "An server error occurred."
+                    }
+                },
+                "security": [
+                    {
+                        "AuthorizationToken": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/osw/union": {
+            "post": {
+                "tags": [
+                    "OSW"
+                ],
+                "summary": "Performs union of the two input OSW dataset.",
+                "description": "Performs union of the two input OSW dataset. Returns the job_id for the union request. To check the status, refer to the Location header in the response, which includes the URL for the status API endpoint.",
+                "operationId": "osw-union",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tdei_dataset_id_one": {
+                                        "type": "string",
+                                        "example": "fa8e12ea-6b0c-4d3e-8b38-5b87b268e76b",
+                                        "description": "Dataset id defined to be unioned"
+                                    },
+                                    "tdei_dataset_id_two": {
+                                        "type": "string",
+                                        "example": "0d661b69495d47fb838862edf699fe09",
+                                        "description": "Dataset id defined to be unioned"
+                                    }
+                                },
+                                "required": [
+                                    "tdei_dataset_id_one",
+                                    "tdei_dataset_id_two"
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for union job request.",
+                        "content": {
+                            "application/text": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Location": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "description": "Location api to find the status of request processing"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The request body is empty."
+                    },
+                    "401": {
+                        "description": "This request is unauthenticated."
+                    },
+                    "404": {
+                        "description": "Dataset not found for either tdei_dataset_id_one or tdei_dataset_id_two."
                     },
                     "500": {
                         "description": "An server error occurred."
@@ -2833,6 +3015,152 @@
                     }
                 ]
             }
+        },
+        "/api/v1/system-metrics": {
+            "get": {
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Gets the system metrics",
+                "description": "Gets the system metrics",
+                "operationId": "system-metrics",
+                "responses": {
+                    "200": {
+                        "description": "Successful response - Returns the system metrics.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "SystemMetricsResponse",
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/SystemMetrics",
+                                    "description": "Holds the response data"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated request"
+                    },
+                    "500": {
+                        "description": "Internal server error."
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKey": []
+                    },
+                    {
+                        "AuthorizationToken": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/data-metrics": {
+            "get": {
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Gets the data metrics",
+                "description": "Gets the data metrics",
+                "operationId": "data-metrics",
+                "responses": {
+                    "200": {
+                        "description": "Successful response - Returns the data metrics.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "DataMetricsResponse",
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/DataMetrics",
+                                    "description": "Holds the response data"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated request"
+                    },
+                    "500": {
+                        "description": "Internal server error."
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKey": []
+                    },
+                    {
+                        "AuthorizationToken": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/recover-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request for password recovery",
+                "description": "Request for password recovery, sends an email with a link to reset the password for given email.",
+                "operationId": "recoverPassword",
+                "requestBody": {
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request for password recovery was successful. An email with a link to reset the password has been sent."
+                    },
+                    "401": {
+                        "description": "This request is unauthenticated."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "An server error occurred."
+                    }
+                }
+            }
+        },
+        "/api/v1/verify-email": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request for email verification link",
+                "description": "Request for email verification link, sends an email verification link for given email",
+                "operationId": "verifyEmail",
+                "requestBody": {
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request for email verification was successful. An email verification link has been sent."
+                    },
+                    "401": {
+                        "description": "This request is unauthenticated."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "An server error occurred."
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -3062,7 +3390,7 @@
                                 "type": "string",
                                 "description": "Name of the county"
                             },
-                            "key_limitations_of_the_dataset": {
+                            "key_limitations": {
                                 "type": "string",
                                 "description": "Key limitations of the dataset"
                             },
@@ -3390,12 +3718,19 @@
                         "type": "string",
                         "description": "job_type of the job request",
                         "enum": [
+                            "Clone-Dataset",
                             "Confidence-Calculate",
-                            "Dataset-Reformat",
-                            "Dataset-Upload",
+                            "Dataset-BBox",
+                            "Dataset-Incline-Tag",
                             "Dataset-Publish",
+                            "Dataset-Reformat",
+                            "Dataset-Road-Tag",
+                            "Dataset-Spatial-Join",
+                            "Dataset-Union",
+                            "Dataset-Upload",
                             "Dataset-Validate",
-                            "Dataset-Queries"
+                            "Edit-Metadata",
+                            "Quality-Metric"
                         ]
                     },
                     "tdei_project_group_id": {
@@ -3537,6 +3872,173 @@
                     "total_entity_count",
                     "overall_quality_metric",
                     "metric_details"
+                ]
+            },
+            "SystemMetrics": {
+                "type": "object",
+                "properties": {
+                    "systemMetrics": {
+                        "type": "object",
+                        "properties": {
+                            "totalUsers": {
+                                "type": "number"
+                            },
+                            "totalServices": {
+                                "type": "number"
+                            },
+                            "totalProjectGroups": {
+                                "type": "number"
+                            },
+                            "servicesByType": {
+                                "type": "object",
+                                "properties": {
+                                    "osw": {
+                                        "type": "number"
+                                    },
+                                    "flex": {
+                                        "type": "number"
+                                    },
+                                    "pathways": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "osw",
+                                    "flex",
+                                    "pathways"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "totalUsers",
+                            "totalServices",
+                            "totalProjectGroups",
+                            "servicesByType"
+                        ]
+                    },
+                    "datasetMetrics": {
+                        "type": "object",
+                        "properties": {
+                            "totalUploads": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "number"
+                                    },
+                                    "totalSizeMB": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "count",
+                                    "totalSizeMB"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "totalUploads"
+                        ]
+                    }
+                }
+            },
+            "DataMetrics": {
+                "type": "object",
+                "properties": {
+                    "dataMetrics": {
+                        "type": "object",
+                        "properties": {
+                            "datasetByType": {
+                                "type": "object",
+                                "properties": {
+                                    "osw": {
+                                        "type": "object",
+                                        "properties": {
+                                            "totalDatasets": {
+                                                "type": "number"
+                                            },
+                                            "totalSizeMB": {
+                                                "type": "number"
+                                            },
+                                            "aggregatedStats": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "num_crossings": {
+                                                        "type": "number"
+                                                    },
+                                                    "length_of_sidewalks_km": {
+                                                        "type": "number"
+                                                    },
+                                                    "num_edges": {
+                                                        "type": "number"
+                                                    },
+                                                    "num_nodes": {
+                                                        "type": "number"
+                                                    },
+                                                    "concave_hull_area_km2": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "num_crossings",
+                                                    "length_of_sidewalks_km",
+                                                    "num_edges",
+                                                    "num_nodes",
+                                                    "concave_hull_area_km2"
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "totalDatasets",
+                                            "totalSizeMB",
+                                            "aggregatedStats"
+                                        ]
+                                    },
+                                    "flex": {
+                                        "type": "object",
+                                        "properties": {
+                                            "totalDatasets": {
+                                                "type": "number"
+                                            },
+                                            "totalSizeMB": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "totalDatasets",
+                                            "totalSizeMB"
+                                        ]
+                                    },
+                                    "pathways": {
+                                        "type": "object",
+                                        "properties": {
+                                            "totalDatasets": {
+                                                "type": "number"
+                                            },
+                                            "totalSizeMB": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "totalDatasets",
+                                            "totalSizeMB"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "osw",
+                                    "flex",
+                                    "pathways"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "datasetByType"
+                        ]
+                    }
+                },
+                "required": [
+                    "dataMetrics",
+                    "datasetMetrics"
                 ]
             }
         },
