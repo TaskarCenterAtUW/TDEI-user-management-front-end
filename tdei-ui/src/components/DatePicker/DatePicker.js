@@ -67,7 +67,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
         value={internalDate}
         slotProps={{
           textField: {
-            placeholder: label,
+            placeholder: dateValue ? '' : label,
             error: touched?.[name] && !!errors?.[name],
             onBlur: handleBlur,
             inputProps: {
