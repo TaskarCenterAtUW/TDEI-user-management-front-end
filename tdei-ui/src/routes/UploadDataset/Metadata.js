@@ -68,7 +68,7 @@ const defaultMetadata = {
   }
 };
 
-const Metadata = ({ selectedData, onSelectedFileChange, isDatasetPublished = false }) => {
+const Metadata = ({ selectedData, onSelectedFileChange, dataType, isDatasetPublished = false }) => {
   const onDrop = (files) => {
     const selectedFile = files[0];
     if (selectedFile) {
@@ -124,7 +124,7 @@ const Metadata = ({ selectedData, onSelectedFileChange, isDatasetPublished = fal
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>
-      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished}/>
+      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished} dataType={dataType}/>
     </div>
   );
 };
