@@ -75,7 +75,7 @@ const CreateUpdateService = () => {
         setToastMessage({
             showtoast: true,
             type: 'error',
-            message: err.message ?? err.data ?? err.data.message ?? 'An unknown error occurred',
+            message:  err.data ?? err.response.data ?? err.message ??  'An unknown error occurred',
             autoHideDuration: null 
         });
     };

@@ -289,7 +289,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
     componentProps = {
       selectedData: selectedData[activeStep],
-      onSelectedFileChange: handleSelectedDataChange
+      onSelectedFileChange: handleSelectedDataChange,
+      dataType: selectedData[0].service_type
     };
   } else {
     componentProps = {
