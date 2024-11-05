@@ -13,6 +13,7 @@ import ResponseToast from "../ToastMessage/ResponseToast";
 import InfoIcon from '@mui/icons-material/Info';
 import { IconButton } from "@mui/material";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
+import { DateTime, Interval } from "luxon";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -107,6 +108,34 @@ const handleClick = (e) => {
     }
   };
 
+  const getJobDuration = (jobItem) => {
+    const createdAt = DateTime.fromISO(jobItem.created_at);
+    const updatedAt = jobItem.updated_at
+      ? DateTime.fromISO(jobItem.updated_at)
+      : DateTime.now();
+  
+    // For in-progress jobs, display Started at: created_date
+    if (jobItem.status.toLowerCase() === "in-progress") {
+      return `${createdAt.toLocaleString(DateTime.DATETIME_MED)}`;
+    }
+    // Calculate the duration between created_at and updated_at
+    const duration = Interval.fromDateTimes(createdAt, updatedAt).toDuration([
+      "days",
+      "hours",
+      "minutes",
+      "seconds",
+    ]);
+    if (duration.days >= 1) {
+      return `${Math.floor(duration.days)} day${duration.days >= 2 ? "s" : ""}`;
+    } else if (duration.hours >= 1) {
+      return `${Math.floor(duration.hours)} hr${duration.hours >= 2 ? "s" : ""}`;
+    } else if (duration.minutes >= 1) {
+      return `${Math.floor(duration.minutes)} min${duration.minutes >= 2 ? "s" : ""}`;
+    } else {
+      return `${Math.floor(duration.seconds)} sec${duration.seconds >= 2 ? "s" : ""}`;
+    }
+  };
+  
   if (error) {
     console.log(error);
   }
@@ -215,7 +244,7 @@ const handleClick = (e) => {
           color={getColorForLabel(jobItem.status.toLowerCase())}
         />
         <div className={style.updatedInfo}>
-          Updated at : {updatedTime(jobItem.updated_at)}
+         {jobItem.status.toLowerCase() === "in-progress" ? "Started at:" : "Duration:"}  {getJobDuration(jobItem)}
         </div>
       </div>
  

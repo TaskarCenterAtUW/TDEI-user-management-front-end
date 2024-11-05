@@ -11,6 +11,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
   const [internalDate, setInternalDate] = useState(null);
+  const [displayValue, setDisplayValue] = useState("");
 
   // Sync internal date state with the dateValue prop
   useEffect(() => {
@@ -25,14 +26,27 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
   }, [dateValue]);
 
   const handleChange = (date) => {
-    const dateString = date ? date.toISOString() : null;
-    setInternalDate(date);  
-    if (setFieldValue) setFieldValue(name, dateString); 
-    if(!isFilter){
-      setFieldTouched(name, true);
+    if (date) {
+      const formattedDate = date.format("MM/DD/YYYY");
+      if (formattedDate.length === 10 && dayjs(date).isValid()) {
+        const dateString = date.toISOString();
+        setInternalDate(date);
+        setDisplayValue(formattedDate);
+        if (setFieldValue) setFieldValue(name, dateString);
+        if (!isFilter) {
+          setFieldTouched(name, true);
+        }
+        onChange(dateString);
+      } else {
+        setDisplayValue(formattedDate);
+      }
+    } else {
+      setInternalDate(null);
+      setDisplayValue("");
+      if (setFieldValue) setFieldValue(name, null);
+      onChange(null);
     }
-    onChange(dateString);
-  };
+  };  
 
   const handleBlur = () => {
     if (!internalDate && !isFilter) {
@@ -64,15 +78,12 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
             fontSize: '16px',
           },
         }}
-        value={internalDate}
+        value={internalDate || null}
         slotProps={{
           textField: {
             placeholder: dateValue ? '' : label,
             error: touched?.[name] && !!errors?.[name],
             onBlur: handleBlur,
-            inputProps: {
-              readOnly: true,
-            },
           }
         }}
         onChange={handleChange}
