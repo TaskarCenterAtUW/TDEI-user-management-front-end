@@ -712,7 +712,7 @@ export async function getJobDetails(tdei_project_group_id, job_id, isAdmin) {
   if (job_id) {
     params.job_id = job_id;
   }
-  params.show_group_jobs = false;
+  params.show_group_jobs = true;
   const res = await axios({
     url: `${osmUrl}/jobs`,
     params: params,
