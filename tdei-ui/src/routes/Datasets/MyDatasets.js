@@ -65,13 +65,18 @@ const MyDatasets = () => {
         sortField,
         sortOrder
     );
-
+    const [projectSearchText, setProjectSearchText] = useState("");
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
     const [showFilters, setShowFilters] = useState(false);
 
     const toggleFilters = () => {
         setShowFilters(!showFilters);
+    };
+    const handleClearProjectGroup = () => {
+        setSelectedProjectGroupId(null); 
+        setProjectSearchText(""); 
+        refreshData();
     };
 
     useEffect(() => {
@@ -383,15 +388,15 @@ const MyDatasets = () => {
                                             <Form.Label>Project Group</Form.Label>
                                             <span
                                                 className={style.clearButton}
-                                                onClick={() => {
-                                                    setSelectedProjectGroupId(null);
-                                                    refreshData();
-                                                }}
+                                                onClick={handleClearProjectGroup}
                                             >
                                                 Clear
                                             </span>
                                         </div>
                                         <ProjectAutocomplete
+                                            selectedProjectGroupId={selectedProjectGroupId}
+                                            projectSearchText={projectSearchText} 
+                                            setProjectSearchText={setProjectSearchText}
                                             onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
                                         />
                                     </Form.Group>

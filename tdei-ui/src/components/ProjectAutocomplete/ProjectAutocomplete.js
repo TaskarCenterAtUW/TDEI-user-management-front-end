@@ -6,7 +6,7 @@ import { debounce } from "lodash";
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 
-const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
+const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setProjectSearchText, onSelectProjectGroup }) => {
   const [searchText, setSearchText] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
   const [pageNo, setPageNo] = useState(1);
@@ -71,6 +71,7 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
 
   const handleSelect = (projectGroup) => {
     setSelectedProjectGroup(projectGroup);
+    setProjectSearchText(projectGroup.project_group_name)
     setShowDropdown(false);
     onSelectProjectGroup(projectGroup.tdei_project_group_id);
     console.log("Selected Project Group ID:", projectGroup.tdei_project_group_id); 
@@ -100,26 +101,10 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
           type="text"
           placeholder="Search Project Group"
           onChange={handleInputChange}
-          value={selectedProjectGroup ? selectedProjectGroup.project_group_name : searchText}
+          value={selectedProjectGroup && selectedProjectGroupId ? selectedProjectGroup.project_group_name : projectSearchText}
           onFocus={() => setShowDropdown(true)}
           autoComplete="off"
-        />
-        {/* {selectedProjectGroup && (
-          <InputGroup.Text>
-            <IconButton
-              aria-label="clear selection"
-              onClick={() => {
-                setSelectedProjectGroup(null);
-                onSelectProjectGroup(null);
-                setSearchText("");
-                setShowDropdown(false);
-              }}
-              size="small"
-            >
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          </InputGroup.Text>
-        )} */}
+        />  
         {loading && (
           <InputGroup.Text>
             <Spinner animation="border" size="sm" />
