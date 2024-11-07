@@ -66,6 +66,7 @@ const MyDatasets = () => {
         sortOrder
     );
     const [projectSearchText, setProjectSearchText] = useState("");
+    const [serviceSearchText, setServiceSearchText] = useState("");
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
     const [showFilters, setShowFilters] = useState(false);
@@ -78,6 +79,12 @@ const MyDatasets = () => {
         setProjectSearchText(""); 
         refreshData();
     };
+    const handleClearService = () => {
+        setTdeiServiceId("");
+        setServiceSearchText("");
+        refreshData();
+    };
+
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -429,19 +436,16 @@ const MyDatasets = () => {
                                 </Col>
                             )}
                             <Col md={4}>
-                                <Form.Group>
+                            <Form.Group>
                                     <div className={style.labelWithClear}>
                                         <Form.Label>Service</Form.Label>
-                                        <span
-                                            className={style.clearButton}
-                                            onClick={() => {
-                                                setTdeiServiceId("")}
-                                            }
-                                        >
+                                        <span className={style.clearButton} onClick={handleClearService}>
                                             Clear
                                         </span>
                                     </div>
                                     <ServiceAutocomplete
+                                        serviceSearchText={serviceSearchText}
+                                        setServiceSearchText={setServiceSearchText}
                                         onSelectService={handleServiceSelect}
                                         isAdmin={user && user.isAdmin}
                                     />
