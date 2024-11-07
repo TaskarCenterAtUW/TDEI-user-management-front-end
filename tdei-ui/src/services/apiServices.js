@@ -295,8 +295,8 @@ export async function postCreateJob(data) {
   try {
     switch (data[0]) {
       case "osw/convert":
-        formData.append('source', data[2]);
-        formData.append('target', data[3]);
+        formData.append('source_format', data[2]);
+        formData.append('target_format', data[3]);
         formData.append('file', data[1]);
         url = baseUrl;
         break;
