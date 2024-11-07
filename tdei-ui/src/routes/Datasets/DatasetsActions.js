@@ -11,13 +11,16 @@ import editImage from "../../assets/img/edit-img.svg";
 import { useAuth } from "../../hooks/useAuth";
 import downloadDatasetImg from "../../assets/img/download-img.svg";
 import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
+import NorthEastIcon from '@mui/icons-material/NorthEast';
+import useIsOswGenerator from '../../hooks/useIsOswGenerator';
 
 const DatasetsActions = ({ status, onAction, isReleasedDataset }) => {
   const isPocUser = useIsPoc();
   const { user } = useAuth();
   const isDataGenerator = useIsDatasetsAccessible();
-  
+  const isOswGenerator = useIsOswGenerator();
   const canDeactivate = isPocUser || user?.isAdmin;
+  const isMember = isPocUser || user?.isAdmin || isOswGenerator;
 
   return (
     <div className={style.dropdownContainer}>
@@ -40,6 +43,10 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset }) => {
               <Dropdown.Item eventKey="editMetadata" className={style.itemRow}>
                 <img src={editImage} className={style.itemIcon} alt="" />Edit Metadata
               </Dropdown.Item>
+              <Dropdown.Item disabled={!isMember || status === "Publish"} eventKey="inclination" className={style.itemRow}>
+            <NorthEastIcon className={style.inclinationIcon} />
+            Add Inclination
+          </Dropdown.Item>
             </>
           )}
           <Dropdown.Item disabled={!isDataGenerator && !user.isAdmin} eventKey="cloneDataset" className={style.itemRow}>

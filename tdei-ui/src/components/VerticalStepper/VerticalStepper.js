@@ -164,15 +164,16 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        if(!(selectedData[2] instanceof File)){
+        if((selectedData[2] && selectedData[2].file instanceof File) || !(selectedData[2] && selectedData[2] instanceof File)){
+          const validMetadata = selectedData[2].file ? selectedData[2].formData : selectedData[2]
           const finalData = {
             ...selectedData,
             2: {
-              ...selectedData[2],
+              ...validMetadata,
               dataset_detail: {
-                ...selectedData[2].dataset_detail,
-                custom_metadata: selectedData[2].dataset_detail && selectedData[2].dataset_detail.custom_metadata ? JSON.stringify(selectedData[2].dataset_detail.custom_metadata, null, 2) : "",
-                dataset_area: selectedData[2].dataset_detail && selectedData[2].dataset_detail.dataset_area ? JSON.stringify(selectedData[2].dataset_detail.dataset_area, null, 2) : ""
+                ...validMetadata.dataset_detail,
+                custom_metadata: validMetadata.dataset_detail && validMetadata.dataset_detail.custom_metadata ? JSON.stringify(validMetadata.dataset_detail.custom_metadata, null, 2) : "",
+                dataset_area: validMetadata.dataset_detail && validMetadata.dataset_detail.dataset_area ? JSON.stringify(validMetadata.dataset_detail.dataset_area, null, 2) : ""
               }
             }
           };
@@ -247,9 +248,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     if (!metadata) {
       return "Please attach metadata file!!";
     }
-  
-    if (!(metadata instanceof File)) {
-      const { dataset_detail, data_provenance } = metadata;
+    
+      const { dataset_detail, data_provenance } = metadata && metadata.file instanceof File ? metadata.formData : metadata;
       if (!dataset_detail) {
         return "Metadata details are missing!";
       }
@@ -260,7 +260,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
         { field: 'collected_by', message: 'Collected By is required' },
         { field: 'collection_date', message: 'Collection Date is required' },
         { field: 'data_source', message: 'Data Source is required' },
-        { field: 'schema_version', message: 'Schema Version is required' }
+        { field: 'schema_version', message: 'Schema Version is required' },
       ];
       for (const { field, message } of requiredFields) {
         if (!dataset_detail[field]) {
@@ -270,7 +270,6 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       if (!data_provenance || !data_provenance.full_dataset_name) {
         return "Full Dataset Name in Data Provenance is required";
       }
-    }
     return null;
   };  
   // Validation function for the fourth step (Changeset)

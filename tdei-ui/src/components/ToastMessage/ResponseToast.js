@@ -7,8 +7,9 @@ export default function ResponseToast(props) {
   return (
     <div>
       <Snackbar 
+        autoHideDuration={props.autoHideDuration === undefined ? 3000 : props.autoHideDuration}
         anchorOrigin={{ vertical:'top', horizontal:'center' }}
-        open={props.showtoast} autoHideDuration={3000} onClose={props.handleClose}>
+        open={props.showtoast} onClose={props.handleClose}>
         <Alert
           onClose={props.handleClose}
           severity={props.type}

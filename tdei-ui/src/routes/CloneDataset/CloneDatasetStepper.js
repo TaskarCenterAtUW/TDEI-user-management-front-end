@@ -136,7 +136,8 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
                 "city": "",
                 "region": "",
                 "county": "",
-                "key_limitations_of_the_dataset": "",
+                "key_limitations": "",
+                "release_notes":"",
                 "challenges": ""
             },
             "maintenance": {
@@ -238,18 +239,24 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        const finalData = {
-          ...selectedData,
-          1: {
-            ...selectedData[1],
-            dataset_detail: {
-              ...selectedData[1].dataset_detail,
-              custom_metadata: selectedData[1].dataset_detail.custom_metadata ? JSON.stringify(selectedData[1].dataset_detail.custom_metadata, null, 2) : "",
-              dataset_area: selectedData[1].dataset_detail.dataset_area ? JSON.stringify(selectedData[1].dataset_detail.dataset_area, null, 2) : ""
+        if((selectedData[1] && selectedData[1].file instanceof File) || !(selectedData[1] && selectedData[1] instanceof File)){
+          const validMetadata = selectedData[1].file ? selectedData[1].formData : selectedData[1]
+          const finalData = {
+            ...selectedData,
+            1: {
+              ...validMetadata,
+              dataset_detail: {
+                ...validMetadata.dataset_detail,
+                custom_metadata: validMetadata.dataset_detail.custom_metadata ? JSON.stringify(validMetadata.dataset_detail.custom_metadata, null, 2) : "",
+                dataset_area: validMetadata.dataset_detail.dataset_area ? JSON.stringify(validMetadata.dataset_detail.dataset_area, null, 2) : ""
+              }
             }
-          }
-        };
-        onStepsComplete(finalData);
+          };
+          onStepsComplete(finalData);
+        }else{
+          onStepsComplete(selectedData);
+        }
+     
       } else {
         setActiveStep(newActiveStep);
         newCompleted[activeStep] = true;
@@ -285,6 +292,8 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   const handleBack = () => {
     const newCompleted = { ...completed };
     delete newCompleted[activeStep];
+
+    updatePreviousSelectedData(activeStep, selectedData[activeStep]);
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setCompleted(newCompleted);
 
@@ -305,8 +314,8 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       return "Please attach metadata file!!";
     }
 
-    if (!(metadata instanceof File)) {
-      const { dataset_detail, data_provenance } = metadata;
+    // if (!(metadata && metadata.file instanceof File)) {
+      const { dataset_detail, data_provenance } = metadata && metadata.file instanceof File ? metadata.formData : metadata;
       if (!dataset_detail) {
         return "Metadata details are missing!";
       }
@@ -317,7 +326,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         { field: 'collected_by', message: 'Collected By is required' },
         { field: 'collection_date', message: 'Collection Date is required' },
         { field: 'data_source', message: 'Data Source is required' },
-        { field: 'schema_version', message: 'Schema Version is required' }
+        { field: 'schema_version', message: 'Schema Version is required' },
       ];
       for (const { field, message } of requiredFields) {
         if (!dataset_detail[field]) {
@@ -327,7 +336,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       if (!data_provenance || !data_provenance.full_dataset_name) {
         return "Full Dataset Name in Data Provenance is required";
       }
-    }
+    // }
     return null;
   };
 

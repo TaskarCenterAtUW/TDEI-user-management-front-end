@@ -45,19 +45,34 @@ const DatasetSummary = ({ formData, updateFormData }) => {
                 />
                 <ErrorMessage name="department_name" component="div" />
               </Form.Group>
-              <Form.Group controlId="key_limitations_of_the_dataset" style={{ marginTop: '15px' }}>
-                <Form.Label>Key limitations of the dataset</Form.Label>
+              <Form.Group controlId="key_limitations" style={{ marginTop: '15px' }}>
+                <Form.Label>Key limitations</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Key limitations of the dataset"
-                  name="key_limitations_of_the_dataset"
-                  value={formData.key_limitations_of_the_dataset}
+                  name="key_limitations"
+                  value={formData.key_limitations}
                   onChange={(e) => {
                     handleFieldChange(e);
                     handleChange(e);
                   }}
                 />
-                <ErrorMessage name="key_limitations_of_the_dataset" component="div" />
+                <ErrorMessage name="key_limitations" component="div" />
+              </Form.Group>
+              <Form.Group controlId="release_notes" style={{ marginTop: '15px' }}>
+                <Form.Label>Release Notes</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Release Notes"
+                  name="release_notes"
+                  value={formData.release_notes}
+                  onChange={(e) => {
+                    handleFieldChange(e);
+                    handleChange(e);
+                  }}
+                />
+                <ErrorMessage name="release_notes" component="div" />
               </Form.Group>
               <Form.Group controlId="challenges" style={{ marginTop: '15px' }}>
                 <Form.Label>Challenges</Form.Label>

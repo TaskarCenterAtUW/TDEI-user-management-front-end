@@ -1,0 +1,32 @@
+.autocompleteContainer {
+  position: relative;
+  width: 100%;
+}
+
+.dropdownList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ced4da;
+  border-top: none;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+.dropdownItem {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover,
+.active {
+  background-color: #f8f9fa;
+}
+
+.noResults {
+  padding: 8px 12px;
+  color: #6c757d;
+}

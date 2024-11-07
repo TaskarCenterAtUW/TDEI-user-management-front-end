@@ -4,17 +4,110 @@ import Dropzone from '../../components/DropZone/Dropzone';
 import MetaDataForm from './MetaDataForm/MetaDataForm';
 import style from './MetaDataForm/MetaDataForm.module.css';
 
-const Metadata = ({ selectedData, onSelectedFileChange }) => {
+const defaultMetadata = {
+  "dataset_detail": {
+    "name": "",
+    "version": "",
+    "collection_date": "",
+    "valid_from": "",
+    "valid_to": "",
+    "custom_metadata": "",
+    "description": "",
+    "dataset_area": "",
+    "collection_method": "",
+    "data_source": "",
+    "schema_version": "",
+    "collected_by": ""
+  },
+  "data_provenance": {
+    "full_dataset_name": "",
+    "other_published_locations": "",
+    "dataset_update_frequency_months": "",
+    "schema_validation_run": null,
+    "allow_crowd_contributions": null,
+    "schema_validation_run_description": "",
+    "location_inaccuracy_factors": ""
+  },
+  "dataset_summary": {
+    "collection_name": "",
+    "department_name": "",
+    "city": "",
+    "region": "",
+    "county": "",
+    "key_limitations": "",
+    "release_notes":"",
+    "challenges": ""
+  },
+  "maintenance": {
+    "official_maintainer": null,
+    "last_updated": "",
+    "update_frequency": "",
+    "authorization_chain": "",
+    "maintenance_funded": null,
+    "funding_details": ""
+  },
+  "methodology": {
+    "point_data_collection_device": "",
+    "node_locations_and_attributes_editing_software": "",
+    "data_collected_by_people": null,
+    "data_collectors": "",
+    "data_captured_automatically": null,
+    "automated_collection": "",
+    "data_collectors_organization": "",
+    "data_collector_compensation": "",
+    "preprocessing_location": "",
+    "preprocessing_by": "",
+    "preprocessing_steps": "",
+    "data_collection_preprocessing_documentation": null,
+    "documentation_uri": "",
+    "validation_process_exists": null,
+    "validation_process_description": "",
+    "validation_conducted_by": "",
+    "excluded_data": "",
+    "excluded_data_reason": ""
+  }
+};
+
+const Metadata = ({ selectedData, onSelectedFileChange, isDatasetPublished = false }) => {
   const onDrop = (files) => {
     const selectedFile = files[0];
-    onSelectedFileChange(selectedFile);
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsedData = JSON.parse(e.target.result);
+          const mergedData = {
+            ...defaultMetadata,
+            ...parsedData,
+            dataset_detail: {
+              ...defaultMetadata.dataset_detail,
+              ...parsedData.dataset_detail,
+              custom_metadata: parsedData.dataset_detail?.custom_metadata 
+                ? JSON.stringify(parsedData.dataset_detail.custom_metadata, null, 2) 
+                : "",
+              dataset_area: parsedData.dataset_detail?.dataset_area 
+                ? JSON.stringify(parsedData.dataset_detail.dataset_area, null, 2) 
+                : ""
+            }
+          };
+          onSelectedFileChange({ file: selectedFile, formData: mergedData });
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          onSelectedFileChange({ file: null, formData: defaultMetadata });
+        }
+      };
+      reader.readAsText(selectedFile);
+    } else {
+      onSelectedFileChange({ file: null, formData: defaultMetadata });
+    }
   };
 
   const handleUpdateFormData = useCallback((formData) => {
-    if (selectedData instanceof File) {
-      return;
+    if (selectedData && selectedData.file instanceof File) {
+      onSelectedFileChange({ file: selectedData.file, formData: formData })
+    } else {
+      onSelectedFileChange(formData);
     }
-    onSelectedFileChange(formData);
     // eslint-disable-next-line
   }, [onSelectedFileChange]);
 
@@ -27,11 +120,11 @@ const Metadata = ({ selectedData, onSelectedFileChange }) => {
       }}>
         Attach metadata file<span style={{ color: 'red' }}> *</span>
       </Typography>
-      <Dropzone onDrop={onDrop} accept={{ 'application/json': ['.json'] }} format={".json"} selectedFile={selectedData} />
+      <Dropzone onDrop={onDrop} accept={{ 'application/json': ['.json'] }} format={".json"} selectedFile={selectedData && selectedData.file instanceof File ? selectedData.file : null} />
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>
-      <MetaDataForm selectedData={selectedData instanceof File ? null : selectedData } onUpdateFormData={handleUpdateFormData}/>
+      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished}/>
     </div>
   );
 };

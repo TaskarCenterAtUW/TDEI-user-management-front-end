@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
 import { useQueryClient } from 'react-query';
 import useGetDatasets from '../../hooks/service/useGetDatasets';
 import { GET_DATASETS, PUBLISH_DATASETS } from '../../utils';
 import { debounce } from "lodash";
-import { Button, Form, Spinner } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
-import { toPascalCase } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import usePublishDataset from '../../hooks/datasets/usePublishDataset';
 import useDeactivateDataset from '../../hooks/datasets/useDeactivateDataset';
@@ -18,14 +16,29 @@ import ResponseToast from '../../components/ToastMessage/ResponseToast';
 import { useNavigate } from 'react-router-dom';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 import { useAuth } from '../../hooks/useAuth';
+import useCreateInclinationJob from '../../hooks/jobs/useCreateInclinationJob';
+import DatePicker from '../../components/DatePicker/DatePicker';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import dayjs from 'dayjs';
+import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
+import ProjectAutocomplete from '../../components/ProjectAutocomplete/ProjectAutocomplete';
+import ServiceAutocomplete from '../../components/ServiceAutocomplete/ServiceAutocomplete';
+import DownloadModal from '../../components/DownloadModal/DownloadModal';
 
 const MyDatasets = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
+    const [isLoadingDownload, setIsLoadingDownload] = useState(false); 
     const [query, setQuery] = useState("");
     const [debounceQuery, setDebounceQuery] = useState("");
+    const [datasetIdQuery, setDatasetIdQuery] = useState("");
+    const [debounceDatasetIdQuery, setDebounceDatasetIdQuery] = useState("");
     const [dataType, setDataType] = useState("");
     const [status, setStatus] = useState("All");
+    const [validFrom, setValidFrom] = useState(null);
+    const [validTo, setValidTo] = useState(null);
+    const [tdeiServiceId, setTdeiServiceId] = useState("");
     const [sortedData, setSortedData] = useState([]);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [selectedDataset, setSelectedDataset] = useState(null);
@@ -33,8 +46,28 @@ const MyDatasets = () => {
     const [eventKey, setEventKey] = useState("");
     const [operationResult, setOperationResult] = useState("");
     const isAdmin = user && user.isAdmin;
-    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(isAdmin,debounceQuery, status, dataType);
+    const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
+    const [sortField, setSortField] = useState('uploaded_timestamp');
+    const [sortOrder, setSortOrder] = useState('DESC');
+    const [showDownloadModal, setShowDownloadModal] = useState(false); 
+    const [selectedFormat, setSelectedFormat] = useState(null);
+    const [selectedFileVersion, setSelectedFileVersion] = useState(null);
+    const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(
+        isAdmin,
+        debounceQuery,
+        debounceDatasetIdQuery,
+        status,
+        dataType,
+        validFrom,
+        validTo,
+        tdeiServiceId,
+        selectedProjectGroupId,
+        sortField,
+        sortOrder
+    );
+
     const navigate = useNavigate();
+    const [customErrorMessage, setCustomErrorMessage] = useState("");
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -50,6 +83,10 @@ const MyDatasets = () => {
         }
     }, [data]);
 
+    useEffect(() => {
+        console.log("Selected Project Group ID in MyDatasets:", selectedProjectGroupId);
+    }, [selectedProjectGroupId]);
+
     const handleSelectedDataType = (value) => {
         setDataType(value.value);
     };
@@ -62,7 +99,31 @@ const MyDatasets = () => {
         setDebounceQuery(e.target.value);
     };
 
-    const debouncedHandleSearch = debounce(handleSearch, 300);
+    const debouncedHandleSearch = useCallback(
+        debounce(handleSearch, 300),
+        []
+    );
+
+    const handleDatasetIdSearch = (e) => {
+        setDebounceDatasetIdQuery(e.target.value);
+    };
+
+    const debouncedHandleDatasetIdSearch = useCallback(
+        debounce(handleDatasetIdSearch, 300),
+        []
+    );
+
+    const handleChangeDatePicker = (date, setter) => {
+        const dateString = date ? dayjs(date).format('MM-DD-YYYY') : null;
+        setter(dateString);
+        refreshData();
+    };
+
+    const handleSortChange = (field, order) => {
+        setSortField(field);
+        setSortOrder(order);
+        refreshData();
+    };
 
     const options = [
         { value: '', label: 'All' },
@@ -77,78 +138,136 @@ const MyDatasets = () => {
         { value: 'Pre-Release', label: 'Pre-Release' },
     ];
 
-    const onSuccess = (data) => {
+    const onSuccess = () => {
         setOperationResult("success");
         setShowSuccessModal(false);
-        handleToast();
         queryClient.invalidateQueries({ queryKey: [GET_DATASETS] });
+        setIsLoadingDownload(false);
+        handleToast();
+        setShowDownloadModal(false);
+        setSelectedFormat(null);
+        setSelectedFileVersion(null);
     };
 
     const onError = (err) => {
-        console.error("error message", err);
-        setShowSuccessModal(false);
-        handleToast();
+        const errorMessage = err.data || "Unknown error occured! Please try again!";
+        console.error("Error message:", errorMessage);
         setOperationResult("error");
+        setOpen(true);
+        setCustomErrorMessage(errorMessage);
+        setShowSuccessModal(false);
+        setIsLoadingDownload(false); 
+        setShowDownloadModal(false);
+        setSelectedFormat(null);
+        setSelectedFileVersion(null);
     };
 
-    const { isLoading: isPublishing, mutate } = usePublishDataset({ onSuccess, onError });
+    const { mutate: publishDataset, isLoading: isPublishing } = usePublishDataset({ onSuccess, onError });
     const { mutate: deactivateDataset, isLoading: isDeletingDataset } = useDeactivateDataset({ onSuccess, onError });
-    const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset();
+    const { mutate: downloadDataset, isLoading: isDownloadingDataset } = useDownloadDataset({ onSuccess, onError });
+    const { mutate: createInclinationJob, isLoading: isCreatingJob } = useCreateInclinationJob({ onSuccess, onError });
 
-    const handlePublishDataset = () => {
-        mutate({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id });
+    const handlePublishDataset = (dataset) => {
+        // Check if valid_from and valid_to dates are present
+        if (!dataset?.metadata?.dataset_detail?.valid_from || !dataset?.metadata?.dataset_detail?.valid_to) {
+            setEventKey("missingDates");
+            setShowSuccessModal(true);
+            return;
+        }
+        // If validation passes, show the release confirmation modal
+        setEventKey("release");
+        setShowSuccessModal(true);
     };
 
     const handleDeactivate = () => {
         deactivateDataset(selectedDataset.tdei_dataset_id);
     };
-    const handleDownloadDataset = (dataset) => {
-        downloadDataset({tdei_dataset_id : dataset.tdei_dataset_id, data_type: dataset.data_type});
+
+    const handleCreateInclinationJob = () => {
+        createInclinationJob(selectedDataset.tdei_dataset_id);
     };
 
+    const handleDownloadDataset = (dataset) => {
+        setIsLoadingDownload(true);
+        if (selectedDataset && selectedDataset.data_type === 'osw') {
+            const format = selectedFormat ? selectedFormat.value : 'osw';
+            const fileVersion = selectedFileVersion ? selectedFileVersion.value : 'latest';
+            downloadDataset({
+                tdei_dataset_id: selectedDataset.tdei_dataset_id,
+                data_type: selectedDataset.data_type,
+                format: format,
+                file_version: fileVersion
+            });
+        } else {
+            downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
+        }
+        setSelectedDataset(null);
+    };    
     const onAction = (eventKey, dataset) => {
         setSelectedDataset(dataset);
         setEventKey(eventKey);
-        if(eventKey === 'editMetadata'){
+        if (eventKey === 'editMetadata') {
             navigate('/EditMetadata', { state: { dataset } });
-        } else if(eventKey === 'cloneDataset'){
-            navigate('/CloneDataset',{ state: { dataset } });
-        } else if(eventKey === 'downLoadDataset'){
-            handleDownloadDataset(dataset)
+        } else if (eventKey === 'cloneDataset') {
+            navigate('/CloneDataset', { state: { dataset } });
+        } else if (eventKey === 'downLoadDataset') {
+            if (dataset.data_type === 'osw') {
+                setShowDownloadModal(true);
+            } else {
+                handleDownloadDataset(dataset);
+            }
+        } else if (eventKey === 'release') {
+            handlePublishDataset(dataset);
         } else {
             setShowSuccessModal(true);
         }
     };
+    const formatOptions = [
+        { value: 'osm', label: 'OSM' },
+        { value: 'osw', label: 'OSW' }
+    ];
+
+    const fileVersionOptions = [
+        { value: 'latest', label: 'Latest' },
+        { value: 'original', label: 'Original' }
+    ];
 
     const handleRefresh = () => {
         refreshData();
     };
-
-    const handleDropdownSelect = (eventKey) => {
-        const sortData = (dataToSort, key) => {
-            return [...dataToSort].sort((a, b) => {
-                const aValue = key === 'metadata.dataset_detail.name'
-                    ? a?.metadata?.dataset_detail?.name ?? ''
-                    : a[key] ?? '';
-                const bValue = key === 'metadata.dataset_detail.name'
-                    ? b?.metadata?.dataset_detail?.name ?? ''
-                    : b[key] ?? '';
-
-                return aValue.localeCompare(bValue);
-            });
-        };
-
-        let sorted = [];
-        if (eventKey === 'status') {
-            sorted = sortData(sortedData, 'status');
-        } else if (eventKey === 'type') {
-            sorted = sortData(sortedData, 'data_type');
-        } else if (eventKey === 'asc') {
-            sorted = sortData(sortedData, 'metadata.dataset_detail.name');
+    // Modal configuration based on eventKey
+    const modalConfig = {
+        release: {
+            message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+            content: "Release job will take around 4 to 6 hours. You can find the status in the jobs page.",
+            handler: () => publishDataset({ service_type: selectedDataset.data_type, tdei_dataset_id: selectedDataset.tdei_dataset_id }),
+            btnlabel: "Release",
+            modaltype: "release"
+        },
+        deactivate: {
+            message: `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+            content: "Deactivation will remove the dataset from the system.",
+            handler: handleDeactivate,
+            btnlabel: "Deactivate",
+            modaltype: "deactivate"
+        },
+        inclination: {
+            message: `Are you sure you want to add an inclination job for dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+            content: "Adding incline may take around 10-15 mins of time depending on the size of the dataset. You can find the status in the jobs page.",
+            handler: handleCreateInclinationJob,
+            btnlabel: "Add Incline",
+            modaltype: "inclination"
+        },
+        missingDates: {
+            message: "Valid From and Valid To dates are mandatory for publishing the dataset.",
+            content: "Please edit the metadata information before proceeding.",
+            handler: () => setShowSuccessModal(false),
+            btnlabel: "Close",
+            modaltype: "error"
         }
-
-        setSortedData(sorted);
     };
+
+    const currentModalConfig = modalConfig[eventKey];
 
     const handleToast = () => {
         setOpen(true);
@@ -158,64 +277,170 @@ const MyDatasets = () => {
         setOpen(false);
     };
 
+    const getToastMessage = () => {
+        switch (eventKey) {
+            case 'release':
+                return operationResult === "success"
+                    ? "Success! Dataset release job has been initiated."
+                    : "Error! Failed to initiate dataset release job.";
+            case 'deactivate':
+                return operationResult === "success"
+                    ? "Success! Dataset has been deactivated."
+                    : "Error! Failed to deactivate dataset.";
+            case 'inclination':
+                return operationResult === "success"
+                    ? "Success! Inclination job has been initiated."
+                    : customErrorMessage;
+            case 'downLoadDataset':
+                return operationResult === "success"
+                    ? "Success! Download has been initiated."
+                    : customErrorMessage;
+            default:
+                return "";
+        }
+    };
+    // Callback to handle service selection from ServiceAutocomplete
+    const handleServiceSelect = useCallback((serviceId) => {
+        setTdeiServiceId(serviceId || "");
+        refreshData();
+    }, [refreshData]);
+
     return (
         <div>
             <Form noValidate>
-                <div className='mt-4 mb-3'>
-                    <div className="d-flex justify-content-between flex-wrap">
-                        <div className='d-flex mb-2'>
-                            <div className={style.filterSection}>
+                <Row className="mb-3" style={{ marginTop: '20px' }}>
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Label>Type</Form.Label>
+                            <Select
+                                isSearchable={false}
+                                defaultValue={{ label: "All", value: "" }}
+                                onChange={handleSelectedDataType}
+                                options={options}
+                                components={{ IndicatorSeparator: () => null }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Label>Status</Form.Label>
+                            <Select
+                                isSearchable={false}
+                                defaultValue={{ label: "All", value: "All" }}
+                                onChange={handleSelectedStatus}
+                                options={statusOptions}
+                                components={{ IndicatorSeparator: () => null }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <SortRefreshComponent
+                            handleRefresh={handleRefresh}
+                            handleSortChange={handleSortChange}
+                            sortField={sortField}
+                            sortOrder={sortOrder}
+                        />
+                    </Col>
+                </Row>
+                <Row className="mb-3">
+                    <Col md={4}>
+                        <Form.Group>
+                            <Form.Control
+                                aria-label="Search Dataset"
+                                placeholder="Search Dataset"
+                                onChange={(e) => {
+                                    setQuery(e.target.value);
+                                    debouncedHandleSearch(e);
+                                }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    {isAdmin ? (
+                        <Col md={4}>
+                            <Form.Group>
+                                <ProjectAutocomplete
+                                    onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
+                                />
+                            </Form.Group>
+                        </Col>
+                    ) : (
+                        <Col md={4}>
+                            <Form.Group>
                                 <Form.Control
-                                    className={style.customFormControl}
-                                    aria-label="Text input with dropdown button"
-                                    placeholder="Search Dataset"
+                                    aria-label="Search Dataset ID"
+                                    placeholder="Search Dataset ID"
                                     onChange={(e) => {
-                                        setQuery(e.target.value);
-                                        debouncedHandleSearch(e);
+                                        setDatasetIdQuery(e.target.value);
+                                        debouncedHandleDatasetIdSearch(e);
                                     }}
                                 />
-                            </div>
-                            <div className={style.filterSection}>
-                                <div className={style.filterLabel}>Type</div>
-                                <div className={style.filterField}>
-                                    <Select
-                                        isSearchable={false}
-                                        defaultValue={{ label: "All", value: "" }}
-                                        onChange={handleSelectedDataType}
-                                        options={options}
-                                        components={{
-                                            IndicatorSeparator: () => null
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className={style.filterSection}>
-                                <div className={style.filterLabel}>Status</div>
-                                <div className={style.filterField}>
-                                    <Select
-                                        isSearchable={false}
-                                        defaultValue={{ label: "All", value: "" }}
-                                        onChange={handleSelectedStatus}
-                                        options={statusOptions}
-                                        components={{
-                                            IndicatorSeparator: () => null
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className='d-flex align-items-center mb-2'>
-                            <SortRefreshComponent handleRefresh={handleRefresh} handleDropdownSelect={handleDropdownSelect} isReleasedDataset={false} />
-                        </div>
-                    </div>
-                </div>
+                            </Form.Group>
+                        </Col>
+                    )}
+                    <Col md={4}>
+                        <Form.Group>
+                            <ServiceAutocomplete
+                                onSelectService={handleServiceSelect}
+                                isAdmin={user && user.isAdmin}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className="mb-3 d-flex justify-content-start">
+                    {isAdmin && (
+                        <Col md={4}>
+                            <Form.Group>
+                                <Form.Control
+                                    aria-label="Search Dataset ID"
+                                    placeholder="Search Dataset ID"
+                                    onChange={(e) => {
+                                        setDatasetIdQuery(e.target.value);
+                                        debouncedHandleDatasetIdSearch(e);
+                                    }}
+                                />
+                            </Form.Group>
+                        </Col>
+                    )}
+                    <Col md={4}>
+                        <Form.Group className="d-flex align-items-center">
+                            <DatePicker
+                                label="Valid From"
+                                onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                                dateValue={validFrom}
+                                isFilter={true}
+                            />
+                            <IconButton aria-label="clear valid from" onClick={() => {
+                                setValidFrom(null);
+                                refreshData();
+                            }}>
+                                <ClearIcon />
+                            </IconButton>
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <Form.Group className="d-flex align-items-center">
+                            <DatePicker
+                                label="Valid To"
+                                onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                                dateValue={validTo}
+                                isFilter={true}
+                            />
+                            <IconButton aria-label="clear valid to" onClick={() => {
+                                setValidTo(null);
+                                refreshData();
+                            }}>
+                                <ClearIcon />
+                            </IconButton>
+                        </Form.Group>
+                    </Col>
+                </Row>
                 <DatasetTableHeader isReleasedDataList={false} />
 
-                {isLoading ? ( 
+                {isLoading ? (
                     <div className="d-flex justify-content-center">
                         <Spinner size="md" />
                     </div>
-                ) : sortedData.length > 0 ? (  
+                ) : sortedData.length > 0 ? (
                     sortedData.map((list, index) => (
                         <DatasetRow
                             key={list.tdei_dataset_id}
@@ -224,7 +449,7 @@ const MyDatasets = () => {
                             isReleasedList={false}
                         />
                     ))
-                ) : (  
+                ) : (
                     <div className="d-flex align-items-center mt-2">
                         <img
                             src={iconNoData}
@@ -235,8 +460,8 @@ const MyDatasets = () => {
                     </div>
                 )}
 
-                {isError && "Error loading datasets"}  
-                {hasNextPage && !isLoading && ( 
+                {isError && "Error loading datasets"}
+                {hasNextPage && !isLoading && (
                     <Button
                         className="tdei-primary-button"
                         onClick={() => fetchNextPage()}
@@ -244,23 +469,41 @@ const MyDatasets = () => {
                     >
                         Load More {isFetchingNextPage && <Spinner size="sm" />}
                     </Button>
-                )}                
+                )}
                 <CustomModal
                     show={showSuccessModal}
-                    message={eventKey === 'release' ? `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?` : `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`}
-                    content={eventKey === 'release' ? "Release job will take around 4 to 6 hours. You can find the status in the jobs page." : "Deactivation will remove the dataset from the system."}
-                    handler={eventKey === 'release' ? handlePublishDataset : handleDeactivate}
-                    btnlabel={eventKey === 'release' ? "Release" : "Deactivate"}
-                    modaltype={eventKey === 'release' ? "release" : "deactivate"}
+                    message={currentModalConfig?.message}
+                    content={currentModalConfig?.content}
+                    handler={currentModalConfig?.handler}
+                    btnlabel={currentModalConfig?.btnlabel}
+                    modaltype={currentModalConfig?.modaltype}
                     onHide={() => setShowSuccessModal(false)}
-                    title={eventKey === 'release' ? "Release Dataset" : "Deactivate Dataset"}
-                    isLoading={isPublishing || isDeletingDataset}
+                    isLoading={isPublishing || isDeletingDataset || isCreatingJob}
+                />
+                <DownloadModal
+                    show={showDownloadModal}
+                    handleClose={() => {
+                        if (!isLoadingDownload) { 
+                            setShowDownloadModal(false);
+                            setSelectedFormat(null);
+                            setSelectedFileVersion(null);
+                            setSelectedDataset(null);
+                        }
+                    }}
+                    handleDownload={handleDownloadDataset}
+                    formatOptions={formatOptions}
+                    fileVersionOptions={fileVersionOptions}
+                    selectedFormat={selectedFormat}
+                    setSelectedFormat={setSelectedFormat}
+                    selectedFileVersion={selectedFileVersion}
+                    setSelectedFileVersion={setSelectedFileVersion}
+                    isLoading={isLoadingDownload}
                 />
                 <ResponseToast
                     showtoast={open}
                     handleClose={handleClose}
                     type={operationResult === "success" ? "success" : "error"}
-                    message={eventKey === 'release' ? (operationResult === "success" ? "Success! Dataset release job has been initiated." : "Error! Failed to initiate dataset release job.") : (operationResult === "success" ? "Success! Dataset has been deactivated." : "Error! Failed to deactivate dataset.")}
+                    message={getToastMessage()}
                 />
             </Form>
         </div>

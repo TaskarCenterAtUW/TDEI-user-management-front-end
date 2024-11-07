@@ -1,6 +1,6 @@
-import React from "react";
-import { Row, Form, Button, Card } from "react-bootstrap";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Row, Form, Button, Card, InputGroup } from "react-bootstrap";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
 import tempLogo from "./../../assets/img/tdei_logo.svg";
@@ -9,13 +9,16 @@ import { show } from "../../store/notification.slice";
 import { Formik } from "formik";
 import * as yup from "yup";
 import ForgotPassModal from "../../components/ForgotPassModal/ForgotPassModal";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const LoginPage = () => {
   const [loading, setLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
   const auth = useAuth();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate(); 
   const initialValues = {
     username: "",
     password: "",
@@ -36,7 +39,16 @@ const LoginPage = () => {
       (err) => {
         console.error(err);
         setLoading(false);
-        dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
+        if(err.status === 403 || err.response.status === 403){
+           navigate("/emailVerify", {
+            state: {  
+              actionText: "Your email address has not been verified. Please verify your email before logging in.",
+              email: values.username 
+            }
+          });
+        } else {
+          dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
+        }
       }
     );
   };
@@ -92,19 +104,27 @@ const LoginPage = () => {
                         controlId="formBasicPassword"
                       >
                         <Form.Label>Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          placeholder="Enter Password"
-                          value={values.password}
-                          name="password"
-                          isInvalid={touched.password && !!errors.password}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          autoComplete="current-password"
-                        />
-                        <Form.Control.Feedback type="invalid">
-                          {errors.password}
-                        </Form.Control.Feedback>
+                        <InputGroup>
+                          <Form.Control
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter Password"
+                            value={values.password}
+                            name="password"
+                            isInvalid={touched.password && !!errors.password}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            autoComplete="current-password"
+                          />
+                          <InputGroup.Text
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                          >
+                            {showPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
+                          </InputGroup.Text>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.password}
+                          </Form.Control.Feedback>
+                        </InputGroup>
                       </Form.Group>
                       <Form.Group
                         className="mb-3 d-flex justify-content-between align-items-center"
@@ -126,10 +146,11 @@ const LoginPage = () => {
                         <Link className="tdei-primary-link" to={"/register"}>
                           Register Now
                         </Link>
+                        
                       </div>
-                    <ForgotPassModal 
-                    email={values.username}
-                    />
+                      <Link className="tdei-primary-link" to={"/ForgotPassword"}>
+                        Forgot Password?
+                        </Link>
                     </Form>
                   )}
                 </Formik>

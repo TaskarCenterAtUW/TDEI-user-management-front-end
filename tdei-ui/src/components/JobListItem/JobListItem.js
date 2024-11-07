@@ -10,6 +10,9 @@ import { toPascalCase } from "../../utils";
 import useDownloadJob from "../../hooks/jobs/useDownloadJob";
 import ColoredLabel from "../ColoredLabel/ColoredLabel";
 import ResponseToast from "../ToastMessage/ResponseToast";
+import InfoIcon from '@mui/icons-material/Info';
+import { IconButton } from "@mui/material";
+import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -19,6 +22,7 @@ const JobListItem = ({ jobItem }) => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [eventKey, setEventKey] = useState("");
+  const [showInputDescModal, setInputDescModal] = useState(false);
 
   const handleToast = () => {
     setOpen(true);
@@ -36,6 +40,7 @@ const JobListItem = ({ jobItem }) => {
   const onError = (err) => {
     console.error("error message", err);
     setEventKey("error")
+    setError(err.message ?? err)
     handleToast();
   };
   const { mutate: downloadJob, isLoading: isDownloadingJob } = useDownloadJob({ onSuccess, onError });
@@ -48,13 +53,15 @@ const JobListItem = ({ jobItem }) => {
     setShowModal(!showModal);
   };
 
+  const toggleInputDescModal = () => {
+    setInputDescModal(!showInputDescModal);
+  };
+
  
 const handleClick = (e) => {
   const { id } = e.target;
   setJobId(id);
-  if (jobItem.job_type === "Quality-Metric") {
-    window.location.href = jobItem.response_props.qm_dataset_url;
-  } else if(jobItem.job_type === "Confidence-Calculate"){
+ if(jobItem.job_type === "Confidence-Calculate"){
     const confidenceScores = jobItem.response_props.confidence_scores;
     const blob = new Blob([confidenceScores], { type: 'application/json' });
     const downloadUrl = URL.createObjectURL(blob);
@@ -108,7 +115,7 @@ const handleClick = (e) => {
     <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
       <div className="d-flex">
         {jobItem.request_input.dataset_name ? (
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center" style={{width:'225px'}}>
             <img
               className={style.datasetFileIconSize}
               src={DatasetIcon}
@@ -119,7 +126,7 @@ const handleClick = (e) => {
             </div>
           </div>
         ) : (
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center" style={{width:'225px'}}>
             <img
               className={style.datasetFileIconSize}
               src={fileIcon}
@@ -130,6 +137,9 @@ const handleClick = (e) => {
             </div>
           </div>
         )}
+       <IconButton onClick={toggleInputDescModal}>
+       <InfoIcon className="infoIconImg" />
+       </IconButton>
       </div>
 
       <div className={style.content} tabIndex={0}>
@@ -180,7 +190,10 @@ const handleClick = (e) => {
           </div>
         )}
         {(jobItem.job_type === "Dataset-Reformat" ||
-          jobItem.job_type === "Dataset-Queries" ||
+          jobItem.job_type === "Dataset-BBox" ||
+          jobItem.job_type === "Dataset-Road-Tag" ||
+          jobItem.job_type === "Dataset-Spatial-Join" ||
+          jobItem.job_type === "Dataset-Union" ||
           jobItem.job_type === "Quality-Metric" ||
           jobItem.job_type === "Confidence-Calculate"
         ) &&
@@ -228,11 +241,21 @@ const handleClick = (e) => {
           jobStatusTitle: getJobStatusTitle(),
         }}
       />
+      <JobInputDescModal
+        show={showInputDescModal}
+        onHide={toggleInputDescModal}
+        message={{
+          type: jobItem.job_type,
+          job_id: jobItem.job_id,
+          progress: jobItem.progress,
+          request_input: jobItem.request_input,
+        }}
+      />
       <ResponseToast
         showtoast={open}
         handleClose={handleClose}
         type={eventKey === "success" ? "success" : "error"}
-        message={eventKey === 'success' ? "Success! Download has been initiated." : "Error! Failed to initiate download."}
+        message={eventKey === 'success' ? "Success! Download has been initiated." : `Error! ${error}`}
       />
     </div>
   );

@@ -12,7 +12,7 @@ import { debounce } from "lodash";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import JobListItem from "../../components/JobListItem/JobListItem";
-import SortRefreshComponent from "../Datasets/SortRefreshComponent";
+import JobSortRefreshComponent from "./JobSortRefreshComponent";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { width } from "@mui/system";
@@ -31,15 +31,20 @@ const Jobs = () => {
     // Options for job type dropdown
     const jobTypeOptions = [
         { value: '', label: 'All' },
+        { value: 'Clone-Dataset', label: 'Clone Dataset' },
         { value: 'Confidence-Calculate', label: 'Confidence - Calculate' },
-        { value: 'Dataset-Reformat', label: 'Reformat' },
-        { value: 'Dataset-Upload', label: 'Upload' },
-        { value: 'Dataset-Publish', label: 'Publish' },
-        { value: 'Dataset-Validate', label: 'Validate' },
-        { value: 'Dataset-Flatten', label: 'Flatten' },
-        { value: 'Dataset-Queries', label: 'Queries' },
+        { value: 'Dataset-BBox', label: 'Dataset BBox' },
+        { value: 'Dataset-Incline-Tag', label: 'Dataset Incline Tag' },
+        { value: 'Dataset-Publish', label: 'Dataset Publish' },
+        { value: 'Dataset-Reformat', label: 'Dataset Reformat' },
+        { value: 'Dataset-Road-Tag', label: 'Dataset Road Tag' },
+        { value: 'Dataset-Spatial-Join', label: 'Dataset Spatial Join' },
+        { value: 'Dataset-Union', label: 'Dataset Union' },
+        { value: 'Dataset-Upload', label: 'Dataset Upload' },
+        { value: 'Dataset-Validate', label: 'Dataset Validate' },
+        { value: 'Edit-Metadata', label: 'Edit Metadata' },
         { value: 'Quality-Metric', label: 'Quality Metric' },
-    ];
+    ];    
 
     // Options for status
     const jobStatusOptions = [
@@ -202,7 +207,7 @@ const Jobs = () => {
                             </div>
                         </div>
                         <div className="d-flex">
-                            <SortRefreshComponent handleRefresh={handleRefresh}
+                            <JobSortRefreshComponent handleRefresh={handleRefresh}
                                 handleDropdownSelect={handleDropdownSelect}
                                 isReleasedDataset={false} />
                         </div>
