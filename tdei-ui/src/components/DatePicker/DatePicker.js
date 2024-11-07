@@ -57,9 +57,12 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DesktopDatePicker
         sx={{
+          "& .MuiInputBase-root": {
+            backgroundColor: "white",
+          },
           "& .MuiInputBase-input": {
             height: "5px",
-            width: "21vw"
+            width: "22vw",
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {

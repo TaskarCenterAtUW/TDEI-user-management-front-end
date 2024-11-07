@@ -293,3 +293,37 @@
 .jobDropdownToggleSort::after {
   display: none; 
 }
+.sortFilterBtn{
+  background: #F8F8F8 0% 0% no-repeat padding-box !important;
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  opacity: 1 !important; 
+  width: 120px;
+  height: 40px;
+  margin-top: 30px !important;
+  color: black !important;
+}
+.filterComponent{
+  background: #F8F8F8 0% 0% no-repeat padding-box !important;
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  opacity: 1 !important; 
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.labelWithClear {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clearButton {
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.clearButton:hover {
+  text-decoration: underline;
+}

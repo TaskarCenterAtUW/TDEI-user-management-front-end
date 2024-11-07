@@ -104,7 +104,7 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
           onFocus={() => setShowDropdown(true)}
           autoComplete="off"
         />
-        {selectedProjectGroup && (
+        {/* {selectedProjectGroup && (
           <InputGroup.Text>
             <IconButton
               aria-label="clear selection"
@@ -119,7 +119,7 @@ const ProjectAutocomplete = ({ onSelectProjectGroup }) => {
               <ClearIcon fontSize="small" />
             </IconButton>
           </InputGroup.Text>
-        )}
+        )} */}
         {loading && (
           <InputGroup.Text>
             <Spinner animation="border" size="sm" />
