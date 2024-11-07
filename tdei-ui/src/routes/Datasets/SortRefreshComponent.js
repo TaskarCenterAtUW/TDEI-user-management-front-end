@@ -7,16 +7,20 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import style from "./Datasets.module.css";
 import { Row } from "react-bootstrap";
 
-const SortRefreshComponent = ({ handleRefresh, handleSortChange, sortField, sortOrder, toggleFilters }) => {
+const SortRefreshComponent = ({ handleRefresh, handleSortChange, toggleFilters }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const [order, setOrder] = useState(sortOrder);
 
     const sortOptions = [
-        { value: 'uploaded_timestamp', label: 'Last Updated' },
-        { value: 'project_group_name', label: 'Project Group Name' },
-        { value: 'status', label: 'Status' },
-        { value: 'valid_from', label: 'Valid From' },
-        { value: 'valid_to', label: 'Valid To' },
+        { field: 'uploaded_timestamp', label: 'Last Updated', order: 'ASC' },
+        { field: 'uploaded_timestamp', label: 'Last Updated', order: 'DESC' },
+        { field: 'project_group_name', label: 'Project Group Name', order: 'ASC' },
+        { field: 'project_group_name', label: 'Project Group Name', order: 'DESC' },
+        { field: 'status', label: 'Status', order: 'ASC' },
+        { field: 'status', label: 'Status', order: 'DESC' },
+        { field: 'valid_from', label: 'Valid From', order: 'ASC' },
+        { field: 'valid_from', label: 'Valid From', order: 'DESC' },
+        { field: 'valid_to', label: 'Valid To', order: 'ASC' },
+        { field: 'valid_to', label: 'Valid To', order: 'DESC' },
     ];
 
     const open = Boolean(anchorEl);
@@ -29,15 +33,9 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, sortField, sort
         setAnchorEl(null);
     };
 
-    const handleSortSelection = (selectedOption) => {
-        handleSortChange(selectedOption.value, order);
+    const handleSortSelection = (option) => {
+        handleSortChange(option.field, option.order);
         handleSortMenuClose();
-    };
-
-    const toggleSortOrder = () => {
-        const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
-        setOrder(newOrder);
-        handleSortChange(sortField, newOrder);
     };
 
     return (
@@ -62,14 +60,17 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, sortField, sort
             </Button>
             <Menu anchorEl={anchorEl} open={open} onClose={handleSortMenuClose}>
                 {sortOptions.map(option => (
-                    <MenuItem key={option.value} onClick={() => handleSortSelection(option)}>
-                        {option.label}
+                    <MenuItem
+                        key={`${option.field}-${option.order}`}
+                        onClick={() => handleSortSelection(option)}
+                    >
+                        {`${option.label} (${option.order === 'ASC' ? 'A-Z' : 'Z-A'})`}
                     </MenuItem>
                 ))}
             </Menu>
-            <IconButton className={style.iconBtn} onClick={handleRefresh} sx={{marginTop:'30px', marginRight:'12px'}}>
-          <RefreshIcon style={{ fontSize: 20 }} />
-        </IconButton>
+            <IconButton className={style.iconBtn} onClick={handleRefresh} sx={{ marginTop: '30px', marginRight: '12px' }}>
+                <RefreshIcon style={{ fontSize: 20 }} />
+            </IconButton>
         </Row>
     );
 };
