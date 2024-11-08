@@ -293,8 +293,7 @@
 .jobDropdownToggleSort::after {
   display: none; 
 }
-.sortFilterBtn{
-  background: #F8F8F8 0% 0% no-repeat padding-box !important;
+.sortFilterBtn {
   border: 1px solid #CED4DA !important;
   border-radius: 8px !important;
   opacity: 1 !important; 
@@ -302,6 +301,8 @@
   height: 40px;
   margin-top: 30px !important;
   color: black !important;
+  font: normal normal normal 16px/22px Lato !important;
+  text-transform: none !important;
 }
 .filterComponent{
   background: #F8F8F8 0% 0% no-repeat padding-box !important;
