@@ -29,7 +29,7 @@ import DownloadModal from '../../components/DownloadModal/DownloadModal';
 const MyDatasets = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
-    const [isLoadingDownload, setIsLoadingDownload] = useState(false); 
+    const [isLoadingDownload, setIsLoadingDownload] = useState(false);
     const [query, setQuery] = useState("");
     const [debounceQuery, setDebounceQuery] = useState("");
     const [datasetIdQuery, setDatasetIdQuery] = useState("");
@@ -49,7 +49,7 @@ const MyDatasets = () => {
     const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
     const [sortField, setSortField] = useState('uploaded_timestamp');
     const [sortOrder, setSortOrder] = useState('DESC');
-    const [showDownloadModal, setShowDownloadModal] = useState(false); 
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
     const [selectedFormat, setSelectedFormat] = useState(null);
     const [selectedFileVersion, setSelectedFileVersion] = useState(null);
     const { data = [], isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData } = useGetDatasets(
@@ -65,9 +65,26 @@ const MyDatasets = () => {
         sortField,
         sortOrder
     );
-
+    const [projectSearchText, setProjectSearchText] = useState("");
+    const [serviceSearchText, setServiceSearchText] = useState("");
     const navigate = useNavigate();
     const [customErrorMessage, setCustomErrorMessage] = useState("");
+    const [showFilters, setShowFilters] = useState(false);
+
+    const toggleFilters = () => {
+        setShowFilters(!showFilters);
+    };
+    const handleClearProjectGroup = () => {
+        setSelectedProjectGroupId(null); 
+        setProjectSearchText(""); 
+        refreshData();
+    };
+    const handleClearService = () => {
+        setTdeiServiceId("");
+        setServiceSearchText("");
+        refreshData();
+    };
+
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -156,7 +173,7 @@ const MyDatasets = () => {
         setOpen(true);
         setCustomErrorMessage(errorMessage);
         setShowSuccessModal(false);
-        setIsLoadingDownload(false); 
+        setIsLoadingDownload(false);
         setShowDownloadModal(false);
         setSelectedFormat(null);
         setSelectedFileVersion(null);
@@ -202,7 +219,7 @@ const MyDatasets = () => {
             downloadDataset({ tdei_dataset_id: dataset.tdei_dataset_id, data_type: dataset.data_type });
         }
         setSelectedDataset(null);
-    };    
+    };
     const onAction = (eventKey, dataset) => {
         setSelectedDataset(dataset);
         setEventKey(eventKey);
@@ -309,133 +326,203 @@ const MyDatasets = () => {
         <div>
             <Form noValidate>
                 <Row className="mb-3" style={{ marginTop: '20px' }}>
-                    <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Type</Form.Label>
-                            <Select
-                                isSearchable={false}
-                                defaultValue={{ label: "All", value: "" }}
-                                onChange={handleSelectedDataType}
-                                options={options}
-                                components={{ IndicatorSeparator: () => null }}
-                            />
+                    <Col md={5}>
+                        <Form.Group className="d-flex align-items-center">
+                            <div style={{ width: '24vw', paddingRight: '20px' }}>
+                                <Form.Label>Type</Form.Label>
+                                <Select
+                                    isSearchable={false}
+                                    defaultValue={{ label: "All", value: "" }}
+                                    onChange={handleSelectedDataType}
+                                    options={options}
+                                    components={{ IndicatorSeparator: () => null }}
+                                />
+                            </div>
+                            <div style={{ width: '24vw' }}>
+                                <Form.Label>Status</Form.Label>
+                                <Select
+                                    isSearchable={false}
+                                    defaultValue={{ label: "All", value: "All" }}
+                                    onChange={handleSelectedStatus}
+                                    options={statusOptions}
+                                    components={{ IndicatorSeparator: () => null }}
+                                />
+                            </div>
                         </Form.Group>
                     </Col>
-                    <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Status</Form.Label>
-                            <Select
-                                isSearchable={false}
-                                defaultValue={{ label: "All", value: "All" }}
-                                onChange={handleSelectedStatus}
-                                options={statusOptions}
-                                components={{ IndicatorSeparator: () => null }}
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col md={4}>
+                    <Col md={7}>
                         <SortRefreshComponent
                             handleRefresh={handleRefresh}
                             handleSortChange={handleSortChange}
                             sortField={sortField}
                             sortOrder={sortOrder}
+                            toggleFilters={toggleFilters}
                         />
                     </Col>
                 </Row>
-                <Row className="mb-3">
-                    <Col md={4}>
-                        <Form.Group>
-                            <Form.Control
-                                aria-label="Search Dataset"
-                                placeholder="Search Dataset"
-                                onChange={(e) => {
-                                    setQuery(e.target.value);
-                                    debouncedHandleSearch(e);
-                                }}
-                            />
-                        </Form.Group>
-                    </Col>
-                    {isAdmin ? (
-                        <Col md={4}>
+                {showFilters && (
+                    <div className={style.filterComponent}>
+                        <Row className="mb-3">
+                            <Col md={4}>
+                                <Form.Group>
+                                    <div className={style.labelWithClear}>
+                                        <Form.Label>Dataset</Form.Label>
+                                        <span
+                                            className={style.clearButton}
+                                            onClick={() => {
+                                                setQuery("");
+                                                debouncedHandleSearch({ target: { value: "" } });
+                                            }}
+                                        >
+                                            Clear
+                                        </span>
+                                    </div>
+                                    <Form.Control
+                                        value={query}
+                                        aria-label="Search Dataset"
+                                        placeholder="Search Dataset"
+                                        onChange={(e) => {
+                                            setQuery(e.target.value);
+                                            debouncedHandleSearch(e);
+                                        }}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            {isAdmin ? (
+                                <Col md={4}>
+                                    <Form.Group>
+                                        <div className={style.labelWithClear}>
+                                            <Form.Label>Project Group</Form.Label>
+                                            <span
+                                                className={style.clearButton}
+                                                onClick={handleClearProjectGroup}
+                                            >
+                                                Clear
+                                            </span>
+                                        </div>
+                                        <ProjectAutocomplete
+                                            selectedProjectGroupId={selectedProjectGroupId}
+                                            projectSearchText={projectSearchText} 
+                                            setProjectSearchText={setProjectSearchText}
+                                            onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            ) : (
+                                <Col md={4}>
+                                    <Form.Group>
+                                    <div className={style.labelWithClear}>
+                                            <Form.Label>Dataset ID</Form.Label>
+                                            <span
+                                                className={style.clearButton}
+                                                onClick={() => {
+                                                    setDatasetIdQuery("");
+                                                    handleDatasetIdSearch({ target: { value: "" } });
+                                                }}
+                                            >
+                                                Clear
+                                            </span>
+                                        </div>
+                                        <Form.Control
+                                            aria-label="Search Dataset ID"
+                                            placeholder="Search Dataset ID"
+                                            value={datasetIdQuery}
+                                            onChange={(e) => {
+                                                setDatasetIdQuery(e.target.value);
+                                                debouncedHandleDatasetIdSearch(e);
+                                            }}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            )}
+                            <Col md={4}>
                             <Form.Group>
-                                <ProjectAutocomplete
-                                    onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
+                                    <div className={style.labelWithClear}>
+                                        <Form.Label>Service</Form.Label>
+                                        <span className={style.clearButton} onClick={handleClearService}>
+                                            Clear
+                                        </span>
+                                    </div>
+                                    <ServiceAutocomplete
+                                        serviceSearchText={serviceSearchText}
+                                        setServiceSearchText={setServiceSearchText}
+                                        onSelectService={handleServiceSelect}
+                                        isAdmin={user && user.isAdmin}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row className="d-flex justify-content-start">
+                            {isAdmin && (
+                                <Col md={4}>
+                                    <Form.Group>
+                                        <div className={style.labelWithClear}>
+                                            <Form.Label>Dataset ID</Form.Label>
+                                            <span
+                                                className={style.clearButton}
+                                                onClick={() => {
+                                                    setDatasetIdQuery("");
+                                                    handleDatasetIdSearch({ target: { value: "" } });
+                                                }}
+                                            >
+                                                Clear
+                                            </span>
+                                        </div>
+                                        <Form.Control
+                                            aria-label="Search Dataset ID"
+                                            placeholder="Search Dataset ID"
+                                            value={datasetIdQuery}
+                                            onChange={(e) => {
+                                                setDatasetIdQuery(e.target.value);
+                                                debouncedHandleDatasetIdSearch(e);
+                                            }}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            )}
+                            <Col md={4}>
+                                <div className={style.labelWithClear}>
+                                    <Form.Label>Valid From</Form.Label>
+                                    <span
+                                        className={style.clearButton}
+                                        onClick={() => {
+                                            setValidFrom(null);
+                                            refreshData();
+                                        }}
+                                    >
+                                        Clear
+                                    </span>
+                                </div>
+                                <DatePicker
+                                    label="Valid From"
+                                    onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
+                                    dateValue={validFrom}
+                                    isFilter={true}
                                 />
-                            </Form.Group>
-                        </Col>
-                    ) : (
-                        <Col md={4}>
-                            <Form.Group>
-                                <Form.Control
-                                    aria-label="Search Dataset ID"
-                                    placeholder="Search Dataset ID"
-                                    onChange={(e) => {
-                                        setDatasetIdQuery(e.target.value);
-                                        debouncedHandleDatasetIdSearch(e);
-                                    }}
+                            </Col>
+                            <Col md={4}>
+                                <div className={style.labelWithClear}>
+                                    <Form.Label>Valid To</Form.Label>
+                                    <span
+                                        className={style.clearButton}
+                                        onClick={() => {
+                                            setValidTo(null);
+                                            refreshData();
+                                        }}
+                                    >
+                                        Clear
+                                    </span>
+                                </div>
+                                <DatePicker
+                                    label="Valid To"
+                                    onChange={(date) => handleChangeDatePicker(date, setValidTo)}
+                                    dateValue={validTo}
+                                    isFilter={true}
                                 />
-                            </Form.Group>
-                        </Col>
-                    )}
-                    <Col md={4}>
-                        <Form.Group>
-                            <ServiceAutocomplete
-                                onSelectService={handleServiceSelect}
-                                isAdmin={user && user.isAdmin}
-                            />
-                        </Form.Group>
-                    </Col>
-                </Row>
-                <Row className="mb-3 d-flex justify-content-start">
-                    {isAdmin && (
-                        <Col md={4}>
-                            <Form.Group>
-                                <Form.Control
-                                    aria-label="Search Dataset ID"
-                                    placeholder="Search Dataset ID"
-                                    onChange={(e) => {
-                                        setDatasetIdQuery(e.target.value);
-                                        debouncedHandleDatasetIdSearch(e);
-                                    }}
-                                />
-                            </Form.Group>
-                        </Col>
-                    )}
-                    <Col md={4}>
-                        <Form.Group className="d-flex align-items-center">
-                            <DatePicker
-                                label="Valid From"
-                                onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
-                                dateValue={validFrom}
-                                isFilter={true}
-                            />
-                            <IconButton aria-label="clear valid from" onClick={() => {
-                                setValidFrom(null);
-                                refreshData();
-                            }}>
-                                <ClearIcon />
-                            </IconButton>
-                        </Form.Group>
-                    </Col>
-                    <Col md={4}>
-                        <Form.Group className="d-flex align-items-center">
-                            <DatePicker
-                                label="Valid To"
-                                onChange={(date) => handleChangeDatePicker(date, setValidTo)}
-                                dateValue={validTo}
-                                isFilter={true}
-                            />
-                            <IconButton aria-label="clear valid to" onClick={() => {
-                                setValidTo(null);
-                                refreshData();
-                            }}>
-                                <ClearIcon />
-                            </IconButton>
-                        </Form.Group>
-                    </Col>
-                </Row>
+                            </Col>
+                        </Row>
+                    </div>)}
                 <DatasetTableHeader isReleasedDataList={false} />
-
                 {isLoading ? (
                     <div className="d-flex justify-content-center">
                         <Spinner size="md" />
@@ -483,7 +570,7 @@ const MyDatasets = () => {
                 <DownloadModal
                     show={showDownloadModal}
                     handleClose={() => {
-                        if (!isLoadingDownload) { 
+                        if (!isLoadingDownload) {
                             setShowDownloadModal(false);
                             setSelectedFormat(null);
                             setSelectedFileVersion(null);
