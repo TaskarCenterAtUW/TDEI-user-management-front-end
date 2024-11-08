@@ -350,7 +350,7 @@ const MyDatasets = () => {
                             </div>
                         </Form.Group>
                     </Col>
-                    <Col md={3}>
+                    <Col md={7}>
                         <SortRefreshComponent
                             handleRefresh={handleRefresh}
                             handleSortChange={handleSortChange}

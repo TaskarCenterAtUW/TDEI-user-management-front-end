@@ -219,16 +219,25 @@ const ReleasedDatasets = () => {
     refreshData();
   }, [refreshData]);
 
- const handleClearProjectGroup = () => {
-        setSelectedProjectGroupId(null); 
-        setProjectSearchText(""); 
-        refreshData();
-    };
-    const handleClearService = () => {
-        setTdeiServiceId("");
-        setServiceSearchText("");
-        refreshData();
-    };
+  const handleClearProjectGroup = () => {
+    setSelectedProjectGroupId(null);
+    setProjectGroupId(null);
+    setProjectSearchText("");
+    refreshData();
+  };
+  const handleClearService = () => {
+    setTdeiServiceId("");
+    setServiceSearchText("");
+    refreshData();
+  };
+  // Debounced event handler for searching dataset ID
+  const handleDatasetIdSearch = (e) => {
+    setDebounceDatasetIdQuery(e.target.value);
+  };
+  const debouncedHandleDatasetIdSearch = React.useMemo(
+    () => debounce(handleDatasetIdSearch, 300),
+    []
+  );
 
   return (
     <div>
@@ -248,7 +257,7 @@ const ReleasedDatasets = () => {
               </div>
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col md={7}>
             <SortRefreshComponent
               handleRefresh={handleRefresh}
               handleSortChange={handleSortChange}
@@ -299,10 +308,10 @@ const ReleasedDatasets = () => {
                     </span>
                   </div>
                   <ProjectAutocomplete
-                   selectedProjectGroupId={selectedProjectGroupId}
-                   projectSearchText={projectSearchText} 
-                   setProjectSearchText={setProjectSearchText}
-                   onSelectProjectGroup={(projectGroupId) => setSelectedProjectGroupId(projectGroupId)}
+                    selectedProjectGroupId={selectedProjectGroupId}
+                    projectSearchText={projectSearchText}
+                    setProjectSearchText={setProjectSearchText}
+                    onSelectProjectGroup={handleProjectGroupSelect}
                   />
                 </Form.Group>
               </Col>
@@ -315,15 +324,40 @@ const ReleasedDatasets = () => {
                     </span>
                   </div>
                   <ServiceAutocomplete
-                   serviceSearchText={serviceSearchText}
-                   setServiceSearchText={setServiceSearchText}
-                   onSelectService={handleServiceSelect}
-                   isAdmin={true}
+                    serviceSearchText={serviceSearchText}
+                    setServiceSearchText={setServiceSearchText}
+                    onSelectService={handleServiceSelect}
+                    isAdmin={true}
                   />
                 </Form.Group>
               </Col>
             </Row>
             <Row className="d-flex justify-content-start">
+              <Col md={4}>
+                <Form.Group>
+                  <div className={style.labelWithClear}>
+                    <Form.Label>Dataset ID</Form.Label>
+                    <span
+                      className={style.clearButton}
+                      onClick={() => {
+                        setDatasetIdQuery("");
+                        handleDatasetIdSearch({ target: { value: "" } });
+                      }}
+                    >
+                      Clear
+                    </span>
+                  </div>
+                  <Form.Control
+                    aria-label="Search Dataset ID"
+                    placeholder="Search Dataset ID"
+                    value={datasetIdQuery}
+                    onChange={(e) => {
+                      setDatasetIdQuery(e.target.value);
+                      debouncedHandleDatasetIdSearch(e);
+                    }}
+                  />
+                </Form.Group>
+              </Col>
               <Col md={4}>
                 <div className={style.labelWithClear}>
                   <Form.Label>Valid From</Form.Label>
