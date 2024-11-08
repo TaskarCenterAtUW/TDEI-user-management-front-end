@@ -32,6 +32,7 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchText(value); 
+    setProjectSearchText(value);
     // If the input is cleared, reset the search and hide the dropdown
     if (value.trim() === "") {
       setSelectedProjectGroup(null);
