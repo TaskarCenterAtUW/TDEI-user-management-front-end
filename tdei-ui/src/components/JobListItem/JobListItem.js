@@ -164,7 +164,7 @@ const JobListItem = ({ jobItem }) => {
                 : `${jobItem.message}`}
             </div>
             <div>
-              {jobItem.message.length > 70 && (
+              {jobItem.message.length > 35 && (
                 <div
                   className={style.showMoreButton}
                   onClick={toggleShowMore}
@@ -183,7 +183,7 @@ const JobListItem = ({ jobItem }) => {
           >
             {jobItem.status.toLowerCase() === "in-progress"
               ? "Job is in progress"
-              : "-"}
+              : jobItem.status.toLowerCase() === "completed" ? "Job Completed" : "-"}
           </div>
         )}
         {(jobItem.job_type === "Dataset-Reformat" ||
