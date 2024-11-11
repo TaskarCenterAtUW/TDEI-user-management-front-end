@@ -1,6 +1,8 @@
-import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Button, Modal, Spinner } from "react-bootstrap";
+import { IconButton } from "@mui/material";
 import style from "../../routes/Jobs/Jobs.module.css";
+import refreshBtn from "./../../assets/img/refreshBtn.svg";
 import { toPascalCase } from "../../utils";
 
 const JobInputDescModal = (props) => {
@@ -36,32 +38,30 @@ const JobInputDescModal = (props) => {
             centered
         >
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: "20px", fontWeight: "bold" }}>
-                    Job Request Input - {job_id}
+                <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: "18px"}}>
+                    Job Request Input
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className={style.modalBody}>
-                <div className={style.requestInputContainer}>
-                    {getFilteredRequestInput().length > 0 ? (
-                        <table className={style.requestInputTable}>
-                            <thead>
-                                <tr>
-                                    <th style={{ textAlign: "left", paddingRight: "10px" }}>Parameter</th>
-                                    <th style={{ textAlign: "left" }}>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {getFilteredRequestInput().map(([key, value], index) => (
-                                    <tr key={index}>
-                                        <td style={{ textAlign: "left", paddingRight: "5px", fontWeight: "bold" }}>{toPascalCase(key)}</td>
-                                        <td style={{ textAlign: "left" }}>{value || "-"}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p>No additional input parameters provided.</p>
-                    )}
+                <div className={style.jobStatusContainer}>
+                    <div className={style.jobStatusHeader}>
+                        <div style={{ flexGrow: 1 }}>
+                            <div className={style.jobStatusHeaderLabel}>Input Parameter</div>
+                            <div className={style.jobStatusHeaderValue}>JOB ID:{job_id}</div>
+                        </div>
+                    </div>
+                    <div className={style.jobStatusContainerContent}>
+                        {getFilteredRequestInput().length > 0 ? (
+                            getFilteredRequestInput().map(([key, value], index) => (
+                                <div className={style.jobInputDescRow} key={index}>
+                                    <div className={style.jobDetailLabel}>{key}:</div>
+                                    <div className={style.jobDetailValue}>{value || "-"}</div>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No additional input parameters provided.</p>
+                        )}
+                    </div>
                 </div>
             </Modal.Body>
             <Modal.Footer>
