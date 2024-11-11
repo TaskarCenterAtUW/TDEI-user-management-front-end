@@ -11,7 +11,7 @@ const JobSortRefreshComponent = ({ handleRefresh, handleDropdownSelect, isReleas
       <IconButton className={style.iconBtn} onClick={handleRefresh}>
         <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
       </IconButton>
-      <div className={style.divider}></div>
+      {/* <div className={style.divider}></div>
       <div className="d-flex align-items-center">
         <div className="me-2">
           <Form.Label className="mb-0">Sort by</Form.Label>
@@ -28,7 +28,7 @@ const JobSortRefreshComponent = ({ handleRefresh, handleDropdownSelect, isReleas
             </Dropdown.Menu>
           </Dropdown>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

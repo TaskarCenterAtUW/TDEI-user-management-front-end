@@ -14,6 +14,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { IconButton } from "@mui/material";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
 import { DateTime, Interval } from "luxon";
+import UserIcon from './../../assets/img/user.svg';
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -58,24 +59,24 @@ const JobListItem = ({ jobItem }) => {
     setInputDescModal(!showInputDescModal);
   };
 
- 
-const handleClick = (e) => {
-  const { id } = e.target;
-  setJobId(id);
- if(jobItem.job_type === "Confidence-Calculate"){
-    const confidenceScores = jobItem.response_props.confidence_scores;
-    const blob = new Blob([confidenceScores], { type: 'application/json' });
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.setAttribute('download', `${id}_confidence_scores.geojson`); 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  }else {
-    downloadJob(id);
-  }
-};
+
+  const handleClick = (e) => {
+    const { id } = e.target;
+    setJobId(id);
+    if (jobItem.job_type === "Confidence-Calculate") {
+      const confidenceScores = jobItem.response_props.confidence_scores;
+      const blob = new Blob([confidenceScores], { type: 'application/json' });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `${id}_confidence_scores.geojson`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else {
+      downloadJob(id);
+    }
+  };
 
   const updatedTime = (time) => {
     const dateTime = new Date(time);
@@ -113,7 +114,7 @@ const handleClick = (e) => {
     const updatedAt = jobItem.updated_at
       ? DateTime.fromISO(jobItem.updated_at)
       : DateTime.now();
-  
+
     // For in-progress jobs, display Started at: created_date
     if (jobItem.status.toLowerCase() === "in-progress") {
       return `${createdAt.toLocaleString(DateTime.DATETIME_MED)}`;
@@ -135,47 +136,44 @@ const handleClick = (e) => {
       return `${Math.floor(duration.seconds)} sec${duration.seconds >= 2 ? "s" : ""}`;
     }
   };
-  
+
+  const getBackgroundColor = (status) => {
+    if (status.includes("completed")) {
+      return "#B6EDD7";
+    } else if (status.includes("in-progress")) {
+      return "#F3E7C7";
+    } else {
+      return "#EAC5C2";
+    }
+  };
+  const getBorderColor = (status) => {
+    if (status.includes("completed")) {
+      return "#A9E2CB";
+    } else if (status.includes("in-progress")) {
+      return "#EBDDB8";
+    } else {
+      return "#DBABA7";
+    }
+  };
+
   if (error) {
     console.log(error);
   }
 
   return (
     <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
-      <div className="d-flex">
-        {jobItem.request_input.dataset_name ? (
-          <div className="d-flex align-items-center" style={{width:'225px'}}>
-            <img
-              className={style.datasetFileIconSize}
-              src={DatasetIcon}
-              alt="Dataset Icon"
-            />
-            <div className={style.datasetFileName} tabIndex={0}>
-              {jobItem.request_input.dataset_name}
-            </div>
-          </div>
-        ) : (
-          <div className="d-flex align-items-center" style={{width:'225px'}}>
-            <img
-              className={style.datasetFileIconSize}
-              src={fileIcon}
-              alt="Dataset Icon"
-            />
-            <div className={style.datasetFileName} tabIndex={0}>
-              {getJobStatusTitle()}
-            </div>
-          </div>
-        )}
-       <IconButton onClick={toggleInputDescModal}>
-       <InfoIcon className="infoIconImg" />
-       </IconButton>
-      </div>
-
       <div className={style.content} tabIndex={0}>
-        {jobItem.job_type} <br />
-        <span className={style.jobIdLabel}>Job Id - {jobItem.job_id}</span>
+        {jobItem.job_type}
       </div>
-      <div className={style.content}>
+      <div className={style.content} tabIndex={1}>
+        Job Id: <span className={style.downloadLink}
+          onClick={toggleInputDescModal}
+          variant="link">{jobItem.job_id}</span>
+      </div>
+      <div className={style.content} tabIndex={2}>
+        <img src={UserIcon} alt="User icon" style={{ width: '18px', height: '18px' }} /> {jobItem.requested_by}
+      </div>
+      <div className={style.content} tabIndex={3}>
         {jobItem.message && (
           <>
             <div className={style.errorMessageContent} tabIndex={0}>
@@ -185,37 +183,25 @@ const handleClick = (e) => {
             </div>
             <div>
               {jobItem.message.length > 70 && (
-                <Button
+                <div
                   className={style.showMoreButton}
                   onClick={toggleShowMore}
                   variant="link"
                 >
                   {showMore ? "Show less" : "Show more"}
-                </Button>
+                </div>
               )}
             </div>
           </>
         )}
         {!jobItem.message && (
           <div
-            className={
-              jobItem.status.toLowerCase() !== "completed"
-                ? style.noMessageFount
-                : style.content
-            }
+            className={style.content}
             tabIndex={0}
-            role={
-              jobItem.status.toLowerCase() !== "completed" ? "button" : undefined
-            }
-            onClick={
-              jobItem.status.toLowerCase() !== "completed"
-                ? toggleModal
-                : undefined
-            }
           >
-            {jobItem.status.toLowerCase() === "completed"
-              ? "Job completed"
-              : "Job is in progress"}
+            {jobItem.status.toLowerCase() === "in-progress"
+              ? "Job is in progress"
+              : "-"}
           </div>
         )}
         {(jobItem.job_type === "Dataset-Reformat" ||
@@ -230,24 +216,35 @@ const handleClick = (e) => {
           (jobItem.download_url || jobItem.job_type === "Quality-Metric" || (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
             <div
               id={jobItem.job_id}
-              className={style.downloadLink}
+              className={style.showMoreButton}
               onClick={(e) => handleClick(e)}
               variant="link"
             >
-              <img src={DownloadIcon} alt="Download icon" /> Download Result
+              Download Result
             </div>
           )}
+        {
+          jobItem.status.toLowerCase() === 'in-progress' && (
+            <div
+              id={jobItem.job_id}
+              className={style.showMoreButton}
+              onClick={toggleModal}
+              variant="link"
+            >
+              Check Status
+            </div>
+          )
+        }
       </div>
-      <div className={style.content} tabIndex={0}>
-        <ColoredLabel
-          labelText={jobItem.status}
-          color={getColorForLabel(jobItem.status.toLowerCase())}
-        />
+      <div tabIndex={4}>
+        <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase())}}>
+          {toPascalCase(jobItem.status)}
+        </div>
         <div className={style.updatedInfo}>
-         {jobItem.status.toLowerCase() === "in-progress" ? "Started at:" : "Duration:"}  {getJobDuration(jobItem)}
+          {jobItem.status.toLowerCase() === "in-progress" ? "Started at:" : "Duration:"}  {getJobDuration(jobItem)}
         </div>
       </div>
- 
+
       <ShowJobMessageModal
         show={showMore}
         onHide={toggleShowMore}

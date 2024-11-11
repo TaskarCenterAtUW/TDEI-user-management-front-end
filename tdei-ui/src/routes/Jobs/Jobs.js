@@ -213,8 +213,9 @@ const Jobs = () => {
                         </div>
                     </div>
                     <div className={clsx(style.gridContainer, style.projectHeader)}>
-                        <div>Input</div>
-                        <div>Job Type / Job Id</div>
+                        <div>Job Type</div>
+                        <div>Job Id</div>
+                        <div>Submitted By</div>
                         <div>Message</div>
                         <div>Status</div>
                     </div>
