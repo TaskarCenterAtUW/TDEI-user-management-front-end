@@ -1,17 +1,10 @@
 import React, { useState } from "react";
 import style from "../../routes/Jobs/Jobs.module.css";
-import DatasetIcon from "../../assets/img/icon-job-dataset.svg";
-import fileIcon from "../../assets/img/icon-job-file.svg";
-import { Button } from "react-bootstrap";
-import DownloadIcon from "../../assets/img/icon-download.svg";
 import ShowJobMessageModal from "../ShowJobMessage/ShowJobMessageModal";
 import JobMsgDescModal from "../ShowJobMessage/JobMsgDescModal";
 import { toPascalCase } from "../../utils";
 import useDownloadJob from "../../hooks/jobs/useDownloadJob";
-import ColoredLabel from "../ColoredLabel/ColoredLabel";
 import ResponseToast from "../ToastMessage/ResponseToast";
-import InfoIcon from '@mui/icons-material/Info';
-import { IconButton } from "@mui/material";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
 import { DateTime, Interval } from "luxon";
 import UserIcon from './../../assets/img/user.svg';
@@ -81,17 +74,6 @@ const JobListItem = ({ jobItem }) => {
   const updatedTime = (time) => {
     const dateTime = new Date(time);
     return dateTime.toLocaleString();
-  };
-
-  const getColorForLabel = (text) => {
-    if (!text) return "green";
-    if (text.includes("completed")) {
-      return "#6BD2D6";
-    } else if (text.includes("in-progress")) {
-      return "#E2C7A2";
-    } else {
-      return "#D55962";
-    }
   };
 
   const getJobStatusTitle = () => {

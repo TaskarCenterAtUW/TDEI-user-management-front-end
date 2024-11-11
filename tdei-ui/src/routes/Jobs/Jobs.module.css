@@ -552,3 +552,8 @@
   background-color: var(--background-color, #F2F8FB) !important; 
   border: 1px solid var(--border-color, #F2F8FB) !important;
 }
+.sortableHeader {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
