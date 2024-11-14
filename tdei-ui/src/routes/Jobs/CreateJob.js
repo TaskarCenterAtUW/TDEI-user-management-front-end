@@ -432,6 +432,13 @@ const CreateJobService = () => {
         } else if (jobType.value === "dataset-tag-road") {
             uploadData.push(sourceDatasetId, targetDatasetId);
         } else if (jobType.value === "spatial-join") {
+            try {
+                JSON.parse(spatialRequestBody);
+            } catch (e) {
+                setValidateErrorMessage("Invalid JSON format in spatial request body. Please check the syntax.");
+                setShowValidateToast(true);
+                return; 
+            }
             uploadData.push(spatialRequestBody);
         } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId);
