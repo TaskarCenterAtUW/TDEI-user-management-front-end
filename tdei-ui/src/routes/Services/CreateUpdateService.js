@@ -72,11 +72,17 @@ const CreateUpdateService = () => {
         navigate(-1);
     };
     const onError = (err) => {
+        const errorMessage =
+            err?.data ??
+            err?.response?.data ??
+            err?.message ??
+            'An unknown error occurred';
+    
         setToastMessage({
             showtoast: true,
             type: 'error',
-            message: err.message ?? err.data ?? err.data.message ?? 'An unknown error occurred',
-            autoHideDuration: null 
+            message: errorMessage,
+            autoHideDuration: null,
         });
     };
     const { isLoading, mutate } = useCreateService({ onSuccess, onError });

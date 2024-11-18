@@ -349,7 +349,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     selectedData: selectedData[activeStep],
     ...(activeStep === 0
       ? { onSelectedServiceChange: handleSelectedDataChange, dataset, fromCloneDataset: true }
-      : { onSelectedFileChange: handleSelectedDataChange }),
+      : { onSelectedFileChange: handleSelectedDataChange,dataType: dataset.data_type }),
   };
 
   // Rendering the vertical stepper component

@@ -285,7 +285,7 @@ export default function EditMetadata() {
                             <Grid container>
                                 <Grid item xs={12}>
                                     <div className={style.stepsTabContainer}>
-                                        <Metadata onSelectedFileChange={handleSelectedDataChange} selectedData={selectedData} isDatasetPublished={dataset.status === 'Publish'} />
+                                        <Metadata onSelectedFileChange={handleSelectedDataChange} selectedData={selectedData} isDatasetPublished={dataset.status === 'Publish'} dataType={dataset.data_type} />
                                     </div>
                                 </Grid>
                                 <Grid item xs={12}>

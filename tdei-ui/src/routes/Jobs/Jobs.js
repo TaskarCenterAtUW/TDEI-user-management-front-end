@@ -12,10 +12,13 @@ import { debounce } from "lodash";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import JobListItem from "../../components/JobListItem/JobListItem";
-import JobSortRefreshComponent from "./JobSortRefreshComponent";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { width } from "@mui/system";
+import refreshBtn from "./../../assets/img/refreshBtn.svg";
+import { IconButton } from "@mui/material";
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const Jobs = () => {
     const { user } = useAuth();
@@ -44,7 +47,7 @@ const Jobs = () => {
         { value: 'Dataset-Validate', label: 'Dataset Validate' },
         { value: 'Edit-Metadata', label: 'Edit Metadata' },
         { value: 'Quality-Metric', label: 'Quality Metric' },
-    ];    
+    ];
 
     // Options for status
     const jobStatusOptions = [
@@ -62,7 +65,35 @@ const Jobs = () => {
     const [jobType, setJobType] = React.useState(jobTypeOptions[0]);
     const [jobStatus, setJobStatus] = React.useState(jobStatusOptions[0]);
     const [jobShow, setJobShow] = React.useState(jobShowOptions[0]);
-
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+    const sortData = (key) => {
+        const direction = sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
+    
+        const sorted = [...sortedData].sort((a, b) => {
+            const aValue = 
+                key === 'job_type' ? a.job_type :
+                key === 'job_id' ? a.job_id :
+                key === 'status' ? a.status :
+                a.requested_by;
+    
+            const bValue = 
+                key === 'job_type' ? b.job_type :
+                key === 'job_id' ? b.job_id :
+                key === 'status' ? b.status :
+                b.requested_by;
+    
+            if (typeof aValue === 'string' && typeof bValue === 'string') {
+                return direction === 'ascending' 
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            } else {
+                return direction === 'ascending' ? (aValue - bValue) : (bValue - aValue);
+            }
+        });
+    
+        setSortedData(sorted);
+        setSortConfig({ key, direction });
+    };    
     const {
         data = [],
         isError,
@@ -207,23 +238,53 @@ const Jobs = () => {
                             </div>
                         </div>
                         <div className="d-flex">
-                            <JobSortRefreshComponent handleRefresh={handleRefresh}
-                                handleDropdownSelect={handleDropdownSelect}
-                                isReleasedDataset={false} />
+                            <div className="d-flex align-items-center">
+                                <IconButton className={style.iconBtn} onClick={handleRefresh}>
+                                    <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
+                                </IconButton>
+                            </div>
                         </div>
                     </div>
                     <div className={clsx(style.gridContainer, style.projectHeader)}>
-                        <div>Input</div>
-                        <div>Job Type / Job Id</div>
+                        <div className={style.sortableHeader}>
+                            Job Type
+                            {sortConfig.key === 'job_type' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
+                            )}
+                        </div>
+                        <div className={style.sortableHeader}>
+                            Job Id
+                            {sortConfig.key === 'job_id' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
+                            )}
+                        </div>
+                        <div className={style.sortableHeader}>
+                            Submitted By
+                            {sortConfig.key === 'requested_by' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
+                            )}
+                        </div>
                         <div>Message</div>
-                        <div>Status</div>
+                        <div className={style.sortableHeader}>
+                            Status
+                            {sortConfig.key === 'status' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('status')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
+                            )}
+                        </div>
                     </div>
-
-                    {isLoading ? (  
+                    {isLoading ? (
                         <div className="d-flex justify-content-center">
                             <Spinner size="md" />
                         </div>
-                    ) : sortedData.length > 0 ? (  
+                    ) : sortedData.length > 0 ? (
                         sortedData.map((list, index) => (
                             <JobListItem jobItem={list} key={list.job_id} />
                         ))
@@ -238,7 +299,7 @@ const Jobs = () => {
                         </div>
                     )}
                     {isError ? " Error loading project group list" : null}
-                    {hasNextPage && !isLoading && (  
+                    {hasNextPage && !isLoading && (
                         <Button
                             className="tdei-primary-button"
                             onClick={() => fetchNextPage()}

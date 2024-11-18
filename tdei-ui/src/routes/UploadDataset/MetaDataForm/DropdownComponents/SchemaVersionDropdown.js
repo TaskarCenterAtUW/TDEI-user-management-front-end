@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import FormControl from '@mui/material/FormControl';
 import Select from 'react-select';
 
-const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion }) => {
-  const options = [
-    { value: 'v0.2', label: 'v0.2' },
-    { value: 'v1.0', label: 'v1.0' },
-    { value: 'v2.0', label: 'v2.0' },
-  ];
+const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion, dataType }) => {
+  const options = dataType
+  ? [
+      dataType === 'osw' && { value: 'v0.2', label: 'v0.2' },
+      dataType === 'pathways' && { value: 'v1.0', label: 'v1.0' },
+      dataType === 'flex' && { value: 'v2.0', label: 'v2.0' },
+    ].filter(Boolean)
+  : [
+      { value: 'v0.2', label: 'v0.2' },
+      { value: 'v1.0', label: 'v1.0' },
+      { value: 'v2.0', label: 'v2.0' },
+    ];
   
   const [currentValue, setCurrentValue] = useState(null);
 
