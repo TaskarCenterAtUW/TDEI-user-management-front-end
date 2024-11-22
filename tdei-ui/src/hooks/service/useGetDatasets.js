@@ -12,7 +12,7 @@ function useGetDatasets(isAdmin, searchText = "", searchDatasetId = "",status = 
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
     [GET_DATASETS, searchText,searchDatasetId, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, tdei_project_group_id, sortField, sortOrder,refreshKey],
     ({ pageParam }) =>
-      getDatasets(searchText,searchDatasetId, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, tdei_project_group_id),
+      getDatasets(searchText,searchDatasetId, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, tdei_project_group_id,sortField,sortOrder),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10

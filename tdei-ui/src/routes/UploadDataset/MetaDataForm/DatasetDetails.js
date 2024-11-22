@@ -11,7 +11,7 @@ import { ClearIcon } from "@mui/x-date-pickers";
 import { IconButton } from "@mui/material";
 
 
-const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData }) => {
+const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFormData }) => {
   const handleDateSelect = (fieldName, date) => {
     updateFormData({ [fieldName]: date });
   };
@@ -103,6 +103,7 @@ const DatasetDetails = ({isDatasetPublished = false, formData, updateFormData })
               <Form.Group controlId="schema_version" style={{ marginTop: '15px' }}>
                 <Form.Label>Schema Version<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Field 
+                  dataType={dataType}
                   schemaVersion={formData.schema_version}  
                   component={SchemaVersionDropdown} 
                   name="schema_version" 

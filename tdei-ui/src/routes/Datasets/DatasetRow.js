@@ -100,8 +100,14 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                     </Col>
                 {/* )} */}
             </Row>
-            <div className={style.datasetIdBlock}>
+            <div className={`${style.datasetIdBlock} d-flex align-items-center`}>
                 <ClipboardCopy copyText={tdei_dataset_id} copyTitle={"Id"} />
+                {dataset.derived_from_dataset_id && (
+                    <>
+                        <span className={style.separator}> | </span>
+                        <ClipboardCopy copyText={dataset.derived_from_dataset_id} copyTitle={"Derived Dataset Id"} />
+                    </>
+                )}
             </div>
         </Container>
     );
