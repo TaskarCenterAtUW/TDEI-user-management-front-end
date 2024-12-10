@@ -4,9 +4,9 @@ import Select from 'react-select';
 
 const DataSourceDropdownForm = ({ field, form, onChange, formDataDataSource }) => {
   const options = [
-    { value: 'TDEITools', label: 'TDEI Tools' },
-    { value: '3rdParty', label: 'Third Party' },
-    { value: 'InHouse', label: 'In House' },
+    { value: 'TDEITools', label: 'TDEITools' },
+    { value: '3rdParty', label: '3rdParty' },
+    { value: 'InHouse', label: 'InHouse' },
   ];
   
   const [currentValue, setCurrentValue] = useState(null);

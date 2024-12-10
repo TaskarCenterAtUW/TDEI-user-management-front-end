@@ -14,7 +14,7 @@ import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
 import NorthEastIcon from '@mui/icons-material/NorthEast';
 import useIsOswGenerator from '../../hooks/useIsOswGenerator';
 
-const DatasetsActions = ({ status, onAction, isReleasedDataset }) => {
+const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => {
   const isPocUser = useIsPoc();
   const { user } = useAuth();
   const isDataGenerator = useIsDatasetsAccessible();
@@ -29,9 +29,9 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset }) => {
           <img src={menuOptionIcon} className={style.moreActionIcon} alt="Menu Options" />
         </Dropdown.Toggle>
         <Dropdown.Menu className={style.dropdownCard}>
-          <Dropdown.Item eventKey="openInWorkspace" className={style.itemRow}>
+          {data_type !== 'flex' && <Dropdown.Item eventKey="openInWorkspace" className={style.itemRow}>
             <img src={openConsoleIcon} className={style.itemIcon} alt="" />Open in workspaces
-          </Dropdown.Item>
+          </Dropdown.Item>} 
           {!isReleasedDataset && (
             <>
               <Dropdown.Item disabled={status === "Publish"} eventKey="release" className={style.itemRow}>

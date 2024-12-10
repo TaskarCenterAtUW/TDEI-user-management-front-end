@@ -267,6 +267,24 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
           return message;
         }
       }
+    // Validate data_source
+    const validDataSources = ["3rdParty", "TDEITools", "InHouse"];
+    if (!validDataSources.includes(dataset_detail.data_source)) {
+      return `Data Source must be one of: ${validDataSources.join(", ")}`;
+    }
+
+    // Validate schema_version based on service_type
+    const serviceType = selectedData[0]?.service_type;
+    const schemaVersion = dataset_detail.schema_version;
+    const schemaVersionMapping = {
+      osw: "v0.2",
+      flex: "v2.0",
+      pathways: "v1.0",
+    };
+
+    if (schemaVersionMapping[serviceType] && schemaVersion !== schemaVersionMapping[serviceType]) {
+      return `For service type "${serviceType}", Schema Version must be "${schemaVersionMapping[serviceType]}"`;
+    }
       if (!data_provenance || !data_provenance.full_dataset_name) {
         return "Full Dataset Name in Data Provenance is required";
       }
