@@ -48,7 +48,7 @@ export async function postProjectGroupUpdate(data) {
 }
 export async function postProjectGroupDelete(data) {
   const { tdei_project_group_id, status } = data;
-  const res = await axios.delete(
+  const res = await axios.put(
     `${url}/project-group/${tdei_project_group_id}/active/${status}`
   );
   return res.data;
