@@ -67,7 +67,9 @@ const CustomModal = (props) => {
               {props.title}
             </div>
             <div className={style.customMessage}>{props.message}</div>
+            {props.content &&  
             <div className={style.content} style={{ backgroundColor: contentColor}}>{props.content}</div>
+            }
           </div>
         </Modal.Body>
         <Modal.Footer className={props.modaltype === "success" || props.modaltype === "error" ? style.footerStyle : ''}>
