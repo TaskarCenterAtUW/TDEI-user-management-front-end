@@ -42,10 +42,10 @@ const CreateProjectGroup = (props) => {
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
   };
   const onError = (err) => {
-    console.error("error message", err);
+    console.error("error message", err.response.data);
     dispatch(
       show({
-        message: `Error in ${isEdit ? "updating" : "creating"} project group. ${err.data.message}`,
+        message: `Error in ${isEdit ? "updating" : "creating"} project group. ${err.response.data}`,
         type: "danger",
       })
     );
