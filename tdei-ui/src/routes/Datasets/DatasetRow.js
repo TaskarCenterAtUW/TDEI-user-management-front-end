@@ -96,7 +96,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                 )}
                 {/* {isReleasedList ? null : ( */}
                     <Col>
-                        <DatasetsActions status={status} onAction={handleDropdownSelect} isReleasedDataset={isReleasedList}/>
+                        <DatasetsActions status={status} onAction={handleDropdownSelect} isReleasedDataset={isReleasedList} data_type={data_type}/>
                     </Col>
                 {/* )} */}
             </Row>

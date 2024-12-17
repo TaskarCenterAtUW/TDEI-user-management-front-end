@@ -4,7 +4,7 @@ export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
-const MAX_PAYLOAD_SIZE = 100 * 1024; 
+const MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; 
 
 // Calculate the byte length of the JSON string
 function calculatePayloadSize(payload) {
@@ -48,7 +48,7 @@ export async function postProjectGroupUpdate(data) {
 }
 export async function postProjectGroupDelete(data) {
   const { tdei_project_group_id, status } = data;
-  const res = await axios.delete(
+  const res = await axios.put(
     `${url}/project-group/${tdei_project_group_id}/active/${status}`
   );
   return res.data;
@@ -130,7 +130,7 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive) {
   const params = {
     searchText,
     page_no: pageParam,
@@ -139,6 +139,9 @@ export async function getServices(searchText, tdei_project_group_id, pageParam =
   };
   if (service_type !== "") {
     params.service_type = service_type;
+  }
+  if (showInactive !== null) {
+    params.show_inactive = showInactive
   }
   const res = await axios({
     url: `${url}/service`,
@@ -750,5 +753,13 @@ export async function postResetPassword(data) {
 
 export async function createInclinationJob(tdei_dataset_id) {
   const res = await axios.post(`${osmUrl}/osw/dataset-inclination/${tdei_dataset_id}`);
+  return res.data;
+}
+
+export async function updateServiceStatus(data) {
+  const { tdei_service_id, status, tdei_project_group_id } = data;
+  const res = await axios.put(
+    `${url}/service/${tdei_project_group_id}/${tdei_service_id}/active/${status}`
+  );
   return res.data;
 }
