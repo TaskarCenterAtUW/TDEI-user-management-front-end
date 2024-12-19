@@ -40,6 +40,7 @@ const ProjectGroup = () => {
   const [showCreateProjectGroup, setShowCreateProjectGroup] =
     React.useState(false);
   const [showManagePoc, setShowManagePoc] = React.useState(false);
+  const [showInactive, setShowInactive] = React.useState(false);
   const {
     data = [],
     isError,
@@ -47,7 +48,7 @@ const ProjectGroup = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetProjectGroups(debounceQuery);
+  } = useGetProjectGroups(debounceQuery,showInactive);
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);

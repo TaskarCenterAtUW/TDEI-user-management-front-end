@@ -100,13 +100,14 @@ export async function getProjectGroupList(searchText, page_no) {
   });
   return res.data;
 }
-export async function getProjectGroupLists(searchText, pageParam = 1) {
+export async function getProjectGroupLists(searchText, pageParam = 1,showInactive) {
   const res = await axios({
     url: `${url}/project-group`,
     params: {
       searchText,
       page_no: pageParam,
       page_size: 10,
+      show_inactive: showInactive
     },
     method: "GET",
   });
