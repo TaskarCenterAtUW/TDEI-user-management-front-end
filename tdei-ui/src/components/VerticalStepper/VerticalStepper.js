@@ -166,12 +166,14 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       if (isLastStep()) {
         if((selectedData[2] && selectedData[2].file instanceof File) || !(selectedData[2] && selectedData[2] instanceof File)){
           const validMetadata = selectedData[2].file ? selectedData[2].formData : selectedData[2]
+          const versionAsNumber = parseFloat(validMetadata.dataset_detail.version);
           const finalData = {
             ...selectedData,
             2: {
               ...validMetadata,
               dataset_detail: {
                 ...validMetadata.dataset_detail,
+                version: versionAsNumber,
                 custom_metadata: validMetadata.dataset_detail && validMetadata.dataset_detail.custom_metadata ? JSON.stringify(validMetadata.dataset_detail.custom_metadata, null, 2) : "",
                 dataset_area: validMetadata.dataset_detail && validMetadata.dataset_detail.dataset_area ? JSON.stringify(validMetadata.dataset_detail.dataset_area, null, 2) : ""
               }
@@ -267,6 +269,11 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
           return message;
         }
       }
+    // Validate version format: it should be x or x.y (e.g., 1, 2.3)
+    const version = dataset_detail.version;
+    if (version && !/^\d+(\.\d+)?$/.test(version)) {
+      return "Version must be in the format x or x.y (e.g., 1, 2.3)";
+    }
     // Validate data_source
     const validDataSources = ["3rdParty", "TDEITools", "InHouse"];
     if (!validDataSources.includes(dataset_detail.data_source)) {

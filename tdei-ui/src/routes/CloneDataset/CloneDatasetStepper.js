@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, version } from 'react';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
@@ -109,7 +109,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         1:{
             "dataset_detail": {
                 "name": "",
-                "version": "",
+                "version": null,
                 "collection_date": "",
                 "valid_from": "",
                 "valid_to": "",
@@ -241,12 +241,14 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       if (isLastStep()) {
         if((selectedData[1] && selectedData[1].file instanceof File) || !(selectedData[1] && selectedData[1] instanceof File)){
           const validMetadata = selectedData[1].file ? selectedData[1].formData : selectedData[1]
+          const versionAsNumber = parseFloat(validMetadata.dataset_detail.version);
           const finalData = {
             ...selectedData,
             1: {
               ...validMetadata,
               dataset_detail: {
                 ...validMetadata.dataset_detail,
+                version: versionAsNumber,
                 custom_metadata: validMetadata.dataset_detail.custom_metadata ? JSON.stringify(validMetadata.dataset_detail.custom_metadata, null, 2) : "",
                 dataset_area: validMetadata.dataset_detail.dataset_area ? JSON.stringify(validMetadata.dataset_detail.dataset_area, null, 2) : ""
               }
