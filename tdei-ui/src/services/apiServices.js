@@ -46,7 +46,7 @@ export async function postProjectGroupUpdate(data) {
   const res = await axios.put(`${url}/project-group`, data);
   return res.data;
 }
-export async function postProjectGroupDelete(data) {
+export async function updateActivateDeleteProjectGroup(data) {
   const { tdei_project_group_id, status } = data;
   const res = await axios.put(
     `${url}/project-group/${tdei_project_group_id}/active/${status}`
@@ -100,7 +100,7 @@ export async function getProjectGroupList(searchText, page_no) {
   });
   return res.data;
 }
-export async function getProjectGroupLists(searchText, pageParam = 1,showInactive) {
+export async function getProjectGroupLists(searchText, pageParam = 1,signal, showInactive) {
   const res = await axios({
     url: `${url}/project-group`,
     params: {

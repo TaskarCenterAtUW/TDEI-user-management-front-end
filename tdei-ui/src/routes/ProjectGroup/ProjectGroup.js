@@ -17,7 +17,7 @@ import style from "./ProjectGroup.module.css";
 import ManagePoc from "../../components/ManagePoc";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
-import useDeleteProjectGroup from "../../hooks/projectGroup/useDeleteProjectGroup";
+import useActivateDeleteProjectGroup from "../../hooks/projectGroup/useActivateDeleteProjectGroup";
 import { getUserName, GET_PROJECT_GROUP_LIST } from "../../utils";
 import { useQueryClient } from "react-query";
 import DeleteModal from "../../components/DeleteModal";
@@ -28,6 +28,8 @@ import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/icon-userAvatar.png";
 import ClipboardCopy from "../Services/ClipBoardCopy";
 import { DEFAULT_PROJECT_GROUP_NAME } from "../../utils";
+import Select from 'react-select';
+import CustomModal from "../../components/SuccessModal/CustomModal";
 
 const ProjectGroup = () => {
   const [, setQuery] = React.useState("");
@@ -40,6 +42,15 @@ const ProjectGroup = () => {
   const [showCreateProjectGroup, setShowCreateProjectGroup] =
     React.useState(false);
   const [showManagePoc, setShowManagePoc] = React.useState(false);
+  const [statusModalMessage, setStatusModalMessage] = React.useState("");
+  const [statusModalTitle, setStatusModalTitle] = React.useState("");
+  const [statusModalAction, setStatusModalAction] = React.useState(null);
+  const [showCustomModal, setShowCustomModal] = React.useState(false);
+  const [statusModalType, setStatusModalType] = React.useState("");
+  const inactiveOptions = [
+    { value: false, label: "Show Active" },
+    { value: true, label: "Show Inactive" },
+  ];
   const [showInactive, setShowInactive] = React.useState(false);
   const {
     data = [],
@@ -48,7 +59,7 @@ const ProjectGroup = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetProjectGroups(debounceQuery,showInactive);
+  } = useGetProjectGroups(debounceQuery, showInactive);
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -58,10 +69,15 @@ const ProjectGroup = () => {
     () => debounce(handleSearch, 300),
     []
   );
+  const handleInactiveChange = (selectedOption) => {
+    setShowInactive(selectedOption.value);
+  };
 
   const onSuccess = (data) => {
     setShowDeleteModal(false);
     setShowModal(true);
+    setDebounceQuery("");
+    setShowInactive(false);
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_LIST] });
   };
   const onError = (err) => {
@@ -72,7 +88,7 @@ const ProjectGroup = () => {
     );
   };
 
-  const { mutate, isLoading: deleteProjectGroupLoading } = useDeleteProjectGroup({
+  const { mutate, isLoading: deleteProjectGroupLoading } = useActivateDeleteProjectGroup({
     onSuccess,
     onError,
   });
@@ -94,11 +110,30 @@ const ProjectGroup = () => {
     setSelectedData(dataToEdit);
     setShowManagePoc(true);
   };
-  const handleDelete = (e) => {
+  const handleUpdateStatus = (e) => {
     const { id } = e.target;
     const dataToEdit = getData(id);
     setSelectedData(dataToEdit);
-    setShowDeleteModal(true);
+
+    setStatusModalMessage(
+      showInactive
+        ? `Are you sure you want to activate the project group "${dataToEdit.project_group_name}" ?`
+        : `Are you sure you want to deactivate the project group "${dataToEdit.project_group_name}"?`
+    );
+    setStatusModalTitle(showInactive ? "Activate Project Group" : "Deactivate Project Group");
+    setStatusModalType(showInactive ? "success" : "deactivate");
+    setStatusModalAction(() => () =>
+      mutate({
+        tdei_project_group_id: dataToEdit.tdei_project_group_id,
+        status: showInactive
+      })
+    );
+    setShowCustomModal(true);
+  };
+  // Update the DeleteModal confirmation handler
+  const confirmStatusUpdate = () => {
+    statusModalAction?.();
+    setShowCustomModal(false);
   };
 
   const confirmDelete = () => {
@@ -133,12 +168,24 @@ const ProjectGroup = () => {
             <Form.Control
               type="text"
               placeholder="Search Project Group"
+              value={debounceQuery}
               onChange={(e) => {
-                setQuery(e.target.value);
+                const value = e.target.value;
+                setDebounceQuery(value);
                 debouncedHandleSearch(e);
               }}
             />
-            {/* <div>Sort by</div> */}
+            <Select
+              className={style.inactiveSelect}
+              value={inactiveOptions.find(option => option.value === showInactive)}
+              options={inactiveOptions}
+              onChange={handleInactiveChange}
+              defaultValue={{ label: "Show Active", value: false }}
+              isSearchable={false}
+              components={{
+                IndicatorSeparator: () => null
+              }}
+            />
           </div>
           <div className={clsx(style.gridContainer, style.projectHeader)}>
             <div>Name & Address</div>
@@ -186,10 +233,10 @@ const ProjectGroup = () => {
                           </Dropdown.Item>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
-                            onClick={handleDelete}
+                            onClick={handleUpdateStatus}
                             disabled={list.project_group_name === DEFAULT_PROJECT_GROUP_NAME}
                           >
-                            Delete Project Group
+                            {showInactive ? 'Activate Project Group' : 'Deactivate Project Group'}
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
@@ -229,20 +276,20 @@ const ProjectGroup = () => {
         onHide={() => setShowManagePoc(false)}
         data={selectedData}
       />
-      <DeleteModal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        message={{
-          title: `Delete Project Group ${selectedData.project_group_name}`,
-          details: "Are you sure you want to delete project group?",
-        }}
-        handler={confirmDelete}
+      <CustomModal
+        show={showCustomModal}
+        onHide={() => setShowCustomModal(false)}
+        title={statusModalTitle}
+        message={statusModalMessage}
+        btnlabel={showInactive ? "Activate" : "Deactivate"}
+        handler={confirmStatusUpdate}
+        modaltype={statusModalType}
         isLoading={deleteProjectGroupLoading}
       />
       <SuccessModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        message={`Project group deleted successfully.`}
+        message={`Project group ${showInactive ? 'Activated' : 'Deactivated'} successfully.`}
       />
     </Layout>
   );
