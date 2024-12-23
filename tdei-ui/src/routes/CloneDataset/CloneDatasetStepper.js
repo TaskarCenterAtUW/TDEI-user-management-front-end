@@ -359,7 +359,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     const version = dataset_detail.version;
     const versionRegex = /^\d+(\.\d+)?$/;
     if (!version || !versionRegex.test(version)) {
-      return "Dataset Version must be a valid number in the format x , x.y (e.g., 1, 2.3)";
+      return "Dataset Version must be a valid number in the format x, or x.y (e.g., 1, 2.3)";
     }
     const versionNumber = parseFloat(version);
     if (isNaN(versionNumber)) {
