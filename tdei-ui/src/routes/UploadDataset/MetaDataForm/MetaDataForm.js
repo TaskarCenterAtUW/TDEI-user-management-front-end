@@ -14,7 +14,7 @@ const MetaDataForm = ({ selectedData, onUpdateFormData, dataType, isDatasetPubli
     const [formData, setFormData] = useState({
         "dataset_detail": {
             "name": "",
-            "version": "",
+            "version": null,
             "collection_date": "",
             "valid_from": "",
             "valid_to": "",
@@ -97,7 +97,7 @@ const MetaDataForm = ({ selectedData, onUpdateFormData, dataType, isDatasetPubli
             setFormData({
                 "dataset_detail": {
                     "name": "",
-                    "version": "",
+                    "version": null,
                     "collection_date": "",
                     "valid_from": "",
                     "valid_to": "",
