@@ -271,7 +271,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     const version = dataset_detail.version;
     const versionRegex = /^\d+(\.\d+)?$/;
     if (!version || !versionRegex.test(version)) {
-      return "Version must be a valid number in the format x , x.y (e.g., 1, 2.3)";
+      return "Dataset version must be a valid number in the format x , x.y (e.g., 1, 2.3)";
     }
     const versionNumber = parseFloat(version);
     if (isNaN(versionNumber)) {
