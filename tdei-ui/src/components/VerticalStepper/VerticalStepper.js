@@ -166,14 +166,12 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
       if (isLastStep()) {
         if((selectedData[2] && selectedData[2].file instanceof File) || !(selectedData[2] && selectedData[2] instanceof File)){
           const validMetadata = selectedData[2].file ? selectedData[2].formData : selectedData[2]
-          const versionAsNumber = parseFloat(validMetadata.dataset_detail.version);
           const finalData = {
             ...selectedData,
             2: {
               ...validMetadata,
               dataset_detail: {
                 ...validMetadata.dataset_detail,
-                version: versionAsNumber,
                 custom_metadata: validMetadata.dataset_detail && validMetadata.dataset_detail.custom_metadata ? JSON.stringify(validMetadata.dataset_detail.custom_metadata, null, 2) : "",
                 dataset_area: validMetadata.dataset_detail && validMetadata.dataset_detail.dataset_area ? JSON.stringify(validMetadata.dataset_detail.dataset_area, null, 2) : ""
               }
