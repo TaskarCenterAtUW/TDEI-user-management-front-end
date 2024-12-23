@@ -269,11 +269,17 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
           return message;
         }
       }
-    // Validate version format: it should be x or x.y (e.g., 1, 2.3)
+    // Validate version
     const version = dataset_detail.version;
-    if (version && !/^\d+(\.\d+)?$/.test(version)) {
-      return "Version must be in the format x or x.y (e.g., 1, 2.3)";
+    const versionRegex = /^\d+(\.\d+)?$/;
+    if (!version || !versionRegex.test(version)) {
+      return "Version must be a valid number in the format x , x.y (e.g., 1, 2.3)";
     }
+    const versionNumber = parseFloat(version);
+    if (isNaN(versionNumber)) {
+      return "Version must be a valid number";
+    }
+    dataset_detail.version = versionNumber;
     // Validate data_source
     const validDataSources = ["3rdParty", "TDEITools", "InHouse"];
     if (!validDataSources.includes(dataset_detail.data_source)) {

@@ -24,9 +24,9 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Dataset Name is required'),
     version: Yup.string().required('Dataset Version is required')
-    .matches(/^\d+(\.\d+)?$/, 'Version must be in the format x or x.y (e.g., 1, 2.3)')
+    .matches(/^\d+(\.\d+)?$/, 'Version must be a valid number in the format x , x.y (e.g., 1, 2.3)')
     .test('valid-version', 'Invalid version format', (value) => {
-      return value && /^\d+(\.\d+)?$/.test(value);
+      return value && /^\d+(\.\d{1,2})?$/.test(value);
     }),
     collected_by: Yup.string().required('Collected By is required'),
     collection_date: Yup.string().required('Collection Date is required').nullable(),
@@ -91,7 +91,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
               <Form.Group controlId="version" style={{ marginTop: '10px' }}>
                 <Form.Label>Dataset Version<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
-                  type="number"
+                  type="text"
                   placeholder="Enter Dataset Version"
                   name="version"
                   step="any"

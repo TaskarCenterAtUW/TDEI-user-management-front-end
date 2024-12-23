@@ -357,6 +357,17 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         return "Full Dataset Name in Data Provenance is required";
       }
     // }
+    // Validate version
+    const version = dataset_detail.version;
+    const versionRegex = /^\d+(\.\d+)?$/;
+    if (!version || !versionRegex.test(version)) {
+      return "Version must be a valid number in the format x , x.y (e.g., 1, 2.3)";
+    }
+    const versionNumber = parseFloat(version);
+    if (isNaN(versionNumber)) {
+      return "Version must be a valid number";
+    }
+    dataset_detail.version = versionNumber;
     return null;
   };
 
