@@ -100,9 +100,6 @@ const MyDatasets = () => {
         }
     }, [data]);
 
-    useEffect(() => {
-        console.log("Selected Project Group ID in MyDatasets:", selectedProjectGroupId);
-    }, [selectedProjectGroupId]);
 
     const handleSelectedDataType = (value) => {
         setDataType(value.value);

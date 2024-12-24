@@ -90,15 +90,15 @@ const Metadata = ({ selectedData, onSelectedFileChange, dataType, isDatasetPubli
                 : ""
             }
           };
-          onSelectedFileChange({ file: selectedFile, formData: mergedData });
+          onSelectedFileChange({ file: selectedFile, formData: mergedData,  validateVersion: true });
         } catch (error) {
           console.error("Error parsing JSON:", error);
-          onSelectedFileChange({ file: null, formData: defaultMetadata });
+          onSelectedFileChange({ file: null, formData: defaultMetadata, validateVersion: true });
         }
       };
       reader.readAsText(selectedFile);
     } else {
-      onSelectedFileChange({ file: null, formData: defaultMetadata });
+      onSelectedFileChange({ file: null, formData: defaultMetadata,  validateVersion: false });
     }
   };
 
@@ -124,7 +124,7 @@ const Metadata = ({ selectedData, onSelectedFileChange, dataType, isDatasetPubli
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>
-      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished} dataType={dataType}/>
+      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished} dataType={dataType} validateVersion={selectedData && selectedData.validateVersion}/>
     </div>
   );
 };

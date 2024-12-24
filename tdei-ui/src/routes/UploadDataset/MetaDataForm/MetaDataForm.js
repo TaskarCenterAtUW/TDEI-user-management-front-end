@@ -9,7 +9,7 @@ import DatasetSummary from "./DatasetSummary";
 import Maintenance from "./Maintenance";
 import Methodology from "./Methodology";
 
-const MetaDataForm = ({ selectedData, onUpdateFormData, dataType, isDatasetPublished = false }) => {
+const MetaDataForm = ({ selectedData, onUpdateFormData, dataType, isDatasetPublished = false, validateVersion = false }) => {
     const [key, setKey] = useState('dataset_detail');
     const [formData, setFormData] = useState({
         "dataset_detail": {
@@ -190,7 +190,7 @@ const MetaDataForm = ({ selectedData, onUpdateFormData, dataType, isDatasetPubli
                         className="mb-2"
                     >
                         <Tab eventKey="dataset_detail" title={<span className={style.boldText}> Dataset Details</span>}>
-                        <DatasetDetails dataType={dataType} isDatasetPublished={isDatasetPublished} formData={formData.dataset_detail} updateFormData={(values) => handleUpdateFormData('dataset_detail', values)} />
+                        <DatasetDetails dataType={dataType} isDatasetPublished={isDatasetPublished} formData={formData.dataset_detail} validateVersion={validateVersion} updateFormData={(values) => handleUpdateFormData('dataset_detail', values)} />
                         </Tab>
                         <Tab eventKey="data_provenance" title={<span className={style.boldText}> Data Provenance</span>}>
                         <DatasetProvenance formData={formData.data_provenance} updateFormData={(values) => handleUpdateFormData('data_provenance', values)} />

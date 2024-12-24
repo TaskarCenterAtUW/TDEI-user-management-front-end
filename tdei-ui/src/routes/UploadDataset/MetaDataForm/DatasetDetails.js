@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import { Form } from "react-bootstrap";
 import DatePicker from "../../../components/DatePicker/DatePicker";
@@ -11,7 +11,9 @@ import { ClearIcon } from "@mui/x-date-pickers";
 import { IconButton } from "@mui/material";
 
 
-const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFormData }) => {
+const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFormData, validateVersion }) => {
+
+  const formRef = useRef();
   const handleDateSelect = (fieldName, date) => {
     updateFormData({ [fieldName]: date });
   };
@@ -24,10 +26,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Dataset Name is required'),
     version: Yup.string().required('Dataset Version is required')
-    .matches(/^\d+(\.\d+)?$/, 'Dataset Version must be a valid number in the format x, or x.y (e.g., 1, 2.3)')
-    .test('valid-version', 'Invalid version format', (value) => {
-      return value && /^\d+(\.\d{1,2})?$/.test(value);
-    }),
+    .matches(/^\d+(\.\d{1,2})?$/, 'Dataset Version must be a valid number in the format x or x.y (e.g., 1, 2.3)').nullable(),
     collected_by: Yup.string().required('Collected By is required'),
     collection_date: Yup.string().required('Collection Date is required').nullable(),
     data_source: Yup.string().required('Data Source is required'),
@@ -46,14 +45,23 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
 
   var link = <a href={'https://geojson.io/'} target="_blank" rel="noreferrer">geojson.io</a>;
 
+  useEffect(() => {
+    if(validateVersion && formRef.current){
+      formRef.current.setFieldTouched('version', true);
+      formRef.current.validateField('version');
+    }
+  }, [validateVersion]);
+
   return (
     <Formik
+      innerRef={formRef}
       initialValues={formData}
       validationSchema={validationSchema}
       validateOnChange={true}
       validateOnBlur={true}
+      initialTouched={{zip: true}}
     >
-      {({ errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched }) => (
+      {({ errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, validateField }) => (
         <div className="container">
           <div className="row" style={{ marginTop: '20px' }}>
             <div className="col-md-6 column-style">
@@ -96,11 +104,16 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
                   name="version"
                   step="any"
                   value={formData.version}
-                  isInvalid={touched.version && errors.version && (formData.version === '')}
+                  isInvalid={touched.version && errors.version}
                   onBlur={handleBlur}
+                  onFocus={() => {
+                    setFieldTouched('version', true);
+                    validateField('version');
+                  }}
                   onChange={(e) => {
                     handleFieldChange(e);
                     handleChange(e);
+                    validateField('version');
                   }}
                 />
                 <Form.Control.Feedback type="invalid">{errors.version}</Form.Control.Feedback>
