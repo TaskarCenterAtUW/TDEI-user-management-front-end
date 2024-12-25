@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, version } from 'react';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
@@ -109,7 +109,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         1:{
             "dataset_detail": {
                 "name": "",
-                "version": "",
+                "version": null,
                 "collection_date": "",
                 "valid_from": "",
                 "valid_to": "",
@@ -355,6 +355,17 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         return "Full Dataset Name in Data Provenance is required";
       }
     // }
+    // Validate version
+    const version = dataset_detail.version;
+    const versionRegex = /^\d+(\.\d+)?$/;
+    if (!version || !versionRegex.test(version)) {
+      return "Dataset Version must be a valid number in the format x, or x.y (e.g., 1, 2.3)";
+    }
+    const versionNumber = parseFloat(version);
+    if (isNaN(versionNumber)) {
+      return "Version must be a valid number";
+    }
+    dataset_detail.version = versionNumber;
     return null;
   };
 
