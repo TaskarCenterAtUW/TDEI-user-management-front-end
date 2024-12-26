@@ -46,7 +46,7 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 15% 15% 25% 25% 20%;
+  grid-template-columns: 15% 10% 20% 20% 15% 15%;
   /* to be adjusted once action is added again */
   grid-column-gap: 10px;
   /* min-height: 70px; */

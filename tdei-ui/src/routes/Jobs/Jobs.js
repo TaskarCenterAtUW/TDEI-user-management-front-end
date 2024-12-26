@@ -279,6 +279,14 @@ const Jobs = () => {
                                 <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
                             )}
                         </div>
+                        <div className={style.sortableHeader}>
+                            Created On
+                            {sortConfig.key === 'created_at' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
+                            )}
+                        </div>
                     </div>
                     {isLoading ? (
                         <div className="d-flex justify-content-center">

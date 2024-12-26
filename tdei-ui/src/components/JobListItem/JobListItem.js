@@ -8,6 +8,7 @@ import ResponseToast from "../ToastMessage/ResponseToast";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
 import { DateTime, Interval } from "luxon";
 import UserIcon from './../../assets/img/user.svg';
+import { updatedTime } from "../../utils";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -226,7 +227,11 @@ const JobListItem = ({ jobItem }) => {
           {jobItem.status.toLowerCase() === "in-progress" ? "Started at:" : "Duration:"}  {getJobDuration(jobItem)}
         </div>
       </div>
-
+      <div tabIndex={4}>
+        <div className={style.updatedInfo}>
+          {updatedTime(jobItem.created_at)}
+        </div>
+      </div>
       <ShowJobMessageModal
         show={showMore}
         onHide={toggleShowMore}
