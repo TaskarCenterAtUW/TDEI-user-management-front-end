@@ -45,12 +45,35 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
 
   var link = <a href={'https://geojson.io/'} target="_blank" rel="noreferrer">geojson.io</a>;
 
+  // useEffect(() => {
+  //   if(validateVersion && formRef.current){
+  //     formRef.current.setFieldTouched('version', true);
+  //     formRef.current.validateField('version');
+  //   }
+  // }, [validateVersion,formData]);
+
   useEffect(() => {
-    if(validateVersion && formRef.current){
-      formRef.current.setFieldTouched('version', true);
-      formRef.current.validateField('version');
+    if (validateVersion && formRef.current) {
+      formRef.current.setFieldTouched("version", true);
+
+      // Check if version is null or invalid based on custom regex validation
+      const versionValue = formData.version;
+      if (versionValue === null || versionValue === "") {
+        formRef.current.setFieldValue('version', "");
+        formRef.current.setErrors({ version: "Dataset Version is required" });
+      } else if (!/^\d+(\.\d{1,2})?$/.test(versionValue)) {
+        formRef.current.setErrors({
+          version: "Dataset Version must be a valid number in the format x or x.y (e.g., 1, 2.3)"
+        });
+      } else {
+        // Clear the error if it's valid
+        formRef.current.setErrors({ version: "" });
+      }
+
+      // Trigger field validation
+      formRef.current.validateField("version");
     }
-  }, [validateVersion]);
+  }, [validateVersion, formData]);
 
   return (
     <Formik
@@ -102,7 +125,6 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
                   type="text"
                   placeholder="Enter Dataset Version"
                   name="version"
-                  step="any"
                   value={formData.version}
                   isInvalid={touched.version && errors.version}
                   onBlur={handleBlur}

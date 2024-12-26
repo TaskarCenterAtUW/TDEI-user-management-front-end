@@ -82,7 +82,7 @@ export default function EditMetadata() {
     const [selectedData, setSelectedData] = useState({
         "dataset_detail": {
             "name": "",
-            "version": null,
+            "version": "",
             "collection_date": "",
             "valid_from": "",
             "valid_to": "",

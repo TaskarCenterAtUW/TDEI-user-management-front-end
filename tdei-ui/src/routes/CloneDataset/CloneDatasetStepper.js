@@ -109,7 +109,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         1:{
             "dataset_detail": {
                 "name": "",
-                "version": null,
+                "version": "",
                 "collection_date": "",
                 "valid_from": "",
                 "valid_to": "",

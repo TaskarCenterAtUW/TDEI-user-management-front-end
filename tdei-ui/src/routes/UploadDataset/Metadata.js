@@ -7,7 +7,7 @@ import style from './MetaDataForm/MetaDataForm.module.css';
 const defaultMetadata = {
   "dataset_detail": {
     "name": "",
-    "version": null,
+    "version": "",
     "collection_date": "",
     "valid_from": "",
     "valid_to": "",
