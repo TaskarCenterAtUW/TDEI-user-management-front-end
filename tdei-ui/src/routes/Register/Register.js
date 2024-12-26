@@ -45,7 +45,7 @@ const Register = () => {
     password: yup
       .string()
       .matches(
-        /^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,\-./:;<=>?@[\\]^_`{|}~])(?!.*\s).{8,255}$/,
         "Password must be minimum of 8 characters in length, requires at least one lower case, one upper case, one special character and a number."
       ).required("Please enter password"),
     confirm: yup
