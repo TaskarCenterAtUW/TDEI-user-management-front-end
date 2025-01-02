@@ -44,8 +44,7 @@ const Register = () => {
     phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
     password: yup
       .string()
-      .matches(
-        /^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$/,
+      .matches(/^(?=.*[a-z])(?=.*\d)(?=.*[A-Z])(?=.*[!\"#$%&'()*+,\-./:;<=>?@[\]^_`{|}~])(?!.*\s).{8,255}$/,
         "Password must be minimum of 8 characters in length, requires at least one lower case, one upper case, one special character and a number."
       ).required("Please enter password"),
     confirm: yup
