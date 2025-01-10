@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, version } from 'react';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
@@ -333,10 +333,35 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
           return message;
         }
       }
+    // Validate data_source
+    const validDataSources = ["3rdParty", "TDEITools", "InHouse"];
+    if (!validDataSources.includes(dataset_detail.data_source)) {
+      return `Data Source must be one of: ${validDataSources.join(", ")}`;
+    }
+
+    // Validate schema_version based on service_type
+    const serviceType = selectedData[0].service_type;
+    const schemaVersion = dataset_detail.schema_version;
+    const schemaVersionMapping = {
+      osw: "v0.2",
+      flex: "v2.0",
+      pathways: "v1.0",
+    };
+
+    if (schemaVersionMapping[serviceType] && schemaVersion !== schemaVersionMapping[serviceType]) {
+      return `For service type "${serviceType}", Schema Version must be "${schemaVersionMapping[serviceType]}"`;
+    }
       if (!data_provenance || !data_provenance.full_dataset_name) {
         return "Full Dataset Name in Data Provenance is required";
       }
     // }
+    // Validate version
+    const version = dataset_detail.version;
+    const versionRegex = /^\d+(\.\d+)?$/;
+    if (!version || !versionRegex.test(version)) {
+      return "Dataset Version must be a valid number in the format x, or x.y (e.g., 1, 2.3)";
+    }
+    dataset_detail.version = version;
     return null;
   };
 
