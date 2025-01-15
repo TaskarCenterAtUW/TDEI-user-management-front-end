@@ -54,7 +54,8 @@ const Jobs = () => {
         { value: '', label: 'All' },
         { value: 'COMPLETED', label: 'Completed' },
         { value: 'FAILED', label: 'Failed' },
-        { value: 'IN-PROGRESS', label: 'In-Progress' }
+        { value: 'IN-PROGRESS', label: 'In-Progress' },
+        { value: 'ABANDONED', label: 'Abandoned' }
     ];
 
     const jobShowOptions = [

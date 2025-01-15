@@ -9,6 +9,7 @@ import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
 import { DateTime, Interval } from "luxon";
 import UserIcon from './../../assets/img/user.svg';
 import { updatedTime } from "../../utils";
+import { color } from "@mui/system";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -153,7 +154,7 @@ const JobListItem = ({ jobItem }) => {
           onClick={toggleInputDescModal}
           variant="link">{jobItem.job_id}</span>
       </div>
-      <div className={style.content} tabIndex={2}>
+      <div className={style.content} tabIndex={2} style={{width:'200px'}}>
         <img src={UserIcon} alt="User icon" style={{ width: '18px', height: '18px' }} /> {jobItem.requested_by}
       </div>
       <div className={style.content} tabIndex={3}>
