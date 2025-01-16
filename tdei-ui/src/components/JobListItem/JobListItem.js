@@ -9,7 +9,6 @@ import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
 import { DateTime, Interval } from "luxon";
 import UserIcon from './../../assets/img/user.svg';
 import { updatedTime } from "../../utils";
-import { color } from "@mui/system";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
