@@ -155,7 +155,14 @@ const JobListItem = ({ jobItem }) => {
           variant="link">{jobItem.job_id}</span>
       </div>
       <div className={style.content} tabIndex={2} style={{width:'200px'}}>
-        <img src={UserIcon} alt="User icon" style={{ width: '18px', height: '18px' }} /> {jobItem.requested_by}
+        <img src={UserIcon} alt="User icon" style={{ width: '18px', height: '18px', marginRight:'5px' }} /> 
+        <span
+          className={
+            (jobItem.requested_by?.length || 0) > 30
+              ? style.emailContentWrap
+              : style.emailContentNoWrap
+          }
+        >  {jobItem.requested_by}</span>
       </div>
       <div className={style.content} tabIndex={3}>
         {jobItem.message && (
