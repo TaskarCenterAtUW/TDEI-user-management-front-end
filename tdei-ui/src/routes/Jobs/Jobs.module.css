@@ -46,7 +46,7 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 15% 10% 20% 20% 15% 15%;
+  grid-template-columns: 15% 10% 25% 20% 15% 15%;
   /* to be adjusted once action is added again */
   grid-column-gap: 10px;
   /* min-height: 70px; */
@@ -67,6 +67,7 @@
 .content {
   font-size: 16px;
   color: #162848;
+  white-space: nowrap;
 }
 
 .projectGroupIcon {
@@ -562,3 +563,14 @@
   display: flex;
   align-items: center;
 }
+.emailContentWrap {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.emailContentNoWrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
