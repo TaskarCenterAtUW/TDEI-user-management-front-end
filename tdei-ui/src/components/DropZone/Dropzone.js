@@ -26,7 +26,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
         onDrop: async (acceptedFiles) => {
             const totalSizeInMB = await calculateTotalUncompressedSize(acceptedFiles);
             if (totalSizeInMB > MAX_SIZE_MB) {
-                dispatch(show({ message: "The total size of dataset zip files exceeds 1 GB upload limit", type: "danger" }));
+                dispatch(show({ message: "The total size of dataset files in zip exceeds 1 GB upload limit.", type: "danger" }));
                 return;
             }
             setMyFiles([...acceptedFiles]);
