@@ -5,11 +5,14 @@ import uploadIcon from "./../../assets/img/upload-icon.svg";
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from "@mui/material/IconButton";
+import { show } from "../../store/notification.slice";
+import { useDispatch } from "react-redux";
 
 // Functional component Dropzone
 function Dropzone({ onDrop, accept, format, selectedFile }) {
+    const dispatch = useDispatch();
     const [myFiles, setMyFiles] = useState([]);
-    // Effect hook to update files when selectedFile prop changes
+    const MAX_SIZE_MB = 1024;
     useEffect(() => {
         if (selectedFile instanceof File) {
             setMyFiles([selectedFile]);
@@ -17,10 +20,15 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
             setMyFiles([]);
         }
     }, [selectedFile]);
-    // Dropzone hook to manage file drop functionality
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept,
-        onDrop: (acceptedFiles) => {
+        onDrop: async (acceptedFiles) => {
+            const totalSizeInMB = await calculateTotalUncompressedSize(acceptedFiles);
+            if (totalSizeInMB > MAX_SIZE_MB) {
+                dispatch(show({ message: "The total size of dataset zip files exceeds 1 GB upload limit", type: "danger" }));
+                return;
+            }
             setMyFiles([...acceptedFiles]);
             onDrop(acceptedFiles);
         },
@@ -35,10 +43,30 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
     };
     // Function to convert bytes to megabytes
     const bytesToMB = (bytes) => {
-        if(format == ".json"){
-            return bytes
+        if (format === ".json") {
+            return bytes;
         }
         return (bytes / (1024 * 1024)).toFixed(2);
+    };
+
+    // Function to calculate the total uncompressed size of internal files
+    const calculateTotalUncompressedSize = async (files) => {
+        let totalSize = 0;
+        for (const file of files) {
+            const content = await readFile(file);
+            totalSize += new Blob([content]).size;
+        }
+        return totalSize / (1024 * 1024);
+    };
+
+    // Helper function to read the file content as a promise
+    const readFile = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+            reader.readAsArrayBuffer(file);
+        });
     };
 
     const files = myFiles.map((file) => (
