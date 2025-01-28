@@ -33,6 +33,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirm: "",
+    terms: false,
   };
 
   const validationSchema = yup.object().shape({
@@ -50,6 +51,10 @@ const Register = () => {
     confirm: yup
       .string()
       .oneOf([yup.ref("password"), null], "Confirm password does not match").required("Please confirm password"),
+      terms: yup
+    .boolean()
+    .oneOf([true], "You must accept the terms and conditions")
+    .required("You must accept the terms and conditions")
   });
 
   const handleCreateAccount = async ({
@@ -227,6 +232,29 @@ const Register = () => {
                             {errors.confirm}
                           </Form.Control.Feedback>
                         </InputGroup>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="terms">
+                        <Form.Check
+                          type="checkbox"
+                          label={
+                            <>
+                              I agree to the{" "}
+                              <a
+                                href="/terms.html"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                terms and conditions
+                              </a>
+                              .
+                            </>
+                          }
+                          name="terms"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          isInvalid={touched.terms && !!errors.terms}
+                          feedback={errors.terms}
+                        />
                       </Form.Group>
 
                       <Button
