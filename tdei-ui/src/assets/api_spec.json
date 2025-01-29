@@ -2,18 +2,18 @@
     "openapi": "3.0.1",
     "info": {
         "title": "TDEI Gateway Dev API",
-        "description": "This is an API for interacting with the Transportation Data Equity Initiative (TDEI) data system. It is intended for applications producing data to and consuming data from the TDEI system. It currently supports GTFS-Pathways, GTFS-Flex v2 and OpenSidewalks v0.2 data schemas.",
+        "description": "This is an API for interacting with the Transportation Data Equity Initiative (TDEI) system. It is intended for applications submitting data to and consuming data from the TDEI system. We currently support GTFS-Pathways, GTFS-Flex and OpenSidewalks (OSW) data schemas.",
         "contact": {
             "name": "TDEI",
-            "url": "https://transitequity.cs.washington.edu/",
-            "email": "tdei@uw.edu"
+            "url": "http://www.tdei.us/",
+            "email": "admin@tdei.us"
         },
         "version": "v0.1"
     },
     "servers": [
         {
-            "url": "https://tdei-api-dev.azurewebsites.net",
-            "description": "TDEI API Gateway"
+            "url": "https://api-dev.tdei.us/",
+            "description": "TDEI API Dev Gateway"
         }
     ],
     "security": [
@@ -25,19 +25,64 @@
         }
     ],
     "paths": {
+        "/api/v1/authenticate": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticates the user with the TDEI system.",
+                "description": "Authenticates the user with the TDEI system. Returns an access token, if successfully authenticated.",
+                "operationId": "authenticate",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginModel"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Authentication successful - Returns the access token for the user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Password does not satisfiy with password policy."
+                    },
+                    "401": {
+                        "description": "Authentication failed - Check username and password."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "An Internal server error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/refresh-token": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Re-issue access token",
-                "description": "Re-issues access token provided the valid refresh token",
+                "summary": "Re-issue an access token",
+                "description": "Re-issues an access token, if a valid refresh token is sent to the server",
                 "operationId": "refreshToken",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The refresh token that was sent through authentication or refresh token API"
                             }
                         }
                     },
@@ -55,51 +100,10 @@
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Invalid or expired refresh token provided."
                     },
                     "500": {
-                        "description": "An server error occurred."
-                    }
-                }
-            }
-        },
-        "/api/v1/authenticate": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Authenticates the user to the TDEI system.",
-                "description": "Authenticates the user to the TDEI system. Returns access token.",
-                "operationId": "authenticate",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LoginModel"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful response - Returns the access token for the validated user.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TokenResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "This request is unauthenticated."
-                    },
-                    "403": {
-                        "description": "Email is not verified."
-                    },
-                    "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 }
             }
@@ -107,16 +111,16 @@
         "/api/v1/datasets": {
             "get": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "List Dataset files meeting criteria.",
-                "description": "This endpoint returns a list of url to zipped geojson files with Dataset data that meet the specified criteria. Criteria that can be specified include: a dataset area (polygon), minimum confidence level and Dataset version.",
+                "summary": "Lists the TDEI datasets in the system.",
+                "description": "This API lists all TDEI datasets, allowing users to efficiently search with sorting and filtering features. Each dataset entry is uniquely identified by `tdei_dataset_id` and also provide detailed information including metadata, associated project group, service details, download URL, and status. Users can sort datasets by 'valid_to', 'valid_from', 'uploaded date', 'project group name', and 'status'. Filtering options are provided for enhanced discoverability of the datasets.By default all released datasets are visible to all user. Pre-release datasets are only visible to user affiliated with the project groups.",
                 "operationId": "listDatasetFiles",
                 "parameters": [
                     {
                         "name": "data_type",
                         "in": "query",
-                        "description": "Data type of the dataset.",
+                        "description": "Type of the dataset.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -130,7 +134,7 @@
                     {
                         "name": "status",
                         "in": "query",
-                        "description": "Request datasets according to their status. By default, when the setting is 'All', it displays all datasets. If set to 'Pre-Release' or 'Publish', it includes Pre-Release or Publish datasets for the project groups the user is a part of.",
+                        "description": "This filter allows users to request datasets based on their status. When set to 'All', the filter displays all available datasets by default. If specified as 'Pre-Release' or 'Publish', it shows only the datasets that are in the Pre-Release or Publish stages, respectively, for the project groups the user is affiliated with.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -145,7 +149,7 @@
                     {
                         "name": "name",
                         "in": "query",
-                        "description": "dataset name or title.",
+                        "description": "Dataset name or title",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -154,7 +158,7 @@
                     {
                         "name": "version",
                         "in": "query",
-                        "description": "dataset version.",
+                        "description": "Dataset version.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -163,7 +167,7 @@
                     {
                         "name": "data_source",
                         "in": "query",
-                        "description": "data source of the dataset.",
+                        "description": "Data source of the dataset.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -201,7 +205,7 @@
                     {
                         "name": "derived_from_dataset_id",
                         "in": "query",
-                        "description": "Derived from dataset id.",
+                        "description": "Dataset id from which this dataset was derived.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -227,7 +231,7 @@
                     {
                         "name": "schema_version",
                         "in": "query",
-                        "description": "version name of the data type schema version that the application requests. list of versions can be found with /api/v1/{data_type}/versions.",
+                        "description": "Version name of the data type schema version that the application requests. list of versions can be found with /api/v1/{data_type}/versions.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -236,7 +240,7 @@
                     {
                         "name": "tdei_project_group_id",
                         "in": "query",
-                        "description": "tdei-assigned project group id. Represented as a UUID.",
+                        "description": "TDEI project group id of the datasets to be retrieved.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -245,7 +249,7 @@
                     {
                         "name": "tdei_service_id",
                         "in": "query",
-                        "description": "tdei service id.",
+                        "description": "TDEI service id of the datasets to be retrieved.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -254,7 +258,7 @@
                     {
                         "name": "valid_from",
                         "in": "query",
-                        "description": "Valid from date time. date-time for which the caller is interested in obtaining files.",
+                        "description": "Valid from date time. Date-time for which datasets to be retrieved.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -263,7 +267,7 @@
                     {
                         "name": "valid_to",
                         "in": "query",
-                        "description": "date-time for which the caller is interested in obtaining files. all files that are valid at the specified date-time and meet the other criteria will be returned.",
+                        "description": "Valid to date time. Date-time for which datasets to be retrieved.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -272,7 +276,7 @@
                     {
                         "name": "tdei_dataset_id",
                         "in": "query",
-                        "description": "tdei_dataset_id, unique id represents file.",
+                        "description": "tdei_dataset_id of the dataset to be retrieved.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -384,6 +388,15 @@
                         "name": "key_limitations",
                         "in": "query",
                         "description": "Key limitations of the dataset",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "release_notes",
+                        "in": "query",
+                        "description": "Release notes",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -620,7 +633,7 @@
                     {
                         "name": "page_no",
                         "in": "query",
-                        "description": "Integer, defaults to 1.",
+                        "description": "Integer, defaults to 1. Retrieves the results in pages.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -631,7 +644,7 @@
                     {
                         "name": "page_size",
                         "in": "query",
-                        "description": "page size. integer, between 1 to 50, defaults to 10.",
+                        "description": "Page size. integer, between 1 to 50, defaults to 10.Specifies total records per page.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -673,7 +686,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful response - returns an array of [DatasetItem](#/components/schemas/DatasetItem) entities.",
+                        "description": "Successful response - returns an array of dataset entities.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -685,11 +698,14 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Bad input request."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -705,16 +721,16 @@
         "/api/v1/metadata/{tdei_dataset_id}": {
             "put": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "Edit metadata for the dataset",
-                "description": "Edit metadata for the dataset. Returns status 200 if the action is successful.",
+                "summary": "Updates the metadata of a given dataset",
+                "description": "Updates the metadata of a dataset with the metadata in the provided file. Returns status 200 if the action is successful.",
                 "operationId": "editMetadata",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei dataset id for a file, represented as a uuid",
+                        "description": "Must be a valid TDEI dataset id",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -743,19 +759,22 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Request successful."
+                        "description": "Successfully updated the metadata."
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request was invalid. The metadata file provided doesn't adhere to the metadata schema."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to update metadata."
+                    },
+                    "404": {
+                        "description": "Given TDEI dataset ID doesnt exist."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -768,16 +787,16 @@
         "/api/v1/dataset/clone/{tdei_dataset_id}/{tdei_project_group_id}/{tdei_service_id}": {
             "post": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
                 "summary": "Clones the provided dataset to the designated project group and service.",
-                "description": "Clone the dataset `tdei_dataset_id` to the designated project group `tdei_project_group_id` and service `tdei_service_id`. Returns cloned dataset id if the action is successful.",
+                "description": "Cloning of a dataset lets one to use the dataset being cloned as the base for a new dataset without having to upload the dataset. This operation clones the datafiles in the dataset `tdei_dataset_id` to the designated project group `tdei_project_group_id` and service `tdei_service_id`, and uses the metadata file provided along with the API as the metadata. Returns cloned dataset id if the action is successful. ",
                 "operationId": "cloneDataset",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei dataset id to be cloned",
+                        "description": "Valid TDEI dataset id to be cloned.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -786,7 +805,7 @@
                     {
                         "name": "tdei_project_group_id",
                         "in": "path",
-                        "description": "tdei project group id. Represented as UUID.",
+                        "description": "Valid TDEI project group id.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -795,7 +814,7 @@
                     {
                         "name": "tdei_service_id",
                         "in": "path",
-                        "description": "tdei service id associated with project group id. Represented as UUID.",
+                        "description": "Valid TDEI service id associated with the project group.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -824,11 +843,13 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Request successful.",
+                        "description": "Cloning of the dataset successful. ID of the newly cloned dataset returned.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Cloned dataset ID",
+                                    "example": "5f7b1b3b-7b7b-4b7b-8b7b-9b7b1b3b7b7b"
                                 }
                             }
                         }
@@ -837,13 +858,16 @@
                         "description": "The request was invalid."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to clone the dataset."
+                    },
+                    "404": {
+                        "description": "tdei_dataset_id, tdei_project_group_id or tdei_service_id doesn't exist in the system"
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -856,17 +880,26 @@
         "/api/v1/jobs": {
             "get": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "List job details.",
-                "description": "This endpoint returns a list of jobs with status and request details.",
+                "summary": "Shows the details of the jobs that the user has access to.",
+                "description": "Returns a list of jobs including request and reponse details. By default only shows the jobs that are submitted by the user.",
                 "operationId": "listJobs",
                 "parameters": [
                     {
                         "name": "job_id",
                         "in": "query",
-                        "description": "job_id uniquely identifies the job request.",
+                        "description": "Get the details for the job with id=job_id only.",
                         "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tdei_project_group_id",
+                        "in": "query",
+                        "description": "project group id of the user for which the jobs are listed for.",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -874,7 +907,7 @@
                     {
                         "name": "show_group_jobs",
                         "in": "query",
-                        "description": "Show all the jobs within the project group.",
+                        "description": "Make this `true` to see the jobs submitted by others also in the given project group",
                         "required": false,
                         "schema": {
                             "type": "boolean",
@@ -884,7 +917,7 @@
                     {
                         "name": "job_type",
                         "in": "query",
-                        "description": "job_type of the job.",
+                        "description": "Use this to filter for a specific type of job",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -908,30 +941,22 @@
                     {
                         "name": "status",
                         "in": "query",
-                        "description": "Status of the job.",
+                        "description": "Status of the job. Use this to filter jobs by a specific status",
                         "required": false,
                         "schema": {
                             "type": "string",
                             "enum": [
                                 "COMPLETED",
                                 "FAILED",
-                                "IN-PROGRESS"
+                                "IN-PROGRESS",
+                                "ABANDONED"
                             ]
-                        }
-                    },
-                    {
-                        "name": "tdei_project_group_id",
-                        "in": "query",
-                        "description": "project group id. Represented as a UUID.",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
                         }
                     },
                     {
                         "name": "page_no",
                         "in": "query",
-                        "description": "Integer, defaults to 1.",
+                        "description": "Pagination: page number to start the list from. Defaults to 1.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -942,7 +967,7 @@
                     {
                         "name": "page_size",
                         "in": "query",
-                        "description": "page size. integer, between 1 to 50, defaults to 10.",
+                        "description": "Total records to retrieve.Page size ranges between 1 to 50, defaults to 10.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -965,11 +990,17 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "The request is invalid."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
+                    },
+                    "404": {
+                        "description": "job_id or tdei_project_group_id doesn't exist in the system"
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -985,10 +1016,10 @@
         "/api/v1/job/download/{job_id}": {
             "get": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "Downloads the job download file",
-                "description": "Downloads the dataset generated by the job",
+                "summary": "Downloads the job output file",
+                "description": "Downloads the output file generated by the job",
                 "operationId": "job-download",
                 "parameters": [
                     {
@@ -1003,22 +1034,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Downloadable stream of the file",
+                        "description": "Successful response - Downloads the job output file",
                         "content": {
                             "application/octet-stream": {}
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
-                        "description": "download file not found"
-                    },
-                    "400": {
-                        "description": "job_id not found"
+                        "description": "Job download file not found or Requested job not found."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1034,16 +1062,16 @@
         "/api/v1/dataset/{tdei_dataset_id}": {
             "delete": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "Invalidates the Dataset",
-                "description": "Returns boolean true if the action is successful.",
+                "summary": "Deletes the Dataset",
+                "description": "Deletes the dataset from TDEI system. This operation cannot be undone.",
                 "operationId": "deleteDataset",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Valid TDEI Dataset ID ",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1052,7 +1080,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns true if action is successful.",
+                        "description": "Returns true if dataset deleted successfully.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1062,16 +1090,19 @@
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "400": {
-                        "description": "The specified tdei_dataset_id was not found or record already invalidated.",
+                        "description": "Dataset already invalidated.",
                         "content": {
                             "application/json": {}
                         }
                     },
+                    "404": {
+                        "description": "Dataset not found."
+                    },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1086,14 +1117,14 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "upload a pre-release of OSW dataset.",
-                "description": "This path allows a user to upload pre-release osw dataset. The caller must provide metadata about the file - includes information about how and when the data was collected and valid dates of the file. Returns the job_id of the uploaded file. For checking the status of the upload, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "summary": "Upload a OSW dataset.",
+                "description": "This endpoint enables users to upload an OSW dataset. The request must include the required parameters to complete the upload. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint. By default, the dataset's status will be set to 'pre-release.' The dataset can be published using the `/publish` endpoint.",
                 "operationId": "uploadOswFile",
                 "parameters": [
                     {
                         "name": "tdei_project_group_id",
                         "in": "path",
-                        "description": "tdei project group id. Represented as UUID.",
+                        "description": "Project group id to which the dataset would be uploaded",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1102,7 +1133,7 @@
                     {
                         "name": "tdei_service_id",
                         "in": "path",
-                        "description": "tdei service id associated with project group id. Represented as UUID.",
+                        "description": "TDEI service id associated with the above project group id.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1111,7 +1142,7 @@
                     {
                         "name": "derived_from_dataset_id",
                         "in": "query",
-                        "description": "Dataset id from which this dataset was derived",
+                        "description": "Dataset id from which this dataset was derived.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -1136,12 +1167,12 @@
                                     "metadata": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "OSW dataset metadata information. see [metadata schema](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/metadata.schema.json)"
+                                        "description": "Metadata information for the OSW dataset. This is a JSON file that includes details on how and when the data was collected, the file's valid dates, and other relevant information about the dataset. For more details, refer to the [metadata schema](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/metadata.schema.json)."
                                     },
                                     "changeset": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "changeset file captures changes to the sidewalk network that are captured in the OSW dataset"
+                                        "description": "The changeset file records modifications to the sidewalk network included in the OSW dataset. It supports file formats with either .zip or .osc extensions."
                                     }
                                 }
                             }
@@ -1151,7 +1182,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for uploaded file.",
+                        "description": "The upload request has been accepted for processing. It returns a `job_id`, a unique identifier for the uploaded request, which can be used to track the status of the upload. The endpoint to check the status is provided in the `location` header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1169,16 +1200,19 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request's input parameters are invalid."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to upload the dataset."
+                    },
+                    "404": {
+                        "description": "derived_from_dataset_id, tdei_project_group_id or tdei_service_id doesn't exist in the system"
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1194,13 +1228,13 @@
                     "OSW"
                 ],
                 "summary": "Publishes the OSW dataset for the tdei_dataset_id",
-                "description": "Publishes an OSW dataset that was previously uploaded via the [POST] /osw endpoint, marking it as an official release for the mobility service. This official release status ensures visibility to all TDEI data consumers. Returns the job_id of the uploaded file. For checking the status of the upload, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Publishes an OSW dataset that was previously uploaded via the [POST] /osw endpoint, marking it as an official release for the mobility service. This official release status ensures visibility to all TDEI data consumers.The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "publishOswFile",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset to be published. ",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1209,7 +1243,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for publish request.",
+                        "description": "The publish request has been accepted for processing. It returns a `job_id`, a unique identifier for the published request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1227,22 +1261,22 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request fails to match the publish criteria."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to publish the dataset."
                     },
                     "404": {
-                        "description": "A file with the specified tdei_dataset_id was not found. Use the [GET] /api/v1/osw endpoint to find valid file ids.",
+                        "description": "Dataset with the specified tdei_dataset_id was not found. Use the [GET] /api/v1/osw endpoint to find valid dataset ids.",
                         "content": {
                             "text/plain": {}
                         }
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1261,7 +1295,7 @@
                     "OSW"
                 ],
                 "summary": "Validates the osw dataset.",
-                "description": "Allows a user to validate osw dataset to check the correctness of data. Returns the job_id for validation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Allows a user to validate osw dataset to check the correctness of data. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "validateOswFile",
                 "requestBody": {
                     "content": {
@@ -1274,7 +1308,8 @@
                                 "properties": {
                                     "dataset": {
                                         "type": "string",
-                                        "format": "binary"
+                                        "format": "binary",
+                                        "description": "OSW file which is expected to be a zip file, internally has {nodes, edges, points}.geojson. If the extensions are present, then the zip file will have {nodes, edges, points}.extension.geojson files"
                                     }
                                 }
                             }
@@ -1284,7 +1319,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for validation job request.",
+                        "description": "The validate request has been accepted for processing. It returns a `job_id`, a unique identifier for the validate request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1302,16 +1337,16 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Dataset input file not found."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to validate the dataset."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1326,8 +1361,8 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "OSW reformatting on demand",
-                "description": "upload a file and request for file format conversion. Returns the job_id for convert request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "summary": "OSW dataset conversion on demand",
+                "description": "This request facilitates the conversion of an OSW dataset to OSM format, or vice versa. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "oswOnDemandFormat",
                 "requestBody": {
                     "content": {
@@ -1335,32 +1370,33 @@
                             "schema": {
                                 "required": [
                                     "file",
-                                    "source",
-                                    "target"
+                                    "source_format",
+                                    "target_format"
                                 ],
                                 "type": "object",
                                 "properties": {
-                                    "source": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "OSW dataset file which is to be converted.Supported formats are : .zip, .pbf, .osm,.xml"
+                                    },
+                                    "source_format": {
                                         "type": "string",
                                         "default": "osw",
-                                        "description": "Source format",
+                                        "description": "Source dataset format. Supported formats : osm, osw",
                                         "enum": [
                                             "osm",
                                             "osw"
                                         ]
                                     },
-                                    "target": {
+                                    "target_format": {
                                         "type": "string",
-                                        "description": "Target format",
+                                        "description": "Target dataset format. Supported formats : osm, osw",
                                         "default": "osm",
                                         "enum": [
                                             "osm",
                                             "osw"
                                         ]
-                                    },
-                                    "file": {
-                                        "type": "string",
-                                        "format": "binary"
                                     }
                                 }
                             }
@@ -1370,7 +1406,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for convert job request.",
+                        "description": "The convert request has been accepted for processing. It returns a `job_id`, a unique identifier for the convert request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1388,13 +1424,13 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "The request failed due to an invalid file type, a missing upload file, invalid source or target formats, missing source or target inputs, or identical source and target formats."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 }
             }
@@ -1404,14 +1440,14 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "Initiate Confidence calculation for a dataset",
-                "description": "Initiates the confidence calculation for requested tdei_dataset_id with optional sub-regions. Returns the job_id for confidence calculation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "summary": "Initiate confidence calculation for a dataset",
+                "description": "Initiates the confidence calculation for requested tdei_dataset_id with optional sub-regions.Sub-regions file is a GeoJSON file containing one or more polygons.If the sub-region file is given as an input, the confidence score of each polygon inside the sub-region file will be calculated.The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "oswConfidenceCalculate",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset for which confidence is to be calculated.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1427,7 +1463,7 @@
                                     "file": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "Sub regions geojson file for which confidence to be calculated"
+                                        "description": "Sub regions GeoJSON file for which confidence to be calculated"
                                     }
                                 }
                             }
@@ -1436,7 +1472,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for confidence job request.",
+                        "description": "The confidence request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1453,14 +1489,17 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Missing tdei_dataset_id or dataset type is not OSW or invalid sub-region file."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
-                        "description": "tdei_dataset_id is not found"
+                        "description": "tdei_dataset_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 }
             }
@@ -1471,13 +1510,13 @@
                     "OSW"
                 ],
                 "summary": "Initiate Intersection Quality metric calculation for a dataset",
-                "description": "Initiates the Intersection Quality calculation for requested tdei_dataset_id with optional intersection polygon file. Returns the job_id for quality metric calculation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Initiates the Intersection Quality calculation for requested `tdei_dataset_id` with optional intersection polygon file.Intersection polygon file can be a GeoJSON file containing one or more polygons.If intersection polygon file is not given the system creates vornoi polygons based on the dataset area.It is recommended to add intersection polygon file for better performance. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "oswQualityCalculate",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset for which Intersection Quality metric is to be calculated.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1493,7 +1532,7 @@
                                     "file": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "(Optional) GeoJSON intersection polygon file to be used to calculate Quality Metric"
+                                        "description": "(Optional) GeoJSON intersection polygon file to be used to calculate intersection quality metric."
                                     }
                                 }
                             }
@@ -1502,7 +1541,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for quality metric job request.",
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1519,14 +1558,17 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
-                        "description": "tdei_dataset_id is not found"
+                        "description": "tdei_dataset_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 }
             }
@@ -1537,13 +1579,13 @@
                     "OSW"
                 ],
                 "summary": "Calculates the quality metric on a dataset element tags",
-                "description": "Calculates the quality metric on a dataset element tags for requested tdei_dataset_id. Returns the tag quality metric for the dataset element tags.",
+                "description": "Calculates the quality metric on a dataset element tags for requested tdei_dataset_id. Tags are the specific attributes or characteristics relevant to the OSW data entity. For example entities like Footway, Crossing, and Sidewalk have tags such as surface, width, incline, and length, indicating attributes like the material, size, slope, and distance. Returns the tag quality metric for the dataset element tags.",
                 "operationId": "qualityMetricTag",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a dataset, represented as a uuid",
+                        "description": "Dataset ID for calculating the quality metrics of element tags.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1562,7 +1604,7 @@
                                     "file": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "OSW dataset element tag list for which quality metric to be calculated. Example file format: [tag-quality.json](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/tag-quality.json). OSW Schema tag definition [osw-tag-definition.json](https://github.com/OpenSidewalks/OpenSidewalks-Schema/blob/Audiom/opensidewalks.schema.json#L5)"
+                                        "description": "OSW dataset element tag list. Example file format: [tag-quality.json](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/tag-quality.json). OSW  tag schema definition [osw-tag-definition.json](https://github.com/OpenSidewalks/OpenSidewalks-Schema/blob/Audiom/opensidewalks.schema.json#L5)"
                                     }
                                 }
                             }
@@ -1572,7 +1614,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful response - returns the tag quality metric for the dataset element tags.",
+                        "description": "Successful response - returns the tag quality metric for the given input parameters.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1583,16 +1625,16 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Empty tag list or unknown entity type or tag."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token.."
                     },
-                    "403": {
-                        "description": "This request is unauthorized."
+                    "404": {
+                        "description": "tdei_dataset_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1611,11 +1653,11 @@
                     "OSW"
                 ],
                 "summary": "List available OSW versions",
-                "description": "Lists the versions of OSW data which are supported by TDEI.",
+                "description": "List of OSW data standard versions supported by TDEI. The response includes a link to the OSW data standard and specification.",
                 "operationId": "listOswVersions",
                 "responses": {
                     "200": {
-                        "description": "Returns list of OSW versions supported by TDEI.",
+                        "description": "List of API versions supported by TDEI.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1625,10 +1667,10 @@
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1646,14 +1688,14 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "downloads the OSW files as zip",
-                "description": "returns a specific osw file as zip containing metadata, dataset, and changeset identified by the tdei_dataset_id",
+                "summary": "Downloads the OSW dataset",
+                "description": "Downloads a specific OSW dataset as a zip file, which includes `{nodes, edges, points}.geojson` files. If file extensions are specified, the zip will contain `{nodes, edges, points}.extension.geojson` files, as well as metadata and a changeset file, if available.",
                 "operationId": "getOswFile",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset to be downloaded.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1662,7 +1704,7 @@
                     {
                         "name": "format",
                         "in": "query",
-                        "description": "File format to download. Default to osw",
+                        "description": "The system maintains two formats for the OSW dataset: OSW and OSM. By default, the OSW format is downloaded.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -1676,13 +1718,12 @@
                     {
                         "name": "file_version",
                         "in": "query",
-                        "description": "File version to download. Default to latest",
+                        "description": "The Latest version includes any recent modifications.",
                         "required": false,
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "latest",
-                                "original"
+                                "latest"
                             ],
                             "default": "latest"
                         }
@@ -1690,22 +1731,25 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the single zip file containing dataset.zip, metadata.json, changeset.zip (optional).",
+                        "description": "Streams the dataset zip file.",
                         "content": {
                             "application/octet-stream": {}
                         }
                     },
+                    "400": {
+                        "description": "File version requested is invalid/ tdei_dataset_id is not of type OSW."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
-                        "description": "A file with the specified tdei_dataset_id was not found. Use the /api/v1/osw endpoints to find valid file ids.",
+                        "description": "A file with the specified tdei_dataset_id was not found. Use the /api/v1/osw endpoints to find valid file ids or Request file format not found.",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1723,14 +1767,14 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "Given a dataset tdei_dataset_id returns the subgraph within a given bounding box.",
-                "description": "Given a dataset tdei_dataset_id returns the subgraph within a given bounding box (xmin, ymin, ymax, xmax). Returns the job_id for convert request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "summary": "Returns a subgraph dataset that falls within a specified bounding box",
+                "description": "When provided with a tdei_dataset_id, this request returns a subgraph dataset that falls within a specified bounding box defined by the coordinates (xmin, ymin, ymax, xmax). The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "datasetBbox",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "query",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset ID to which the bounding box will be applied.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1739,7 +1783,7 @@
                     {
                         "name": "file_type",
                         "in": "query",
-                        "description": "Output file type for a file",
+                        "description": "Dataset output file type.",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1752,7 +1796,7 @@
                     {
                         "name": "bbox",
                         "in": "query",
-                        "description": "A bounding box which specifies the area to be searched. A bounding box is specified by a string providing the lat/lon coordinates of the corners of the bounding box. Coordinate should be specified as west, south, east, north.",
+                        "description": "A bounding box defines the search area by specifying the latitude and longitude coordinates of its corners. These coordinates should be provided as a string in the order: west (longitude), south (latitude), east (longitude), north (latitude). This format outlines the geographical area to be searched within the defined perimeter.",
                         "required": true,
                         "schema": {
                             "maxItems": 4,
@@ -1773,7 +1817,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for the request.",
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1791,16 +1835,16 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Missing input/Dataset type is not of type OSW/Invalid bbox input."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
-                    "403": {
-                        "description": "This request is unauthorized."
+                    "404": {
+                        "description": "tdei_dataset_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1818,8 +1862,8 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "Given a target dataset, tags the sidewalks with the road network from source dataset.",
-                "description": "Given a target dataset, tags the sidewalks with the road network from source dataset which is within the buffer of 5 meters from the sidewalk.",
+                "summary": "Tags the sidewalks with the road network within proximity.",
+                "description": "This process involves associating sidewalks from a target dataset with the road network from a source dataset based on proximity. Specifically, any part of the road network that is within a 5-meter buffer zone around the sidewalks in the target dataset gets tagged accordingly. This method ensures that sidewalks are accurately mapped in relation to nearby roads, facilitating better data integration and analysis between different geographic datasets.The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "datasetTagRoad",
                 "parameters": [
                     {
@@ -1843,7 +1887,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for the request.",
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1861,16 +1905,19 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Missing input or dataset not in pre-release state."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to perform the action."
+                    },
+                    "404": {
+                        "description": "source_dataset_id/target_dataset_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -1885,8 +1932,8 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "Performs the spatial join operation on the OSW dataset.",
-                "description": "Executes a spatial join operation on the OSW dataset. Based on the provided spatial join input parameters, the system runs the query and generates a downloadable dataset. Returns the job_id for the spatial join request. The geometry column for data elements is specified as `geometry_target` and `geometry_source`. To check the status, refer to the Location header in the response, which includes the URL for the status API endpoint.",
+                "summary": "Performs a spatial join operation between two datasets within the TDEI system.",
+                "description": "Performs a spatial join operation between two datasets within the TDEI system. It involves two datasets, target and source, specifying the spatial dimension entities of each to be joined, such as edges, nodes, zones, points, lines, or polygons. The join operation is guided by specified conditions that define how the geometries of the two datasets interact, typically involving spatial functions like intersections. Additionally, filters can be applied to both datasets to refine the data involved in the join. Aggregate functions are also defined to associate the attributes from source to target dataset entity.The geometry column for data elements is specified as `geometry_target` and `geometry_source`.Eg: Find all light poles in source dataset within 5 m of an edge in target dataset, and associate the attribute highway from source dataset with each edge in target dataset. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "osw-spatial-join",
                 "requestBody": {
                     "content": {
@@ -1901,6 +1948,7 @@
                                     },
                                     "target_dimension": {
                                         "type": "string",
+                                        "description": "Valid opensidewalks core entity on which the join operation is to be performed",
                                         "enum": [
                                             "edge",
                                             "node",
@@ -1914,13 +1962,15 @@
                                     },
                                     "source_dimension": {
                                         "type": "string",
+                                        "description": "Valid opensidewalks core entity on which the join operation is to be performed",
                                         "enum": [
                                             "edge",
                                             "node",
                                             "zone",
                                             "point",
                                             "line",
-                                            "polygon"
+                                            "polygon",
+                                            "extension"
                                         ],
                                         "default": "point"
                                     },
@@ -1931,17 +1981,17 @@
                                     },
                                     "join_filter_target": {
                                         "type": "string",
-                                        "description": "Target attribute filters",
+                                        "description": "Target attribute filters. These can be any valid attributes defined in the OpenSidewalks schema for the entity.",
                                         "default": "highway='footway' AND footway='sidewalk'"
                                     },
                                     "join_filter_source": {
                                         "type": "string",
-                                        "description": "Source attribute filters",
+                                        "description": "Source attribute filters, These can be any valid attributes defined in the OpenSidewalks schema for the entity",
                                         "default": "highway='street_lamp'"
                                     },
                                     "aggregate": {
                                         "type": "array",
-                                        "description": "Agrregate function for attribute.all attribute_name/alias will be prefixed with 'ext:'",
+                                        "description": "Agrregate function for attribute. Attribute information to be pulled along from source and attach to target dataset entity. All attribute_name/alias will be prefixed with 'ext:'",
                                         "items": {
                                             "type": "string"
                                         },
@@ -1969,7 +2019,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for validation job request.",
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -1987,16 +2037,19 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Missing input or target dataset or source dataset type is not OSW."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to perform the action."
+                    },
+                    "404": {
+                        "description": "source_dataset_id or target_dataset_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2015,13 +2068,13 @@
                     "OSW"
                 ],
                 "summary": "Adds the incline tag to the dataset",
-                "description": "Adds the \"incline\" tag to a specified dataset identified by the tdei_dataset_id. It takes the dataset ID as a parameter, processes the dataset to calculate the incline information, and updates the dataset with the incline tag. Returns the job_id for the incline calculation request.",
+                "description": "Adds the **incline** tag to a specified dataset identified by the tdei_dataset_id. It takes the dataset ID as a parameter, processes the dataset to calculate the incline information, and updates the dataset with the incline tag.The original data of the dataset will be modified in this request.If the original data already has incline tag, it will be replaced. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "datasetTagIncline",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a dataset, represented as a uuid",
+                        "description": "Dataset ID for calculating the dataset inclination.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2030,7 +2083,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for the request.",
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2047,14 +2100,11 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "The request was invalid."
-                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
-                    "403": {
-                        "description": "This request is unauthorized."
+                    "404": {
+                        "description": "tdei_dataset_id doesn't exist in the system."
                     },
                     "500": {
                         "description": "An server error occurred."
@@ -2072,8 +2122,8 @@
                 "tags": [
                     "OSW"
                 ],
-                "summary": "Performs union of the two input OSW dataset.",
-                "description": "Performs union of the two input OSW dataset. Returns the job_id for the union request. To check the status, refer to the Location header in the response, which includes the URL for the status API endpoint.",
+                "summary": "Performs a union of the two input OSW datasets.",
+                "description": "This function merges spatial data from two datasets by unifying overlapping nodes, edges, and polygons into consolidated geometries. It identifies equivalent nodes based on proximity, aligns and merges overlapping edges, and combines adjacent polygons. The function outputs a single cohesive dataset.The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "osw-union",
                 "requestBody": {
                     "content": {
@@ -2090,6 +2140,11 @@
                                         "type": "string",
                                         "example": "0d661b69495d47fb838862edf699fe09",
                                         "description": "Dataset id defined to be unioned"
+                                    },
+                                    "proximity": {
+                                        "type": "number",
+                                        "example": "0.5",
+                                        "description": "Proximity value to identify equivalent nodes in meters. Default value is 0.5 meters."
                                     }
                                 },
                                 "required": [
@@ -2103,7 +2158,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for union job request.",
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2124,13 +2179,13 @@
                         "description": "The request body is empty."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
                         "description": "Dataset not found for either tdei_dataset_id_one or tdei_dataset_id_two."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured."
                     }
                 },
                 "security": [
@@ -2148,14 +2203,14 @@
                 "tags": [
                     "GTFS Flex"
                 ],
-                "summary": "upload a pre-release of GTFS Flex dataset.",
-                "description": "This path allows a user to upload pre-release GTFS Flex dataset. The caller must provide metadata about the file - includes information about how and when the data was collected and valid dates of the file. Returns the job_id of the uploaded file. For checking the status of the upload, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "summary": "Upload a GTFS Flex dataset.",
+                "description": "This endpoint enables users to upload a GTFS-Flex dataset. The request must include the required parameters to complete the upload. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint. By default, the dataset's status will be set to 'pre-release.' The dataset can be published using the /publish endpoint.",
                 "operationId": "uploadGtfsFlexFile",
                 "parameters": [
                     {
                         "name": "tdei_project_group_id",
                         "in": "path",
-                        "description": "tdei project group id. Represented as UUID.",
+                        "description": "Project group id to which the dataset would be uploaded",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2164,7 +2219,7 @@
                     {
                         "name": "tdei_service_id",
                         "in": "path",
-                        "description": "tdei service id associated with project group id. Represented as UUID.",
+                        "description": "TDEI service id associated with the above project group id.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2173,7 +2228,7 @@
                     {
                         "name": "derived_from_dataset_id",
                         "in": "query",
-                        "description": "Dataset id from which this dataset was derived",
+                        "description": "Dataset id from which this dataset was derived.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -2193,17 +2248,17 @@
                                     "dataset": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "GTFS Flex file which is expected to be a zip file, internally has {nodes, edges, points}.geojson. If the extensions are present, then the zip file will have {nodes, edges, points}.extension.geojson files"
+                                        "description": "GTFS Flex file which is expected to be a zip file. It typically includes .txt files that define details such as service areas and stops for flexible transit routes."
                                     },
                                     "metadata": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "GTFS Flex dataset metadata information. see [metadata schema](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/metadata.schema.json)"
+                                        "description": "Metadata information for the GTFS-Flex dataset. This is a JSON file that includes details on how and when the data was collected, the file's valid dates, and other relevant information about the dataset. For more details, refer to the [metadata schema](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/metadata.schema.json)."
                                     },
                                     "changeset": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "changeset file captures changes to the sidewalk network that are captured in the GTFS Flex dataset"
+                                        "description": "The changeset file records modifications to the sidewalk network included in the GTFS-Flex dataset. It supports file formats with either .zip or .osc extensions."
                                     }
                                 }
                             }
@@ -2213,7 +2268,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for uploaded file.",
+                        "description": "The upload request has been accepted for processing. It returns a `job_id`, a unique identifier for the uploaded request, which can be used to track the status of the upload. The endpoint to check the status is provided in the `location` header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2231,16 +2286,19 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request's input parameters are invalid."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to upload the dataset."
+                    },
+                    "404": {
+                        "description": "derived_from_dataset_id, tdei_project_group_id or tdei_service_id doesn't exist in the system"
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2256,13 +2314,13 @@
                     "GTFS Flex"
                 ],
                 "summary": "Publishes the GTFS Flex dataset for the tdei_dataset_id",
-                "description": "Publishes an GTFS Flex dataset that was previously uploaded via the [POST] /gtfs-flex endpoint, marking it as an official release for the mobility service. This official release status ensures visibility to all TDEI data consumers. Returns the job_id of the uploaded file. For checking the status of the upload, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Publishes a GTFS Flex dataset that was previously uploaded via the [POST] /gtfs-flex endpoint, marking it as an official release for the mobility service. This official release status ensures visibility to all TDEI data consumers. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "publishGtfsFlexFile",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset to be published",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2271,7 +2329,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for publish request.",
+                        "description": "The publish request has been accepted for processing. It returns a `job_id`, a unique identifier for the published request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2289,22 +2347,22 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request fails to match the publish criteria."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to publish the dataset."
                     },
                     "404": {
-                        "description": "A file with the specified tdei_dataset_id was not found. Use the [GET] /api/v1/gtfs-flex endpoint to find valid file ids.",
+                        "description": "Dataset with the specified tdei_dataset_id was not found. Use the [GET] /api/v1/gtfs-flex endpoint to find valid dataset ids.",
                         "content": {
                             "text/plain": {}
                         }
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2323,7 +2381,7 @@
                     "GTFS Flex"
                 ],
                 "summary": "Validates the GTFS Flex dataset.",
-                "description": "Allows a user to validate GTFS Flex dataset to check the correctness of data. Returns the job_id for validation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Allows a user to validate GTFS Flex dataset to check the correctness of data. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "validateGtfsFlexFile",
                 "requestBody": {
                     "content": {
@@ -2336,7 +2394,8 @@
                                 "properties": {
                                     "dataset": {
                                         "type": "string",
-                                        "format": "binary"
+                                        "format": "binary",
+                                        "description": "GTFS Flex file which is expected to be a zip file. It typically includes .txt files that define details such as service areas and stops for flexible transit routes."
                                     }
                                 }
                             }
@@ -2346,7 +2405,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for validation job request.",
+                        "description": "The validate request has been accepted for processing. It returns a `job_id`, a unique identifier for the validate request, which can be used to track the status of the validate request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2364,16 +2423,16 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Dataset input file not found."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to validate the dataset."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2388,14 +2447,14 @@
                 "tags": [
                     "GTFS Flex"
                 ],
-                "summary": "downloads the GTFS Flex files as zip",
-                "description": "returns a specific GTFS Flex file as zip containing metadata, dataset, and changeset identified by the tdei_dataset_id",
+                "summary": "Downloads the GTFS Flex dataset",
+                "description": "Downloads a specific GTFS Flex dataset as zip containing .txt files that define details such as service areas and stops for flexible transit routes.",
                 "operationId": "getGtfsFlexFile",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset to be downloaded.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2404,13 +2463,16 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the single zip file containing dataset.zip, metadata.json, changeset.zip (optional).",
+                        "description": "Streams the dataset zip file.",
                         "content": {
                             "application/octet-stream": {}
                         }
                     },
+                    "400": {
+                        "description": "tdei_dataset_id is not of type GTFS-Flex."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
                         "description": "A file with the specified tdei_dataset_id was not found. Use the /api/v1/gtfs-flex endpoints to find valid file ids.",
@@ -2419,7 +2481,7 @@
                         }
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2438,7 +2500,7 @@
                     "GTFS Flex"
                 ],
                 "summary": "List available GTFS Flex versions",
-                "description": "Lists the versions of GTFS Flex data which are supported by TDEI.",
+                "description": "List of GTFS Flex data standard versions supported by TDEI. The response includes a link to the GTFS Flex data standard and specification.",
                 "operationId": "listGtfsFlexVersions",
                 "responses": {
                     "200": {
@@ -2452,10 +2514,10 @@
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2474,13 +2536,13 @@
                     "GTFS Pathways"
                 ],
                 "summary": "upload a pre-release of GTFS Pathways dataset.",
-                "description": "This path allows a user to upload pre-release GTFS Pathways dataset. The caller must provide metadata about the file - includes information about how and when the data was collected and valid dates of the file. Returns the job_id of the uploaded file. For checking the status of the upload, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "This endpoint enables users to upload a GTFS-Pathways dataset. The request must include the required parameters to complete the upload. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint. By default, the dataset's status will be set to 'pre-release.' The dataset can be published using the /publish endpoint.",
                 "operationId": "uploadGtfsPathwaysFile",
                 "parameters": [
                     {
                         "name": "tdei_project_group_id",
                         "in": "path",
-                        "description": "tdei project group id. Represented as UUID.",
+                        "description": "Project group id to which the dataset would be uploaded",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2489,7 +2551,7 @@
                     {
                         "name": "tdei_service_id",
                         "in": "path",
-                        "description": "tdei service id associated with project group id. Represented as UUID.",
+                        "description": "TDEI service id associated with the above project group id.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2498,7 +2560,7 @@
                     {
                         "name": "derived_from_dataset_id",
                         "in": "query",
-                        "description": "Dataset id from which this dataset was derived",
+                        "description": "Dataset id from which this dataset was derived.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -2518,17 +2580,17 @@
                                     "dataset": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "GTFS Pathways file which is expected to be a zip file, internally has {nodes, edges, points}.geojson. If the extensions are present, then the zip file will have {nodes, edges, points}.extension.geojson files"
+                                        "description": "GTFS Pathways file which is expected to be a zip file, internally has .txt files that represent transit details."
                                     },
                                     "metadata": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "GTFS Pathways dataset metadata information. see [metadata schema](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/metadata.schema.json)"
+                                        "description": "Metadata information for the GTFS-Pathways dataset. This is a JSON file that includes details on how and when the data was collected, the file's valid dates, and other relevant information about the dataset. For more details, refer to the [metadata schema](https://raw.githubusercontent.com/TaskarCenterAtUW/TDEI-osw-datasvc-ts/dev/schema/metadata.schema.json)."
                                     },
                                     "changeset": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "changeset file captures changes to the sidewalk network that are captured in the GTFS Pathways dataset"
+                                        "description": "The changeset file records modifications to the sidewalk network included in the GTFS-Pathways dataset. It supports file formats with either .zip or .osc extensions."
                                     }
                                 }
                             }
@@ -2538,7 +2600,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for uploaded file.",
+                        "description": "The upload request has been accepted for processing. It returns a `job_id`, a unique identifier for the uploaded request, which can be used to track the status of the upload. The endpoint to check the status is provided in the `location` header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2556,16 +2618,19 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request's input parameters are invalid."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to upload the dataset."
+                    },
+                    "404": {
+                        "description": "derived_from_dataset_id, tdei_project_group_id or tdei_service_id doesn't exist in the system"
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2581,13 +2646,13 @@
                     "GTFS Pathways"
                 ],
                 "summary": "Publishes the GTFS Pathways dataset for the tdei_dataset_id",
-                "description": "Publishes an GTFS Pathways dataset that was previously uploaded via the [POST] /gtfs-pathways endpoint, marking it as an official release for the mobility service. This official release status ensures visibility to all TDEI data consumers. Returns the job_id of the uploaded file. For checking the status of the upload, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Publishes an GTFS Pathways dataset that was previously uploaded via the [POST] /gtfs-pathways endpoint, marking it as an official release for the mobility service. This official release status ensures visibility to all TDEI data consumers. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "publishGtfsPathwaysFile",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset to be published.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2596,7 +2661,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for publish request.",
+                        "description": "The publish request has been accepted for processing. It returns a `job_id`, a unique identifier for the published request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2614,22 +2679,22 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "The request fails to match the publish criteria."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to publish the dataset."
                     },
                     "404": {
-                        "description": "A file with the specified tdei_dataset_id was not found. Use the [GET] /api/v1/gtfs-pathways endpoint to find valid file ids.",
+                        "description": "Dataset with the specified tdei_dataset_id was not found. Use the [GET] /api/v1/gtfs-pathways endpoint to find valid dataset ids.",
                         "content": {
                             "text/plain": {}
                         }
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2648,7 +2713,7 @@
                     "GTFS Pathways"
                 ],
                 "summary": "Validates the GTFS Pathways dataset.",
-                "description": "Allows a user to validate GTFS Pathways dataset to check the correctness of data. Returns the job_id for validation request. For checking the status, refer to the Location header in the response, which contains the URL for the status API endpoint.",
+                "description": "Allows a user to validate GTFS Pathways dataset to check the correctness of data. The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
                 "operationId": "validateGtfsPathwaysFile",
                 "requestBody": {
                     "content": {
@@ -2661,7 +2726,8 @@
                                 "properties": {
                                     "dataset": {
                                         "type": "string",
-                                        "format": "binary"
+                                        "format": "binary",
+                                        "description": "GTFS Pathways file which is expected to be a zip file, internally has .txt files that represent transit details."
                                     }
                                 }
                             }
@@ -2671,7 +2737,7 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "The request has been accepted for processing. returns the job_id, unique identifier for validation job request.",
+                        "description": "The validate request has been accepted for processing. It returns a `job_id`, a unique identifier for the validate request, which can be used to track the status of the validate request. The endpoint to check the status is provided in the location header of the response.",
                         "content": {
                             "application/text": {
                                 "schema": {
@@ -2689,16 +2755,16 @@
                         }
                     },
                     "400": {
-                        "description": "The request was invalid."
+                        "description": "Dataset input file not found."
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "403": {
-                        "description": "This request is unauthorized."
+                        "description": "User unauthorized to validate the dataset."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2713,14 +2779,14 @@
                 "tags": [
                     "GTFS Pathways"
                 ],
-                "summary": "downloads the GTFS Pathways files as zip",
-                "description": "returns a specific GTFS Pathways file as zip containing metadata, dataset, and changeset identified by the tdei_dataset_id",
+                "summary": "Downloads the GTFS Pathways dataset",
+                "description": "Download a specific GTFS Pathways dataset as zip containing .txt files that represent transit details.",
                 "operationId": "getGtfsPathwaysFile",
                 "parameters": [
                     {
                         "name": "tdei_dataset_id",
                         "in": "path",
-                        "description": "tdei_dataset_id for a file, represented as a uuid",
+                        "description": "Dataset id of the dataset to be downloaded.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -2729,13 +2795,16 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the single zip file containing dataset.zip, metadata.json, changeset.zip (optional).",
+                        "description": "Streams the dataset zip file.",
                         "content": {
                             "application/octet-stream": {}
                         }
                     },
+                    "400": {
+                        "description": "tdei_dataset_id is not of type GTFS Pathways."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
                         "description": "A file with the specified tdei_dataset_id was not found. Use the /api/v1/gtfs-pathways endpoints to find valid file ids.",
@@ -2744,7 +2813,7 @@
                         }
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2763,7 +2832,7 @@
                     "GTFS Pathways"
                 ],
                 "summary": "List available GTFS Pathways versions",
-                "description": "Lists the versions of GTFS Pathways data which are supported by TDEI.",
+                "description": "List of GTFS Pathways data standard versions supported by TDEI. The response includes a link to the GTFS Pathways data standard and specification.",
                 "operationId": "listGtfsPathwaysVersions",
                 "responses": {
                     "200": {
@@ -2777,10 +2846,10 @@
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2796,16 +2865,16 @@
         "/api/v1/services": {
             "get": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "List Services",
-                "description": "Path used to retrieve the list of Services in the TDEI system. Allows callers to get the tdei_service_id id for a service.  Returns the tdei_service_id and service name for all services in the TDEI system.   If tdei_project_group_id param is used, will return services for that project group.",
+                "summary": "Lists the TDEI services",
+                "description": "Retrieves the list of services in the TDEI system. By default lists all the services in the TDEI system",
                 "operationId": "listServices",
                 "parameters": [
                     {
                         "name": "tdei_service_id",
                         "in": "query",
-                        "description": "Search by service Id.",
+                        "description": "Get the details for the service with id=job_id only.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -2823,7 +2892,7 @@
                     {
                         "name": "tdei_project_group_id",
                         "in": "query",
-                        "description": "A tdei-assigned id for an project group. project_group_ids can be retrieved using the path /api/v1/project-group.",
+                        "description": "Gets the services belonging to a specific project group.`tdei_project_group_id` can be retrieved using the api `api/v1/project-groups`",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -2832,7 +2901,7 @@
                     {
                         "name": "service_type",
                         "in": "query",
-                        "description": "Service type",
+                        "description": "Type of the service. Default list displays services with all types",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -2848,7 +2917,7 @@
                     {
                         "name": "page_no",
                         "in": "query",
-                        "description": "Integer, defaults to 1.",
+                        "description": "Pagination: page number to start the list from.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -2859,7 +2928,7 @@
                     {
                         "name": "page_size",
                         "in": "query",
-                        "description": "page size. integer, between 1 to 50, defaults to 10.",
+                        "description": "Total records to retrieve.Page size ranges between 1 to 50, defaults to 10.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -2870,7 +2939,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns an array of `Service` entities. ",
+                        "description": "Successful response - Returns the list of services. ",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2882,11 +2951,17 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Service type invalid."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
+                    },
+                    "404": {
+                        "description": "tdei_service_id or tdei_project_group_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2902,16 +2977,16 @@
         "/api/v1/project-groups": {
             "get": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
                 "summary": "List project groups",
-                "description": "Path used to retrieve the list of project groups with data in the TDEI system. Allows callers to get the tdei_project_group_id id for an project group.\n\nReturns the tdei_project_group_id and project group information for all project groups with data in the TDEI system.",
+                "description": "Retrieves the list of project groups in the TDEI system. By default lists all the prohect groups in the TDEI system.",
                 "operationId": "listProjectGroups",
                 "parameters": [
                     {
                         "name": "tdei_project_group_id",
                         "in": "query",
-                        "description": "Search by project group Id.",
+                        "description": "Get the details of the project group with id=tdei_project_group_id only.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -2929,7 +3004,7 @@
                     {
                         "name": "page_no",
                         "in": "query",
-                        "description": "Integer, defaults to 1.",
+                        "description": "Pagination: page number to start the list from.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -2940,7 +3015,7 @@
                     {
                         "name": "page_size",
                         "in": "query",
-                        "description": "page size. integer, between 1 to 50, defaults to 10.",
+                        "description": "Total records to retrieve.Page size ranges between 1 to 50, defaults to 10.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -2951,7 +3026,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful response - returns an array of `Agency` entities.",
+                        "description": "Successful response - returns the list of Project Groups.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2964,10 +3039,13 @@
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
+                    },
+                    "404": {
+                        "description": "tdei_project_group_id doesn't exist in the system."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -2983,27 +3061,27 @@
         "/api/v1/api": {
             "get": {
                 "tags": [
-                    "General"
+                    "Common APIs"
                 ],
-                "summary": "List available API versions",
-                "description": "Returns a json list of the versions of the TDEI API which are available.",
+                "summary": "List TDEI supported API versions",
+                "description": "Returns a list of supported versions of the TDEI API.",
                 "operationId": "listApiVersions",
                 "responses": {
                     "200": {
-                        "description": "Returns a list of versions",
+                        "description": "Returns a list of supported api versions.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VersionList"
+                                    "$ref": "#/components/schemas/APIVersionList"
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 },
                 "security": [
@@ -3022,7 +3100,7 @@
                     "Metrics"
                 ],
                 "summary": "Gets the system metrics",
-                "description": "Gets the system metrics",
+                "description": "Retrieves metrics related to the system and datasets within the TDEI platform. This endpoint provides an overview of usage statistics including the total number of users, services, and project groups, as well as a breakdown of services by type. Additionally, it gives details on dataset uploads, such as the total number of uploads and their cumulative size in megabytes.",
                 "operationId": "system-metrics",
                 "responses": {
                     "200": {
@@ -3061,7 +3139,7 @@
                     "Metrics"
                 ],
                 "summary": "Gets the data metrics",
-                "description": "Gets the data metrics",
+                "description": "This endpoint provides detailed metrics about datasets categorized by type within the TDEI platform. It includes the total number of datasets and their cumulative size in megabytes for each type, such as osw, flex, and pathways. For the osw type, additional aggregated statistics like the number of crossings, length of sidewalks in kilometers, number of edges and nodes, and the area covered by the concave hull in square kilometers are also provided.",
                 "operationId": "data-metrics",
                 "responses": {
                     "200": {
@@ -3100,7 +3178,7 @@
                     "Authentication"
                 ],
                 "summary": "Request for password recovery",
-                "description": "Request for password recovery, sends an email with a link to reset the password for given email.",
+                "description": "This request initiates a password recovery process for the specified email address. Upon submission, the system sends an email containing a link that the user can follow to reset their password. This allows users to securely update their password if they have forgotten it or wish to change it for security reasons.",
                 "operationId": "recoverPassword",
                 "requestBody": {
                     "content": {
@@ -3116,14 +3194,17 @@
                     "200": {
                         "description": "Request for password recovery was successful. An email with a link to reset the password has been sent."
                     },
+                    "400": {
+                        "description": "Request failed due to an invalid or missing email address."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
                         "description": "User not found."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured"
                     }
                 }
             }
@@ -3134,7 +3215,7 @@
                     "Authentication"
                 ],
                 "summary": "Request for email verification link",
-                "description": "Request for email verification link, sends an email verification link for given email",
+                "description": "This request sends an email verification link to the specified email address. The email verification link is initially sent following successful registration. If the user does not receive the initial verification email, they can request to have the verification link resent.",
                 "operationId": "verifyEmail",
                 "requestBody": {
                     "content": {
@@ -3150,14 +3231,17 @@
                     "200": {
                         "description": "Request for email verification was successful. An email verification link has been sent."
                     },
+                    "400": {
+                        "description": "Request failed due to an invalid or missing email address."
+                    },
                     "401": {
-                        "description": "This request is unauthenticated."
+                        "description": "Unauthenticated request. Check your access token."
                     },
                     "404": {
                         "description": "User not found."
                     },
                     "500": {
-                        "description": "An server error occurred."
+                        "description": "An Internal server error occured."
                     }
                 }
             }
@@ -3173,15 +3257,23 @@
                     },
                     "expires_in": {
                         "type": "integer",
-                        "format": "int64"
-                    },
-                    "refresh_expires_in": {
-                        "type": "integer",
-                        "format": "int64"
+                        "format": "int64",
+                        "description": "value is in seconds"
                     },
                     "refresh_token": {
                         "type": "string"
+                    },
+                    "refresh_expires_in": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "value is in seconds"
                     }
+                },
+                "example": {
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                    "expires_in": 1740,
+                    "refresh_expires_in": 1800,
+                    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
                 }
             },
             "Feature": {
@@ -3248,7 +3340,8 @@
                 "type": "object",
                 "properties": {
                     "username": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "email that was used during registration"
                     },
                     "password": {
                         "type": "string"
@@ -3393,6 +3486,10 @@
                             "key_limitations": {
                                 "type": "string",
                                 "description": "Key limitations of the dataset"
+                            },
+                            "release_notes": {
+                                "type": "string",
+                                "description": "Release notes"
                             },
                             "challenges": {
                                 "type": "string",
@@ -3616,18 +3713,54 @@
                 "properties": {
                     "version": {
                         "type": "string",
-                        "description": "version string"
+                        "description": "Version of data standard"
                     },
                     "documentation": {
                         "type": "string",
-                        "description": "link to the documentation"
+                        "description": "Link to the data standard documentation."
                     },
                     "specification": {
                         "type": "string",
-                        "description": "link to the specification for the data standard"
+                        "description": "Link to the data specification."
                     }
                 },
-                "description": "Specification for a data standards (GTFS-Flex, GTFS-Pathways, OSW) versions or TDEI API.",
+                "description": "Response model for data standard versions",
+                "example": {
+                    "version": "v1.0",
+                    "documentation": "link to v1.0 documentation",
+                    "specification": "link to the v1.0 specification"
+                }
+            },
+            "APIVersionList": {
+                "type": "object",
+                "properties": {
+                    "versions": {
+                        "type": "array",
+                        "description": "List of API versions supported by TDEI.",
+                        "items": {
+                            "$ref": "#/components/schemas/APIVersionSpec"
+                        }
+                    }
+                },
+                "description": "List of API versions."
+            },
+            "APIVersionSpec": {
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the API"
+                    },
+                    "documentation": {
+                        "type": "string",
+                        "description": "Link to the API documentation."
+                    },
+                    "specification": {
+                        "type": "string",
+                        "description": "Link to the API specification."
+                    }
+                },
+                "description": "Response model for API versions",
                 "example": {
                     "version": "v1.0",
                     "documentation": "link to v1.0 documentation",
@@ -3642,19 +3775,17 @@
                 "type": "object",
                 "properties": {
                     "polygon": {
-                        "type": "object",
-                        "description": "geo-json polygon."
+                        "$ref": "#/components/schemas/GeoJsonObject"
                     },
                     "tdei_project_group_id": {
                         "type": "string",
-                        "description": "tdei-assigned project group id. Necessary to ensure that project group ids are unique. Represented as a UUID."
+                        "description": "Unique id that represents the project group."
                     },
                     "project_group_name": {
                         "type": "string",
-                        "description": "project_group_name name. For transit agencies, typically the agency name used in GTFS releases."
+                        "description": "Name of the project group."
                     }
-                },
-                "description": "Includes gtfs project group information and a tdei project group id."
+                }
             },
             "ServiceModel": {
                 "required": [
@@ -3669,17 +3800,17 @@
                     },
                     "service_name": {
                         "type": "string",
-                        "description": "name of the gtfs-flex service.",
+                        "description": "Name of the service",
                         "example": "Hyde Shuttle"
                     },
                     "tdei_service_id": {
                         "type": "string",
-                        "description": "tdei assigned service id. Necessary to ensure that service ids are unique.",
+                        "description": "Unique id that represents the service",
                         "example": "5e991e7a-5c16-4ebf-ad31-3a3625bcca10"
                     },
                     "service_type": {
                         "type": "string",
-                        "description": "Service type",
+                        "description": "Type of the service",
                         "default": "flex",
                         "enum": [
                             "flex",
@@ -3703,7 +3834,7 @@
                     },
                     "message": {
                         "type": "string",
-                        "description": "message of the job request"
+                        "description": "Response message from the job process. In case of an error, shows the error messages here."
                     },
                     "status": {
                         "type": "string",
@@ -3711,7 +3842,8 @@
                         "enum": [
                             "COMPLETED",
                             "FAILED",
-                            "IN-PROGRESS"
+                            "IN-PROGRESS",
+                            "ABANDONED"
                         ]
                     },
                     "job_type": {
@@ -3735,26 +3867,26 @@
                     },
                     "tdei_project_group_id": {
                         "type": "string",
-                        "description": "tdei project group id of the requested user",
+                        "description": "tdei project group id under which the job was requested",
                         "example": "4e991e7a-5c16-4ebf-ad31-3a3625bcca10"
                     },
                     "tdei_project_group_name": {
                         "type": "string",
-                        "description": "tdei project group name of the requested user",
+                        "description": "tdei project group nunder which the job was requested",
                         "example": "King County Metro"
                     },
                     "requested_by": {
                         "type": "string",
-                        "description": "requested by username of the job request",
+                        "description": "User who requested this job",
                         "example": "John.Doe@transit.com"
                     },
                     "request_input": {
                         "type": "object",
-                        "description": "request input of the job request"
+                        "description": "Inputs that were provided whlie requesting this job"
                     },
                     "response_props": {
                         "type": "object",
-                        "description": "response properties of the job request"
+                        "description": "Dynamic response object type that depends on the job_type"
                     },
                     "created_at": {
                         "type": "string",
@@ -3772,7 +3904,7 @@
                     },
                     "current_stage": {
                         "type": "string",
-                        "description": "current stage of the job request"
+                        "description": "current processing stage of the job request"
                     },
                     "progress": {
                         "$ref": "#/components/schemas/JobProgress"
@@ -3789,7 +3921,7 @@
                     },
                     "current_stage": {
                         "type": "string",
-                        "description": "description of the current stage of the job"
+                        "description": "description of the current processing stage of the job"
                     },
                     "completed_stages": {
                         "type": "integer",
@@ -3810,7 +3942,7 @@
                     },
                     "last_updated_at": {
                         "type": "string",
-                        "description": "date-time that job was last updated",
+                        "description": "date-time when the job was last updated",
                         "example": "2024-06-17T06:32:35.842Z"
                     }
                 }
