@@ -54,7 +54,8 @@ const Jobs = () => {
         { value: '', label: 'All' },
         { value: 'COMPLETED', label: 'Completed' },
         { value: 'FAILED', label: 'Failed' },
-        { value: 'IN-PROGRESS', label: 'In-Progress' }
+        { value: 'IN-PROGRESS', label: 'In-Progress' },
+        { value: 'ABANDONED', label: 'Abandoned' }
     ];
 
     const jobShowOptions = [
@@ -277,6 +278,14 @@ const Jobs = () => {
                                 <ArrowDropUpIcon onClick={() => sortData('status')} className={style.sortIcon} />
                             ) : (
                                 <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
+                            )}
+                        </div>
+                        <div className={style.sortableHeader}>
+                            Created On
+                            {sortConfig.key === 'created_at' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
                             )}
                         </div>
                     </div>

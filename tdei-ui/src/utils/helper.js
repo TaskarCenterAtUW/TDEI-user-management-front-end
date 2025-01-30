@@ -58,3 +58,22 @@ export const formatPhoneNumber = (phoneNumber) => {
   }
   return phoneNumber;
 };
+export const updatedTime = (time) => {
+  const dateTime = new Date(time);
+  
+  const optionsDate = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+  };
+  const optionsTime = {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+  };
+  const formattedDate = dateTime.toLocaleDateString('en-US', optionsDate);
+  const formattedTime = dateTime.toLocaleTimeString('en-US', optionsTime);
+  
+  return `${formattedDate}, ${formattedTime}`;
+};
