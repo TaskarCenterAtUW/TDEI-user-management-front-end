@@ -354,6 +354,7 @@ export async function postCreateJob(data) {
           const unionRequestBody = {
             tdei_dataset_id_one: data[2],
             tdei_dataset_id_two: data[3],
+            proximity: data[4],
           };
           url = baseUrl;
           headers = {
