@@ -62,7 +62,7 @@ const CloneDataset = () => {
         setCurrentStep(0);
         console.error("error message", err);
         setToast(true);
-        setErrorMessage(err.data ?? err.message ?? err)
+        setErrorMessage(err.response ? err.response.data :  err.data ?? err.message ?? err)
     };
 
     // Using useUploadDataset hook to get mutate function
