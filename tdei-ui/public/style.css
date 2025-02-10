@@ -2,15 +2,10 @@
 
 :root {
     --primary-font-family: "Open Sans", sans-serif;
-    --secondary-font-family: "Montserrat", sans-serif;
     --primary-color: #873EF2;
     --primary-color-dark: #7a32e4;
     --secondary-color: #83879b;
-    --tdei-blue: #586AB5;
-    --tdei-green: #479FA1;
     --purple-background-light: #fbf8ff;
-    --purple-background-dark: #e7e2f3;
-    --purple-background-medium: #f5f0ff;
     --white: #ffffff;
 }
 

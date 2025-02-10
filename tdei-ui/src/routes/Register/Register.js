@@ -244,9 +244,8 @@ const Register = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                terms and conditions
+                                Terms and Conditions
                               </a>
-                              .
                             </>
                           }
                           name="terms"
