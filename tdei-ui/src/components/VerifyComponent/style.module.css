@@ -1,5 +1,5 @@
   .registerContainer {
-      background-image: url(./../../assets/img/bg_login.png);
+      background-image: url(./../../../public/assets/img/bg_login.png);
       background-repeat: no-repeat;
       background-size: cover;
       min-height: calc(100vh - 60px);
