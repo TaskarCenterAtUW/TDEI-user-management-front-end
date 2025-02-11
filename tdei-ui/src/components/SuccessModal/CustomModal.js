@@ -83,16 +83,17 @@ const CustomModal = (props) => {
               No, Cancel
             </Button>
           ) : null}
-          <Button
-            onClick={props.handler}
-            disabled={props.isLoading}
-            variant="outline-secondary"
-            className={`tdei-${props.modaltype === "release" || props.modaltype === "deactivate" || props.modaltype === "inclination" ? 'primary' : 'rounded'}-button ${props.modaltype === "error" ? 'maroon-bg' : ''}`}
-          >
-            {props.btnlabel}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Button
+          style={{ width: '100px' }}
+          onClick={props.handler}
+          disabled={props.isLoading}
+          variant="outline-secondary"
+          className={`tdei-${props.modaltype === "release" || props.modaltype === "deactivate" || props.modaltype === "inclination" ? 'primary' : 'rounded'}-button ${props.modaltype === "error" ? 'maroon-bg' : ''}`}
+        >
+          {props.btnlabel}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
