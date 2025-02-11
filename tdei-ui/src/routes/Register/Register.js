@@ -265,13 +265,7 @@ const Register = () => {
                         className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
                         type="submit"
-                        disabled={
-                          !values.firstName ||
-                          !values.email ||
-                          !values.password ||
-                          !values.confirm ||
-                          loading
-                        }
+                        disabled={loading}
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
@@ -298,7 +292,6 @@ const Register = () => {
       <CustomModal
         show={showTermsModal}
         onHide={handleCloseTermsModal}
-        title="Terms and Conditions Required"
         message="Please accept Terms and Conditions to create your account."
         btnlabel="OK"
         modaltype="error"

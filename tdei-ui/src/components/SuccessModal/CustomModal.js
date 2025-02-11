@@ -7,6 +7,7 @@ import datasetReleaseIcon from "../../assets/img/dataset-publish-confirmation.sv
 import datasetDeleteIcon from "../../assets/img/dataset-delete-confirmation.svg";
 import { AuthContext } from "../../context";
 import NorthEastIcon from '@mui/icons-material/NorthEast';
+import { minWidth } from "@mui/system";
 
 // CustomModal component displays a modal with success or error message
 const CustomModal = (props) => {
@@ -21,7 +22,7 @@ const CustomModal = (props) => {
       contentColor = '';
       break;
     case "error":
-      iconComponent = <ErrorIcon style={{ fontSize: '35px', color: '#c84349' }} />;
+      iconComponent = <ErrorIcon style={{ fontSize: '42px', color: '#c84349' }} />;
       titleColor = "#c84349";
       contentColor = '#FFD2D4';
       break;
@@ -45,6 +46,7 @@ const CustomModal = (props) => {
       titleColor = '#000';
       contentColor = '';
   }
+  const buttonStyle = props.modaltype === "error" ? { minWidth: "70px" } : {};
   return (
       <Modal
         {...props}
@@ -84,11 +86,14 @@ const CustomModal = (props) => {
             </Button>
           ) : null}
         <Button
-          style={{ width: '100px' }}
+          style={buttonStyle}
           onClick={props.handler}
           disabled={props.isLoading}
           variant="outline-secondary"
-          className={`tdei-${props.modaltype === "release" || props.modaltype === "deactivate" || props.modaltype === "inclination" ? 'primary' : 'rounded'}-button ${props.modaltype === "error" ? 'maroon-bg' : ''}`}
+          className={`tdei-${["release", "deactivate", "inclination"].includes(props.modaltype)
+              ? "primary"
+              : "rounded"
+            }-button ${props.modaltype === "error" ? "maroon-bg" : ""}`}
         >
           {props.btnlabel}
         </Button>
