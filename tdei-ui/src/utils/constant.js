@@ -64,6 +64,11 @@ export const POC_SIDE_NAV = [
     linkName: "Jobs",
     to: "/jobs",
     icon: jobsIcon
+  },
+  {
+    linkName: "Switch Project Group",
+    to: "/projectGroupSwitch",
+    icon: projectGroupIcon,
   }
 ];
 

@@ -1,51 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Dropdown } from "react-bootstrap";
-import { useDispatch } from "react-redux";
-import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getSelectedProjectGroup } from "../../selectors";
 import { set } from "../../store";
 import style from "./ProjectGroupSwitcher.module.css";
+import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 
 const ProjectGroupSwitcher = () => {
-  const { data } = useGetProjectGroupRoles();
   const dispatch = useDispatch();
-  const [selected, setSelected] = React.useState(null);
-  React.useEffect(() => {
-    if (data?.length) {
-      setSelected(data?.[0]);
+  const navigate = useNavigate();
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const {  data = [] } = useGetProjectGroupRoles();
+
+  useEffect(() => {
+    const isEmptyObject = (obj) => Object.keys(obj).length === 0;
+    if ((selectedProjectGroup === null || isEmptyObject(selectedProjectGroup)) && data?.pages?.[0]?.data?.length > 0) {
+      const firstProjectGroup = data.pages[0].data[0];
+      if (firstProjectGroup) {
+        console.log("Setting first project group:", firstProjectGroup);
+        dispatch(set(firstProjectGroup));
+      }
     }
-  }, [data]);
-
-  const handleProjectGroupSelection = (index) => {
-    setSelected(data?.[index]);
-    dispatch(set(data?.[index]));
-  };
-
+  }, [data, dispatch, selectedProjectGroup]);
+  
   return (
-    <>
-      {data?.length ? (
-        <div style={{ marginRight: "1rem" }}>
-          <div className={style.projectGroupLabel}>Project Group</div>
-          <Dropdown className={style.customDropdown} align="end">
-            <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-              <div className={style.selectedProjectGroupName}>{selected?.project_group_name}</div>
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Header>Switch Project Group</Dropdown.Header>
-              {data?.map((val, index) => (
-               
-                <Dropdown.Item
-                  key={val.tdei_project_group_id}
-                  onClick={() => handleProjectGroupSelection(index)}
-                  active={val.tdei_project_group_id === selected?.tdei_project_group_id}
-                >
-                  {val.project_group_name}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-      ) : null}
-    </>
+    <div style={{ marginRight: "1rem" }}>
+      <div className={style.projectGroupLabel}>Project Group</div>
+      <Dropdown className={style.customDropdown} align="end">
+        <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
+          <div className={style.selectedProjectGroupName}>
+            {selectedProjectGroup.name || "Select Project Group"}
+          </div>
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          <Dropdown.Header>{selectedProjectGroup.name || "Switch Project Group"}</Dropdown.Header>
+          <Dropdown.Item onClick={() => navigate("/projectGroupSwitch")}>
+            Switch Project
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </div>
   );
 };
 

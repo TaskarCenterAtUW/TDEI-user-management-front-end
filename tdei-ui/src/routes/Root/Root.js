@@ -14,10 +14,15 @@ const Root = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const flag = useSelector(getSideMenuFlag);
   React.useEffect(() => {
-    if (projectGroupData?.length) {
-      dispatch(set(projectGroupData[0]));
+    const isEmptyObject = (obj) => Object.keys(obj).length === 0;
+    if ((selectedProjectGroup === null || isEmptyObject(selectedProjectGroup)) && projectGroupData?.pages?.[0]?.data?.length > 0) {
+      const firstProjectGroup = projectGroupData.pages[0].data[0];
+      if (firstProjectGroup) {
+        console.log("Setting first project group:", firstProjectGroup);
+        dispatch(set(firstProjectGroup));
+      }
     }
-  }, [projectGroupData, dispatch]);
+  }, [projectGroupData, dispatch, selectedProjectGroup]);
   const roles = selectedProjectGroup?.roles;
   return (
     <Container fluid className="p-0">
