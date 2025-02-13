@@ -83,11 +83,23 @@ export async function getApiKey({ queryKey }) {
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
   return res.data;
 }
-export async function getProjectGroupRoles({ queryKey }) {
-  const [, userId] = queryKey;
-  const res = await axios.get(`${url}/project-group-roles/${userId}`);
-  return res.data;
+export async function getProjectGroupRoles(userId, pageParam = 1, queryText = "") {
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+  if (queryText.trim()) {
+    params.searchText = queryText;
+  }
+
+  const res = await axios.get(`${url}/project-group-roles/${userId}`, { params });
+
+  return {
+    data: res.data,
+    pageParam,
+  };
 }
+
 export async function getProjectGroupList(searchText, page_no) {
   const res = await axios({
     url: `${url}/project-group`,

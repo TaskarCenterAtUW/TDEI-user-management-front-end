@@ -46,6 +46,11 @@ export const POC_SIDE_NAV = [
     icon: dashboardIcon,
   },
   {
+    linkName: "Project Groups",
+    to: "/projectGroupSwitch",
+    icon: projectGroupIcon,
+  },
+  {
     linkName: "Services",
     to: "/services",
     icon: servicesIcon,

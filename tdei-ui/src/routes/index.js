@@ -22,6 +22,7 @@ import CloneDataset from "./CloneDataset/CloneDataset";
 import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import PasswordResetConfirm from "../components/VerifyComponent/PasswordResetConfirm";
 import EmailVerification from "../components/VerifyComponent/EmailVerification";
+import ProjectGroupSwitch from "../components/ProjectGroupSwitcher/ProjectGroupSwitch";
 
 const Router = () => {
   const { user } = useAuth();
@@ -44,6 +45,7 @@ const Router = () => {
             <Route path="/jobs" element={<Jobs/>}/>
             <Route path="/stations" element={<Stations />} />
             <Route path="/datasets" element={<Datasets/>} />
+            <Route path="/projectGroupSwitch" element={<ProjectGroupSwitch/>} />
             {!user?.isAdmin && <Route path="/members" element={<Members />} />}
             <Route path="*" element={<NotFound />} />
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
