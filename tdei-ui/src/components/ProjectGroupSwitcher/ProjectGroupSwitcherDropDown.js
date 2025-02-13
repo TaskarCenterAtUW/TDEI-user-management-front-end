@@ -7,7 +7,7 @@ import { set } from "../../store";
 import style from "./ProjectGroupSwitcher.module.css";
 import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 
-const ProjectGroupSwitcher = () => {
+const ProjectGroupSwitcherDropDown = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -36,7 +36,7 @@ const ProjectGroupSwitcher = () => {
         <Dropdown.Menu>
           <Dropdown.Header>{selectedProjectGroup.name || "Switch Project Group"}</Dropdown.Header>
           <Dropdown.Item onClick={() => navigate("/projectGroupSwitch")}>
-            Switch Project
+            Switch Project Group
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -62,4 +62,4 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
   </button>
 ));
 
-export default ProjectGroupSwitcher;
+export default ProjectGroupSwitcherDropDown;

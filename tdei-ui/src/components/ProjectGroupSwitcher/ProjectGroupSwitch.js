@@ -59,7 +59,7 @@ const ProjectGroupSwitch = () => {
     return (
         <div className={style.layout}>
             <div className={style.title}>
-                <div className="page-header-title">Switch Project Group</div>
+                <div className="page-header-title">Project Groups</div>
             </div>
             <div className="page-header-subtitle" style={{ paddingTop: '10px', paddingBottom: '20px' }}>
                 {"Current project is "}
