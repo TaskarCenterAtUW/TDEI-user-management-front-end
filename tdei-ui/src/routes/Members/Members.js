@@ -23,6 +23,8 @@ import SuccessModal from "../../components/SuccessModal";
 import DeleteModal from "../../components/DeleteModal";
 import { Tooltip, OverlayTrigger } from "react-bootstrap";
 import { formatPhoneNumber } from "../../utils";
+import useDownloadUsers from "../../hooks/useDownloadActiveUsers";
+import DownloadIcon from '@mui/icons-material/Download';
 
 
 const Members = () => {
@@ -63,6 +65,13 @@ const Members = () => {
       onSuccess: onRevokeSuccess,
     });
 
+  const { mutate: downloadUsers, isLoading: isDownloadingUsers } = useDownloadUsers();
+
+  const handleDownloadUsers = () => {
+    downloadUsers();
+  };
+
+
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
   };
@@ -94,7 +103,7 @@ const Members = () => {
       roles: [],
     });
   };
-  // setShowDeleteModal(true);
+  const isAdmin = user.isAdmin;
   return (
     <Layout>
       <div className={style.header}>
@@ -109,29 +118,48 @@ const Members = () => {
           </div>
         </div>
         <div>
-          <Button onClick={handleAssignUser} className="tdei-primary-button">
-            Assign New User
-          </Button>
+          {!user.isAdmin && (
+            <div>
+              <Button onClick={handleAssignUser} className="tdei-primary-button">
+                Assign New User
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <Container>
         <>
           <div className={style.searchPanel}>
-            <Form.Control
-              type="text"
-              placeholder="Search User"
-              onChange={(e) => {
-                setQuery(e.target.value);
-                debouncedHandleSearch(e);
-              }}
-            />
-            {/* <div>Sort by</div> */}
+            <div className={style.searchWrapper}>
+              <Form.Control
+                type="text"
+                placeholder="Search User"
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  debouncedHandleSearch(e);
+                }}
+              />
+              {user.isAdmin &&
+                (
+                  <Button
+                    className={style.downloadButton}
+                    onClick={handleDownloadUsers}
+                    disabled={isDownloadingUsers}
+                  >
+                    {isDownloadingUsers ? <Spinner size="sm" /> : <><DownloadIcon /> Download Active Users</>}
+                  </Button>
+                )}
+            </div>
           </div>
-          <div className={clsx(style.gridContainer, style.userHeader)}>
+          <div className={clsx(
+            style.gridContainer,
+            isAdmin ? style.adminGrid : style.userGrid,
+            style.userHeader
+          )}>
             <div>Name & Email Id</div>
             <div>Contact Number</div>
-            <div>Roles</div>
-            <div>Action</div>
+            {!user.isAdmin && <div>Roles</div>}
+            {!user.isAdmin && <div>Action</div>}
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
@@ -146,7 +174,10 @@ const Members = () => {
                 </div>
               ) : null}
               {values?.data?.map((list) => (
-                <div className={style.gridContainer} key={list.user_id}>
+                <div className={clsx(
+                  style.gridContainer,
+                  isAdmin ? style.adminGrid : style.userGrid
+                )} key={list.user_id}>
                   <div className={style.details}>
                     <div className={style.icon}>
                       <img src={userIcon} alt="sitemap-solid" />
@@ -160,9 +191,11 @@ const Members = () => {
                   </div>
                   <div className={style.content}>{formatPhoneNumber(list.phone)}</div>
                   <div className={style.roles}>
-                    <DisplayRolesList list={list} />
+                    {!user.isAdmin && (
+                      <DisplayRolesList list={list} />
+                    )}
                   </div>
-                  {user.userId !== list.user_id && (<div className={style.actionItem}>
+                  {user.userId !== list.user_id && !user.isAdmin && (<div className={style.actionItem}>
                     <Dropdown align="end">
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       <Dropdown.Menu align="end">

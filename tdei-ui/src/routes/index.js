@@ -46,7 +46,7 @@ const Router = () => {
             <Route path="/stations" element={<Stations />} />
             <Route path="/datasets" element={<Datasets/>} />
             <Route path="/projectGroupSwitch" element={<ProjectGroupSwitch/>} />
-            {!user?.isAdmin && <Route path="/members" element={<Members />} />}
+            <Route path="/members" element={<Members />} />
             <Route path="*" element={<NotFound />} />
             <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
             <Route path="/CreateUpdateStation" element={<CreateUpdateStation />}/>
