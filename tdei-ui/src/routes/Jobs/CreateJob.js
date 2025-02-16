@@ -88,7 +88,8 @@ const formConfig = {
     ],
     "dataset-union": [
         { label: "First Dataset Id", type: "text", stateSetter: "setDatasetIdOne" },
-        { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" }
+        { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" },
+        { label: "Proximity", type: "text", stateSetter: "setProximity" }
     ],
 };
 
@@ -127,6 +128,7 @@ const CreateJobService = () => {
     const [showModal, setShowModal] = useState(false);
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
+    const [proximity, setProximity] = useState("");
 
     // Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
     const handleAlgorithmUpdate = (updatedConfig) => {
@@ -308,10 +310,12 @@ const CreateJobService = () => {
     };
     const getUnionDescription = (label) => {
         const path = getPathFromJobType("dataset-union");
-        if (label === "First Dataset Id ") {
+        if (label === "First Dataset Id") {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_one?.description || "";
-        } else {
+        } else if (label === "Second Dataset Id"){
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_two?.description || "";
+        }else {
+            return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.proximity?.description || "";
         }
     };
 
@@ -440,10 +444,18 @@ const CreateJobService = () => {
                 return; 
             }
             uploadData.push(spatialRequestBody);
-        } else if (jobType.value === "dataset-union") {
-            uploadData.push(firstDatasetId, secondDatasetId);
+        } if (jobType.value === "dataset-union") {
+            if (proximity) {
+                const proximityFloat = parseFloat(proximity);
+                if (!isNaN(proximityFloat)) {
+                    uploadData.push(firstDatasetId, secondDatasetId, proximityFloat);
+                } else {
+                    uploadData.push(firstDatasetId, secondDatasetId);
+                }
+            } else {
+                uploadData.push(firstDatasetId, secondDatasetId);
+            }
         }
-
         setLoading(true); 
         mutate(uploadData);
     };
@@ -495,6 +507,9 @@ const CreateJobService = () => {
                 case "setDatasetIdTwo":
                     setSecondDatasetId(value);
                     break;
+                case "setProximity":
+                    setProximity(value);
+                    break;
                 default:
                     break;
             }
@@ -507,13 +522,17 @@ const CreateJobService = () => {
                 setSourceDatasetId: sourceDatasetId,
                 setTargetDatasetId: targetDatasetId,
                 setDatasetIdOne: firstDatasetId,
-                setDatasetIdTwo: secondDatasetId
+                setDatasetIdTwo: secondDatasetId,
+                setProximity:proximity
             };
 
             return (
                 <Form.Group key={index} controlId={field.label} className={style.formItem}>
                     <Form.Label>
-                        {field.label}<span style={{ color: 'red' }}> *</span>
+                        {field.label}
+                        {!(jobType?.value === "dataset-union" && field.label === "Proximity") && (
+                    <span style={{ color: 'red' }}> *</span>
+                )}
                     </Form.Label>
                     <Form.Control
                         placeholder={`Enter ${field.label}`}
