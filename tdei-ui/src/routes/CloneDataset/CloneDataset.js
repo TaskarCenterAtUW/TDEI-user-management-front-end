@@ -13,13 +13,18 @@ import style from "../../routes/UploadDataset/UploadDataset.module.css";
 import { useAuth } from '../../hooks/useAuth';
 import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
 import CloneDatasetStepper from './CloneDatasetStepper';
-// import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import cloneFileImage from "../../assets/img/clone-file-img.svg";
 import useCloneDataset from '../../hooks/datasets/useCloneDataset';
+import ProjectGroupSelection from '../UploadDataset/ProjectGroupSelection';
 
 
 // Array of steps data for the vertical stepper
 const stepsData = [
+    {
+        title: 'Project Groups',
+        subtitle: 'Select the project group',
+        component: ProjectGroupSelection,
+    },
     {
         title: 'Service',
         subtitle: 'Select the service',
@@ -54,12 +59,12 @@ const CloneDataset = () => {
 
     const handleClose = () => {
         setToast(false);
-        setCurrentStep(1); // reverting to metadata step.
+        setCurrentStep(2); // reverting to metadata step.
     };
     const onError = (err) => {
         setLoading(false);
         // resetting current step
-        setCurrentStep(0);
+        // setCurrentStep(2);
         console.error("error message", err);
         setToast(true);
         setErrorMessage(err.response ? err.response.data :  err.data ?? err.message ?? err)
