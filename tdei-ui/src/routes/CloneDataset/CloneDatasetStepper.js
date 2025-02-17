@@ -101,12 +101,12 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     if (dataset && dataset.service && dataset.service.tdei_service_id) {
       setSelectedData(prevData => ({
         ...prevData,
-        0: {
-          tdei_project_group_id: "",
+        1: {
+          tdei_project_group_id: selectedData[0]?.tdei_project_group_id ?? "",
           tdei_service_id: "",
           service_type: dataset.data_type
         },
-        1:{
+        2:{
             "dataset_detail": {
                 "name": "",
                 "version": "",
@@ -171,7 +171,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         }
       }));
     }
-  }, [dataset]);
+  }, [dataset,selectedData[0]]);
 
   useEffect(() => {
     if (currentStep === 0) {
@@ -220,14 +220,18 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
+        isValid = validateProjectGroupSelection();
+        if (!isValid) errorMessage = "Please select a project group!";
+        break;
+      case 1:
         isValid = validateServiceUpload();
         if (!isValid) errorMessage = "Please select a service!";
         break;
-      case 1:
+      case 2:
         errorMessage = validateMetadata();
         isValid = errorMessage === null;
         break;
-      case 2:
+      case 3:
         isValid = validateChangeset();
         break;
       default:
@@ -239,11 +243,11 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        if((selectedData[1] && selectedData[1].file instanceof File) || !(selectedData[1] && selectedData[1] instanceof File)){
-          const validMetadata = selectedData[1].file ? selectedData[1].formData : selectedData[1]
+        if((selectedData[2] && selectedData[2].file instanceof File) || !(selectedData[2] && selectedData[2] instanceof File)){
+          const validMetadata = selectedData[2].file ? selectedData[2].formData : selectedData[2]
           const finalData = {
             ...selectedData,
-            1: {
+            2: {
               ...validMetadata,
               dataset_detail: {
                 ...validMetadata.dataset_detail,
@@ -304,6 +308,8 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     }));
   };
 
+  const validateProjectGroupSelection = () => selectedData[activeStep].tdei_project_group_id !== null && selectedData[activeStep].tdei_project_group_id !== "";
+
   // Validation function for the first step (ServiceUpload)
   const validateServiceUpload = () => selectedData[activeStep].tdei_service_id !== null && selectedData[activeStep].tdei_service_id !== "";
 
@@ -340,7 +346,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     }
 
     // Validate schema_version based on service_type
-    const serviceType = selectedData[0].service_type;
+    const serviceType = selectedData[1].service_type;
     const schemaVersion = dataset_detail.schema_version;
     const schemaVersionMapping = {
       osw: "v0.2",
@@ -370,12 +376,27 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
 
   // To Determine the component to render based on active step and prepare component props
   const SelectedComponent = stepsData[activeStep].component;
-  const componentProps = {
-    selectedData: selectedData[activeStep],
-    ...(activeStep === 0
-      ? { onSelectedServiceChange: handleSelectedDataChange, dataset, fromCloneDataset: true }
-      : { onSelectedFileChange: handleSelectedDataChange,dataType: dataset.data_type }),
-  };
+  let componentProps = {};
+
+  if (activeStep === 0) {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedProjectGroupChange: handleSelectedDataChange,
+    };
+  } else if (activeStep === 1) {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedServiceChange: handleSelectedDataChange,
+      dataset,
+      fromCloneDataset: true,
+    };
+  } else {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedFileChange: handleSelectedDataChange,
+      dataType: dataset.data_type,
+    };
+  }
 
   // Rendering the vertical stepper component
   return (

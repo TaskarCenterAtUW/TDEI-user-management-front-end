@@ -27,28 +27,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
-
-  // Effect to reset selected service if project group ID changes
-  useEffect(() => {
-    if (Array.isArray(data.pages) && data.pages.length > 0) {
-      const firstPageData = data.pages[0]?.data ?? [];
-      const newProjectGroupId = firstPageData.length > 0 ? firstPageData[0]?.tdei_project_group_id : "";
-      if (!user.isAdmin && newProjectGroupId !== previousProjectGroupId) {
-          setSelectedService({
-            tdei_project_group_id: "",
-            tdei_service_id: "",
-            service_type: ""
-          });
-          setPreviousProjectGroupId(newProjectGroupId);
-          onSelectedServiceChange({
-            tdei_project_group_id: "",
-            tdei_service_id: "",
-            service_type: ""
-          });
-        }
-      }
-  }, [data]);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType,false,selectedData?.tdei_project_group_id);
 
   // Event handler for selecting a service
   const handleSelectedService = (list) => {
