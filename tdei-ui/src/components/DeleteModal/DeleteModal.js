@@ -8,7 +8,7 @@ const DeleteModal = (props) => {
     <Modal
       onHide={props.onHide}
       show={props.show}
-      size="md"
+      size={props.size? props.size :"md"}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
