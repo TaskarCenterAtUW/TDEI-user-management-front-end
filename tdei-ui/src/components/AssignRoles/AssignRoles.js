@@ -13,12 +13,14 @@ import { useQueryClient } from "react-query";
 import { GET_PROJECT_GROUP_USERS } from "../../utils";
 import { getSelectedProjectGroup } from "../../selectors";
 import { useAuth } from "../../hooks/useAuth";
+import DeleteModal from "../DeleteModal";
 
 const AssignRoles = (props) => {
   const { data, isLoading: isRolesLoading, isError } = useGetRoles();
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [rolesData, setRolesData] = React.useState({
     user_name: "",
     tdei_project_group_id: "",
@@ -40,9 +42,12 @@ const AssignRoles = (props) => {
 
   const validationSchema = yup.object().shape({
     user_name: yup.string().required("Email Id is required"),
-    roles: yup.array().of(yup.string()).min(1, "Please select roles"),
+    roles: yup.array().when([], {
+      is: () => !props.isEdit,
+      then: yup.array().of(yup.string()).min(1, "Please select roles"),
+    }),
   });
-
+  
   const onSuccess = () => {
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_USERS] });
     props.onHide();
@@ -68,7 +73,20 @@ const AssignRoles = (props) => {
   } = useAssignRoles({ onError, onSuccess });
 
   const handleAssignRoles = (values) => {
-    mutate(values);
+    if (props.isEdit && values.roles.length === 0) {
+      setShowConfirmModal(true);
+    } else {
+      mutate(values);
+    }
+  };
+
+  const handleRemoveUser = () => {
+    mutate({ user_name: rolesData.user_name, tdei_project_group_id: rolesData.tdei_project_group_id, roles: [] }, {
+      onSuccess: () => {
+        setShowConfirmModal(false);
+        props.onHide();
+      }
+    });
   };
 
   const handleExit = () => {
@@ -202,6 +220,7 @@ const AssignRoles = (props) => {
                       </Form.Group>
                     )}
                   </Field>
+                  {props.isEdit && <div className="tdei-hint-text">(note:Deselecting all roles and submitting will revoke all existing project group permissions. )</div>}
                 </Modal.Body>
                 <Modal.Footer>
                   <Button
@@ -217,7 +236,7 @@ const AssignRoles = (props) => {
                     className="tdei-primary-button"
                     disabled={isLoading || !dirty}
                   >
-                    {isLoading ? "Assigning..." : "Assign"}
+                    {(isLoading && !showConfirmModal) ? "Assigning..." : "Assign"}
                   </Button>
                 </Modal.Footer>
               </Form>
@@ -225,6 +244,17 @@ const AssignRoles = (props) => {
           </Formik>
         </Modal>
       ) : null}
+      <DeleteModal
+        show={showConfirmModal}
+        onHide={() => setShowConfirmModal(false)}
+        size={"sm"}
+        message={{
+          title: "Revoke Permissions",
+          details: "Are you sure you want to remove the selected user from the project group?",
+        }}
+        handler={handleRemoveUser}
+        isLoading={isLoading}
+      />
     </>
   );
 };
