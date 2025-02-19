@@ -19,6 +19,7 @@ import refreshBtn from "./../../assets/img/refreshBtn.svg";
 import { IconButton } from "@mui/material";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import useIsMember from "../../hooks/roles/useIsMember";
 
 const Jobs = () => {
     const { user } = useAuth();
@@ -28,6 +29,7 @@ const Jobs = () => {
     const navigate = useNavigate();
     const isDatasetsAccessible = useIsDatasetsAccessible();
     const isAdmin = user && user.isAdmin;
+    const isMember = useIsMember();
     const [sortedData, setSortedData] = useState([]);
 
 
@@ -174,7 +176,7 @@ const Jobs = () => {
         // Logic for refreshing
         refreshData();
     };
-    if (!(isAdmin || isDatasetsAccessible)) {
+    if (!(isAdmin || isDatasetsAccessible || isMember)) {
         return (
             <div className="p-4">
                 <div className="alert alert-warning" role="alert">

@@ -27,7 +27,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery, user?.isAdmin, serviceType,false,selectedData?.tdei_project_group_id);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType,false,selectedData?.tdei_project_group_id,fromCloneDataset);
 
   // Event handler for selecting a service
   const handleSelectedService = (list) => {

@@ -5,11 +5,18 @@ import { debounce } from "lodash";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import ProjectGroupsList from './ProjectGroupsList';
 import useGetProjectGroupRoles from '../../hooks/roles/useProjectGroupRoles';
+import useGetProjectGroups from '../../hooks/projectGroup/useGetProjectGroups';
+import { useAuth } from '../../hooks/useAuth';
 
 const ProjectGroupSelection = ({ selectedData, onSelectedProjectGroupChange}) => {
   const [, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
   const [selectedProjectGroup, setSelectedProjectGroup] = useState({});
+  const { user } = useAuth();
+  const isAdmin = user?.isAdmin;
+
+  const adminProjectGroups = useGetProjectGroups(debounceQuery, false);
+  const userProjectGroups = useGetProjectGroupRoles(debounceQuery);
 
   // Fetching project groups list data using custom hook
   const {
@@ -19,7 +26,7 @@ const ProjectGroupSelection = ({ selectedData, onSelectedProjectGroupChange}) =>
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetProjectGroupRoles(debounceQuery);
+  } = isAdmin ? adminProjectGroups : userProjectGroups;
 
 
   // Event handler for selecting a project group
@@ -27,8 +34,7 @@ const ProjectGroupSelection = ({ selectedData, onSelectedProjectGroupChange}) =>
     setSelectedProjectGroup(list);
     onSelectedProjectGroupChange({
       tdei_project_group_id: list.tdei_project_group_id,
-      tdei_service_id: list.tdei_service_id,
-      service_type: list.service_type
+      roles: list.roles
     });
   };
 
