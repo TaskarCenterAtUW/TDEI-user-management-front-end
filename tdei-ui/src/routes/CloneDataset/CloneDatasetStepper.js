@@ -94,15 +94,19 @@ CloneDatasetStepper.propTypes = {
 export default function CloneDatasetStepper({ stepsData, onStepsComplete, currentStep, dataset }) {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [selectedData, setSelectedData] = useState({});
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const [selectedData, setSelectedData] = useState({
+    0: {
+      tdei_project_group_id: selectedProjectGroup?.tdei_project_group_id ?? "",
+      roles: selectedProjectGroup?.roles || [],
+    }});
   const [previousSelectedData, setPreviousSelectedData] = useState({});
   const [showToast, setToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = user?.isAdmin;
-  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
-
+ 
   useEffect(() => {
     if (dataset && dataset.service && dataset.service.tdei_service_id) {
       setSelectedData(prevData => ({
