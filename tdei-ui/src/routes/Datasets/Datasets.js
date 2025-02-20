@@ -14,7 +14,7 @@ const Datasets = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isDatasetsAccessible = useIsDatasetsAccessible();
+  const isWritable = useIsDatasetsAccessible();
   const handleUploadNav = () => { 
     navigate('/UploadDataset');
   };
@@ -27,11 +27,12 @@ const Datasets = () => {
                   Here are the list of datasets available
               </div>
           </div>
-          <div>
+          {(isWritable || user.isAdmin) &&  
+          (<div>
               <Button onClick={handleUploadNav} className="tdei-primary-button">
                   Upload Dataset
               </Button>
-          </div>
+          </div>)}
           </div>
           <DatasetsTabsContainer/>
       </div>

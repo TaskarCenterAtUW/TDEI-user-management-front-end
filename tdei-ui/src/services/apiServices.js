@@ -143,12 +143,12 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive,fromCloneDataset) {
   const params = {
     searchText,
     page_no: pageParam,
     page_size: 10,
-    tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
+    tdei_project_group_id: isAdmin && !fromCloneDataset ? null : tdei_project_group_id,
   };
   if (service_type !== "") {
     params.service_type = service_type;

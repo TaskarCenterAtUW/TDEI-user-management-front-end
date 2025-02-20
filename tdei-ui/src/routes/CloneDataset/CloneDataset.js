@@ -78,16 +78,6 @@ const CloneDataset = () => {
         setLoading(true)
     };
 
-    // Check if the user is not an admin, not a flex data generator, not a PoC
-    if (!(user.isAdmin || isDataGenerator)) {
-        return (
-            <div className="p-4">
-                <div className="alert alert-warning" role="alert">
-                    Oops! User doesn't have permission to access this page!
-                </div>
-            </div>
-        );
-    }
     if (!dataset) {
         return <Navigate to="/datasets" replace />;
     }

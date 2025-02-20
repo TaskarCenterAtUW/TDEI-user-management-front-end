@@ -14,6 +14,9 @@ import { Icon, Grid, Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../../components/ToastMessage/ToastMessage';
 import style from "../../components/VerticalStepper/steps.module.css";
+import { useAuth } from '../../hooks/useAuth';
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from '../../selectors';
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -91,12 +94,19 @@ CloneDatasetStepper.propTypes = {
 export default function CloneDatasetStepper({ stepsData, onStepsComplete, currentStep, dataset }) {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [selectedData, setSelectedData] = useState({});
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const [selectedData, setSelectedData] = useState({
+    0: {
+      tdei_project_group_id: selectedProjectGroup?.tdei_project_group_id ?? "",
+      roles: selectedProjectGroup?.roles || [],
+    }});
   const [previousSelectedData, setPreviousSelectedData] = useState({});
   const [showToast, setToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-
+  const { user } = useAuth();
+  const isAdmin = user?.isAdmin;
+ 
   useEffect(() => {
     if (dataset && dataset.service && dataset.service.tdei_service_id) {
       setSelectedData(prevData => ({
@@ -215,21 +225,21 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   // Function to handle next button click
   const handleNext = () => {
     let isValid = false;
-    let errorMessage = "";
+    let errMsg = "";
 
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
-        isValid = validateProjectGroupSelection();
-        if (!isValid) errorMessage = "Please select a project group!";
+        errMsg = validateProjectGroupSelection();
+        isValid = errMsg === null;
         break;
       case 1:
         isValid = validateServiceUpload();
-        if (!isValid) errorMessage = "Please select a service!";
+        if (!isValid) errMsg = "Please select a service!";
         break;
       case 2:
-        errorMessage = validateMetadata();
-        isValid = errorMessage === null;
+        errMsg = validateMetadata();
+        isValid = errMsg === null;
         break;
       case 3:
         isValid = validateChangeset();
@@ -270,7 +280,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       }
     } else {
       // Display toast message
-      setErrorMessage(errorMessage);
+      setErrorMessage(errMsg);
       setToast(true);
     }
   };
@@ -308,7 +318,32 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     }));
   };
 
-  const validateProjectGroupSelection = () => selectedData[activeStep].tdei_project_group_id !== null && selectedData[activeStep].tdei_project_group_id !== "";
+  const validateProjectGroupSelection = () => {
+    const selectedProjectGroup = selectedData[0]?.tdei_project_group_id;
+    const userRoles = selectedData[0]?.roles || [];
+  
+    const requiredRoles = [
+      "poc",
+      "flex_data_generator",
+      "osw_data_generator",
+      "pathways_data_generator",
+      "admin"
+    ];
+  
+    // Check if project group is selected
+    if (!selectedProjectGroup) {
+      return "Please select a project group!";
+    }
+  
+    // Check if user has at least one required role
+    const hasValidRole = userRoles.some(role => requiredRoles.includes(role));
+    if (!hasValidRole && !isAdmin) {
+      return "You do not have the required access to the selected project group.";
+    }
+  
+    return null;
+  };
+  
 
   // Validation function for the first step (ServiceUpload)
   const validateServiceUpload = () => selectedData[activeStep].tdei_service_id !== null && selectedData[activeStep].tdei_service_id !== "";
