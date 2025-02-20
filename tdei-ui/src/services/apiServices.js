@@ -777,3 +777,7 @@ export async function updateServiceStatus(data) {
   );
   return res.data;
 }
+export async function regenerateApiKey() {
+  const res = await axios.post(`${osmUrl}/regenerate-api-key`);
+  return res.data;
+}
