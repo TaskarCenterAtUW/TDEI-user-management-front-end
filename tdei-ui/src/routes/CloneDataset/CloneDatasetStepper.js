@@ -98,6 +98,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   const [selectedData, setSelectedData] = useState({
     0: {
       tdei_project_group_id: selectedProjectGroup?.tdei_project_group_id ?? "",
+      project_group_name: selectedProjectGroup?.name ?? "",
       roles: selectedProjectGroup?.roles || [],
     }});
   const [previousSelectedData, setPreviousSelectedData] = useState({});
@@ -113,6 +114,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         ...prevData,
         1: {
           tdei_project_group_id: selectedData[0]?.tdei_project_group_id ?? "",
+          project_group_name: selectedData[0]?.project_group_name ?? "",
           tdei_service_id: "",
           service_type: dataset.data_type
         },
@@ -321,26 +323,18 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   const validateProjectGroupSelection = () => {
     const selectedProjectGroup = selectedData[0]?.tdei_project_group_id;
     const userRoles = selectedData[0]?.roles || [];
-  
-    const requiredRoles = [
-      "poc",
-      "flex_data_generator",
-      "osw_data_generator",
-      "pathways_data_generator",
-      "admin"
-    ];
-  
-    // Check if project group is selected
+    
     if (!selectedProjectGroup) {
       return "Please select a project group!";
     }
-  
-    // Check if user has at least one required role
-    const hasValidRole = userRoles.some(role => requiredRoles.includes(role));
-    if (!hasValidRole && !isAdmin) {
-      return "You do not have the required access to the selected project group.";
+    const datasetType = dataset.data_type;
+    const requiredRole = `${datasetType}_data_generator`;
+    
+    const hasValidRole = userRoles.includes(requiredRole) || userRoles.includes("poc") || isAdmin;
+    
+    if (!hasValidRole) {
+      return `You need ${requiredRole} role to clone this dataset.`;
     }
-  
     return null;
   };
   

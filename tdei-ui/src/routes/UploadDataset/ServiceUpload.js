@@ -59,9 +59,16 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
   return (
     <div>
       <div className='mb-3'>
-        <div className={style.stepComponentTitle}>
-          Select Service<span style={{ color: 'red' }}> *</span>
-        </div>
+        {fromCloneDataset ? (
+          <div className={style.stepComponentTitle}>
+            Select Service from <span className={style.highlightedText}>{selectedData.project_group_name} :</span>
+            <span style={{ color: 'red' }}> *</span>
+          </div>
+        ) : (
+          <div className={style.stepComponentTitle}>
+            Select Service<span style={{ color: 'red' }}> *</span>
+          </div>
+        )}
       </div>
       <>
         <Form noValidate>

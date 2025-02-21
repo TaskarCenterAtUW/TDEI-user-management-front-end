@@ -34,7 +34,8 @@ const ProjectGroupSelection = ({ selectedData, onSelectedProjectGroupChange}) =>
     setSelectedProjectGroup(list);
     onSelectedProjectGroupChange({
       tdei_project_group_id: list.tdei_project_group_id,
-      roles: list.roles
+      roles: list.roles,
+      project_group_name: list.project_group_name
     });
   };
 
