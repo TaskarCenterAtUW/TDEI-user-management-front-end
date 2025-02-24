@@ -36,7 +36,8 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     onSelectedServiceChange({
       tdei_project_group_id: list.tdei_project_group_id,
       tdei_service_id: list.tdei_service_id,
-      service_type: list.service_type
+      service_type: list.service_type,
+      project_group_name: selectedData?.project_group_name ?? ""
     });
   };
 
