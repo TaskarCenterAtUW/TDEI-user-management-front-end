@@ -85,6 +85,7 @@ const AssignRoles = (props) => {
       onSuccess: () => {
         setShowConfirmModal(false);
         props.onHide();
+        dispatch(showModal({ message: "User removed successfully." }));
       }
     });
   };
@@ -201,8 +202,8 @@ const AssignRoles = (props) => {
                               <div className={style.roleInfoBlock}>
                                 <div className={style.roleName}>{val.name}</div>
                                 <div className={style.roleDesc}>
-                                  {val.description}
-                                </div>
+                                {val.name === "member" ? "A standard project group member with limited permissions." : val.description}
+                              </div>
                               </div>
                               <div className={style.successIcon}>
                                 <img
@@ -220,7 +221,7 @@ const AssignRoles = (props) => {
                       </Form.Group>
                     )}
                   </Field>
-                  {props.isEdit && <div className="tdei-hint-text">(note:Deselecting all roles and submitting will revoke all existing project group permissions. )</div>}
+                  {props.isEdit && <div className="tdei-hint-text">(note: Deselecting all roles and submitting will remove the user from the project group. )</div>}
                 </Modal.Body>
                 <Modal.Footer>
                   <Button
@@ -249,7 +250,7 @@ const AssignRoles = (props) => {
         onHide={() => setShowConfirmModal(false)}
         size={"sm"}
         message={{
-          title: "Revoke Permissions",
+          title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
         handler={handleRemoveUser}

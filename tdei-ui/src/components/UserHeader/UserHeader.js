@@ -28,6 +28,7 @@ const UserHeader = ({ roles }) => {
   const { mutate: regenerateKey, isLoading: isRegenerating } = useRegenerateApiKey({
     onSuccess: (data) => {
       dispatch(show({ type: "success", message: data?.message || "API Key regenerated successfully" }));
+      setCopy(false);
       queryClient.invalidateQueries({ queryKey: [GET_API_KEY] });
     },
     onError: (err) => {
@@ -75,7 +76,7 @@ const UserHeader = ({ roles }) => {
       {!user.isAdmin && (
         <div className={style.apiKey}>
           <div>My API Key</div>
-          <div className={style.maskedKey}>
+          <div className={style.maskedKey} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {isLoading ? (
               <span className={style.font14}>loading api key...</span>
             ) : (
@@ -87,7 +88,10 @@ const UserHeader = ({ roles }) => {
                 {showApiKey ? "Hide" : "Show"}
               </Button>
               <div className={style.verticalLine}></div>
-              <CopyToClipboard text={API_KEY} onCopy={() => setCopy(true)}>
+              <CopyToClipboard text={API_KEY} onCopy={() => {
+                setCopy(true);
+                setTimeout(() => setCopy(false), 2000);
+              }}>
                 <Button variant="link">{copy ? "Copied!" : "Copy"}</Button>
               </CopyToClipboard>
               <div className={style.verticalLine}></div>

@@ -36,7 +36,8 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     onSelectedServiceChange({
       tdei_project_group_id: list.tdei_project_group_id,
       tdei_service_id: list.tdei_service_id,
-      service_type: list.service_type
+      service_type: list.service_type,
+      project_group_name: selectedData?.project_group_name ?? ""
     });
   };
 
@@ -59,9 +60,16 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
   return (
     <div>
       <div className='mb-3'>
-        <div className={style.stepComponentTitle}>
-          Select Service<span style={{ color: 'red' }}> *</span>
-        </div>
+        {fromCloneDataset ? (
+          <div className={style.stepComponentTitle}>
+            Select Service from <span className={style.highlightedText}>{selectedData.project_group_name} :</span>
+            <span style={{ color: 'red' }}> *</span>
+          </div>
+        ) : (
+          <div className={style.stepComponentTitle}>
+            Select Service<span style={{ color: 'red' }}> *</span>
+          </div>
+        )}
       </div>
       <>
         <Form noValidate>
