@@ -123,7 +123,7 @@
 .downloadButton {
   background: var(--primary-color);
   border: none;
-  padding: 5px;
+  padding: 6px;
   cursor: pointer;
   transition: background 0.2s;
   min-width: 100px;

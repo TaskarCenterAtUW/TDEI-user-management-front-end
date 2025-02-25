@@ -3,11 +3,14 @@ import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import { GET_PROJECT_GROUP_USERS } from "../../utils";
 import { getProjectGroupUsers } from "../../services";
-import useIsDatasetsAccessible from "../useIsDatasetsAccessible";
+import useIsPoc from "../useIsPoc"; 
+import { useAuth } from "../useAuth";
 
 function useGetProjectGroupUsers(query = "") {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
-  const isMember = useIsDatasetsAccessible();
+  const { user } = useAuth();
+  const isPoc = useIsPoc();
+  const isAdmin = user?.isAdmin;
 
   return useInfiniteQuery(
     [GET_PROJECT_GROUP_USERS, query, tdei_project_group_id],
@@ -19,7 +22,7 @@ function useGetProjectGroupUsers(query = "") {
           ? lastPage.pageParam + 1
           : undefined;
       },
-      enabled: !!tdei_project_group_id && !!isMember,
+      enabled: !!tdei_project_group_id && (isAdmin || isPoc),
     }
   );
 }
