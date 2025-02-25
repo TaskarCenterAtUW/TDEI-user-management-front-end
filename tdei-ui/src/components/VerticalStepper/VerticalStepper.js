@@ -17,6 +17,9 @@ import { Grid, Button, Container, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../ToastMessage/ToastMessage';
 import style from "./steps.module.css";
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from '../../selectors';
+import { useAuth } from "../../hooks/useAuth";
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -92,7 +95,11 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   const [showToast, setToast] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [metaDataErrorMsg, setMetaDataErrorMsg] = React.useState("");
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const projectRoles = selectedProjectGroup.roles;
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user.isAdmin;
 
   useEffect(() => {
     if (currentStep == 0) {
@@ -142,8 +149,8 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
-        isValid = validateServiceUpload();
-        if (!isValid) errorMessage = "Please select a service!";
+        errorMessage = validateServiceUpload(selectedData, projectRoles, isAdmin);
+        isValid = errorMessage === null;
         break;
       case 1:
         isValid = validateDataFile();
@@ -227,11 +234,15 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     }));
   };
   // Validation function for the first step (ServiceUpload)
-  const validateServiceUpload = () => {
-    if(selectedData[activeStep].tdei_service_id !== null && selectedData[activeStep].tdei_service_id !== ""){
-      return true
+  const validateServiceUpload = (selectedData, projectRoles, isAdmin) => {
+    if (!selectedData[0]?.tdei_service_id) {
+      return "Please select a service!";
     }
-    return false;
+    const requiredRole = `${selectedData[0]?.service_type}_data_generator`;
+    if (!(isAdmin || projectRoles.includes("poc") || projectRoles.includes(requiredRole))) {
+      return `You need ${requiredRole} role to upload this service.`;
+    }
+    return null;
   };
 
   // Validation function for the second step (DataFile)
@@ -309,7 +320,9 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   if (activeStep === 0) {
     componentProps = {
       selectedData: selectedData[activeStep],
-      onSelectedServiceChange: handleSelectedDataChange
+      onSelectedServiceChange: handleSelectedDataChange,
+      dataType: null,
+      fromCloneDataset: false,
     };
   } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
     componentProps = {

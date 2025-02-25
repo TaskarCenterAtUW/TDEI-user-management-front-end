@@ -143,12 +143,12 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive,fromCloneDataset) {
   const params = {
     searchText,
     page_no: pageParam,
     page_size: 10,
-    tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
+    tdei_project_group_id: isAdmin && !fromCloneDataset ? null : tdei_project_group_id,
   };
   if (service_type !== "") {
     params.service_type = service_type;
@@ -640,12 +640,12 @@ export async function editMetadata(data) {
 export async function cloneDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data.selectedData[0].tdei_project_group_id);
-  formData.append('tdei_service_id', data.selectedData[0].tdei_service_id);
+  formData.append('tdei_service_id', data.selectedData[1].tdei_service_id);
   formData.append('tdei_dataset_id', data.tdei_dataset_id);
   if (data.selectedData[1] instanceof File) {
-    formData.append('file', data.selectedData[1]);
+    formData.append('file', data.selectedData[2]);
   } else {
-    const metadata = { ...data.selectedData[1] };
+    const metadata = { ...data.selectedData[2] };
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
@@ -678,7 +678,7 @@ export async function cloneDataset(data) {
   //   formData.append('changeset', data[2]);
   // }
 
-  const response = await axios.post(`${osmUrl}/dataset/clone/${data.tdei_dataset_id}/${data.selectedData[0].tdei_project_group_id}/${data.selectedData[0].tdei_service_id}`, formData, {
+  const response = await axios.post(`${osmUrl}/dataset/clone/${data.tdei_dataset_id}/${data.selectedData[0].tdei_project_group_id}/${data.selectedData[1].tdei_service_id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -798,3 +798,7 @@ export async function downloadUsers() {
     return Promise.reject(new AxiosError(error));
   }
 };
+export async function regenerateApiKey() {
+  const res = await axios.post(`${osmUrl}/regenerate-api-key`);
+  return res.data;
+}

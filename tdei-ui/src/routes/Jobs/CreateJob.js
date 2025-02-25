@@ -17,6 +17,8 @@ import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
+import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
+import { useAuth } from "../../hooks/useAuth";
 
 // Options for the Job Type dropdown
 const jobTypeOptions = [
@@ -99,7 +101,8 @@ const formConfig = {
  */
 const CreateJobService = () => {
     const navigate = useNavigate();
-
+    const { user } = useAuth();
+    const isDataAccessible = useIsDatasetsAccessible();
     // State variables to manage form inputs and UI states
     const [jobType, setJobType] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -129,6 +132,10 @@ const CreateJobService = () => {
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
+
+    const filteredJobTypeOptions = jobTypeOptions.filter(option => 
+        !(option.value === "dataset-tag-road" && (!isDataAccessible && !user?.isAdmin))
+    );    
 
     // Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
     const handleAlgorithmUpdate = (updatedConfig) => {
@@ -772,7 +779,7 @@ const CreateJobService = () => {
                                 <p className={style.formLabelP}>Job Type<span style={{ color: 'red' }}> *</span></p>
                                 <Select
                                     className={style.createJobSelectType}
-                                    options={jobTypeOptions}
+                                    options={filteredJobTypeOptions}
                                     placeholder="Select a Job type"
                                     onChange={handleJobTypeSelect}
                                 />

@@ -14,7 +14,6 @@ import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
-import useRevokePermission from "../../hooks/roles/useRevokePermission";
 import { GET_PROJECT_GROUP_USERS } from "../../utils";
 import { useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
@@ -25,6 +24,7 @@ import { Tooltip, OverlayTrigger } from "react-bootstrap";
 import { formatPhoneNumber } from "../../utils";
 import useDownloadUsers from "../../hooks/useDownloadActiveUsers";
 import DownloadIcon from '@mui/icons-material/Download';
+import useAssignRoles from "../../hooks/roles/useAssignRoles";
 
 
 const Members = () => {
@@ -49,20 +49,20 @@ const Members = () => {
     isLoading,
   } = useGetProjectGroupUsers(debounceQuery);
 
-  const onRevokeSuccess = (data) => {
+  const onRemoveUserSuccess = (data) => {
     setShowRevokeModal(true);
     setShowConfirmModal(false);
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_USERS] });
   };
-  const onRevokeError = (err) => {
+  const onRemoveUserError = (err) => {
     setShowConfirmModal(false);
     console.error(err);
-    dispatch(show({ message: `Error in revoking poc user`, type: "danger" }));
+    dispatch(show({ message: `Error in removing user`, type: "danger" }));
   };
-  const { mutate: revokePermission, isLoading: revokePermissionLoading } =
-    useRevokePermission({
-      onError: onRevokeError,
-      onSuccess: onRevokeSuccess,
+  const { mutate: removeUser, isLoading: removeUserLoading } =
+    useAssignRoles({
+      onError: onRemoveUserError,
+      onSuccess: onRemoveUserSuccess,
     });
 
   const { mutate: downloadUsers, isLoading: isDownloadingUsers } = useDownloadUsers();
@@ -96,8 +96,8 @@ const Members = () => {
     setShowModal(true);
     setIsEdit(true);
   };
-  const handleRevokePermission = () => {
-    revokePermission({
+  const handleRemoveUser = () => {
+    removeUser({
       tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
       user_name: selectedUser.username,
       roles: [],
@@ -243,17 +243,17 @@ const Members = () => {
         onHide={() => {
           setShowRevokeModal(false)
         }}
-        message="User's Permissions revoked successfully"
+        message="User Removed Successfully"
       />
       <DeleteModal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
         message={{
-          title: "Revoke Permissions",
+          title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
-        handler={handleRevokePermission}
-        isLoading={revokePermissionLoading}
+        handler={handleRemoveUser}
+        isLoading={removeUserLoading}
       />
     </Layout>
   );
