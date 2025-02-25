@@ -777,6 +777,27 @@ export async function updateServiceStatus(data) {
   );
   return res.data;
 }
+export async function downloadUsers() {
+  try {
+    const response = await axios.get(`${url}/users/download`, {
+      responseType: 'blob'
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = urlBlob;
+    a.download = `tdei-active-users.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  } catch (error) {
+    console.error('There was a problem with the download operation:', error);
+    if(error.status === 404){
+      return Promise.reject(new AxiosError("Download File Not Found!"));
+    }
+    return Promise.reject(new AxiosError(error));
+  }
+};
 export async function regenerateApiKey() {
   const res = await axios.post(`${osmUrl}/regenerate-api-key`);
   return res.data;

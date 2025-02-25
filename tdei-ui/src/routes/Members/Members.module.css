@@ -23,9 +23,7 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 30% 25% 35% 10%;
   grid-column-gap: 10px;
-  /* min-height: 70px; */
   align-items: center;
   border: 1px solid #dddddd;
   border-radius: 5px;
@@ -34,6 +32,12 @@
   font-size: 14px;
 }
 
+.adminGrid {
+  grid-template-columns: minmax(100px, 60%) minmax(100px, max-content);
+}
+.userGrid {
+  grid-template-columns: 30% 25% 35% 10%;
+}
 .menuVertical {
   width: 28px;
   cursor: pointer;
@@ -109,4 +113,23 @@
   font-size: 14px;
   color: var(--secondary-color);
   margin-left: 5px;
+}
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.downloadButton {
+  background: var(--primary-color);
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 100px;
+}
+
+.downloadButton:hover {
+  background: var(--tdei-blue);
+  border-radius: 4px;
 }
