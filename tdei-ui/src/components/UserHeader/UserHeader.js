@@ -77,11 +77,19 @@ const UserHeader = ({ roles }) => {
         <div className={style.apiKey}>
           <div>My API Key</div>
           <div className={style.maskedKey} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {isLoading ? (
-              <span className={style.font14}>loading api key...</span>
-            ) : (
-              <>{showApiKey ? <div className={style.keyVisible}>{API_KEY}</div> : <div className={style.keyHidden}>{maskedKey}</div>}</>
-            )}
+            <div className={style.keyContainer}>
+              {isLoading ? (
+                <span className={style.font14}>loading api key...</span>
+              ) : (
+                <>
+                  {showApiKey ? (
+                    <div className={style.keyVisible}>{API_KEY}</div>
+                  ) : (
+                    <div className={style.keyHidden}>{maskedKey}</div>
+                  )}
+                </>
+              )}
+            </div>
 
             <div className={style.buttonContainer}>
               <Button variant="link" onClick={() => setShowApiKey(!showApiKey)}>
@@ -96,12 +104,14 @@ const UserHeader = ({ roles }) => {
               </CopyToClipboard>
               <div className={style.verticalLine}></div>
               <Tooltip title="Regenerate API Key" arrow>
-                <Button
-                  variant="link"
-                  onClick={regenerateKey}
-                  disabled={isRegenerating}
-                >
-                  {isRegenerating ? <Spinner animation="border" size="sm" /> : <CachedIcon />}
+                <Button variant="link" onClick={regenerateKey} disabled={isRegenerating}>
+                  <div className={style.fixedIcon}>
+                    {isRegenerating ? (
+                      <Spinner animation="border" size="sm" style={{ width: "20px", height: "20px" }} />
+                    ) : (
+                      <CachedIcon style={{ fontSize: "20px" }} />
+                    )}
+                  </div>
                 </Button>
               </Tooltip>
             </div>

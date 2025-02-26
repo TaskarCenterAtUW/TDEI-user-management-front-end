@@ -240,7 +240,11 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     }
     const requiredRole = `${selectedData[0]?.service_type}_data_generator`;
     if (!(isAdmin || projectRoles.includes("poc") || projectRoles.includes(requiredRole))) {
-      return `You need ${requiredRole} role to select this service.`;
+      return (
+        <>
+          You need <strong>{requiredRole}</strong> role to select this service.
+        </>
+      );
     }
     return null;
   };
