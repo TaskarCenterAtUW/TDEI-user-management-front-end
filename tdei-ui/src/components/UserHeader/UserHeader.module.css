@@ -46,6 +46,7 @@
   justify-content: space-between;
   padding: 5px 15px 5px 15px;
   margin-left: 10px;
+  min-width: 525px;
 }
 .buttonContainer {
   display: flex;
