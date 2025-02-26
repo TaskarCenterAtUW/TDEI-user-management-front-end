@@ -92,7 +92,7 @@ const UserHeader = ({ roles }) => {
                 setCopy(true);
                 setTimeout(() => setCopy(false), 2000);
               }}>
-                <Button variant="link">{copy ? "Copied!" : "Copy"}</Button>
+                <Button style={{ minWidth: "70px" }} variant="link">{copy ? "Copied!" : "Copy"}</Button>
               </CopyToClipboard>
               <div className={style.verticalLine}></div>
               <Tooltip title="Regenerate API Key" arrow>

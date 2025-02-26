@@ -85,3 +85,8 @@ body {
     font-style: italic;
     color: var(--primary-color-dark);
 }
+.last-updated {
+    font-style: italic;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
