@@ -18,8 +18,6 @@ import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
 import { useAuth } from '../../hooks/useAuth';
 import useCreateInclinationJob from '../../hooks/jobs/useCreateInclinationJob';
 import DatePicker from '../../components/DatePicker/DatePicker';
-import IconButton from '@mui/material/IconButton';
-import ClearIcon from '@mui/icons-material/Clear';
 import dayjs from 'dayjs';
 import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 import ProjectAutocomplete from '../../components/ProjectAutocomplete/ProjectAutocomplete';

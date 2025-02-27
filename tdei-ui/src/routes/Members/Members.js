@@ -14,7 +14,6 @@ import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
-import useRevokePermission from "../../hooks/roles/useRevokePermission";
 import { GET_PROJECT_GROUP_USERS } from "../../utils";
 import { useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
@@ -23,6 +22,9 @@ import SuccessModal from "../../components/SuccessModal";
 import DeleteModal from "../../components/DeleteModal";
 import { Tooltip, OverlayTrigger } from "react-bootstrap";
 import { formatPhoneNumber } from "../../utils";
+import useDownloadUsers from "../../hooks/useDownloadActiveUsers";
+import DownloadIcon from '@mui/icons-material/Download';
+import useAssignRoles from "../../hooks/roles/useAssignRoles";
 
 
 const Members = () => {
@@ -47,21 +49,28 @@ const Members = () => {
     isLoading,
   } = useGetProjectGroupUsers(debounceQuery);
 
-  const onRevokeSuccess = (data) => {
+  const onRemoveUserSuccess = (data) => {
     setShowRevokeModal(true);
     setShowConfirmModal(false);
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_USERS] });
   };
-  const onRevokeError = (err) => {
+  const onRemoveUserError = (err) => {
     setShowConfirmModal(false);
     console.error(err);
-    dispatch(show({ message: `Error in revoking poc user`, type: "danger" }));
+    dispatch(show({ message: `Error in removing user`, type: "danger" }));
   };
-  const { mutate: revokePermission, isLoading: revokePermissionLoading } =
-    useRevokePermission({
-      onError: onRevokeError,
-      onSuccess: onRevokeSuccess,
+  const { mutate: removeUser, isLoading: removeUserLoading } =
+    useAssignRoles({
+      onError: onRemoveUserError,
+      onSuccess: onRemoveUserSuccess,
     });
+
+  const { mutate: downloadUsers, isLoading: isDownloadingUsers } = useDownloadUsers();
+
+  const handleDownloadUsers = () => {
+    downloadUsers();
+  };
+
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -87,14 +96,14 @@ const Members = () => {
     setShowModal(true);
     setIsEdit(true);
   };
-  const handleRevokePermission = () => {
-    revokePermission({
+  const handleRemoveUser = () => {
+    removeUser({
       tdei_project_group_id: selectedProjectGroup.tdei_project_group_id,
       user_name: selectedUser.username,
       roles: [],
     });
   };
-  // setShowDeleteModal(true);
+  const isAdmin = user.isAdmin;
   return (
     <Layout>
       <div className={style.header}>
@@ -109,29 +118,48 @@ const Members = () => {
           </div>
         </div>
         <div>
-          <Button onClick={handleAssignUser} className="tdei-primary-button">
-            Assign New User
-          </Button>
+          {!user.isAdmin && (
+            <div>
+              <Button onClick={handleAssignUser} className="tdei-primary-button">
+                Assign New User
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <Container>
         <>
           <div className={style.searchPanel}>
-            <Form.Control
-              type="text"
-              placeholder="Search User"
-              onChange={(e) => {
-                setQuery(e.target.value);
-                debouncedHandleSearch(e);
-              }}
-            />
-            {/* <div>Sort by</div> */}
+            <div className={style.searchWrapper}>
+              <Form.Control
+                type="text"
+                placeholder="Search User"
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  debouncedHandleSearch(e);
+                }}
+              />
+              {user.isAdmin &&
+                (
+                  <Button
+                    className={style.downloadButton}
+                    onClick={handleDownloadUsers}
+                    disabled={isDownloadingUsers}
+                  >
+                    {isDownloadingUsers ? <Spinner size="sm" /> : <><DownloadIcon /> Download Active Users</>}
+                  </Button>
+                )}
+            </div>
           </div>
-          <div className={clsx(style.gridContainer, style.userHeader)}>
+          <div className={clsx(
+            style.gridContainer,
+            isAdmin ? style.adminGrid : style.userGrid,
+            style.userHeader
+          )}>
             <div>Name & Email Id</div>
             <div>Contact Number</div>
-            <div>Roles</div>
-            <div>Action</div>
+            {!user.isAdmin && <div>Roles</div>}
+            {!user.isAdmin && <div>Action</div>}
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
@@ -146,7 +174,10 @@ const Members = () => {
                 </div>
               ) : null}
               {values?.data?.map((list) => (
-                <div className={style.gridContainer} key={list.user_id}>
+                <div className={clsx(
+                  style.gridContainer,
+                  isAdmin ? style.adminGrid : style.userGrid
+                )} key={list.user_id}>
                   <div className={style.details}>
                     <div className={style.icon}>
                       <img src={userIcon} alt="sitemap-solid" />
@@ -160,9 +191,11 @@ const Members = () => {
                   </div>
                   <div className={style.content}>{formatPhoneNumber(list.phone)}</div>
                   <div className={style.roles}>
-                    <DisplayRolesList list={list} />
+                    {!user.isAdmin && (
+                      <DisplayRolesList list={list} />
+                    )}
                   </div>
-                  {user.userId !== list.user_id && (<div className={style.actionItem}>
+                  {user.userId !== list.user_id && !user.isAdmin && (<div className={style.actionItem}>
                     <Dropdown align="end">
                       <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       <Dropdown.Menu align="end">
@@ -210,17 +243,17 @@ const Members = () => {
         onHide={() => {
           setShowRevokeModal(false)
         }}
-        message="User's Permissions revoked successfully"
+        message="User Removed Successfully"
       />
       <DeleteModal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
         message={{
-          title: "Revoke Permissions",
+          title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
-        handler={handleRevokePermission}
-        isLoading={revokePermissionLoading}
+        handler={handleRemoveUser}
+        isLoading={removeUserLoading}
       />
     </Layout>
   );

@@ -14,6 +14,9 @@ import { Icon, Grid, Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../../components/ToastMessage/ToastMessage';
 import style from "../../components/VerticalStepper/steps.module.css";
+import { useAuth } from '../../hooks/useAuth';
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from '../../selectors';
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -91,22 +94,31 @@ CloneDatasetStepper.propTypes = {
 export default function CloneDatasetStepper({ stepsData, onStepsComplete, currentStep, dataset }) {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [selectedData, setSelectedData] = useState({});
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const [selectedData, setSelectedData] = useState({
+    0: {
+      tdei_project_group_id: selectedProjectGroup?.tdei_project_group_id ?? "",
+      project_group_name: selectedProjectGroup?.name ?? "",
+      roles: selectedProjectGroup?.roles || [],
+    }});
   const [previousSelectedData, setPreviousSelectedData] = useState({});
   const [showToast, setToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-
+  const { user } = useAuth();
+  const isAdmin = user?.isAdmin;
+ 
   useEffect(() => {
     if (dataset && dataset.service && dataset.service.tdei_service_id) {
       setSelectedData(prevData => ({
         ...prevData,
-        0: {
-          tdei_project_group_id: "",
+        1: {
+          tdei_project_group_id: selectedData[0]?.tdei_project_group_id ?? "",
+          project_group_name: selectedData[0]?.project_group_name ?? "",
           tdei_service_id: "",
           service_type: dataset.data_type
         },
-        1:{
+        2:{
             "dataset_detail": {
                 "name": "",
                 "version": "",
@@ -171,7 +183,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
         }
       }));
     }
-  }, [dataset]);
+  }, [dataset,selectedData[0]]);
 
   useEffect(() => {
     if (currentStep === 0) {
@@ -215,19 +227,23 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
   // Function to handle next button click
   const handleNext = () => {
     let isValid = false;
-    let errorMessage = "";
+    let errMsg = "";
 
     // Perform validation based on active step
     switch (activeStep) {
       case 0:
-        isValid = validateServiceUpload();
-        if (!isValid) errorMessage = "Please select a service!";
+        errMsg = validateProjectGroupSelection();
+        isValid = errMsg === null;
         break;
       case 1:
-        errorMessage = validateMetadata();
-        isValid = errorMessage === null;
+        isValid = validateServiceUpload();
+        if (!isValid) errMsg = "Please select a service!";
         break;
       case 2:
+        errMsg = validateMetadata();
+        isValid = errMsg === null;
+        break;
+      case 3:
         isValid = validateChangeset();
         break;
       default:
@@ -239,11 +255,11 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       const newCompleted = { ...completed };
       const newActiveStep = isLastStep() ? activeStep : activeStep + 1;
       if (isLastStep()) {
-        if((selectedData[1] && selectedData[1].file instanceof File) || !(selectedData[1] && selectedData[1] instanceof File)){
-          const validMetadata = selectedData[1].file ? selectedData[1].formData : selectedData[1]
+        if((selectedData[2] && selectedData[2].file instanceof File) || !(selectedData[2] && selectedData[2] instanceof File)){
+          const validMetadata = selectedData[2].file ? selectedData[2].formData : selectedData[2]
           const finalData = {
             ...selectedData,
-            1: {
+            2: {
               ...validMetadata,
               dataset_detail: {
                 ...validMetadata.dataset_detail,
@@ -266,7 +282,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       }
     } else {
       // Display toast message
-      setErrorMessage(errorMessage);
+      setErrorMessage(errMsg);
       setToast(true);
     }
   };
@@ -304,6 +320,30 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     }));
   };
 
+  const validateProjectGroupSelection = () => {
+    const selectedProjectGroup = selectedData[0]?.tdei_project_group_id;
+    const userRoles = selectedData[0]?.roles || [];
+    
+    if (!selectedProjectGroup) {
+      return "Please select a project group!";
+    }
+    const datasetType = dataset.data_type;
+    const requiredRole = `${datasetType}_data_generator`;
+    const projectGroupName = selectedData[0]?.project_group_name ?? "";
+    
+    const hasValidRole = userRoles.includes(requiredRole) || userRoles.includes("poc") || isAdmin;
+    
+    if (!hasValidRole) {
+      return (
+        <>
+          To clone this dataset to project group <strong>{projectGroupName}</strong>, you need <strong>{requiredRole}</strong> role in <strong>{projectGroupName}</strong>.
+        </>
+      );
+    }
+    return null;
+  };
+  
+
   // Validation function for the first step (ServiceUpload)
   const validateServiceUpload = () => selectedData[activeStep].tdei_service_id !== null && selectedData[activeStep].tdei_service_id !== "";
 
@@ -340,7 +380,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     }
 
     // Validate schema_version based on service_type
-    const serviceType = selectedData[0].service_type;
+    const serviceType = selectedData[1].service_type;
     const schemaVersion = dataset_detail.schema_version;
     const schemaVersionMapping = {
       osw: "v0.2",
@@ -370,12 +410,27 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
 
   // To Determine the component to render based on active step and prepare component props
   const SelectedComponent = stepsData[activeStep].component;
-  const componentProps = {
-    selectedData: selectedData[activeStep],
-    ...(activeStep === 0
-      ? { onSelectedServiceChange: handleSelectedDataChange, dataset, fromCloneDataset: true }
-      : { onSelectedFileChange: handleSelectedDataChange,dataType: dataset.data_type }),
-  };
+  let componentProps = {};
+
+  if (activeStep === 0) {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedProjectGroupChange: handleSelectedDataChange,
+    };
+  } else if (activeStep === 1) {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedServiceChange: handleSelectedDataChange,
+      dataset,
+      fromCloneDataset: true,
+    };
+  } else {
+    componentProps = {
+      selectedData: selectedData[activeStep],
+      onSelectedFileChange: handleSelectedDataChange,
+      dataType: dataset.data_type,
+    };
+  }
 
   // Rendering the vertical stepper component
   return (

@@ -4,7 +4,7 @@ import tempLogo from "./../../assets/img/tdei_logo.svg";
 import { useAuth } from "../../hooks/useAuth";
 import { Dropdown } from "react-bootstrap";
 import userIcon from "./../../assets/img/user.png";
-import ProjectGroupSwitcher from "../ProjectGroupSwitcher/ProjectGroupSwitcher";
+import ProjectGroupSwitcherDropDown from "../ProjectGroupSwitcher/ProjectGroupSwitcherDropDown";
 import { useDispatch } from "react-redux";
 import { toggle } from "../../store/sideMenuBar.slice";
 import resetPasswordIcon from "../../assets/img/reset_pass.svg";
@@ -45,7 +45,7 @@ const Header = () => {
         <div className={style.rightContainer}>
           {!user?.isAdmin ? (
             <div>
-              <ProjectGroupSwitcher />
+              <ProjectGroupSwitcherDropDown />
             </div>
           ) : null}
           <div className={style.horizontalLine}></div>

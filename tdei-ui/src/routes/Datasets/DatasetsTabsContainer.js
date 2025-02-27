@@ -10,17 +10,19 @@ import ReleasedDatasets from "./ReleasedDatasets";
 import Container from "../../components/Container/Container";
 import { useAuth } from '../../hooks/useAuth';
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible.js";
+import useIsMember from "../../hooks/roles/useIsMember.js";
 
 // Overall tabs container for Datasets
 const DatasetsTabsContainer = () => {
     const { user } = useAuth();
     const isDatasetsAccessible = useIsDatasetsAccessible();
+    const isMember = useIsMember();
     const isAdmin = user && user.isAdmin;
     const [key, setKey] = useState('myDatasets');
 
     useEffect(() => {
         // Update the default active tab if user is not admin or datasets are not accessible
-        if (!isAdmin && !isDatasetsAccessible) {
+        if (!isAdmin && !isDatasetsAccessible && !isMember) {
             setKey('releasedDatasets');
         }
     }, [isAdmin, isDatasetsAccessible]);
@@ -33,7 +35,7 @@ const DatasetsTabsContainer = () => {
                     onSelect={(k) => setKey(k)}
                     className="mb-2"
                 >
-                    {(isAdmin || isDatasetsAccessible) && (
+                    {(isAdmin || isDatasetsAccessible || isMember) && (
                         <Tab eventKey="myDatasets" title={<span className={style.boldText}> <img className={style.smallMargin} src={datasetIcon} /> { isAdmin? "All Datasets" : "My Project Datasets"}</span>}>
                             <MyDatasets />
                         </Tab>

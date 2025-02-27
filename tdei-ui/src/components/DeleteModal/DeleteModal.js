@@ -8,7 +8,7 @@ const DeleteModal = (props) => {
     <Modal
       onHide={props.onHide}
       show={props.show}
-      size="md"
+      size={props.size? props.size :"md"}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
@@ -35,7 +35,7 @@ const DeleteModal = (props) => {
           onClick={props.handler}
           disabled={props.isLoading}
         >
-          { props.message.title === "Revoke Permissions" ? props.isLoading ? "Revoking" : "Revoke" : props.isLoading ? "Deleting" : "Delete"}
+          { props.message.title === "Remove User" ? props.isLoading ? "Removing" : "Remove" : props.isLoading ? "Deleting" : "Delete"}
         </Button>
       </Modal.Footer>
     </Modal>

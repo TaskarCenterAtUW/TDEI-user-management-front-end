@@ -27,28 +27,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery, user?.isAdmin, serviceType);
-
-  // Effect to reset selected service if project group ID changes
-  useEffect(() => {
-    if (Array.isArray(data.pages) && data.pages.length > 0) {
-      const firstPageData = data.pages[0]?.data ?? [];
-      const newProjectGroupId = firstPageData.length > 0 ? firstPageData[0]?.tdei_project_group_id : "";
-      if (!user.isAdmin && newProjectGroupId !== previousProjectGroupId) {
-          setSelectedService({
-            tdei_project_group_id: "",
-            tdei_service_id: "",
-            service_type: ""
-          });
-          setPreviousProjectGroupId(newProjectGroupId);
-          onSelectedServiceChange({
-            tdei_project_group_id: "",
-            tdei_service_id: "",
-            service_type: ""
-          });
-        }
-      }
-  }, [data]);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType,false,selectedData?.tdei_project_group_id,fromCloneDataset);
 
   // Event handler for selecting a service
   const handleSelectedService = (list) => {
@@ -57,7 +36,8 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
     onSelectedServiceChange({
       tdei_project_group_id: list.tdei_project_group_id,
       tdei_service_id: list.tdei_service_id,
-      service_type: list.service_type
+      service_type: list.service_type,
+      project_group_name: selectedData?.project_group_name ?? ""
     });
   };
 
@@ -80,9 +60,16 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
   return (
     <div>
       <div className='mb-3'>
-        <div className={style.stepComponentTitle}>
-          Select Service<span style={{ color: 'red' }}> *</span>
-        </div>
+        {fromCloneDataset ? (
+          <div className={style.stepComponentTitle}>
+            Select Service from <span className={style.highlightedText}>{selectedData.project_group_name} :</span>
+            <span style={{ color: 'red' }}> *</span>
+          </div>
+        ) : (
+          <div className={style.stepComponentTitle}>
+            Select Service<span style={{ color: 'red' }}> *</span>
+          </div>
+        )}
       </div>
       <>
         <Form noValidate>
