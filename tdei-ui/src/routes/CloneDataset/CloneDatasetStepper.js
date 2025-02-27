@@ -329,11 +329,16 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     }
     const datasetType = dataset.data_type;
     const requiredRole = `${datasetType}_data_generator`;
+    const projectGroupName = selectedData[0]?.project_group_name ?? "";
     
     const hasValidRole = userRoles.includes(requiredRole) || userRoles.includes("poc") || isAdmin;
     
     if (!hasValidRole) {
-      return `You need ${requiredRole} role to clone this dataset.`;
+      return (
+        <>
+          To clone this dataset to project group <strong>{projectGroupName}</strong>, you need <strong>{requiredRole}</strong> role in <strong>{projectGroupName}</strong>.
+        </>
+      );
     }
     return null;
   };

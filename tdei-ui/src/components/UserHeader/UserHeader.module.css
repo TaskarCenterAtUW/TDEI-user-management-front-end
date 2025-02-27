@@ -29,6 +29,9 @@
   color: #6e7897;
   display: flex;
   align-items: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100%;
 }
 .projectId {
   padding-top: 20px;
@@ -46,10 +49,14 @@
   justify-content: space-between;
   padding: 5px 15px 5px 15px;
   margin-left: 10px;
+  min-width: 525px;
+  overflow:hidden;
+  flex-shrink: 0;
 }
 .buttonContainer {
   display: flex;
   margin-left: 20px;
+  flex-wrap: nowrap;
 }
 
 .verticalLine {
@@ -76,3 +83,34 @@
 .font14 {
   font-size: 14px;
 }
+.keyContainer {
+  flex-grow: 1;
+  overflow: scroll;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media screen and (max-width: 768px) {
+  .apiKey {
+    overflow-x: auto; 
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    padding-bottom: 5px;
+  }
+
+  .maskedKey {
+    min-width: 525px;
+    width: auto;
+    max-width: none;
+  }
+
+  .buttonContainer {
+    margin-left: 5px;
+    flex-wrap: nowrap; 
+  }
+
+  .buttonContainer button {
+    font-size: 12px; 
+    padding: 3px 6px;
+  }
+}
+
