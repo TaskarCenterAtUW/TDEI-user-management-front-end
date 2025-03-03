@@ -6,13 +6,14 @@ import { GET_DATASETS } from "../../utils";
 import { getReleasedDatasets } from "../../services";
 
 function useGetReleasedDatasets(searchText = "",debounceDatasetIdQuery = "", dataType, projectId = "", validFrom = null, validTo = null, tdeiServiceId,sortField, sortOrder) {
-  const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const tdei_project_group_id = projectId === "" ? selectedProjectGroup?.tdei_project_group_id : projectId;
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    [GET_DATASETS, searchText,debounceDatasetIdQuery, dataType, tdei_project_group_id, refreshKey, projectId, validFrom, validTo,tdeiServiceId,sortField, sortOrder],
+    [GET_DATASETS, searchText,debounceDatasetIdQuery, dataType, tdei_project_group_id, refreshKey, validFrom, validTo,tdeiServiceId,sortField, sortOrder],
     ({ pageParam }) =>
-      getReleasedDatasets(searchText, debounceDatasetIdQuery, pageParam, dataType, projectId, validFrom, validTo,tdeiServiceId,sortField, sortOrder),
+      getReleasedDatasets(searchText, debounceDatasetIdQuery, pageParam, dataType, tdei_project_group_id, validFrom, validTo,tdeiServiceId,sortField, sortOrder),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10

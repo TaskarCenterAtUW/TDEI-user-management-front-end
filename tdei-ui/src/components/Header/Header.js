@@ -11,6 +11,7 @@ import resetPasswordIcon from "../../assets/img/reset_pass.svg";
 import logoutIcon from "../../assets/img/logout.svg";
 import ResetPassword from "../ResetPassword/ResetPassword";
 import useResetPassword from "../../hooks/useResetPassword";
+import { clear } from "../../store";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    dispatch(clear());
     window.location.reload();
   };
   const handleResetPassword = () => {
