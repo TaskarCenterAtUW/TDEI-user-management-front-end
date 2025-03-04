@@ -13,18 +13,20 @@ import * as yup from "yup";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
+import CustomModal from "../../components/SuccessModal/CustomModal";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showToast, setShowToast] = useState(false); 
+  const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const auth = useAuth();
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const initialValues = {
     firstName: "",
@@ -33,6 +35,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirm: "",
+    terms: false,
   };
 
   const validationSchema = yup.object().shape({
@@ -49,33 +52,35 @@ const Register = () => {
       ).required("Please enter password"),
     confirm: yup
       .string()
-      .oneOf([yup.ref("password"), null], "Confirm password does not match").required("Please confirm password"),
+      .oneOf([yup.ref("password"), null], "Confirm password does not match")
+      .required("Please confirm password"),
   });
 
-  const handleCreateAccount = async ({
-    firstName,
-    lastName,
-    email,
-    phone,
-    password,
-  }) => {
+  // Custom onSubmit that checks if T&C is accepted.
+  const handleSubmit = async (values, { setFieldError }) => {
+    if (!values.terms) {
+      setFieldError("terms", "Please accept Terms and Conditions to create your account");
+      setShowTermsModal(true);
+      return;
+    }
     setLoading(true);
     try {
       await axios.post(`${process.env.REACT_APP_URL}/register`, {
-        firstName,
-        lastName,
-        email,
-        phone,
-        password,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
       });
       setToastMessage("Registration successful!");
       setToastType("success");
       setShowToast(true);
+      setLoading(false);
       setTimeout(() => {
         navigate("/emailVerify", {
           state: {  
             actionText: "Your email verification link has been sent. Please verify your email before logging in.",
-            email: email
+            email: values.email
           }
         });
       }, 2000);
@@ -90,6 +95,11 @@ const Register = () => {
     setShowToast(false);
   };
 
+  // Handler for closing the Terms modal (OK button)
+  const handleCloseTermsModal = () => {
+    setShowTermsModal(false);
+  };
+
   return (
     <div className={style.registerContainer}>
       <Row className="justify-content-center align-items-center">
@@ -100,7 +110,7 @@ const Register = () => {
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
                 <Formik
                   initialValues={initialValues}
-                  onSubmit={handleCreateAccount}
+                  onSubmit={handleSubmit}
                   validationSchema={validationSchema}
                 >
                   {({
@@ -228,12 +238,34 @@ const Register = () => {
                           </Form.Control.Feedback>
                         </InputGroup>
                       </Form.Group>
+                      <Form.Group className="mb-3" controlId="terms">
+                        <Form.Check
+                          type="checkbox"
+                          label={
+                            <>
+                              I agree to the{" "}
+                              <a
+                                href="/terms.html"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Terms and Conditions
+                              </a>
+                            </>
+                          }
+                          name="terms"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          isInvalid={touched.terms && !!errors.terms}
+                          feedback={errors.terms}
+                        />
+                      </Form.Group>
 
                       <Button
                         className="tdei-primary-button"
                         variant="primary col-12 mx-auto"
                         type="submit"
-                        disabled={!dirty || !isValid}
+                        disabled={loading}
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
@@ -256,6 +288,14 @@ const Register = () => {
         handleClose={handleCloseToast}
         message={toastMessage}
         type={toastType}
+      />
+      <CustomModal
+        show={showTermsModal}
+        onHide={handleCloseTermsModal}
+        message="Please accept Terms and Conditions to create your account."
+        btnlabel="OK"
+        modaltype="error"
+        handler={handleCloseTermsModal}
       />
     </div>
   );

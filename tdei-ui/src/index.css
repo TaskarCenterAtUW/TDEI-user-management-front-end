@@ -50,6 +50,12 @@ body {
   color: var(--primary-color-dark);
   text-decoration: underline;
 }
+.tdei-primary-button:disabled {
+  background-color: #cccccc !important;
+  border-color: #cccccc !important;
+  color: #ffffff !important;
+  cursor: not-allowed;
+}
 
 .tdei-secondary-button {
   border-color: var(--secondary-color);

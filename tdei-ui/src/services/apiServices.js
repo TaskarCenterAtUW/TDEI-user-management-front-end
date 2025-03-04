@@ -83,11 +83,23 @@ export async function getApiKey({ queryKey }) {
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
   return res.data;
 }
-export async function getProjectGroupRoles({ queryKey }) {
-  const [, userId] = queryKey;
-  const res = await axios.get(`${url}/project-group-roles/${userId}`);
-  return res.data;
+export async function getProjectGroupRoles(userId, pageParam = 1, queryText = "") {
+  const params = {
+    page_no: pageParam,
+    page_size: 10,
+  };
+  if (queryText.trim()) {
+    params.searchText = queryText;
+  }
+
+  const res = await axios.get(`${url}/project-group-roles/${userId}`, { params });
+
+  return {
+    data: res.data,
+    pageParam,
+  };
 }
+
 export async function getProjectGroupList(searchText, page_no) {
   const res = await axios({
     url: `${url}/project-group`,
@@ -131,12 +143,12 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive,fromCloneDataset) {
   const params = {
     searchText,
     page_no: pageParam,
     page_size: 10,
-    tdei_project_group_id: isAdmin ? null : tdei_project_group_id,
+    tdei_project_group_id: isAdmin && !fromCloneDataset ? null : tdei_project_group_id,
   };
   if (service_type !== "") {
     params.service_type = service_type;
@@ -628,12 +640,12 @@ export async function editMetadata(data) {
 export async function cloneDataset(data) {
   const formData = new FormData();
   formData.append('tdei_project_group_id', data.selectedData[0].tdei_project_group_id);
-  formData.append('tdei_service_id', data.selectedData[0].tdei_service_id);
+  formData.append('tdei_service_id', data.selectedData[1].tdei_service_id);
   formData.append('tdei_dataset_id', data.tdei_dataset_id);
   if (data.selectedData[1] instanceof File) {
-    formData.append('file', data.selectedData[1]);
+    formData.append('file', data.selectedData[2]);
   } else {
-    const metadata = { ...data.selectedData[1] };
+    const metadata = { ...data.selectedData[2] };
     // Parse datasetArea and customMetadata fields
     try {
       if (typeof metadata.dataset_detail.dataset_area === 'string') {
@@ -666,7 +678,7 @@ export async function cloneDataset(data) {
   //   formData.append('changeset', data[2]);
   // }
 
-  const response = await axios.post(`${osmUrl}/dataset/clone/${data.tdei_dataset_id}/${data.selectedData[0].tdei_project_group_id}/${data.selectedData[0].tdei_service_id}`, formData, {
+  const response = await axios.post(`${osmUrl}/dataset/clone/${data.tdei_dataset_id}/${data.selectedData[0].tdei_project_group_id}/${data.selectedData[1].tdei_service_id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -763,5 +775,30 @@ export async function updateServiceStatus(data) {
   const res = await axios.put(
     `${url}/service/${tdei_project_group_id}/${tdei_service_id}/active/${status}`
   );
+  return res.data;
+}
+export async function downloadUsers() {
+  try {
+    const response = await axios.get(`${url}/users/download`, {
+      responseType: 'blob'
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = urlBlob;
+    a.download = `tdei-active-users.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  } catch (error) {
+    console.error('There was a problem with the download operation:', error);
+    if(error.status === 404){
+      return Promise.reject(new AxiosError("Download File Not Found!"));
+    }
+    return Promise.reject(new AxiosError(error));
+  }
+};
+export async function regenerateApiKey() {
+  const res = await axios.post(`${osmUrl}/regenerate-api-key`);
   return res.data;
 }

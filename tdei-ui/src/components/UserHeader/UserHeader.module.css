@@ -29,6 +29,9 @@
   color: #6e7897;
   display: flex;
   align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
 }
 .projectId {
   padding-top: 20px;
@@ -46,11 +49,15 @@
   justify-content: space-between;
   padding: 5px 15px 5px 15px;
   margin-left: 10px;
-  width: 475px;
+  min-width: 525px;
+  max-width: 48%;
+  overflow:hidden;
+  flex-shrink: 1;
 }
 .buttonContainer {
   display: flex;
   margin-left: 20px;
+  flex-wrap: nowrap;
 }
 
 .verticalLine {
@@ -76,4 +83,10 @@
 }
 .font14 {
   font-size: 14px;
+}
+.keyContainer {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

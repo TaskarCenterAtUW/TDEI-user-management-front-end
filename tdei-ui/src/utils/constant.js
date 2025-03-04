@@ -28,6 +28,11 @@ export const ADMIN_SIDE_NAV = [
     icon: servicesIcon,
   },
   {
+    linkName: "Members",
+    to: "/members",
+    icon: membersIcon,
+  },
+  {
     linkName:"Datasets",
     to:"/datasets",
     icon: datasetIcon
@@ -44,6 +49,11 @@ export const POC_SIDE_NAV = [
     linkName: "Dashboard",
     to: "/",
     icon: dashboardIcon,
+  },
+  {
+    linkName: "Project Groups",
+    to: "/projectGroupSwitch",
+    icon: projectGroupIcon,
   },
   {
     linkName: "Services",

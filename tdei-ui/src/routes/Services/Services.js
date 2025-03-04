@@ -56,7 +56,7 @@ const Services = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery, user?.isAdmin, serviceType, showInactive);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType, showInactive,"",false);
   const [statusModalMessage, setStatusModalMessage] = React.useState("");
   const [statusModalTitle, setStatusModalTitle] = React.useState("");
   const [statusModalAction, setStatusModalAction] = React.useState(null);
