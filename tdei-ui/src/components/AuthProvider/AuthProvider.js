@@ -25,7 +25,6 @@ const AuthProvider = ({ children }) => {
       const decodedToken = JSON.parse(window.atob(base64));
           // Check if the token is expired
           if (decodedToken.exp * 1000 < Date.now()) { 
-            console.warn("Token has expired. Logging out...");
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             dispatch(clear());
