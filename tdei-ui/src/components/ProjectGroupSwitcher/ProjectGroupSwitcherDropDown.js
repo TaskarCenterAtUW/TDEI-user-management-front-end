@@ -15,12 +15,6 @@ const ProjectGroupSwitcherDropDown = () => {
   const { data = [] } = useGetProjectGroupRoles();
 
   // // Load initial value from localStorage when component mounts
-  // useEffect(() => {
-  //   const savedProjectGroup = JSON.parse(localStorage.getItem("selectedProjectGroup"));
-  //   if (savedProjectGroup && !selectedProjectGroup?.tdei_project_group_id) {
-  //     dispatch(set(savedProjectGroup));
-  //   }
-  // }, [dispatch, selectedProjectGroup]);
   useEffect(() => {
     const savedProjectGroup = JSON.parse(localStorage.getItem("selectedProjectGroup"));
 
