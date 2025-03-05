@@ -29,7 +29,6 @@ const ProjectGroupSwitcherDropDown = () => {
       );
       // Only clear selection if the project is confirmed to be deleted
       if (!projectExists) {
-        console.warn("Selected project no longer exists. Clearing selection...");
         dispatch(clear());
       }
     }
@@ -60,7 +59,6 @@ const ProjectGroupSwitcherDropDown = () => {
     ) {
       const firstProjectGroup = data.pages[0].data[0];
       if (firstProjectGroup) {
-        console.log("Setting first project group:", firstProjectGroup);
         dispatch(set(firstProjectGroup));
       }
     }

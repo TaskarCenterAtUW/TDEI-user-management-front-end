@@ -51,14 +51,7 @@ const ProjectGroupSwitch = () => {
         useEffect(() => {
             const handleStorageChange = (event) => {
                 if (event.key === "selectedProjectGroup") {
-                    console.log("Storage event detected. New value:", event.newValue);
                     const updatedProjectGroup = JSON.parse(localStorage.getItem("selectedProjectGroup"));
-                    
-                    if (updatedProjectGroup) {
-                        console.log("Updated Project Group:", updatedProjectGroup);
-                        console.log("Name:", updatedProjectGroup.name);
-                    }
-        
                     if (updatedProjectGroup && updatedProjectGroup.tdei_project_group_id !== selectedProjectGroup?.tdei_project_group_id) {
                         dispatch(set(updatedProjectGroup));
                     }

@@ -29,7 +29,6 @@ const projectGroupRolesSlice = createSlice({
         tdei_project_group_id: action.payload.tdei_project_group_id,
         roles: action.payload.roles || [],
       };
-      console.log("Saving to localStorage:", newState);
       localStorage.setItem("selectedProjectGroup", JSON.stringify(newState));
       return newState;
     },
