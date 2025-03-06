@@ -5,9 +5,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ReLoginModal from "../ReLoginModal/ReLoginModal";
 import { setTokenExpiredCallback } from "../../services/tokenEventEmitter";
 import ResponseToast from "../ToastMessage/ResponseToast";
+import { clear } from "../../store";
+import { useDispatch } from "react-redux";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isReLoginOpen, setIsReLoginOpen] = useState(false);
@@ -20,6 +23,13 @@ const AuthProvider = ({ children }) => {
       const base64Url = accessToken.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const decodedToken = JSON.parse(window.atob(base64));
+          // Check if the token is expired
+          if (decodedToken.exp * 1000 < Date.now()) { 
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            dispatch(clear());
+            return null; 
+        }
       return decodedToken;
     } catch (error) {
       console.error("Failed to decode token:", error);
@@ -146,6 +156,7 @@ const AuthProvider = ({ children }) => {
   const signout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    dispatch(clear());
     setUser(null);
     navigate("/login");
   };

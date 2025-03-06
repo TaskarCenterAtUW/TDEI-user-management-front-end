@@ -111,6 +111,7 @@ axios.interceptors.response.use(
       //----------------------------
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("selectedProjectGroup");
       if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
         //----------------------------
         //Case when re login fails on session timeout popup
