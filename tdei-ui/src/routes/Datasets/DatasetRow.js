@@ -6,10 +6,13 @@ import { workspaceUrl } from '../../services';
 import DatasetsActions from "./DatasetsActions";
 import ClipboardCopy from "../Services/ClipBoardCopy";
 import { updatedTime } from "../../utils";
+import { useDispatch } from "react-redux";
+import { show } from "../../store/notificationModal.slice";
 
 const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
     const { metadata, data_type, service, status, uploaded_timestamp, tdei_dataset_id, project_group } = dataset;
     const { data_provenance, dataset_detail } = metadata;
+    const dispatch = useDispatch();
 
     const getStatusColor = () => {
         if (isReleasedList) {
@@ -34,8 +37,33 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
     const handleDropdownSelect = (eventKey) => {
         if (eventKey === 'openInWorkspace') {
             window.open(`${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`, '_blank')?.focus();
+        } else if (eventKey === 'downloadMetadata') {
+            downloadMetadata(dataset.metadata, dataset.tdei_dataset_id);
         } else {
             onAction(eventKey, dataset);
+        }
+    };
+
+    const downloadMetadata = (metadata, datasetId) => {
+        if (!metadata || Object.keys(metadata).length === 0) {
+            dispatch(show({ message: "Metadata is unavailable for this dataset.", type: "danger" }));
+            return;
+        }
+        try {
+            const metadataJson = JSON.stringify(metadata, null, 2);
+            const blob = new Blob([metadataJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+    
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `metadata_${datasetId}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading metadata:", error);
+            dispatch(show({ message: "An error occurred while downloading metadata.", type: "danger" }));
         }
     };
 

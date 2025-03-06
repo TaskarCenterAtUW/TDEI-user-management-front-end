@@ -57,6 +57,13 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
       icon: editImage,
       condition: true,
     },
+    // "Download Metadata" is available if the user is isDataGenerator || user?.isAdmin || isMember
+    canClone && {
+      key: "downloadMetadata",
+      label: "Download Metadata",
+      icon: downloadDatasetImg,
+      condition: true,
+    },
     // "Add Inclination" is available for non-released OSW datasets if the user is OSW generator and the status isn't "Publish"
     !isReleasedDataset && canAddIncline && status !== "Publish" && data_type === 'osw' && {
       key: "inclination",
