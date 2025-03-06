@@ -27,7 +27,7 @@ const Datasets = () => {
                   Here are the list of datasets available
               </div>
           </div>
-          {(isWritable || user.isAdmin) &&  
+          {isWritable &&  
           (<div>
               <Button onClick={handleUploadNav} className="tdei-primary-button">
                   Upload Dataset
