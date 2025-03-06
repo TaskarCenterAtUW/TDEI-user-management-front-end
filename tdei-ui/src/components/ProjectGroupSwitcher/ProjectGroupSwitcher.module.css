@@ -207,3 +207,17 @@
   border-radius: 5px;
   background: #fff;
 }
+.selectedProjectGroupItem {
+  font-weight: bold;
+  background-color: #e9ecef;
+  pointer-events: none;
+}
+
+.seeAllOptions {
+  font-weight: bold;
+  text-align: center;
+  color:var(--primary-color);
+}
+.seeAllOptions:hover {
+  background-color: #f8f9fa;
+}

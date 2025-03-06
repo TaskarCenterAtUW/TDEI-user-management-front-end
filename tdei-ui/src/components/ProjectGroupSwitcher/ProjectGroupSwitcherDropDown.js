@@ -64,6 +64,9 @@ const ProjectGroupSwitcherDropDown = () => {
     }
   }, [data, dispatch, selectedProjectGroup]);
 
+  const projectGroups = data?.pages?.flatMap((page) => page.data) || [];
+  const limitedProjectGroups = projectGroups.slice(0, 5);
+
   return (
     <div style={{ marginRight: "1rem" }}>
       <div className={style.projectGroupLabel}>Project Group</div>
@@ -74,14 +77,41 @@ const ProjectGroupSwitcherDropDown = () => {
           </div>
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          <Dropdown.Header>{selectedProjectGroup?.name || "Switch Project Group"}</Dropdown.Header>
-          <Dropdown.Item onClick={() => navigate("/projectGroupSwitch")}>
-            Switch Project Group
-          </Dropdown.Item>
+          {limitedProjectGroups.map((projectGroup) => (
+            <Dropdown.Item
+              key={projectGroup.tdei_project_group_id}
+              onClick={() => {
+                if (projectGroup.tdei_project_group_id !== selectedProjectGroup?.tdei_project_group_id) {
+                  dispatch(set(projectGroup));
+                }
+              }}
+              disabled={projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id}
+              className={
+                projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id
+                  ? style.selectedProjectGroupItem
+                  : ""
+              }
+            >
+              {projectGroup.project_group_name}
+            </Dropdown.Item>
+          ))}
+
+          {projectGroups.length > 5 && (
+            <>
+              <Dropdown.Divider />
+              <Dropdown.Item
+                onClick={() => navigate("/projectGroupSwitch")}
+                className={style.seeAllOptions}
+              >
+                See all options
+              </Dropdown.Item>
+            </>
+          )}
         </Dropdown.Menu>
       </Dropdown>
     </div>
   );
+  
 };
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
