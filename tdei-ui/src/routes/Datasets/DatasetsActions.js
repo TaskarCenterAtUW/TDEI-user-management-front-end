@@ -57,8 +57,8 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
       icon: editImage,
       condition: true,
     },
-    // "Download Metadata" is available if the user is isDataGenerator || user?.isAdmin || isMember
-    canClone && {
+    // "Download Metadata" is available to all users
+   {
       key: "downloadMetadata",
       label: "Download Metadata",
       icon: downloadDatasetImg,
