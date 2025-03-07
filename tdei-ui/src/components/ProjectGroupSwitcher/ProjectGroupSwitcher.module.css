@@ -211,13 +211,48 @@
   font-weight: bold;
   background-color: #e9ecef;
   pointer-events: none;
+  font-size: 14px;
+  padding: 6px 12px;
 }
 
 .seeAllOptions {
+  padding: 8px;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
   color:var(--primary-color);
+  font-size: 16px;
 }
 .seeAllOptions:hover {
   background-color: #f8f9fa;
+}
+.currentProjectGroupContainer,
+.dropdownHeader {
+  padding: 8px;
+  font-size: 16px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+}
+
+.currentProjectGroupLabel {
+  padding: 8px 0;
+  font-weight: bold;
+  color: #555;
+  display: block;
+  font-size: 16px;
+}
+
+.currentProjectGroupName {
+  font-size: 14px;
+  color:var(--primary-color);
+  padding: 0px 4px 0px;
+}
+
+.projectGroupNames {
+  font-size: 14px;
+  padding: 6px 12px;
+}
+.dropdownMenu {
+  min-width: 240px;
+  padding: 8px;
 }

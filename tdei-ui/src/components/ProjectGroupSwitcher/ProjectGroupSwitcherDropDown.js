@@ -68,7 +68,7 @@ const ProjectGroupSwitcherDropDown = () => {
   const limitedProjectGroups = projectGroups.slice(0, 5);
 
   return (
-    <div style={{ marginRight: "1rem" }}>
+    <div style={{ marginRight: "1rem",alignSelf:'end' }}>
       <div className={style.projectGroupLabel}>Project Group</div>
       <Dropdown className={style.customDropdown} align="end">
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
@@ -76,7 +76,15 @@ const ProjectGroupSwitcherDropDown = () => {
             {selectedProjectGroup?.name || "Select Project Group"}
           </div>
         </Dropdown.Toggle>
-        <Dropdown.Menu>
+        <Dropdown.Menu className={style.dropdownMenu}>
+        <div className={style.currentProjectGroupContainer}>
+            <span className={style.currentProjectGroupLabel}>Current Project Group:</span>
+            <span className={style.currentProjectGroupName}>
+              {selectedProjectGroup?.name || "None Selected"}
+            </span>
+          </div>
+        <Dropdown.Divider />
+        <Dropdown.Header className={style.dropdownHeader}>{"Switch Project Group"}</Dropdown.Header>
           {limitedProjectGroups.map((projectGroup) => (
             <Dropdown.Item
               key={projectGroup.tdei_project_group_id}
@@ -89,7 +97,7 @@ const ProjectGroupSwitcherDropDown = () => {
               className={
                 projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id
                   ? style.selectedProjectGroupItem
-                  : ""
+                  : style.projectGroupNames
               }
             >
               {projectGroup.project_group_name}
@@ -103,7 +111,7 @@ const ProjectGroupSwitcherDropDown = () => {
                 onClick={() => navigate("/projectGroupSwitch")}
                 className={style.seeAllOptions}
               >
-                See all options
+                See All Groups
               </Dropdown.Item>
             </>
           )}
