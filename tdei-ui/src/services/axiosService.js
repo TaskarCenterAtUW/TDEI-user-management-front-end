@@ -110,7 +110,7 @@ axios.interceptors.response.use(
       //Removing local storage items so that when user refreshes or clicks on back button, user will be logged out
       //----------------------------
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      // localStorage.removeItem("refreshToken");
       localStorage.removeItem("selectedProjectGroup");
       if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
         //----------------------------

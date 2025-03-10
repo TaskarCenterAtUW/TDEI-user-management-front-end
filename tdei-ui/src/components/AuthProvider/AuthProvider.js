@@ -25,6 +25,7 @@ const AuthProvider = ({ children }) => {
       const decodedToken = JSON.parse(window.atob(base64));
           // Check if the token is expired
           if (decodedToken.exp * 1000 < Date.now()) { 
+            console.log("clearing token in docodetoken")
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             dispatch(clear());
@@ -52,8 +53,11 @@ const AuthProvider = ({ children }) => {
 
 
   React.useEffect(() => {
+    console.log("AuthProvider useEffect ran..."); 
     const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
+    const hadSession = localStorage.getItem("refreshToken");
+    if (!accessToken && hadSession) {
+      console.log("No accessToken found, hadSession:", hadSession);
       setToastMessage({
         showtoast: true,
         message: "Session expired. You have been logged out.",
@@ -65,7 +69,11 @@ const AuthProvider = ({ children }) => {
     }
     else {
       let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
+      if (tokenDetails) {
+        setUserContext(tokenDetails);
+      } else {
+        signout();
+      }
     }
     // Register the token expired event handler
     setTokenExpiredCallback(() => {
@@ -84,12 +92,13 @@ const AuthProvider = ({ children }) => {
     // Anonymous paths
     const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify"];
     if (!accessToken && location && !excludePaths.includes(location.pathname) && location.pathname !== '/') {
+      console.log("Redirecting due to missing accessToken...");
       setToastMessage({
         showtoast: true,
         message: "Session expired. You have been logged out.",
         type: "warning",
       });
-      window.location.href = "/";
+      // window.location.href = "/";
     }
   }, [location]);
 
@@ -112,9 +121,13 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("refreshToken", refreshToken);
 
       let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
-      successCallback(response);
-      navigate(origin);
+      if (tokenDetails) {
+        setUserContext(tokenDetails);
+        successCallback(response);
+        navigate(origin);
+      } else {
+        signout();
+      }
     } catch (err) {
       console.log(err);
       errorCallback(err);
