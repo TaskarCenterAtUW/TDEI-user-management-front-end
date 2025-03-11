@@ -29,6 +29,8 @@ async function refreshRequest(originalRequest) {
     localStorage.setItem("accessToken", access_token);
     localStorage.setItem("refreshToken", refresh_token);
     console.log("Token refreshed successfully");
+    // Dispatch a global event to notify all listeners that the token has been refreshed.
+    window.dispatchEvent(new Event("tokenRefreshed"));
     // Return new access token to use it for retrying
     return access_token;
     // }
