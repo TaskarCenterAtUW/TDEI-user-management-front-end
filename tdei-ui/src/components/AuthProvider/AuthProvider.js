@@ -7,10 +7,12 @@ import { setTokenExpiredCallback } from "../../services/tokenEventEmitter";
 import ResponseToast from "../ToastMessage/ResponseToast";
 import { clear } from "../../store";
 import { useDispatch } from "react-redux";
+import { useQueryClient } from "react-query";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isReLoginOpen, setIsReLoginOpen] = useState(false);
@@ -53,7 +55,8 @@ const AuthProvider = ({ children }) => {
 
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
+    const hadSession = localStorage.getItem("refreshToken");
+    if (!accessToken && hadSession) {
       setToastMessage({
         showtoast: true,
         message: "Session expired. You have been logged out.",
@@ -65,7 +68,11 @@ const AuthProvider = ({ children }) => {
     }
     else {
       let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
+      if (tokenDetails) {
+        setUserContext(tokenDetails);
+      } else {
+        signout();
+      }
     }
     // Register the token expired event handler
     setTokenExpiredCallback(() => {
@@ -89,9 +96,23 @@ const AuthProvider = ({ children }) => {
         message: "Session expired. You have been logged out.",
         type: "warning",
       });
-      window.location.href = "/";
+      // window.location.href = "/";
     }
   }, [location]);
+
+  /**
+   * This function is triggered when the "tokenRefreshed" event is dispatched.
+   * It forces React Query to re-fetch all queries, ensuring that the UI gets fresh data.
+   */
+  React.useEffect(() => {
+    const handleTokenRefresh = () => {
+      queryClient.invalidateQueries();
+    };
+    // Add event listener that listens for "tokenRefreshed" events
+    window.addEventListener("tokenRefreshed", handleTokenRefresh);
+    // Remove the event listener when the component unmounts
+    return () => window.removeEventListener("tokenRefreshed", handleTokenRefresh);
+  }, []);
 
   const signin = async (
     { username, password },
@@ -112,9 +133,13 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("refreshToken", refreshToken);
 
       let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
-      successCallback(response);
-      navigate(origin);
+      if (tokenDetails) {
+        setUserContext(tokenDetails);
+        successCallback(response);
+        navigate(origin);
+      } else {
+        signout();
+      }
     } catch (err) {
       console.log(err);
       errorCallback(err);
