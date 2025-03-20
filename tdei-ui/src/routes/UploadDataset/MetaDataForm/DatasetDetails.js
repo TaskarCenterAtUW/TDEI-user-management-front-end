@@ -247,6 +247,9 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
           </div>
           <div id="custom_metadata" className="section-style">
             <Form.Label>Custom Metadata</Form.Label>
+              <div className="tdei-hint-text">
+                Enter metadata as a valid JSON string. e.g., {'{"key": "value"}'}
+              </div>
             <div className="jsonContent">
               <Form.Control
                 as="textarea"

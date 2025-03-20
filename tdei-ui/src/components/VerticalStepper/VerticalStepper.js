@@ -298,12 +298,19 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
     // Validate schema_version based on service_type
     const serviceType = selectedData[0]?.service_type;
     const schemaVersion = dataset_detail.schema_version;
+    const custom_metadata = dataset_detail.custom_metadata;
     const schemaVersionMapping = {
       osw: "v0.2",
       flex: "v2.0",
       pathways: "v1.0",
     };
-
+    if (custom_metadata) {
+      try {
+        JSON.parse(custom_metadata);
+      } catch (e) {
+        return "Custom Metadata is not a valid JSON string.";
+      }
+    }
     if (schemaVersionMapping[serviceType] && schemaVersion !== schemaVersionMapping[serviceType]) {
       return `For service type "${serviceType}", Schema Version must be "${schemaVersionMapping[serviceType]}"`;
     }
