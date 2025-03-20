@@ -18,13 +18,26 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 - Do npm run build
 - This will builds the app for production to the `build` folder.
 
-
-## Environment vriables
+## Environment Variables
 
 ```shell
 REACT_APP_URL = <User management backend URL>
-REACT_APP_OSM_URL=<gateway URL for TDEI APIs>
+REACT_APP_MAP_KEY = <Map API Key for mapbox>
+REACT_APP_OSM_URL = <gateway URL for TDEI APIs>
+REACT_APP_ADMIN_EMAIL = <Admin email>
+REACT_APP_TDEI_WORKSPACE_URL = <TDEI Workspace URL>
 ```
+
+## Deployment
+
+When a pull request (PR) is merged, the application is automatically deployed based on the target branch:
+
+- **`dev` branch**: Deploys the application to the **Development** environment.
+- **`stage` branch**: Deploys the application to the **Staging** environment.
+- **`main` branch**: Deploys the application to the **Production** environment.
+
+Deployment workflows are managed via GitHub Actions, defined within the `.github/workflows` directory.
+
 
 ## For changing brand color and font
 
