@@ -14,6 +14,7 @@ import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
 import useIsOswGenerator from '../../hooks/useIsOswGenerator';
 import useIsMember from '../../hooks/roles/useIsMember';
 import { useAuth } from "../../hooks/useAuth";
+import useIsDataTypeGenerator from '../../hooks/useIsDataTypeGenerator';
 
 const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => {
   const { user } = useAuth();
@@ -21,11 +22,14 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
   const isMember = useIsMember();
   const isOswGenerator = useIsOswGenerator();
   const isDataGenerator = useIsDatasetsAccessible();
+  //check if user has "<data_type>_data_generator" role
+  const isDataTypeGenerator = useIsDataTypeGenerator(data_type);
 
   const canManageUser = isPocUser || user?.isAdmin;
   const canModifyDataset = isDataGenerator || user?.isAdmin;
   const canClone = isDataGenerator || user?.isAdmin || isMember;
   const canAddIncline = isPocUser || user?.isAdmin || isOswGenerator;
+  const canPublish = isPocUser || user?.isAdmin || isDataTypeGenerator;
   
   //Role based available actions
   const actions = [
@@ -37,7 +41,8 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
       condition: true,
     },
     // "Release" is available for non-released datasets if the user can manage the dataset and the status isn't "Publish"
-    !isReleasedDataset && canManageUser && status !== "Publish" && {
+    // User can release if they're a POC, an admin, or a <data_type>_data_generator
+    !isReleasedDataset && canPublish && status !== "Publish" && {
       key: "release",
       label: "Release",
       icon: releaseIcon,

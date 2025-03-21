@@ -80,7 +80,8 @@ export async function getRoles() {
 
 export async function getApiKey({ queryKey }) {
   const [, userId] = queryKey;
-  const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
+  const encodedEmail = encodeURIComponent(userId); 
+  const res = await axios.get(`${url}/user-profile?user_name=${encodedEmail}`);
   return res.data;
 }
 export async function getProjectGroupRoles(userId, pageParam = 1, queryText = "") {
