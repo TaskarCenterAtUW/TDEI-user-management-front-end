@@ -114,6 +114,22 @@ const AuthProvider = ({ children }) => {
     return () => window.removeEventListener("tokenRefreshed", handleTokenRefresh);
   }, []);
 
+  // This effect ensures that if any other tab sets the "forceRefresh" key in localStorage,
+  // this tab will receive a "storage" event and immediately reload. That way, all tabs
+  // stay synchronized whenever a forced refresh is triggered from elsewhere.
+  React.useEffect(() => {
+    function handleStorageEvent(event) {
+      if (event.key === "forceRefresh") {
+        window.location.reload();
+      }
+    }
+    window.addEventListener("storage", handleStorageEvent);
+    return () => {
+      window.removeEventListener("storage", handleStorageEvent);
+    };
+  }, []);
+
+
   const signin = async (
     { username, password },
     successCallback,
@@ -131,6 +147,9 @@ const AuthProvider = ({ children }) => {
       const refreshToken = response.data.refresh_token;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+
+      // Force every other tab to refresh.
+      localStorage.setItem("forceRefresh", Date.now().toString());
 
       let tokenDetails = decodeToken(accessToken);
       if (tokenDetails) {
