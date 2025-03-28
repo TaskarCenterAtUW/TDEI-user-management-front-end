@@ -47,6 +47,22 @@ const ProjectGroupSwitch = () => {
             navigate("/");
         }
     }
+        // Sync Redux state when localStorage changes (cross-tab update)
+        useEffect(() => {
+            const handleStorageChange = (event) => {
+                if (event.key === "selectedProjectGroup") {
+                    const updatedProjectGroup = JSON.parse(localStorage.getItem("selectedProjectGroup"));
+                    if (updatedProjectGroup && updatedProjectGroup.tdei_project_group_id !== selectedProjectGroup?.tdei_project_group_id) {
+                        dispatch(set(updatedProjectGroup));
+                    }
+                }
+            };
+        
+            window.addEventListener("storage", handleStorageChange);
+            return () => window.removeEventListener("storage", handleStorageChange);
+        }, [dispatch, selectedProjectGroup?.tdei_project_group_id]);
+        
+        
     const handleSearch = (e) => {
         setDebounceQuery(e.target.value);
     };

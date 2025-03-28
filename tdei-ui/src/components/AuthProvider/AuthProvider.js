@@ -5,9 +5,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ReLoginModal from "../ReLoginModal/ReLoginModal";
 import { setTokenExpiredCallback } from "../../services/tokenEventEmitter";
 import ResponseToast from "../ToastMessage/ResponseToast";
+import { clear } from "../../store";
+import { useDispatch } from "react-redux";
+import { useQueryClient } from "react-query";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isReLoginOpen, setIsReLoginOpen] = useState(false);
@@ -20,6 +25,13 @@ const AuthProvider = ({ children }) => {
       const base64Url = accessToken.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const decodedToken = JSON.parse(window.atob(base64));
+          // Check if the token is expired
+          if (decodedToken.exp * 1000 < Date.now()) { 
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            dispatch(clear());
+            return null; 
+        }
       return decodedToken;
     } catch (error) {
       console.error("Failed to decode token:", error);
@@ -43,7 +55,8 @@ const AuthProvider = ({ children }) => {
 
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
+    const hadSession = localStorage.getItem("refreshToken");
+    if (!accessToken && hadSession) {
       setToastMessage({
         showtoast: true,
         message: "Session expired. You have been logged out.",
@@ -55,7 +68,11 @@ const AuthProvider = ({ children }) => {
     }
     else {
       let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
+      if (tokenDetails) {
+        setUserContext(tokenDetails);
+      } else {
+        signout();
+      }
     }
     // Register the token expired event handler
     setTokenExpiredCallback(() => {
@@ -79,9 +96,47 @@ const AuthProvider = ({ children }) => {
         message: "Session expired. You have been logged out.",
         type: "warning",
       });
-      window.location.href = "/";
+      // window.location.href = "/";
     }
   }, [location]);
+
+  /**
+   * This function is triggered when the "tokenRefreshed" event is dispatched.
+   * It forces React Query to re-fetch all queries, ensuring that the UI gets fresh data.
+   */
+  React.useEffect(() => {
+    const handleTokenRefresh = () => {
+      queryClient.invalidateQueries();
+    };
+    // Add event listener that listens for "tokenRefreshed" events
+    window.addEventListener("tokenRefreshed", handleTokenRefresh);
+    // Remove the event listener when the component unmounts
+    return () => window.removeEventListener("tokenRefreshed", handleTokenRefresh);
+  }, []);
+
+  // This effect ensures that if any other tab sets the "forceRefresh" key in localStorage,
+  // this tab will receive a "storage" event and immediately reload. That way, all tabs
+  // stay synchronized whenever a forced refresh is triggered from elsewhere.
+  React.useEffect(() => {
+    function handleStorageEvent(event) {
+      switch (event.key) {
+        case "forceRefresh":
+          window.location.reload();
+          break;
+        case "forceLogout":
+          window.location.replace("/login");
+          break;
+        default:
+          // do nothing
+          break;
+      }
+    }
+    window.addEventListener("storage", handleStorageEvent);
+    return () => {
+      window.removeEventListener("storage", handleStorageEvent);
+    };
+  }, []);
+
 
   const signin = async (
     { username, password },
@@ -101,10 +156,17 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
+      // Force every other tab to refresh.
+      localStorage.setItem("forceRefresh", Date.now().toString());
+
       let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
-      successCallback(response);
-      navigate(origin);
+      if (tokenDetails) {
+        setUserContext(tokenDetails);
+        successCallback(response);
+        navigate(origin);
+      } else {
+        signout();
+      }
     } catch (err) {
       console.log(err);
       errorCallback(err);
@@ -146,6 +208,7 @@ const AuthProvider = ({ children }) => {
   const signout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    dispatch(clear());
     setUser(null);
     navigate("/login");
   };
