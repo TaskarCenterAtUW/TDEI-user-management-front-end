@@ -119,8 +119,16 @@ const AuthProvider = ({ children }) => {
   // stay synchronized whenever a forced refresh is triggered from elsewhere.
   React.useEffect(() => {
     function handleStorageEvent(event) {
-      if (event.key === "forceRefresh") {
-        window.location.reload();
+      switch (event.key) {
+        case "forceRefresh":
+          window.location.reload();
+          break;
+        case "forceLogout":
+          window.location.replace("/login");
+          break;
+        default:
+          // do nothing
+          break;
       }
     }
     window.addEventListener("storage", handleStorageEvent);

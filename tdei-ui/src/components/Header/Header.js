@@ -20,11 +20,17 @@ const Header = () => {
   const [showModal, setShowModal] = React.useState(false);
 
   const handleLogout = () => {
+    //Broadcast a 'forceLogout' event to other tabs
+    localStorage.setItem("forceLogout", Date.now().toString());
+    setTimeout(() => {
+      localStorage.removeItem("forceLogout");
+    }, 0);
+    dispatch(clear());
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    dispatch(clear());
     window.location.reload();
   };
+  
   const handleResetPassword = () => {
     setShowModal(true);
   };
