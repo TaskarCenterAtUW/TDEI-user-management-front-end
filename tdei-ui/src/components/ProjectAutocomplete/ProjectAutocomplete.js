@@ -75,7 +75,6 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
     setProjectSearchText(projectGroup.project_group_name)
     setShowDropdown(false);
     onSelectProjectGroup(projectGroup.tdei_project_group_id);
-    console.log("Selected Project Group ID:", projectGroup.tdei_project_group_id); 
   };
 
   const handleClickOutside = useCallback(
