@@ -11,6 +11,7 @@ import resetPasswordIcon from "../../assets/img/reset_pass.svg";
 import logoutIcon from "../../assets/img/logout.svg";
 import ResetPassword from "../ResetPassword/ResetPassword";
 import useResetPassword from "../../hooks/useResetPassword";
+import { clear } from "../../store";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -19,10 +20,17 @@ const Header = () => {
   const [showModal, setShowModal] = React.useState(false);
 
   const handleLogout = () => {
+    //Broadcast a 'forceLogout' event to other tabs
+    localStorage.setItem("forceLogout", Date.now().toString());
+    setTimeout(() => {
+      localStorage.removeItem("forceLogout");
+    }, 0);
+    dispatch(clear());
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     window.location.reload();
   };
+  
   const handleResetPassword = () => {
     setShowModal(true);
   };

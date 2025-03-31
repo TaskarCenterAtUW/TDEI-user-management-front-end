@@ -5,10 +5,12 @@ import * as yup from "yup";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import style from './ReLoginModal.module.css';
+import { useDispatch } from "react-redux";
+import { clear } from "../../store";
 
 const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const dispatch = useDispatch();
   const validationSchema = yup.object().shape({
     password: yup.string().required("Password is required"),
   });
@@ -17,6 +19,12 @@ const ReLoginModal = ({ open, onClose, onReLogin, email }) => {
     setShowPassword(!showPassword);
   };
   const handleLogout = () => {
+    //Broadcast a 'forceLogout' event to other tabs
+    localStorage.setItem("forceLogout", Date.now().toString());
+    setTimeout(() => {
+      localStorage.removeItem("forceLogout");
+    }, 0);
+    dispatch(clear());
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     window.location.reload();

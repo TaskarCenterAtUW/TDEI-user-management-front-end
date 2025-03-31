@@ -29,6 +29,8 @@ async function refreshRequest(originalRequest) {
     localStorage.setItem("accessToken", access_token);
     localStorage.setItem("refreshToken", refresh_token);
     console.log("Token refreshed successfully");
+    // Dispatch a global event to notify all listeners that the token has been refreshed.
+    window.dispatchEvent(new Event("tokenRefreshed"));
     // Return new access token to use it for retrying
     return access_token;
     // }
@@ -110,7 +112,8 @@ axios.interceptors.response.use(
       //Removing local storage items so that when user refreshes or clicks on back button, user will be logged out
       //----------------------------
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      // localStorage.removeItem("refreshToken");
+      localStorage.removeItem("selectedProjectGroup");
       if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
         //----------------------------
         //Case when re login fails on session timeout popup

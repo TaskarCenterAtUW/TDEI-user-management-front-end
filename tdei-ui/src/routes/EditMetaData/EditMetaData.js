@@ -267,6 +267,13 @@ export default function EditMetadata() {
         if (!validDataSources.includes(dataset_detail.data_source)) {
             return `Data Source must be one of: ${validDataSources.join(", ")}`;
         }
+        if (dataset_detail.custom_metadata) {
+            try {
+                JSON.parse(dataset_detail.custom_metadata);
+            } catch (e) {
+                return "Custom Metadata is not a valid JSON string.";
+            }
+        }
 
         // Validate schema_version based on service_type
         const serviceType = dataset.data_type;

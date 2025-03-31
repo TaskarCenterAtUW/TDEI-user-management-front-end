@@ -11,6 +11,7 @@ import ResponseToast from "../ToastMessage/ResponseToast";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import style from './ResetPassword.module.css';
+import { clear } from "../../store";
 
 const ResetPassword = (props) => {
   const { user } = useAuth();
@@ -48,6 +49,7 @@ const ResetPassword = (props) => {
     setTimeout(() => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      dispatch(clear());
       window.location.reload();
     }, 2000);
   };
