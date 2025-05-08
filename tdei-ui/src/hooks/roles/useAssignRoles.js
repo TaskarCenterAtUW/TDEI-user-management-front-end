@@ -8,7 +8,10 @@ function useAssignRoles(mutationOptions) {
     onSuccess: (data) => {
       mutationOptions.onSuccess(data);
     },
-    onError: (err) => {
+    onError: (err, variables) => {
+      if (err?.response?.status === 404) {
+        err.response.data = `The user '${variables.user_name}' not registered with TDEI`;
+      }
       mutationOptions.onError(err);
     },
   });
