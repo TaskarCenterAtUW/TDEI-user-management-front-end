@@ -107,12 +107,12 @@ const AssignRoles = (props) => {
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-             {props.isEdit ? "Assign Roles" : "Assign Role to New User"} 
+              {props.isEdit ? "Assign Roles" : "Assign Role to New User"}
             </Modal.Title>
           </Modal.Header>
           {assignRolesError ? (
             <Alert variant={"danger"}>
-              {error.data || "Error in Assigning roles"}
+              {error.response.data || "Error in Assigning roles"}
             </Alert>
           ) : null}
           <Formik
@@ -202,8 +202,8 @@ const AssignRoles = (props) => {
                               <div className={style.roleInfoBlock}>
                                 <div className={style.roleName}>{val.name}</div>
                                 <div className={style.roleDesc}>
-                                {val.name === "member" ? "A standard project group member with limited permissions." : val.description}
-                              </div>
+                                  {val.name === "member" ? "A standard project group member with limited permissions." : val.description}
+                                </div>
                               </div>
                               <div className={style.successIcon}>
                                 <img
