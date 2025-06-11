@@ -10,10 +10,11 @@ import { useDispatch } from "react-redux";
 import JSZip from "jszip";
 
 // Functional component Dropzone
-function Dropzone({ onDrop, accept, format, selectedFile }) {
+function Dropzone({ onDrop, accept, format, maxSizeMB, selectedFile }) {
   const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
-  const MAX_SIZE_MB = 1024;
+  const DEFAULT_SIZE_MB   = 1024;
+  const ALLOWED_SIZE_MB   = maxSizeMB ?? DEFAULT_SIZE_MB;
 
   useEffect(() => {
     if (selectedFile instanceof File) {
@@ -27,11 +28,10 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
     accept,
     onDrop: async (acceptedFiles) => {
       const totalSizeInMB = await calculateTotalUncompressedSize(acceptedFiles);
-      if (totalSizeInMB > MAX_SIZE_MB) {
+      if (totalSizeInMB > ALLOWED_SIZE_MB) {
         dispatch(
-          show({
-            message:
-              "The total size of dataset files in zip exceeds 1 GB upload limit.",
+         show({
+            message: `The total size of dataset files exceeds ${ALLOWED_SIZE_MB / 1024} GB upload limit.`,
             type: "danger",
           })
         );
@@ -66,7 +66,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
     try {
       zip = await jszip.loadAsync(fileOrBlob);
     } catch (e) {
-      throw new Error("Error loading zip file");
+      return fileOrBlob.size;
     }
     let totalSize = 0;
     const entries = Object.values(zip.files);

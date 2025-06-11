@@ -135,7 +135,22 @@ const CreateJobService = () => {
 
     const filteredJobTypeOptions = jobTypeOptions.filter(option => 
         !(option.value === "dataset-tag-road" && (!isDataAccessible && !user?.isAdmin))
-    );    
+    );  
+    const twoGBJobTypes = [
+        'osw-validate',
+        'osw-convert',
+        'confidence',
+        'quality-metric',
+        'dataset-bbox',
+        'dataset-tag-road',
+        'quality-metric-tag',
+        'spatial-join',
+        'dataset-union'
+    ];
+    const dropzoneMaxSizeMB =
+        jobType && twoGBJobTypes.includes(jobType.value)
+            ? 2048
+            : 1024;  
 
     // Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
     const handleAlgorithmUpdate = (updatedConfig) => {
@@ -590,6 +605,7 @@ const CreateJobService = () => {
                     accept={getAcceptedFileTypes()}
                     format={getFileFormat()}
                     selectedFile={selectedFile}
+                    maxSizeMB={dropzoneMaxSizeMB}
                 />
                 <div className="d-flex align-items-start mt-2">
                     <Form.Text id="passwordHelpBlock" className={style.description}>

@@ -8,7 +8,7 @@ import style from './UploadDataset.module.css';
 import { Form } from "react-bootstrap";
 
 // Functional component DataFile
-const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
+const DataFile = ({ selectedData = {}, onSelectedFileChange, dataType }) => {
   const [derivedDatasetId, setDerivedDatasetId] = useState('');
 
   useEffect(() => {
@@ -16,6 +16,11 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
       setDerivedDatasetId(selectedData.derived_from_dataset_id);
     }
   }, [selectedData]);
+
+  const TWO_GB_TYPES = ['osw'];
+  const dropzoneMaxSizeMB = TWO_GB_TYPES.includes(dataType)
+    ? 2048
+    : undefined;
 
   // Function to handle file drop
   const onDrop = (files) => {
@@ -69,7 +74,7 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
       }}>
         Attach data file<span style={{ color: 'red' }}> *</span>
       </Typography>
-      <Dropzone onDrop={onDrop} accept={{ 'application/zip': ['.zip'] }} format={".zip"} selectedFile={selectedData.file} />
+      <Dropzone onDrop={onDrop} accept={{ 'application/zip': ['.zip'] }} format={".zip"} selectedFile={selectedData.file}  maxSizeMB={dropzoneMaxSizeMB} />
     </div>
   );
 };
