@@ -139,13 +139,6 @@ const CreateJobService = () => {
     const twoGBJobTypes = [
         'osw-validate',
         'osw-convert',
-        'confidence',
-        'quality-metric',
-        'dataset-bbox',
-        'dataset-tag-road',
-        'quality-metric-tag',
-        'spatial-join',
-        'dataset-union'
     ];
     const dropzoneMaxSizeMB =
         jobType && twoGBJobTypes.includes(jobType.value)
