@@ -31,7 +31,7 @@ const Jobs = () => {
     const isAdmin = user && user.isAdmin;
     const isMember = useIsMember();
     const [sortedData, setSortedData] = useState([]);
-
+    const [jobError, setJobError] = useState('');
 
     // Options for job type dropdown
     const jobTypeOptions = [
@@ -100,6 +100,7 @@ const Jobs = () => {
     const {
         data = [],
         isError,
+        error,
         hasNextPage,
         fetchNextPage,
         isFetchingNextPage,
@@ -120,6 +121,13 @@ const Jobs = () => {
             setSortedData(sorted);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (isError && (error?.response?.status === 404 || error?.response?.status === 400)) {
+          setSortedData([]);
+          setJobError(error.response.data)
+        }
+      }, [isError, error]);
 
     const handleJobTypeSelect = (value) => {
         setJobType(value);
@@ -299,17 +307,17 @@ const Jobs = () => {
                         sortedData.map((list, index) => (
                             <JobListItem jobItem={list} key={list.job_id} />
                         ))
-                    ) : (
+                    ): <div></div>}
+                    {isError && (error?.response?.status === 404 || error?.response?.status === 400) && (
                         <div className="d-flex align-items-center mt-2">
                             <img
                                 src={iconNoData}
                                 alt="no-data-icon"
                                 width="20"
                             />
-                            <div className={style.noDataText}>No Jobs Found..!</div>
+                            <div className={style.noDataText}>{jobError}</div>
                         </div>
                     )}
-                    {isError ? " Error loading project group list" : null}
                     {hasNextPage && !isLoading && (
                         <Button
                             className="tdei-primary-button"
