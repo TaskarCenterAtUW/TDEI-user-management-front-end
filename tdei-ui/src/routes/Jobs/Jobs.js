@@ -123,7 +123,7 @@ const Jobs = () => {
     }, [data]);
 
     useEffect(() => {
-        if (isError && (error?.response?.status === 404 || error?.response?.status === 400)) {
+        if (isError && (error?.response?.status === 404 || error?.response?.status === 400) || error?.response?.status === 500) {
           setSortedData([]);
           setJobError(error.response.data)
         }
@@ -316,6 +316,16 @@ const Jobs = () => {
                                 width="20"
                             />
                             <div className={style.noDataText}>{jobError}</div>
+                        </div>
+                    )}  
+                    {isError && error?.response?.status === 500 && (
+                        <div className="d-flex align-items-center mt-2">
+                            <img
+                                src={iconNoData}
+                                alt="no-data-icon"
+                                width="20"
+                            />
+                            <div className={style.noDataText}>Error Loading Jobs!</div>
                         </div>
                     )}
                     {hasNextPage && !isLoading && (

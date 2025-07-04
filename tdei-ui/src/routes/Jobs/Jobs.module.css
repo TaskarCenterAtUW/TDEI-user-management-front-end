@@ -573,4 +573,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.noDataText {
+  font-size: 14px;
+  color: var(--secondary-color);
+  margin-left: 5px;
+}
 
