@@ -38,7 +38,7 @@ const Jobs = () => {
         { value: '', label: 'All' },
         { value: 'Clone-Dataset', label: 'Clone Dataset' },
         { value: 'Confidence-Calculate', label: 'Confidence - Calculate' },
-        { value: 'Dataset-BBox', label: 'Dataset BBox' },
+        { value: 'Dataset-BBox', label: 'Filter Dataset By BBox' },
         { value: 'Dataset-Incline-Tag', label: 'Dataset Incline Tag' },
         { value: 'Dataset-Publish', label: 'Dataset Publish' },
         { value: 'Dataset-Reformat', label: 'Dataset Reformat' },
