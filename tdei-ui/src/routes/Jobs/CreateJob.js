@@ -28,7 +28,7 @@ const jobTypeOptions = [
     { value: 'osw-convert', label: 'OSW - Convert' },
     { value: 'confidence', label: 'Confidence Calculation' },
     { value: 'quality-metric', label: 'Quality Metric IXN Calculation' },
-    { value: 'dataset-bbox', label: 'Dataset BBox' },
+    { value: 'dataset-bbox', label: 'Filter Dataset By BBox' },
     { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
     { value: 'spatial-join', label: 'Spatial Join' },
