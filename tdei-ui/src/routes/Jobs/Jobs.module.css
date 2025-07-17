@@ -57,6 +57,12 @@
   margin-bottom: 15px;
   font-size: 14px;
 }
+.gridContainer > .content {
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;    
+  overflow-wrap: anywhere;
+}
 
 .name {
   font-size: 16px;
