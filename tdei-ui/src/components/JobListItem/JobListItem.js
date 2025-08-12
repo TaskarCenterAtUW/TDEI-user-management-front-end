@@ -20,6 +20,10 @@ const JobListItem = ({ jobItem }) => {
   const [eventKey, setEventKey] = useState("");
   const [showInputDescModal, setInputDescModal] = useState(false);
 
+  const JOB_TYPE_LABELS = {
+    "Dataset-BBox": "Filter Dataset By BBox",
+  };
+
   const handleToast = () => {
     setOpen(true);
   };
@@ -142,11 +146,12 @@ const JobListItem = ({ jobItem }) => {
   if (error) {
     console.log(error);
   }
+  const displayJobType = JOB_TYPE_LABELS[jobItem.job_type] ?? jobItem.job_type;
 
   return (
     <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
       <div className={style.content} tabIndex={0}>
-        {jobItem.job_type}
+        {displayJobType}
       </div>
       <div className={style.content} tabIndex={1}>
         Job Id: <span className={style.downloadLink}

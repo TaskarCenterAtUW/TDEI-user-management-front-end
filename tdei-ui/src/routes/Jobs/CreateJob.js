@@ -28,7 +28,7 @@ const jobTypeOptions = [
     { value: 'osw-convert', label: 'OSW - Convert' },
     { value: 'confidence', label: 'Confidence Calculation' },
     { value: 'quality-metric', label: 'Quality Metric IXN Calculation' },
-    { value: 'dataset-bbox', label: 'Dataset BBox' },
+    { value: 'dataset-bbox', label: 'Filter Dataset By BBox' },
     { value: 'dataset-tag-road', label: 'Dataset Tag Road' },
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
     { value: 'spatial-join', label: 'Spatial Join' },
@@ -137,12 +137,6 @@ const CreateJobService = () => {
         !(option.value === "dataset-tag-road" && (!isDataAccessible && !user?.isAdmin))
     );    
 
-    // Updates the algorithm configuration state based on input from the QualityMetricAlgo component.
-    const handleAlgorithmUpdate = (updatedConfig) => {
-        setAlgorithmConfig(updatedConfig);
-    };
-
-
     // Callback function invoked when a job creation API call is successful.
     const onSuccess = (data) => {
         setLoading(false);
@@ -165,6 +159,17 @@ const CreateJobService = () => {
         setErrorMessage(error);
         setToast(true); // Show error toast
     };
+
+    // whenever `sourceFormat` changes, update `targetFormat` if only one choice remains
+    const targetFormatOptions = sourceFormat
+        ? formatOptions.filter(o => o.value !== sourceFormat.value)
+        : formatOptions;
+
+    React.useEffect(() => {
+        if (targetFormatOptions.length === 1) {
+            setTargetFormat(targetFormatOptions[0]);
+        }
+    }, [targetFormatOptions]);
 
     // Custom hook to handle job creation via API
     const { isLoading, mutate } = useCreateJob({ onSuccess, onError });
@@ -563,7 +568,18 @@ const CreateJobService = () => {
             <div key={index} className={style.formItem}>
                 <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
                 <Select
-                    options={field.options}
+                    value={
+                        field.stateSetter === "setSourceFormat"
+                            ? sourceFormat
+                            : field.stateSetter === "setTargetFormat"
+                                ? targetFormat
+                                : fileType
+                    }
+                    options={
+                        field.stateSetter === "setTargetFormat"
+                            ? targetFormatOptions
+                            : field.options
+                    }
                     placeholder={`Select ${field.label.toLowerCase()}`}
                     onChange={(value) => {
                         if (field.stateSetter === "setSourceFormat") handleSourceFormatChange(value);

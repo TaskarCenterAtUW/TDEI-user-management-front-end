@@ -31,14 +31,14 @@ const Jobs = () => {
     const isAdmin = user && user.isAdmin;
     const isMember = useIsMember();
     const [sortedData, setSortedData] = useState([]);
-
+    const [jobError, setJobError] = useState('');
 
     // Options for job type dropdown
     const jobTypeOptions = [
         { value: '', label: 'All' },
         { value: 'Clone-Dataset', label: 'Clone Dataset' },
         { value: 'Confidence-Calculate', label: 'Confidence - Calculate' },
-        { value: 'Dataset-BBox', label: 'Dataset BBox' },
+        { value: 'Dataset-BBox', label: 'Filter Dataset By BBox' },
         { value: 'Dataset-Incline-Tag', label: 'Dataset Incline Tag' },
         { value: 'Dataset-Publish', label: 'Dataset Publish' },
         { value: 'Dataset-Reformat', label: 'Dataset Reformat' },
@@ -73,18 +73,23 @@ const Jobs = () => {
         const direction = sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
     
         const sorted = [...sortedData].sort((a, b) => {
-            const aValue = 
-                key === 'job_type' ? a.job_type :
-                key === 'job_id' ? a.job_id :
-                key === 'status' ? a.status :
-                a.requested_by;
-    
-            const bValue = 
-                key === 'job_type' ? b.job_type :
-                key === 'job_id' ? b.job_id :
-                key === 'status' ? b.status :
-                b.requested_by;
-    
+            let aValue, bValue;
+            if (key === 'job_type') {
+                aValue = a.job_type;
+                bValue = b.job_type;
+            } else if (key === 'job_id') {
+                aValue = Number(a.job_id);
+                bValue = Number(b.job_id);
+            } else if (key === 'status') {
+                aValue = a.status;
+                bValue = b.status;
+            } else if (key === 'created_at') {
+                aValue = new Date(a.created_at);
+                bValue = new Date(b.created_at);
+            } else {
+                aValue = a.requested_by;
+                bValue = b.requested_by;
+            }
             if (typeof aValue === 'string' && typeof bValue === 'string') {
                 return direction === 'ascending' 
                     ? aValue.localeCompare(bValue)
@@ -100,6 +105,7 @@ const Jobs = () => {
     const {
         data = [],
         isError,
+        error,
         hasNextPage,
         fetchNextPage,
         isFetchingNextPage,
@@ -120,6 +126,13 @@ const Jobs = () => {
             setSortedData(sorted);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (isError && (error?.response?.status === 404 || error?.response?.status === 400) || error?.response?.status === 500) {
+          setSortedData([]);
+          setJobError(error.response.data)
+        }
+      }, [isError, error]);
 
     const handleJobTypeSelect = (value) => {
         setJobType(value);
@@ -299,17 +312,27 @@ const Jobs = () => {
                         sortedData.map((list, index) => (
                             <JobListItem jobItem={list} key={list.job_id} />
                         ))
-                    ) : (
+                    ): <div></div>}
+                    {isError && (error?.response?.status === 404 || error?.response?.status === 400) && (
                         <div className="d-flex align-items-center mt-2">
                             <img
                                 src={iconNoData}
                                 alt="no-data-icon"
                                 width="20"
                             />
-                            <div className={style.noDataText}>No Jobs Found..!</div>
+                            <div className={style.noDataText}>{jobError}</div>
+                        </div>
+                    )}  
+                    {isError && error?.response?.status === 500 && (
+                        <div className="d-flex align-items-center mt-2">
+                            <img
+                                src={iconNoData}
+                                alt="no-data-icon"
+                                width="20"
+                            />
+                            <div className={style.noDataText}>Error Loading Jobs!</div>
                         </div>
                     )}
-                    {isError ? " Error loading project group list" : null}
                     {hasNextPage && !isLoading && (
                         <Button
                             className="tdei-primary-button"
