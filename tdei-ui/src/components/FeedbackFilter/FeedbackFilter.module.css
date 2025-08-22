@@ -90,21 +90,14 @@
 }
 
 .clearButton {
-  background: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--secondary-color);
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  height: 42px;
-  min-width: 120px;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .clearButton:hover {
-  background: #5a6268;
+  text-decoration: underline;
 }
 
 .clearButton:focus {
@@ -160,4 +153,9 @@
 .selectDropdown .react-select__single-value {
   font-size: 14px !important;
   color: #333 !important;
+}
+.labelWithClear {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

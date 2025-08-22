@@ -1,147 +1,131 @@
-import React, { useState } from 'react';
-import { Row, Col, Form, InputGroup } from 'react-bootstrap';
-import Select from 'react-select';
-import style from './FeedbackFilter.module.css';
+import React, { useEffect, useState } from "react";
+import { Row, Col, Form } from "react-bootstrap";
+import Select from "react-select";
+import dayjs from "dayjs";
+import style from "./FeedbackFilter.module.css";
+import DatasetAutocomplete from "../DatasetAutocomplete/DatasetAutocomplete";
+import DatePicker from "../../components/DatePicker/DatePicker";
+import FeedbackSortRefresh from "../FeedbackSortRefresh/FeedbackSortRefresh";
 
-
-const FeedbackFilter = () => {
-  // State for search query
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  // State for dropdown filters
-  const [selectedDataset, setSelectedDataset] = useState(null);
-  const [selectedProjectGroup, setSelectedProjectGroup] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState(null);
-
-  // Dummy data for dropdowns
-  const datasetOptions = [
-    { value: '', label: 'All Datasets' },
-    { value: 'dataset1', label: 'Portland Transit Data' },
-    { value: 'dataset2', label: 'Seattle Walking Paths' },
-    { value: 'dataset3', label: 'Vancouver Bike Routes' },
-    { value: 'dataset4', label: 'Tacoma Bus Network' }
-  ];
-
-  const projectGroupOptions = [
-    { value: '', label: 'All Project Groups' },
-    { value: 'group1', label: 'Urban Mobility' },
-    { value: 'group2', label: 'Public Transit' },
-    { value: 'group3', label: 'Accessibility Research' },
-    { value: 'group4', label: 'Data Collection' }
-  ];
+const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
+  const [selectedDatasetId, setSelectedDatasetId] = useState(null);
+  const [datasetSearchText, setDatasetSearchText] = useState("");
+  const [validFromIso, setValidFromIso] = useState(null);
+  const [validToIso, setValidToIso] = useState(null);
+  const [status, setStatus] = useState("");
+  const [sortField, setSortField] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   const statusOptions = [
-    { value: '', label: 'All Status' },
-    { value: 'open', label: 'Open' },
-    { value: 'in_progress', label: 'In Progress' },
-    { value: 'resolved', label: 'Resolved' }
-  ];
-
-  // Handler functions
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+  { value: "",           label: "All Status" },
+  { value: "open",       label: "Open" },
+  { value: "resolved",   label: "Resolved" }
+];
+const handleSortChange = (field, order) => {
+    setSortField(field);
+    setSortOrder(order);
   };
 
-  const handleDatasetChange = (selectedOption) => {
-    setSelectedDataset(selectedOption);
+  useEffect(() => {
+    onFiltersChange?.({
+      datasetId: selectedDatasetId,
+      from_date: validFromIso,  
+      to_date: validToIso,      
+      status,                   
+      searchText: "",
+      sort_by: sortField,
+      sort_order: sortOrder,
+    });
+  }, [selectedDatasetId, validFromIso, validToIso, status, onFiltersChange,sortField, sortOrder]);
+
+  const clearValidFrom = () => {
+    setValidFromIso(null);
+    refreshData?.();
+  };
+  const clearValidTo = () => {
+    setValidToIso(null);
+    refreshData?.();
+  };
+    const clearStatus = () => {
+    setStatus("");
+    refreshData?.();
   };
 
-  const handleProjectGroupChange = (selectedOption) => {
-    setSelectedProjectGroup(selectedOption);
-  };
-
-  const handleStatusChange = (selectedOption) => {
-    setSelectedStatus(selectedOption);
-  };
-
-  const handleClearFilters = () => {
-    setSearchQuery('');
-    setSelectedDataset(datasetOptions[0]);
-    setSelectedProjectGroup(projectGroupOptions[0]);
-    setSelectedStatus(statusOptions[0]);
+  const handleSelectDataset = (id) => {
+    setSelectedDatasetId(id);
   };
 
   return (
     <div className={style.filterContainer}>
-      {/* Search Bar */}
-      <Row className="mb-3">
-        <Col md={12}>
+     <Row className="g-3 mb-2 align-items-end">
+        <Col xs={12} md={8} lg={9}>
           <Form.Group>
-            <InputGroup>
-              <Form.Control
-                type="text"
-                placeholder="Search feedback by subject, message, or email..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className={style.searchInput}
-              />
-              <InputGroup.Text className={style.searchIcon}>
-              {/* Replace with actual search icon */}
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
-              </InputGroup.Text>
-            </InputGroup>
+            <div className={style.labelWithClear}>
+              <Form.Label>Search by Dataset Name</Form.Label>
+            </div>
+            <DatasetAutocomplete
+              selectedDatasetId={selectedDatasetId}
+              datasetSearchText={datasetSearchText}
+              setDatasetSearchText={setDatasetSearchText}
+              onSelectDataset={(id) => { handleSelectDataset(id); }}
+              placeholder="Search by Dataset Name"
+            />
           </Form.Group>
+        </Col>
+
+        <Col xs={16} md={4} lg={3}>
+        <div className="d-flex justify-content-end align-items-end h-100">
+          <FeedbackSortRefresh
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onSortChange={handleSortChange}
+            onRefresh={() => refreshData?.()}
+          />
+          </div>
         </Col>
       </Row>
-
-      {/* Filter Dropdowns */}
-      <Row className="mb-3">
-        <Col md={3}>
+      <Row className="g-3 mb-3 align-items-end">
+        <Col xs={12} md={4}>
           <Form.Group>
-            <Form.Label className={style.filterLabel}>Dataset</Form.Label>
+            <div className={style.labelWithClear}>
+              <Form.Label>Status</Form.Label>
+              <span className={style.clearButton} onClick={clearStatus}>Clear</span>
+            </div>
             <Select
               isSearchable={false}
-              value={selectedDataset}
-              onChange={handleDatasetChange}
-              options={datasetOptions}
-              defaultValue={datasetOptions[0]}
-              components={{ IndicatorSeparator: () => null }}
-              className={style.selectDropdown}
-            />
-          </Form.Group>
-        </Col>
-        
-        <Col md={3}>
-          <Form.Group>
-            <Form.Label className={style.filterLabel}>Project Group</Form.Label>
-            <Select
-              isSearchable={false}
-              value={selectedProjectGroup}
-              onChange={handleProjectGroupChange}
-              options={projectGroupOptions}
-              defaultValue={projectGroupOptions[0]}
-              components={{ IndicatorSeparator: () => null }}
-              className={style.selectDropdown}
-            />
-          </Form.Group>
-        </Col>
-        
-        <Col md={3}>
-          <Form.Group>
-            <Form.Label className={style.filterLabel}>Status</Form.Label>
-            <Select
-              isSearchable={false}
-              value={selectedStatus}
-              onChange={handleStatusChange}
+              value={statusOptions.find((o) => o.value === status)}
+              onChange={(opt) => {
+                setStatus(opt?.value ?? "");
+                refreshData?.();
+              }}
               options={statusOptions}
-              defaultValue={statusOptions[0]}
               components={{ IndicatorSeparator: () => null }}
-              className={style.selectDropdown}
             />
           </Form.Group>
         </Col>
-        
-        <Col md={3} className="d-flex align-items-end">
-          <button 
-            type="button" 
-            className={style.clearButton}
-            onClick={handleClearFilters}
-          >
-            Clear Filters
-          </button>
+        <Col xs={12} md={4}>
+          <div className={style.labelWithClear}>
+            <Form.Label>Valid From</Form.Label>
+            <span className={style.clearButton} onClick={clearValidFrom}>Clear</span>
+          </div>
+          <DatePicker
+            label="Valid From"
+            onChange={(dateIso) => { setValidFromIso(dateIso); refreshData?.(); }}
+            dateValue={validFromIso}
+            isFilter={true}
+          />
+        </Col>
+        <Col xs={12} md={4}>
+          <div className={style.labelWithClear}>
+            <Form.Label>Valid To</Form.Label>
+            <span className={style.clearButton} onClick={clearValidTo}>Clear</span>
+          </div>
+          <DatePicker
+            label="Valid To"
+            onChange={(dateIso) => { setValidToIso(dateIso); refreshData?.(); }}
+            dateValue={validToIso}
+            isFilter={true}
+          />
         </Col>
       </Row>
     </div>

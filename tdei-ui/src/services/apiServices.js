@@ -4,7 +4,7 @@ export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL
 
-const MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; 
+const MAX_PAYLOAD_SIZE = 10 * 1024 * 1024;
 
 // Calculate the byte length of the JSON string
 function calculatePayloadSize(payload) {
@@ -112,7 +112,7 @@ export async function getProjectGroupList(searchText, page_no) {
   });
   return res.data;
 }
-export async function getProjectGroupLists(searchText, pageParam = 1,signal, showInactive) {
+export async function getProjectGroupLists(searchText, pageParam = 1, signal, showInactive) {
   const res = await axios({
     url: `${url}/project-group`,
     params: {
@@ -143,7 +143,7 @@ export async function getProjectGroupUsers(searchText, tdei_project_group_id, pa
     pageParam,
   };
 }
-export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive,fromCloneDataset) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive, fromCloneDataset) {
   const params = {
     searchText,
     page_no: pageParam,
@@ -183,17 +183,17 @@ export async function getService(tdei_service_id, service_type, tdei_project_gro
     pageParam,
   };
 }
-export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status,job_show) {
+export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status, job_show) {
 
   const params = {
     page_no: pageParam,
     page_size: 10,
   };
 
-  if(!isAdmin) {
+  if (!isAdmin) {
     params.tdei_project_group_id = tdei_project_group_id;
   }
-  if(job_show == "all"){
+  if (job_show == "all") {
     params.show_group_jobs = true;
   }
 
@@ -276,7 +276,7 @@ export async function postCreateService(data) {
   const token = localStorage.getItem("accessToken");
   const headers = {
     'Content-Type': 'application/json',
-     'Authorization': `Bearer ${token}`
+    'Authorization': `Bearer ${token}`
   };
   const res = await checkPayloadSizeAndSendRequest(`${url}/service`, data, headers);
   return res.data;
@@ -285,9 +285,9 @@ export async function postUpdateService(data) {
   const token = localStorage.getItem("accessToken");
   const headers = {
     'Content-Type': 'application/json',
-     'Authorization': `Bearer ${token}`
+    'Authorization': `Bearer ${token}`
   };
-  const res = await checkPayloadSizeAndSendRequest(`${url}/service/${data.tdei_project_group_id}`, data, headers,'put');
+  const res = await checkPayloadSizeAndSendRequest(`${url}/service/${data.tdei_project_group_id}`, data, headers, 'put');
   return res.data;
 }
 export async function postUpdateStation(data) {
@@ -321,7 +321,7 @@ export async function postCreateJob(data) {
         url = `${baseUrl}/${data[2]}`;
         break;
       case "osw/quality-metric/ixn":
-        if(data[1]){
+        if (data[1]) {
           formData.append('file', data[1]);
         }
         formData.append('tdei_dataset_id', data[2]);
@@ -352,7 +352,7 @@ export async function postCreateJob(data) {
         if (data[2]) {
           url = baseUrl;
           try {
-             requestBody = JSON.parse(data[2]);
+            requestBody = JSON.parse(data[2]);
           } catch (e) {
             return Promise.reject(new AxiosError(e));
           }
@@ -362,18 +362,18 @@ export async function postCreateJob(data) {
           return;
         }
         break;
-        case "osw/union":
-          const unionRequestBody = {
-            tdei_dataset_id_one: data[2],
-            tdei_dataset_id_two: data[3],
-            proximity: data[4],
-          };
-          url = baseUrl;
-          headers = {
-            'Content-Type': 'application/json',
-          };
-          response = await axios.post(url, unionRequestBody, { headers });
-          return response.data;
+      case "osw/union":
+        const unionRequestBody = {
+          tdei_dataset_id_one: data[2],
+          tdei_dataset_id_two: data[3],
+          proximity: data[4],
+        };
+        url = baseUrl;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        response = await axios.post(url, unionRequestBody, { headers });
+        return response.data;
       default:
         formData.append('dataset', data[1]);
         url = baseUrl;
@@ -395,7 +395,7 @@ export async function postCreateJob(data) {
       ];
       url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]}&${bboxParams.join('&')}`;
       response = await axios.post(url);
-    } else if (data[0] === "osw/dataset-tag-road" || data[0] === "osw/union" ) {
+    } else if (data[0] === "osw/dataset-tag-road" || data[0] === "osw/union") {
       response = await axios.post(url, {}, config);
     } else {
       response = await axios.post(url, formData, config);
@@ -421,8 +421,8 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(JSON.parse(metadata.dataset_detail.dataset_area));
       }
     } catch (e) {
-      if(metadata.dataset_detail.dataset_area !== ""){
-      return Promise.reject(new AxiosError(e));
+      if (metadata.dataset_detail.dataset_area !== "") {
+        return Promise.reject(new AxiosError(e));
       }
     }
     try {
@@ -430,7 +430,7 @@ export async function postUploadDataset(data) {
         metadata.dataset_detail.custom_metadata = JSON.parse(JSON.parse(metadata.dataset_detail.custom_metadata));
       }
     } catch (e) {
-      if(metadata.dataset_detail.custom_metadata !== ""){
+      if (metadata.dataset_detail.custom_metadata !== "") {
         return Promise.reject(new AxiosError(e));
       }
     }
@@ -483,8 +483,8 @@ export async function getDatasets(
   tdei_service_id,
   selectedProjectGroupId,
   tdei_project_group_id,
-  sortField = 'uploaded_timestamp', 
-  sortOrder = 'DESC'              
+  sortField = 'uploaded_timestamp',
+  sortOrder = 'DESC'
 ) {
   const params = {
     page_no: pageParam,
@@ -538,8 +538,8 @@ export async function getDatasets(
     pageParam,
   };
 }
-export async function getReleasedDatasets(searchText,searchDatasetId, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId,sortField = 'uploaded_timestamp', 
-  sortOrder = 'DESC'    ) {
+export async function getReleasedDatasets(searchText, searchDatasetId, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId, sortField = 'uploaded_timestamp',
+  sortOrder = 'DESC') {
   const params = {
     status: "Publish",
     page_no: pageParam,
@@ -607,8 +607,8 @@ export async function editMetadata(data) {
         metadata.dataset_detail.dataset_area = JSON.parse(metadata.dataset_detail.dataset_area);
       }
     } catch (e) {
-      if(metadata.dataset_detail.dataset_area !== ""){
-      return Promise.reject(new AxiosError(e));
+      if (metadata.dataset_detail.dataset_area !== "") {
+        return Promise.reject(new AxiosError(e));
       }
     }
     try {
@@ -616,9 +616,9 @@ export async function editMetadata(data) {
         metadata.dataset_detail.custom_metadata = JSON.parse(metadata.dataset_detail.custom_metadata);
       }
     } catch (e) {
-      if( metadata.dataset_detail.custom_metadata !== ""){
+      if (metadata.dataset_detail.custom_metadata !== "") {
         return Promise.reject(new AxiosError(e));
-        }
+      }
     }
     // Replace empty strings with null
     replaceEmptyStringsWithNull(metadata);
@@ -693,7 +693,7 @@ export async function downloadDataset(data) {
   if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
   else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
   else { file_end_point = 'osw' }
-  if(service_type === 'osw'){
+  if (service_type === 'osw') {
     if (data.format) {
       params.format = data.format;
     }
@@ -703,7 +703,7 @@ export async function downloadDataset(data) {
   }
   try {
     const response = await axios.get(`${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`, {
-      responseType: 'blob',params:params
+      responseType: 'blob', params: params
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const a = document.createElement('a');
@@ -752,7 +752,7 @@ export async function downloadJob(jobId) {
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
     console.error('There was a problem with the download operation:', error);
-    if(error.status === 404){
+    if (error.status === 404) {
       return Promise.reject(new AxiosError("Download File Not Found!"));
     }
     return Promise.reject(new AxiosError(error));
@@ -792,7 +792,7 @@ export async function downloadUsers() {
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
     console.error('There was a problem with the download operation:', error);
-    if(error.status === 404){
+    if (error.status === 404) {
       return Promise.reject(new AxiosError("Download File Not Found!"));
     }
     return Promise.reject(new AxiosError(error));
@@ -813,7 +813,15 @@ export async function updateDataviewerPreferenceForDataset(tdei_dataset_id, allo
 
 }
 
-export async function searchFeedback(tdei_project_group_id,tdei_dataset_id,from_date,to_date,sort_by,sort_order,page_no,page_size) {
+export async function searchFeedback(tdei_project_group_id,
+  tdei_dataset_id,
+  from_date,
+  to_date,
+  sort_by,
+  sort_order,
+  page_no,
+  page_size,
+  status) {
   const params = {
     tdei_project_group_id,
     tdei_dataset_id,
@@ -822,17 +830,18 @@ export async function searchFeedback(tdei_project_group_id,tdei_dataset_id,from_
     sort_by,
     sort_order,
     page_no,
-    page_size
+    page_size,
   };
-  ///api/v1/osw/dataset-viewer/feedbacks
+  if(status != null && status !== undefined && status !== "") {
+    params.status = status;
+  }
   const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks`, { params });
   console.log("Feedback response:", res);
-  return { data: res.data , pageParam: page_no};
+  return { data: res.data, pageParam: page_no };
 
 }
 
 export async function getFeedbackSummary() {
   const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`);
-  return res.data[0];
-  
+  return res.data;
 }

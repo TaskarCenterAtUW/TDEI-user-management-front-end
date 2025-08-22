@@ -46,21 +46,25 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 15% 10% 25% 20% 15% 15%;
-  /* to be adjusted once action is added again */
-  grid-column-gap: 10px;
-  /* min-height: 70px; */
-  align-items: center;
+  grid-template-columns:
+    minmax(240px, 2.2fr)
+    minmax(180px, 1.6fr)
+    minmax(140px, 1fr)
+    minmax(220px, 1.8fr)
+    minmax(90px, .8fr);
+  grid-column-gap: 16px;
+  grid-row-gap: 6px;
+  align-items: start;
   border-bottom: 1px solid #dddddd;
-  border-radius: 0px;
-  padding: 0px 10px 15px 10px;
+  padding: 0 10px 15px 10px;
   margin-bottom: 15px;
   font-size: 14px;
 }
+
 .gridContainer > .content {
   min-width: 0;
   white-space: normal;
-  word-break: break-word;    
+  word-break: break-word;
   overflow-wrap: anywhere;
 }
 
@@ -592,4 +596,49 @@
     color:rgb(107, 114, 128);
     font-size: 10px;
     margin-top: 5px;
+}
+
+@media (max-width: 1200px) {
+  .projectHeader { display: none; }
+  .gridContainer {
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 12px;
+    grid-row-gap: 8px;
+  }
+  .gridContainer > :nth-child(1) { grid-column: 1 / -1; }
+
+  .gridContainer > :nth-child(2) { grid-column: 1; }
+  .gridContainer > :nth-child(3) { grid-column: 2; }
+  .gridContainer > :nth-child(4) { grid-column: 1 / -1; }
+  .gridContainer > :nth-child(5) { grid-column: 2; }
+
+}
+
+@media (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: 1fr;
+    grid-row-gap: 6px;
+  }
+  .gridContainer > * {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 1200px) {
+  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Feedback Details"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Contact & Location"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Submitted time"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Dataset and Element ID"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Status"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
+}
+.filterBtn {
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  opacity: 1 !important; 
+  width: 120px;
+  height: 40px;
+  margin-top: 30px !important;
+  color: black !important;
+  font: normal normal normal 16px/22px Lato !important;
+  text-transform: none !important;
+  margin-right: 10px !important;
 }
