@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dropdown } from 'react-bootstrap';
+import React from "react";
+import { Dropdown } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import menuOptionIcon from "../../assets/img/menu-options.svg";
 import releaseIcon from "../../assets/img/action-release.svg";
@@ -8,15 +8,23 @@ import openConsoleIcon from "../../assets/img/action-open-console.svg";
 import cloneImg from "../../assets/img/clone-img.svg";
 import editImage from "../../assets/img/edit-img.svg";
 import downloadDatasetImg from "../../assets/img/download-img.svg";
-import NorthEastIcon from '@mui/icons-material/NorthEast';
+import dataViewerIcon from "../../assets/img/data-viewer-icon.svg";
+import dataViewerIconDisabled from "../../assets/img/data-viewer-icon-disabled.svg";
+import NorthEastIcon from "@mui/icons-material/NorthEast";
 import useIsPoc from "../../hooks/useIsPoc";
-import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
-import useIsOswGenerator from '../../hooks/useIsOswGenerator';
-import useIsMember from '../../hooks/roles/useIsMember';
+import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
+import useIsOswGenerator from "../../hooks/useIsOswGenerator";
+import useIsMember from "../../hooks/roles/useIsMember";
 import { useAuth } from "../../hooks/useAuth";
-import useIsDataTypeGenerator from '../../hooks/useIsDataTypeGenerator';
+import useIsDataTypeGenerator from "../../hooks/useIsDataTypeGenerator";
 
-const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => {
+const DatasetsActions = ({
+  status,
+  onAction,
+  isReleasedDataset,
+  data_type,
+  dataViewerProps,
+}) => {
   const { user } = useAuth();
   const isPocUser = useIsPoc();
   const isMember = useIsMember();
@@ -29,30 +37,33 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
   const canClone = isDataGenerator || user?.isAdmin || isMember;
   const canAddIncline = isPocUser || user?.isAdmin || isOswGenerator;
   const canPublish = isPocUser || user?.isAdmin || isDataTypeGenerator;
-  
+
   //Role based available actions
   const actions = [
-     // "Open in Workspaces" is available for all datasets except 'flex'
-    data_type !== 'flex' && {
+    // "Open in Workspaces" is available for all datasets except 'flex'
+    data_type !== "flex" && {
       key: "openInWorkspace",
       label: "Open in Workspaces",
       icon: openConsoleIcon,
       condition: true,
     },
     // "Release" is available for non-released datasets if the user can manage the dataset and the status isn't "Publish"
-    !isReleasedDataset && canPublish && status !== "Publish" && {
-      key: "release",
-      label: "Release",
-      icon: releaseIcon,
-      condition: true,
-    },
+    !isReleasedDataset &&
+      canPublish &&
+      status !== "Publish" && {
+        key: "release",
+        label: "Release",
+        icon: releaseIcon,
+        condition: true,
+      },
     // "Deactivate" is available for non-released datasets if the user can manage the dataset
-    !isReleasedDataset && canManageUser && {
-      key: "deactivate",
-      label: "Deactivate",
-      icon: deactivateIcon,
-      condition: true,
-    },
+    !isReleasedDataset &&
+      canManageUser && {
+        key: "deactivate",
+        label: "Deactivate",
+        icon: deactivateIcon,
+        condition: true,
+      },
     // "Edit Metadata" is available if the user has dataset modification permissions
     canModifyDataset && {
       key: "editMetadata",
@@ -61,19 +72,22 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
       condition: true,
     },
     // "Download Metadata" is available to all users
-   {
+    {
       key: "downloadMetadata",
       label: "Download Metadata",
       icon: downloadDatasetImg,
       condition: true,
     },
     // "Add Inclination" is available for non-released OSW datasets if the user is OSW generator and the status isn't "Publish"
-    !isReleasedDataset && canAddIncline && status !== "Publish" && data_type === 'osw' && {
-      key: "inclination",
-      label: "Add Inclination",
-      icon: <NorthEastIcon className={style.inclinationIcon} />,
-      condition: true,
-    },
+    !isReleasedDataset &&
+      canAddIncline &&
+      status !== "Publish" &&
+      data_type === "osw" && {
+        key: "inclination",
+        label: "Add Inclination",
+        icon: <NorthEastIcon className={style.inclinationIcon} />,
+        condition: true,
+      },
     // "Clone Dataset" is available if the user has permission to clone
     canClone && {
       key: "cloneDataset",
@@ -88,19 +102,41 @@ const DatasetsActions = ({ status, onAction, isReleasedDataset, data_type }) => 
       icon: downloadDatasetImg,
       condition: true,
     },
+    dataViewerProps.canPerformDataViewerAction && {
+      key: "dataViewer",
+      label: dataViewerProps.data_viewer_allowed
+        ? "Disable Data Viewer"
+        : "Enable Data Viewer",
+      icon: dataViewerProps.data_viewer_allowed
+        ? dataViewerIconDisabled
+        : dataViewerIcon,
+      condition: true,
+    },
   ].filter(Boolean);
 
   return (
     actions.length > 0 && (
       <div className={style.dropdownContainer}>
         <Dropdown onSelect={onAction}>
-          <Dropdown.Toggle id="dropdown-basic" variant='btn btn-link' className={style.dropdownToggle}>
-            <img src={menuOptionIcon} className={style.moreActionIcon} alt="Menu Options" />
+          <Dropdown.Toggle
+            id="dropdown-basic"
+            variant="btn btn-link"
+            className={style.dropdownToggle}
+          >
+            <img
+              src={menuOptionIcon}
+              className={style.moreActionIcon}
+              alt="Menu Options"
+            />
           </Dropdown.Toggle>
           <Dropdown.Menu className={style.dropdownCard}>
             {actions.map(({ key, label, icon }) => (
               <Dropdown.Item key={key} eventKey={key} className={style.itemRow}>
-                {typeof icon === 'string' ? <img src={icon} className={style.itemIcon} alt="" /> : icon}
+                {typeof icon === "string" ? (
+                  <img src={icon} className={style.itemIcon} alt="" />
+                ) : (
+                  icon
+                )}
                 {label}
               </Dropdown.Item>
             ))}
