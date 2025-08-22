@@ -824,8 +824,10 @@ export async function searchFeedback(tdei_project_group_id,tdei_dataset_id,from_
     page_no,
     page_size
   };
-  const res = await axios.get(`${osmUrl}/feedback`, { params });
-  return res.data;
+  ///api/v1/osw/dataset-viewer/feedbacks
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks`, { params });
+  console.log("Feedback response:", res);
+  return { data: res.data , pageParam: page_no};
 
 }
 

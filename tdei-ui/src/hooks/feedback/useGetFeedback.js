@@ -30,3 +30,5 @@ function useGetFeedback(tdei_dataset_id,from_date,to_date,sort_by,sort_order,pag
 
   return { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, refreshData };
 }
+
+export default useGetFeedback;
