@@ -961,9 +961,12 @@ export async function updateDataviewerPreferenceForDataset(
   tdei_dataset_id,
   allow_viewer_access = false
 ) {
-  const res = await axios.post(`${osmUrl}/dataviewer/${tdei_dataset_id}`, {
-    allow_viewer_access,
-  });
+  const res = await axios.post(
+    `${osmUrl}/osw/dataset-viewer/${tdei_dataset_id}`,
+    {
+      allow_viewer_access,
+    }
+  );
   return res.data;
 }
 

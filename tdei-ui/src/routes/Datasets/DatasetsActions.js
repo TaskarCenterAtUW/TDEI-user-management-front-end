@@ -104,7 +104,7 @@ const DatasetsActions = ({
     },
     !isReleasedDataset &&
       dataViewerProps.canPerformDataViewerAction && {
-        key: "dataViewer",
+        key: "dataviewer",
         label: dataViewerProps.data_viewer_allowed
           ? "Disable Data Viewer"
           : "Enable Data Viewer",

@@ -16,6 +16,7 @@ import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import { useNavigate } from "react-router-dom";
 import useDownloadDataset from "../../hooks/datasets/useDownloadDataset";
 import { useAuth } from "../../hooks/useAuth";
+import useToggleDataviewer from "../../hooks/datasets/useToggleDataviewer";
 import useCreateInclinationJob from "../../hooks/jobs/useCreateInclinationJob";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import dayjs from "dayjs";
@@ -184,6 +185,8 @@ const MyDatasets = () => {
     useDeactivateDataset({ onSuccess, onError });
   const { mutate: downloadDataset, isLoading: isDownloadingDataset } =
     useDownloadDataset({ onSuccess, onError });
+  const { mutate: toggleDataviewer, isLoading: isTogglingDataviewer } =
+    useToggleDataviewer({ onSuccess, onError });
   const { mutate: createInclinationJob, isLoading: isCreatingJob } =
     useCreateInclinationJob({ onSuccess, onError });
 
@@ -206,7 +209,14 @@ const MyDatasets = () => {
     deactivateDataset(selectedDataset.tdei_dataset_id);
   };
 
-  const handleDataviewerChange = () => {};
+  const handleDataviewerChange = () => {
+    if (selectedDataset) {
+      toggleDataviewer({
+        tdei_dataset_id: selectedDataset.tdei_dataset_id,
+        data_viewer_allowed: !selectedDataset.data_viewer_allowed,
+      });
+    }
+  };
 
   const handleCreateInclinationJob = () => {
     createInclinationJob(selectedDataset.tdei_dataset_id);
@@ -302,7 +312,7 @@ const MyDatasets = () => {
       btnlabel: "Close",
       modaltype: "error",
     },
-    dataViewer: {
+    dataviewer: {
       message: `Are you sure you want to ${
         selectedDataset?.data_viewer_allowed ? "disable" : "enable"
       } the dataviewer status for dataset ${
@@ -611,7 +621,12 @@ const MyDatasets = () => {
           btnlabel={currentModalConfig?.btnlabel}
           modaltype={currentModalConfig?.modaltype}
           onHide={() => setShowSuccessModal(false)}
-          isLoading={isPublishing || isDeletingDataset || isCreatingJob}
+          isLoading={
+            isPublishing ||
+            isDeletingDataset ||
+            isCreatingJob ||
+            isTogglingDataviewer
+          }
         />
         <DownloadModal
           show={showDownloadModal}
