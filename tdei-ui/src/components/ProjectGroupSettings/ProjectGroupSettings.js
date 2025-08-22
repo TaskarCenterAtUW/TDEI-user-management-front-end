@@ -9,12 +9,14 @@ const ProjectGroupSettings = (props) => {
   const [copySuccess, setCopySuccess] = useState("");
   const [turnaroundTime, setTurnaroundTime] = useState("1");
   const [turnaroundUnit, setTurnaroundUnit] = useState("days");
+  const [turnaroundTimeError, setTurnaroundTimeError] = useState("");
 
   const handleClose = () => {
     props.onHide();
     setCopySuccess("");
-    setTurnaroundTime("");
+    setTurnaroundTime("1");
     setTurnaroundUnit("days");
+    setTurnaroundTimeError("");
   };
 
   const generateViewerUrl = () => {
@@ -34,6 +36,10 @@ const ProjectGroupSettings = (props) => {
   };
 
   const handleSaveSettings = () => {
+    if (!turnaroundTime) {
+      setTurnaroundTimeError("This field is required.");
+      return;
+    }
     // Here you would typically save to backend/database
     handleClose();
   };
@@ -106,8 +112,15 @@ const ProjectGroupSettings = (props) => {
                     const value = e.target.value;
                     if (value === "" || Number(value) >= 0) {
                       setTurnaroundTime(value);
+                      if (value) {
+                        setTurnaroundTimeError("");
+                      } else {
+                        setTurnaroundTimeError("This field is required.");
+                      }
                     }
                   }}
+                  isInvalid={!!turnaroundTimeError}
+                  required
                 />
                 <Form.Group style={{ width: "10px" }} />
                 <Form.Select
@@ -121,7 +134,12 @@ const ProjectGroupSettings = (props) => {
                   <option value="years">Years</option>
                 </Form.Select>
               </InputGroup>
-              {turnaroundTime && (
+              {turnaroundTimeError && (
+                <Form.Control.Feedback type="invalid" className="d-block">
+                  {turnaroundTimeError}
+                </Form.Control.Feedback>
+              )}
+              {turnaroundTime && !turnaroundTimeError && (
                 <Form.Text className={style.description}>
                   Current setting: {turnaroundTime} {turnaroundUnit}
                 </Form.Text>
