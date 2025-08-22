@@ -585,3 +585,11 @@
   margin-left: 5px;
 }
 
+.feedbackText{
+    color:rgb(107, 114, 128);
+}
+.feedbackLocation {
+    color:rgb(107, 114, 128);
+    font-size: 10px;
+    margin-top: 5px;
+}

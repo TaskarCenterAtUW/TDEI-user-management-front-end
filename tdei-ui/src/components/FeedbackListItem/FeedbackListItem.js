@@ -82,7 +82,7 @@ const FeedbackListItem = ({ feedback }) => {
   return (
     <div className={style.gridContainer} key={feedback.id}>
         <p className={style.feedbackText}>{feedback.feedback_text}</p>
-        <p> {feedback.customer_email} {feedback.location_latitude}, {feedback.location_longitude}</p>
+        <p> {feedback.customer_email} <span class = {style.feedbackLocation} >{feedback.location_latitude}, {feedback.location_longitude}</span></p>
         <p>{new Date(feedback.created_at).toLocaleString()}</p>
         <p> {feedback.dataset.name} {feedback.dataset_element_id}</p>
       <p>
