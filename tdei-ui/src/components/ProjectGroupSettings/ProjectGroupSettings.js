@@ -5,11 +5,37 @@ import { FaCopy } from "react-icons/fa";
 import * as yup from "yup";
 import { Formik } from "formik";
 import ResponseToast from "../ToastMessage/ResponseToast";
+import { useDispatch } from "react-redux";
+import { useQueryClient } from "react-query";
+import { show as showModal } from "../../store/notificationModal.slice";
+import useUpdateProjectGroupSettings from "../../hooks/useUpdateProjectGroupSettings";
+import { GET_PROJECT_GROUP_ROLES } from "../../utils/react-query-constant";
 
 const ProjectGroupSettings = (props) => {
   const { projectGroup } = props;
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const [copySuccess, setCopySuccess] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const { mutate, isLoading } = useUpdateProjectGroupSettings({
+    onSuccess: () => {
+      queryClient.invalidateQueries(GET_PROJECT_GROUP_ROLES);
+      dispatch(
+        showModal({
+          message: "Project group settings updated successfully.",
+          type: "success",
+        })
+      );
+      handleClose();
+    },
+    onError: (error) => {
+      console.error(error);
+      setErrorMessage(error.response.data);
+      setShowToast(true);
+    },
+  });
 
   const handleClose = () => {
     props.onHide();
@@ -44,11 +70,18 @@ const ProjectGroupSettings = (props) => {
     }
   };
 
-  const handleSaveSettings = (values, { setSubmitting }) => {
-    // Here you would typically save to backend/database
-    console.log("Saving settings:", values);
-    setSubmitting(false);
-    handleClose();
+  const handleSaveSettings = (values) => {
+    const payload = {
+      dataset_viewer_allowed: values.isDataViewerEnabled,
+      feedback_turnaround_time: {
+        number: Number(values.turnaroundTime),
+        units: values.turnaroundUnit,
+      },
+    };
+    mutate({
+      projectGroupId: projectGroup.tdei_project_group_id,
+      payload,
+    });
   };
 
   return (
@@ -65,7 +98,7 @@ const ProjectGroupSettings = (props) => {
                   ?.number ?? "1",
               turnaroundUnit:
                 projectGroup.data_viewer_config?.feedback_turnaround_time
-                  ?.unit ?? "days",
+                  ?.units ?? "days",
             }}
             onSubmit={handleSaveSettings}
             validationSchema={validationSchema}
@@ -77,7 +110,6 @@ const ProjectGroupSettings = (props) => {
               handleChange,
               handleBlur,
               handleSubmit,
-              isSubmitting,
               isValid,
             }) => (
               <Form onSubmit={handleSubmit}>
@@ -126,50 +158,58 @@ const ProjectGroupSettings = (props) => {
                             {copySuccess ? copySuccess : <FaCopy />}
                           </Button>
                         </InputGroup>
+                        <Form.Group style={{ height: "10px" }} />
+                        <Form.Group
+                          className="mb-3"
+                          controlId="expectedTurnaroundTime"
+                        >
+                          <Form.Group>
+                            <Form.Label>Expected Turnaround Time</Form.Label>
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Text className={style.description}>
+                              What is the expected turn around time to resolve
+                              user's feedback and comments?
+                            </Form.Text>
+                          </Form.Group>
+                          <InputGroup className="mt-2">
+                            <Form.Control
+                              type="number"
+                              name="turnaroundTime"
+                              value={values.turnaroundTime}
+                              min="1"
+                              style={{ maxWidth: "120px" }}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              isInvalid={
+                                touched.turnaroundTime &&
+                                !!errors.turnaroundTime
+                              }
+                              required
+                            />
+                            <Form.Group style={{ width: "10px" }} />
+                            <Form.Select
+                              name="turnaroundUnit"
+                              value={values.turnaroundUnit}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              style={{ maxWidth: "120px" }}
+                            >
+                              <option value="days">Days</option>
+                              <option value="months">Months</option>
+                              <option value="years">Years</option>
+                            </Form.Select>
+                          </InputGroup>
+                          {touched.turnaroundTime && errors.turnaroundTime && (
+                            <Form.Control.Feedback
+                              type="invalid"
+                              className="d-block"
+                            >
+                              {errors.turnaroundTime}
+                            </Form.Control.Feedback>
+                          )}
+                        </Form.Group>
                       </div>
-                    )}
-                  </Form.Group>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="expectedTurnaroundTime"
-                  >
-                    <Form.Label>Expected Turnaround Time</Form.Label>
-                    <Form.Text className={style.description}>
-                      What is the expected turn around time to resolve user's
-                      feedback and comments?
-                    </Form.Text>
-                    <InputGroup className="mt-2">
-                      <Form.Control
-                        type="number"
-                        name="turnaroundTime"
-                        value={values.turnaroundTime}
-                        min="1"
-                        style={{ maxWidth: "120px" }}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        isInvalid={
-                          touched.turnaroundTime && !!errors.turnaroundTime
-                        }
-                        required
-                      />
-                      <Form.Group style={{ width: "10px" }} />
-                      <Form.Select
-                        name="turnaroundUnit"
-                        value={values.turnaroundUnit}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        style={{ maxWidth: "120px" }}
-                      >
-                        <option value="days">Days</option>
-                        <option value="weeks">Weeks</option>
-                        <option value="months">Months</option>
-                        <option value="years">Years</option>
-                      </Form.Select>
-                    </InputGroup>
-                    {touched.turnaroundTime && errors.turnaroundTime && (
-                      <Form.Control.Feedback type="invalid" className="d-block">
-                        {errors.turnaroundTime}
-                      </Form.Control.Feedback>
                     )}
                   </Form.Group>
                 </Modal.Body>
@@ -184,9 +224,9 @@ const ProjectGroupSettings = (props) => {
                   <Button
                     type="submit"
                     className="tdei-primary-button"
-                    disabled={isSubmitting || !isValid}
+                    disabled={isLoading || !isValid}
                   >
-                    {isSubmitting ? "Saving..." : "Save Changes"}
+                    {isLoading ? "Saving..." : "Save Changes"}
                   </Button>
                 </Modal.Footer>
               </Form>
@@ -197,6 +237,7 @@ const ProjectGroupSettings = (props) => {
             showtoast={showToast}
             type={"error"}
             message={
+              errorMessage ??
               "Error! Not able to update project group settings. please try again."
             }
           />
