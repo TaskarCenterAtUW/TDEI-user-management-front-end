@@ -11,6 +11,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import FeedbackSummary from "../../components/FeedbackSummary";
 import DownloadIcon from '@mui/icons-material/Download';
+import FeedbackFilter from "../../components/FeedbackFilter";
 
 const Feedback = () => {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
@@ -76,7 +77,9 @@ const Feedback = () => {
 
             </div>
             <FeedbackSummary />
+            <FeedbackFilter refreshData={refreshData} />
             <Container>
+                
                  {isLoading ? (
                     <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
                         <Spinner animation="border" role="status">
