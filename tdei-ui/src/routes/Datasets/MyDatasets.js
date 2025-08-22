@@ -166,7 +166,10 @@ const MyDatasets = () => {
   };
 
   const onError = (err) => {
-    const errorMessage = err.data || "Unknown error occured! Please try again!";
+    const errorMessage =
+      err.data ||
+      err.response.data ||
+      "Unknown error occured! Please try again!";
     console.error("Error message:", errorMessage);
     setOperationResult("error");
     setOpen(true);
@@ -356,7 +359,7 @@ const MyDatasets = () => {
       case "dataviewer":
         return operationResult === "success"
           ? "Success! Dataviewer status has been updated."
-          : "Error! Failed to updated dataviewer status.";
+          : customErrorMessage ?? "Error! Failed to updated dataviewer status.";
       default:
         return "";
     }
