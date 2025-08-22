@@ -102,16 +102,17 @@ const DatasetsActions = ({
       icon: downloadDatasetImg,
       condition: true,
     },
-    dataViewerProps.canPerformDataViewerAction && {
-      key: "dataViewer",
-      label: dataViewerProps.data_viewer_allowed
-        ? "Disable Data Viewer"
-        : "Enable Data Viewer",
-      icon: dataViewerProps.data_viewer_allowed
-        ? dataViewerIconDisabled
-        : dataViewerIcon,
-      condition: true,
-    },
+    !isReleasedDataset &&
+      dataViewerProps.canPerformDataViewerAction && {
+        key: "dataViewer",
+        label: dataViewerProps.data_viewer_allowed
+          ? "Disable Data Viewer"
+          : "Enable Data Viewer",
+        icon: dataViewerProps.data_viewer_allowed
+          ? dataViewerIconDisabled
+          : dataViewerIcon,
+        condition: true,
+      },
   ].filter(Boolean);
 
   return (
