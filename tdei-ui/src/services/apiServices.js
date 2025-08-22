@@ -832,7 +832,7 @@ export async function searchFeedback(tdei_project_group_id,tdei_dataset_id,from_
 }
 
 export async function getFeedbackSummary() {
-  const res = await axios.get(`${osmUrl}/feedback/metadata`);
-  return res.data;
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`);
+  return res.data[0];
   
 }

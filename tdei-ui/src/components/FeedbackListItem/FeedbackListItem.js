@@ -22,16 +22,16 @@
     }
  */
 import React from "react";
+import style from "../../routes/Feedback/Feedback.module.css";
 
 const FeedbackListItem = ({ feedback }) => {
   return (
-    <div>
-      <h5>{feedback.feedback_text}</h5>
-      <p>Customer: {feedback.customer_email}</p>
-      <p>Location: {feedback.location_latitude}, {feedback.location_longitude}</p>
-      <p>Created At: {new Date(feedback.created_at).toLocaleString()}</p>
-      <p>Status: {feedback.status}</p>
-      <p>Due Date: {new Date(feedback.due_date).toLocaleString()}</p>
+    <div className={style.gridContainer} key={feedback.id}>
+        <p>{feedback.feedback_text}</p>
+        <p> {feedback.customer_email} {feedback.location_latitude}, {feedback.location_longitude}</p>
+        <p>{new Date(feedback.created_at).toLocaleString()}</p>
+        <p> {feedback.dataset.name} {feedback.dataset_element_id}</p>
+      <p>  {feedback.status}</p>
     </div>
   );
 };

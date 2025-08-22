@@ -9,6 +9,7 @@ import FeedbackListItem from "../../components/FeedbackListItem/FeedbackListItem
 import clsx from "clsx";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import FeedbackSummary from "../../components/FeedbackSummary";
 
 const Feedback = () => {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
@@ -62,6 +63,7 @@ const Feedback = () => {
                 </div>
                  
             </div>
+            <FeedbackSummary />
             <Container>
                  {isLoading ? (
                     <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
@@ -84,44 +86,34 @@ const Feedback = () => {
                               <div className={clsx(style.gridContainer, style.projectHeader)}>
                                                       <div className={style.sortableHeader}>
                                                           Feedback Details
-                                                          {sortConfig.key === 'job_type' && sortConfig.direction === 'ascending' ? (
+                                                          {/* {sortConfig.key === 'job_type' && sortConfig.direction === 'ascending' ? (
                                                               <ArrowDropUpIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
                                                           ) : (
                                                               <ArrowDropDownIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
-                                                          )}
+                                                          )} */}
                                                       </div>
                                                       <div className={style.sortableHeader}>
                                                           Contact & Location
-                                                          {sortConfig.key === 'job_id' && sortConfig.direction === 'ascending' ? (
+                                                          {/* {sortConfig.key === 'job_id' && sortConfig.direction === 'ascending' ? (
                                                               <ArrowDropUpIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
                                                           ) : (
                                                               <ArrowDropDownIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
-                                                          )}
+                                                          )} */}
                                                       </div>
                                                       <div className={style.sortableHeader}>
                                                           Submitted time
-                                                          {sortConfig.key === 'requested_by' && sortConfig.direction === 'ascending' ? (
+                                                          {/* {sortConfig.key === 'requested_by' && sortConfig.direction === 'ascending' ? (
                                                               <ArrowDropUpIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
                                                           ) : (
                                                               <ArrowDropDownIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
-                                                          )}
+                                                          )} */}
                                                       </div>
-                                                      <div>Message</div>
+                                                       
+                                                      <div className={style.sortableHeader}>
+                                                          Dataset and Element ID
+                                                      </div>
                                                       <div className={style.sortableHeader}>
                                                           Status
-                                                          {sortConfig.key === 'status' && sortConfig.direction === 'ascending' ? (
-                                                              <ArrowDropUpIcon onClick={() => sortData('status')} className={style.sortIcon} />
-                                                          ) : (
-                                                              <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
-                                                          )}
-                                                      </div>
-                                                      <div className={style.sortableHeader}>
-                                                          Created On
-                                                          {sortConfig.key === 'created_at' && sortConfig.direction === 'ascending' ? (
-                                                              <ArrowDropUpIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
-                                                          ) : (
-                                                              <ArrowDropDownIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
-                                                          )}
                                                       </div>
                                                   </div>
                                 {feedbackList.map((feedback) => (
@@ -129,14 +121,24 @@ const Feedback = () => {
                                 ))}
                                 
                                 {hasNextPage && (
-                                    <div className="d-flex justify-content-center my-3">
+                                    <div className="d-flex justify-content-start my-3">
                                         <Button
+                                            className="tdei-primary-button"
                                             onClick={() => fetchNextPage()}
                                             disabled={isFetchingNextPage}
                                         >
                                             {isFetchingNextPage ? 'Loading more...' : 'Load More'}
                                         </Button>
                                     </div>
+                                    /**
+                                     * <Button
+                                                                 className="tdei-primary-button"
+                                                                 onClick={() => fetchNextPage()}
+                                                                 disabled={isFetchingNextPage || isError || !hasNextPage}
+                                                             >
+                                                                 Load More {isFetchingNextPage && <Spinner size="sm" />}
+                                                             </Button>
+                                     */
                                 )}
                             </div>
                         )}
