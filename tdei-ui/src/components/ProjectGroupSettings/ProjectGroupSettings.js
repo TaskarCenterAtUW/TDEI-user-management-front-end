@@ -46,51 +46,56 @@ const ProjectGroupSettings = (props) => {
             <Modal.Title>Project Group Settings</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p className={style.description}>
+            <Form.Text className={style.description}>
               Configure data viewer access and feedback response settings for{" "}
               {projectGroup.project_group_name}.
-            </p>
-            <div className="mt-3">
-              <div className="d-flex  align-items-center">
-                <div>
-                  <h5>Enable Data Viewer</h5>
-                </div>
-                <Form.Check
-                  type="switch"
-                  id="custom-switch"
-                  checked={isDataViewerEnabled}
-                  onChange={(e) => setDataViewerEnabled(e.target.checked)}
-                  style={{
-                    marginLeft: "auto",
-                    fontSize: "1.5rem",
-                  }}
-                />
-              </div>
-              <p className={style.description}>
-                Allow public access to released datasets.
-              </p>
-              {isDataViewerEnabled && (
-                <div className="mt-3">
-                  <Form.Label>Viewer URL</Form.Label>
-                  <InputGroup>
-                    <Form.Control
-                      type="text"
-                      value={generateViewerUrl()}
-                      readOnly
-                    />
-                    <Button variant="outline-secondary" onClick={copyViewerUrl}>
-                      {copySuccess ? copySuccess : <FaCopy />}
-                    </Button>
-                  </InputGroup>
-                </div>
-              )}
-            </div>
-            <div className="mt-4">
-              <h5>Expected Turnaround Time</h5>
-              <p className={style.description}>
+            </Form.Text>
+            <Form.Group className="mb-3" controlId="enableDataViewer">
+              <Form.Group>
+                <Form.Group className="d-flex  align-items-center">
+                  <Form.Label>Enable Data Viewer</Form.Label>
+                  <Form.Check
+                    type="switch"
+                    id="custom-switch"
+                    checked={isDataViewerEnabled}
+                    onChange={(e) => setDataViewerEnabled(e.target.checked)}
+                    style={{
+                      marginLeft: "auto",
+                      fontSize: "1.5rem",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Text className={style.description}>
+                  Allow public access to released datasets.
+                </Form.Text>
+                {isDataViewerEnabled && (
+                  <div className="mb-3">
+                    <Form.Label>Viewer URL</Form.Label>
+                    <InputGroup>
+                      <Form.Control
+                        type="text"
+                        value={generateViewerUrl()}
+                        readOnly
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={copyViewerUrl}
+                      >
+                        {copySuccess ? copySuccess : <FaCopy />}
+                      </Button>
+                    </InputGroup>
+                  </div>
+                )}
+              </Form.Group>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="expectedTurnaroundTime">
+              <Form.Group>
+                <Form.Label>Expected Turnaround Time</Form.Label>
+              </Form.Group>
+              <Form.Text className={style.description}>
                 What is the expected turn around time to resolve user's feedback
                 and comments?
-              </p>
+              </Form.Text>
               <InputGroup>
                 <Form.Control
                   type="number"
@@ -104,7 +109,7 @@ const ProjectGroupSettings = (props) => {
                     }
                   }}
                 />
-                <div style={{ width: "10px" }}></div>
+                <Form.Group style={{ width: "10px" }} />
                 <Form.Select
                   value={turnaroundUnit}
                   onChange={(e) => setTurnaroundUnit(e.target.value)}
@@ -117,17 +122,25 @@ const ProjectGroupSettings = (props) => {
                 </Form.Select>
               </InputGroup>
               {turnaroundTime && (
-                <Form.Text className="text-muted">
+                <Form.Text className={style.description}>
                   Current setting: {turnaroundTime} {turnaroundUnit}
                 </Form.Text>
               )}
-            </div>
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
+            <Button
+              variant="outline-secondary"
+              className="tdei-secondary-button"
+              onClick={handleClose}
+            >
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSaveSettings}>
+            <Button
+              type="submit"
+              className="tdei-primary-button"
+              onClick={handleSaveSettings}
+            >
               Save Changes
             </Button>
           </Modal.Footer>
