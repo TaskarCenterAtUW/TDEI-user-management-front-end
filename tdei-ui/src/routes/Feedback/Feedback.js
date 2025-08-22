@@ -10,6 +10,7 @@ import clsx from "clsx";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import FeedbackSummary from "../../components/FeedbackSummary";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const Feedback = () => {
   const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
@@ -54,6 +55,11 @@ const Feedback = () => {
     setFeedbackList(sortedData);
   };
 
+  const downloadData = () => {
+    // Construct the CSV content
+    console.log("Downloading data:", feedbackList);
+  }
+
   return (
     <div className={style.jobsContainer}>
             <div className={style.header}>
@@ -61,7 +67,13 @@ const Feedback = () => {
                     <div className="page-header-title">Feedback</div>
                     <div className="page-header-subtitle">View and manage feedback for datasets</div>
                 </div>
-                 
+                 <div className="d-flex align-items-end">
+                  <Button className="tdei-primary-button me-3" onClick={downloadData} disabled={isLoading}>
+                      <DownloadIcon className="me-2" />
+                      Download CSV
+                  </Button>
+                  </div>
+
             </div>
             <FeedbackSummary />
             <Container>

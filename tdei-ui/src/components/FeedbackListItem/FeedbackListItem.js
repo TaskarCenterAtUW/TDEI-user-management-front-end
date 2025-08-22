@@ -25,13 +25,71 @@ import React from "react";
 import style from "../../routes/Feedback/Feedback.module.css";
 
 const FeedbackListItem = ({ feedback }) => {
+  // CSS styles for different status states
+  const getStatusStyle = (status) => {
+    const baseStyle = {
+      padding: '4px 12px',
+      borderRadius: '12px',
+      fontSize: '12px',
+      fontWeight: '600',
+      textTransform: 'capitalize',
+      display: 'inline-block',
+      minWidth: '80px',
+      textAlign: 'center'
+    };
+
+    switch (status?.toLowerCase()) {
+      case 'open':
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgb(219 234 254)',
+          color: 'rgb(30, 64, 175)',
+          border: '1px solid transparent'
+        };
+      case 'in progress':
+      case 'in-progress':
+      case 'inprogress':
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgb(254 249 195)',
+          color: 'rgb(133 77 14)',
+          border: '1px solid rgb(255 224 178)'
+        };
+      case 'resolved':
+      case 'closed':
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgb(220 252 231)',
+          color: 'rgb(22 101 52)',
+          border: '1px solid transparent'
+        };
+    case 'overdue':
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgb(254 226 226)',
+          color: 'rgb(153 27 27)',
+          border: '1px solid transparent'
+        };
+      default:
+        return {
+          ...baseStyle,
+          backgroundColor: '#F5F5F5',
+          color: '#666666',
+          border: '1px solid #E0E0E0'
+        };
+    }
+  };
   return (
     <div className={style.gridContainer} key={feedback.id}>
-        <p>{feedback.feedback_text}</p>
+        <p className={style.feedbackText}>{feedback.feedback_text}</p>
         <p> {feedback.customer_email} {feedback.location_latitude}, {feedback.location_longitude}</p>
         <p>{new Date(feedback.created_at).toLocaleString()}</p>
         <p> {feedback.dataset.name} {feedback.dataset_element_id}</p>
-      <p>  {feedback.status}</p>
+      <p>
+        <span style={getStatusStyle(feedback.status)}>
+          {feedback.status}
+        </span>
+      </p>
     </div>
   );
 };
