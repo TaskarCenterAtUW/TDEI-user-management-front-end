@@ -801,4 +801,36 @@ export async function downloadUsers() {
 export async function regenerateApiKey() {
   const res = await axios.post(`${osmUrl}/regenerate-api-key`);
   return res.data;
+};
+
+/**
+ * Dataviewer API functions
+ */
+
+export async function updateDataviewerPreferenceForDataset(tdei_dataset_id, allow_viewer_access = false) {
+  const res = await axios.post(`${osmUrl}/dataviewer/${tdei_dataset_id}`, { allow_viewer_access });
+  return res.data;
+
+}
+
+export async function searchFeedback(tdei_project_group_id,tdei_dataset_id,from_date,to_date,sort_by,sort_order,page_no,page_size) {
+  const params = {
+    tdei_project_group_id,
+    tdei_dataset_id,
+    from_date,
+    to_date,
+    sort_by,
+    sort_order,
+    page_no,
+    page_size
+  };
+  const res = await axios.get(`${osmUrl}/feedback`, { params });
+  return res.data;
+
+}
+
+export async function getFeedbackSummary() {
+  const res = await axios.get(`${osmUrl}/feedback/metadata`);
+  return res.data;
+  
 }
