@@ -8,7 +8,6 @@ import ResponseToast from "../ToastMessage/ResponseToast";
 
 const ProjectGroupSettings = (props) => {
   const { projectGroup } = props;
-  const [isDataViewerEnabled, setDataViewerEnabled] = useState(false);
   const [copySuccess, setCopySuccess] = useState("");
   const [showToast, setShowToast] = useState(false);
 
@@ -58,8 +57,15 @@ const ProjectGroupSettings = (props) => {
         <Modal show={props.show} onHide={handleClose} centered>
           <Formik
             initialValues={{
-              turnaroundTime: "1",
-              turnaroundUnit: "days",
+              isDataViewerEnabled:
+                projectGroup.data_viewer_config?.dataset_viewer_allowed ??
+                false,
+              turnaroundTime:
+                projectGroup.data_viewer_config?.feedback_turnaround_time
+                  ?.number ?? "1",
+              turnaroundUnit:
+                projectGroup.data_viewer_config?.feedback_turnaround_time
+                  ?.unit ?? "days",
             }}
             onSubmit={handleSaveSettings}
             validationSchema={validationSchema}
@@ -91,8 +97,10 @@ const ProjectGroupSettings = (props) => {
                       <Form.Check
                         type="switch"
                         id="custom-switch"
-                        checked={isDataViewerEnabled}
-                        onChange={(e) => setDataViewerEnabled(e.target.checked)}
+                        name="isDataViewerEnabled"
+                        checked={values.isDataViewerEnabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                         style={{
                           marginLeft: "auto",
                           fontSize: "1.5rem",
@@ -102,7 +110,7 @@ const ProjectGroupSettings = (props) => {
                     <Form.Text className={style.description}>
                       Allow public access to released datasets.
                     </Form.Text>
-                    {isDataViewerEnabled && (
+                    {values.isDataViewerEnabled && (
                       <div className="mt-3">
                         <Form.Label>Viewer URL</Form.Label>
                         <InputGroup>

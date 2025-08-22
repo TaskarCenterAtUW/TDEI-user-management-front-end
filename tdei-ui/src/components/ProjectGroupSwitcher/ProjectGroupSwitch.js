@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import ClipboardCopy from "../../routes/Services/ClipBoardCopy";
 import { useNavigate } from "react-router-dom";
-import useIsPoc from "../../hooks/useIsPoc";
 import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import projectGroupIcon from "../../assets/img/icon-projectgroupIcon.svg";
 import SwitchIcon from "@mui/icons-material/Tune";
