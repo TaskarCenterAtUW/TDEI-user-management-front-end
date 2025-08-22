@@ -3,6 +3,7 @@ import { Row, Col, Form, InputGroup } from 'react-bootstrap';
 import Select from 'react-select';
 import style from './FeedbackFilter.module.css';
 
+
 const FeedbackFilter = () => {
   // State for search query
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,6 +76,7 @@ const FeedbackFilter = () => {
                 className={style.searchInput}
               />
               <InputGroup.Text className={style.searchIcon}>
+              {/* Replace with actual search icon */}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="8"></circle>
                   <path d="m21 21-4.35-4.35"></path>
