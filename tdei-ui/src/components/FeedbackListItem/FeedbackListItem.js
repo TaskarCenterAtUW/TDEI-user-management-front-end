@@ -86,7 +86,7 @@ const FeedbackListItem = ({ feedback }) => {
         <p className={style.feedbackText}>{feedback.feedback_text}</p>
         <p> {feedback.customer_email} <br/> <span class = {style.feedbackLocation} >{lat}, {lng}</span></p>
         <p>{new Date(feedback.created_at).toLocaleString()}</p>
-        <p> {feedback.dataset.name} {feedback.dataset_element_id}</p>
+        <p> {feedback.dataset.name} <br/> {feedback.dataset_element_id}</p>
       <p>
         <span style={getStatusStyle(feedback.status)}>
           {feedback.status}
