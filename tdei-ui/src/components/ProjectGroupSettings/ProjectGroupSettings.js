@@ -55,7 +55,7 @@ const ProjectGroupSettings = (props) => {
   });
 
   const generateViewerUrl = () => {
-    return `https://dataviewer-dev.tdei.us/project-group/${projectGroup.tdei_project_group_id}`;
+    return `${process.env.REACT_APP_DATAVIEWER_URL}project-group/${projectGroup.tdei_project_group_id}`;
   };
 
   const copyViewerUrl = async () => {

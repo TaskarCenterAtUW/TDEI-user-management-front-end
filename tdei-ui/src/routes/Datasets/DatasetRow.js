@@ -136,7 +136,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                       backgroundColor: "var(--primary-color)",
                     }}
                     onClick={() => {
-                      const viewerUrl = `https://dataviewer-dev.tdei.us/project-group/${project_group.tdei_project_group_id}/dataset/${tdei_dataset_id}`;
+                      const viewerUrl = `${process.env.REACT_APP_DATAVIEWER_URL}project-group/${project_group.tdei_project_group_id}/dataset/${tdei_dataset_id}`;
                       window.open(viewerUrl, "_blank");
                     }}
                     title="Data viewer enabled"
