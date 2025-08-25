@@ -635,10 +635,16 @@
   border-radius: 8px !important;
   opacity: 1 !important; 
   width: 120px;
-  height: 40px;
-  margin-top: 30px !important;
+  height: 41px;
   color: black !important;
   font: normal normal normal 16px/22px Lato !important;
   text-transform: none !important;
   margin-right: 10px !important;
+}
+.actionsRight {
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 8px;
+  margin-bottom: 12px;  
 }

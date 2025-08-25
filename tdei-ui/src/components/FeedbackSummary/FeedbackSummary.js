@@ -1,4 +1,6 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from "../../selectors";
 import style from "./FeedbackSummary.module.css";
 import feedbackIcon from "../../assets/img/feedback.svg";
 import warningIcon from "../../assets/img/icon-warning.svg";
@@ -6,9 +8,22 @@ import iconSuccess from "../../assets/img/success-icon.svg";
 import iconDelete from "../../assets/img/icon-delete.svg";
 import useGetFeedbackSummary from "../../hooks/feedback/useGetFeedbackSummary";
 import { Spinner } from "react-bootstrap";
+import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
 
 const FeedbackSummary = () => {
+  const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
   const { data, isLoading, isError, error } = useGetFeedbackSummary();
+  const { loading: pgLoading, projectGroup } = useGetProjectGroupById(tdei_project_group_id);
+
+ const turnaroundLabel = (() => {
+    const tat = projectGroup?.data_viewer_config?.feedback_turnaround_time;
+    if (!tat || tat.number == null || !tat.units) return null;
+    const n = Number(tat.number);
+    const unit = String(tat.units).toLowerCase();
+    const singular = unit.endsWith("s") ? unit.slice(0, -1) : unit;
+    return `${n} ${n === 1 ? singular : singular + "s"}`;
+  })();
+
 
   // Default values if no data is provided
   const defaultData = {
@@ -54,8 +69,8 @@ const FeedbackSummary = () => {
       iconColor: "#1976D2"
     },
     {
-      title: "Last 3 Months",
-      value: feedbackData.lastThreeMonths,
+      title: "Turn Around Time",
+       value: pgLoading ? "Loading…" : (turnaroundLabel || "NA"),
       icon: <img src={iconSuccess} className={style.cardIcon} alt="Last 3 Months" />,
       bgColor: "#E8F5E8",
       iconColor: "#4CAF50"

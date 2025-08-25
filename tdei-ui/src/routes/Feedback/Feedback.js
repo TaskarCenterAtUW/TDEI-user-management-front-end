@@ -13,9 +13,12 @@ import FeedbackSummary from "../../components/FeedbackSummary";
 import DownloadIcon from '@mui/icons-material/Download';
 import FeedbackFilter from "../../components/FeedbackFilter";
 import filterImg from './../../assets/img/filter.svg';
+import ResponseToast from "../../components/ToastMessage/ResponseToast";
+import IconButton from '@mui/material/IconButton';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const Feedback = () => {
-    const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
+     const selectedProjectGroup = useSelector(getSelectedProjectGroup);
      const [selectedButton, setSelectedButton] = useState(null);
     const [filters, setFilters] = useState({
         datasetId: null,   
@@ -50,27 +53,33 @@ const Feedback = () => {
             setFeedbackList(data.pages.flatMap((page) => page.data));
         }
     }, [data]);
-    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-    const sortData = (key) => {
-        const direction = sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
-        setSortConfig({ key, direction });
-        const sortedData = [...feedbackList].sort((a, b) => {
-            if (direction === 'ascending') {
-                return a[key] > b[key] ? 1 : -1;
-            } else {
-                return a[key] < b[key] ? 1 : -1;
-            }
+
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [toastType, setToastType] = useState("success");
+
+    const toggleApiSortByCreatedAt = () => {
+        setFilters(prev => {
+            const isCurrentlyCreated = prev.sort_by === 'created_at';
+            const nextOrder =
+                isCurrentlyCreated && prev.sort_order?.toLowerCase() === 'asc' ? 'desc' : 'asc';
+            const next = { ...prev, sort_by: 'created_at', sort_order: nextOrder };
+            return next;
         });
-        setFeedbackList(sortedData);
+        refreshData?.();
+    };
+
+    const handleCloseToast = () => {
+        setShowToast(false);
     };
        const toggleFilters = () => {
         setSelectedButton(selectedButton === 'Filter' ? null : 'Filter');
     };
-
     const downloadData = () => {
-        // Construct the CSV content
-        console.log("Downloading data:", feedbackList);
-    }
+        setToastMessage("Feature coming soon!");
+        setToastType("info");
+        setShowToast(true);
+    };
 
     return (
         <div className={style.jobsContainer}>
@@ -79,34 +88,40 @@ const Feedback = () => {
                     <div className="page-header-title">Feedback</div>
                     <div className="page-header-subtitle">View and manage feedback for datasets</div>
                 </div>
-                <div className="d-flex align-items-end">
-                    <Button
-                        variant="outline-secondary"                  
-                        size="sm"
-                        onClick={toggleFilters}
-                        className={style.filterBtn}
-                        style={{
-                            backgroundColor: selectedButton === 'Filter' ? '#F8F8F8' : '#FFFFFF',
-                            borderColor: '#E0E0E0',
-                            color: '#162848',
-                        }}
-                    >
-                        <img
-                            src={filterImg}
-                            alt="Filter"
-                            style={{ width: 20, height: 15 }}
-                            className="me-2"
-                        />
-                        Filter
-                    </Button>
-                    <Button className="tdei-primary-button me-3" onClick={downloadData} disabled={isLoading}>
-                        <DownloadIcon className="me-2" />
-                        Download CSV
-                    </Button>
-                </div>
-
             </div>
             <FeedbackSummary />
+            <div className={style.actionsRight}>
+                <IconButton
+                    className={style.iconBtn}
+                    onClick={refreshData}
+                    sx={{ marginTop: '0px', marginRight: '8px', height: '40px' }}
+                    title="Refresh feedback list"  >
+                    <RefreshIcon style={{ fontSize: 20 }} />
+                </IconButton>
+                <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={toggleFilters}
+                    className={style.filterBtn}
+                    style={{
+                        backgroundColor: selectedButton === 'Filter' ? '#FFFFFF' : '#F8F8F8',
+                        borderColor: '#E0E0E0',
+                        color: '#162848',
+                    }}
+                >
+                    <img
+                        src={filterImg}
+                        alt="Filter"
+                        style={{ width: 20, height: 15 }}
+                        className="me-2"
+                    />
+                    Filter
+                </Button>
+                <Button className="tdei-primary-button" onClick={downloadData} disabled={isLoading}>
+                    <DownloadIcon className="me-2" />
+                    Download CSV
+                </Button>
+            </div>
             {selectedButton === 'Filter' && (<FeedbackFilter
                 refreshData={refreshData}
                 onFiltersChange={setFilters}
@@ -148,15 +163,22 @@ const Feedback = () => {
                                                           ) : (
                                                               <ArrowDropDownIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
                                                           )} */}
-                                    </div>
-                                    <div className={style.sortableHeader}>
-                                        Submitted time
-                                        {/* {sortConfig.key === 'requested_by' && sortConfig.direction === 'ascending' ? (
-                                                              <ArrowDropUpIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
-                                                          ) : (
-                                                              <ArrowDropDownIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
-                                                          )} */}
-                                    </div>
+                                                </div>
+                                                <div
+                                                    className={style.sortableHeader}
+                                                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                                                    onClick={toggleApiSortByCreatedAt}
+                                                    title="Sort by submitted time (API)"
+                                                >
+                                                    <span>Submitted time</span>
+                                                    {filters.sort_by === 'created_at' ? (
+                                                        (filters.sort_order?.toLowerCase() === 'asc') ? (
+                                                            <ArrowDropUpIcon className={style.sortIcon} />
+                                                        ) : (
+                                                            <ArrowDropDownIcon className={style.sortIcon} />
+                                                        )
+                                                    ) : null}
+                                                </div>
 
                                     <div className={style.sortableHeader}>
                                         Dataset and Element ID
@@ -189,6 +211,14 @@ const Feedback = () => {
                                                              </Button>
                                      */
                                 )}
+                                            <ResponseToast
+                                                showtoast={showToast}
+                                                handleClose={handleCloseToast}
+                                                message={toastMessage}
+                                                type={toastType}
+                                                autoHideDuration={3000}
+                                            />
+
                             </div>
                         )}
                     </>

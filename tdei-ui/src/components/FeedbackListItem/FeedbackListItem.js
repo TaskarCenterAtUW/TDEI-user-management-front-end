@@ -79,12 +79,14 @@ const FeedbackListItem = ({ feedback }) => {
         };
     }
   };
+  const lat = feedback.location_latitude?.toFixed(8);
+  const lng = feedback.location_longitude?.toFixed(8);
   return (
     <div className={style.gridContainer} key={feedback.id}>
         <p className={style.feedbackText}>{feedback.feedback_text}</p>
-        <p> {feedback.customer_email} <span class = {style.feedbackLocation} >{feedback.location_latitude}, {feedback.location_longitude}</span></p>
+        <p> {feedback.customer_email} <br/> <span class = {style.feedbackLocation} >{lat}, {lng}</span></p>
         <p>{new Date(feedback.created_at).toLocaleString()}</p>
-        <p> {feedback.dataset.name} {feedback.dataset_element_id}</p>
+        <p> {feedback.dataset.name} <br/> {feedback.dataset_element_id}</p>
       <p>
         <span style={getStatusStyle(feedback.status)}>
           {feedback.status}
