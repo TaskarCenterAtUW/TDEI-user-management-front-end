@@ -125,12 +125,7 @@ export async function getProjectGroupList(searchText, page_no) {
   });
   return res.data;
 }
-export async function getProjectGroupLists(
-  searchText,
-  pageParam = 1,
-  signal,
-  showInactive
-) {
+export async function getProjectGroupLists(searchText, pageParam = 1, signal, showInactive) {
   const res = await axios({
     url: `${url}/project-group`,
     params: {
@@ -165,15 +160,7 @@ export async function getProjectGroupUsers(
     pageParam,
   };
 }
-export async function getServices(
-  searchText,
-  tdei_project_group_id,
-  pageParam = 1,
-  isAdmin,
-  service_type,
-  showInactive,
-  fromCloneDataset
-) {
+export async function getServices(searchText, tdei_project_group_id, pageParam = 1, isAdmin, service_type, showInactive, fromCloneDataset) {
   const params = {
     searchText,
     page_no: pageParam,
@@ -219,15 +206,8 @@ export async function getService(
     pageParam,
   };
 }
-export async function getJobs(
-  tdei_project_group_id,
-  pageParam = 1,
-  isAdmin,
-  job_id,
-  job_type,
-  status,
-  job_show
-) {
+export async function getJobs(tdei_project_group_id, pageParam = 1, isAdmin, job_id, job_type, status, job_show) {
+
   const params = {
     page_no: pageParam,
     page_size: 10,
@@ -327,8 +307,8 @@ export async function postRevokePermission(data) {
 export async function postCreateService(data) {
   const token = localStorage.getItem("accessToken");
   const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
   };
   const res = await checkPayloadSizeAndSendRequest(
     `${url}/service`,
@@ -340,15 +320,10 @@ export async function postCreateService(data) {
 export async function postUpdateService(data) {
   const token = localStorage.getItem("accessToken");
   const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
   };
-  const res = await checkPayloadSizeAndSendRequest(
-    `${url}/service/${data.tdei_project_group_id}`,
-    data,
-    headers,
-    "put"
-  );
+  const res = await checkPayloadSizeAndSendRequest(`${url}/service/${data.tdei_project_group_id}`, data, headers, 'put');
   return res.data;
 }
 export async function postUpdateStation(data) {
@@ -386,7 +361,7 @@ export async function postCreateJob(data) {
         break;
       case "osw/quality-metric/ixn":
         if (data[1]) {
-          formData.append("file", data[1]);
+          formData.append('file', data[1]);
         }
         formData.append("tdei_dataset_id", data[2]);
         // formData.append('algorithm', data[3]);
@@ -438,7 +413,7 @@ export async function postCreateJob(data) {
         };
         url = baseUrl;
         headers = {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         };
         response = await axios.post(url, unionRequestBody, { headers });
         return response.data;
@@ -567,8 +542,8 @@ export async function getDatasets(
   tdei_service_id,
   selectedProjectGroupId,
   tdei_project_group_id,
-  sortField = "uploaded_timestamp",
-  sortOrder = "DESC"
+  sortField = 'uploaded_timestamp',
+  sortOrder = 'DESC'
 ) {
   const params = {
     page_no: pageParam,
@@ -622,18 +597,8 @@ export async function getDatasets(
     pageParam,
   };
 }
-export async function getReleasedDatasets(
-  searchText,
-  searchDatasetId,
-  pageParam = 1,
-  dataType,
-  projectId,
-  validFrom,
-  validTo,
-  tdeiServiceId,
-  sortField = "uploaded_timestamp",
-  sortOrder = "DESC"
-) {
+export async function getReleasedDatasets(searchText, searchDatasetId, pageParam = 1, dataType, projectId, validFrom, validTo, tdeiServiceId, sortField = 'uploaded_timestamp',
+  sortOrder = 'DESC') {
   const params = {
     status: "Publish",
     page_no: pageParam,
@@ -819,15 +784,11 @@ export async function cloneDataset(data) {
 export async function downloadDataset(data) {
   var file_end_point = "";
   const params = {};
-  var service_type = data.data_type;
-  if (service_type === "flex") {
-    file_end_point = "gtfs-flex";
-  } else if (service_type === "pathways") {
-    file_end_point = "gtfs-pathways";
-  } else {
-    file_end_point = "osw";
-  }
-  if (service_type === "osw") {
+  var service_type = data.data_type
+  if (service_type === 'flex') { file_end_point = 'gtfs-flex' }
+  else if (service_type === 'pathways') { file_end_point = 'gtfs-pathways' }
+  else { file_end_point = 'osw' }
+  if (service_type === 'osw') {
     if (data.format) {
       params.format = data.format;
     }
@@ -836,13 +797,9 @@ export async function downloadDataset(data) {
     }
   }
   try {
-    const response = await axios.get(
-      `${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`,
-      {
-        responseType: "blob",
-        params: params,
-      }
-    );
+    const response = await axios.get(`${osmUrl}/${file_end_point}/${data.tdei_dataset_id}`, {
+      responseType: 'blob', params: params
+    });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const a = document.createElement("a");
     a.href = urlBlob;
@@ -888,7 +845,7 @@ export async function downloadJob(jobId) {
     a.remove();
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
-    console.error("There was a problem with the download operation:", error);
+    console.error('There was a problem with the download operation:', error);
     if (error.status === 404) {
       return Promise.reject(new AxiosError("Download File Not Found!"));
     }
@@ -930,7 +887,7 @@ export async function downloadUsers() {
     a.remove();
     window.URL.revokeObjectURL(urlBlob);
   } catch (error) {
-    console.error("There was a problem with the download operation:", error);
+    console.error('There was a problem with the download operation:', error);
     if (error.status === 404) {
       return Promise.reject(new AxiosError("Download File Not Found!"));
     }
@@ -978,8 +935,8 @@ export async function searchFeedback(
   sort_by,
   sort_order,
   page_no,
-  page_size
-) {
+  page_size,
+  status) {
   const params = {
     tdei_project_group_id,
     tdei_dataset_id,
@@ -990,15 +947,17 @@ export async function searchFeedback(
     page_no,
     page_size,
   };
-  ///api/v1/osw/dataset-viewer/feedbacks
-  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks`, {
-    params,
-  });
+  if(status != null && status !== undefined && status !== "") {
+    params.status = status;
+  }
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks`, { params });
   console.log("Feedback response:", res);
   return { data: res.data, pageParam: page_no };
+
 }
 
-export async function getFeedbackSummary() {
-  const res = await axios.get(`${osmUrl}/feedback/metadata`);
+export async function getFeedbackSummary(tdei_project_group_id) {
+  const params = {tdei_project_group_id}
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`,{params});
   return res.data;
 }
