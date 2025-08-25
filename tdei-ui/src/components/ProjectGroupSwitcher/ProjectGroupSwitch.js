@@ -167,7 +167,10 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
   };
 
   const canShowProjectGroupSettings = () => {
-    return project.roles.includes("poc");
+    return (
+      project.roles.includes("poc") ||
+      project.roles.includes("osw_data_generator")
+    );
   };
 
   return (
