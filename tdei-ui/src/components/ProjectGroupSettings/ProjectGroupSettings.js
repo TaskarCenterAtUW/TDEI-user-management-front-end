@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
 import style from "./ProjectGroupSettings.module.css";
-import { FaCopy } from "react-icons/fa";
+import { FaCopy, FaGlobe } from "react-icons/fa";
 import * as yup from "yup";
 import { Formik } from "formik";
 import ResponseToast from "../ToastMessage/ResponseToast";
@@ -156,6 +156,14 @@ const ProjectGroupSettings = (props) => {
                             onClick={copyViewerUrl}
                           >
                             {copySuccess ? copySuccess : <FaCopy />}
+                          </Button>
+                          <Button
+                            variant="outline-secondary"
+                            onClick={() =>
+                              window.open(generateViewerUrl(), "_blank")
+                            }
+                          >
+                            <FaGlobe />
                           </Button>
                         </InputGroup>
                         <Form.Group style={{ height: "10px" }} />
