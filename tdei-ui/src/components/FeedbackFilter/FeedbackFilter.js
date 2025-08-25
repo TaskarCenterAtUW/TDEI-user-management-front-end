@@ -61,14 +61,14 @@ const handleSortChange = (field, order) => {
         <Col xs={12} md={8} lg={9}>
           <Form.Group>
             <div className={style.labelWithClear}>
-              <Form.Label>Search by Dataset Name</Form.Label>
+              <Form.Label>Search Feedback By Dataset</Form.Label>
             </div>
             <DatasetAutocomplete
               selectedDatasetId={selectedDatasetId}
               datasetSearchText={datasetSearchText}
               setDatasetSearchText={setDatasetSearchText}
               onSelectDataset={(id) => { handleSelectDataset(id); }}
-              placeholder="Search by Dataset Name"
+              placeholder="Enter dataset name to search feedback…"
             />
           </Form.Group>
         </Col>
@@ -105,11 +105,11 @@ const handleSortChange = (field, order) => {
         </Col>
         <Col xs={12} md={4}>
           <div className={style.labelWithClear}>
-            <Form.Label>Valid From</Form.Label>
+            <Form.Label>Submitted After</Form.Label>
             <span className={style.clearButton} onClick={clearValidFrom}>Clear</span>
           </div>
           <DatePicker
-            label="Valid From"
+            label="Submitted After"
             onChange={(dateIso) => { setValidFromIso(dateIso); refreshData?.(); }}
             dateValue={validFromIso}
             isFilter={true}
@@ -117,11 +117,11 @@ const handleSortChange = (field, order) => {
         </Col>
         <Col xs={12} md={4}>
           <div className={style.labelWithClear}>
-            <Form.Label>Valid To</Form.Label>
+            <Form.Label>Submitted Before</Form.Label>
             <span className={style.clearButton} onClick={clearValidTo}>Clear</span>
           </div>
           <DatePicker
-            label="Valid To"
+            label="Submitted Before"
             onChange={(dateIso) => { setValidToIso(dateIso); refreshData?.(); }}
             dateValue={validToIso}
             isFilter={true}

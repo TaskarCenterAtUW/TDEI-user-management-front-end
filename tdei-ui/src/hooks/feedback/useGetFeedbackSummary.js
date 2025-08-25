@@ -1,22 +1,27 @@
 import { useQuery } from "react-query";
 import { getFeedbackSummary } from "../../services";
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from "../../selectors";
 
 function useGetFeedbackSummary() {
-  const { data, isLoading, isError, error } = useQuery(
-    ["GET_FEEDBACK_SUMMARY"], 
-    getFeedbackSummary,
+  const { tdei_project_group_id } = useSelector(getSelectedProjectGroup) || {};
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(
+    ["GET_FEEDBACK_SUMMARY", tdei_project_group_id],
+    () => getFeedbackSummary(tdei_project_group_id),
     {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      enabled: !!tdei_project_group_id,
+      staleTime: 5 * 60 * 1000,       
+      cacheTime: 10 * 60 * 1000,        
     }
   );
 
-  return { 
-    data, 
-    isLoading, 
-    isError, 
-    error 
-  };
+  return { data, isLoading, isError, error };
 }
 
 export default useGetFeedbackSummary;

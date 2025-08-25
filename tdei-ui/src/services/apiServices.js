@@ -841,7 +841,8 @@ export async function searchFeedback(tdei_project_group_id,
 
 }
 
-export async function getFeedbackSummary() {
-  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`);
+export async function getFeedbackSummary(tdei_project_group_id) {
+  const params = {tdei_project_group_id}
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`,{params});
   return res.data;
 }
