@@ -1,0 +1,18 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#42526e"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <!-- Main chat bubble shape with a rounded tail -->
+  <path
+    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+  ></path>
+  <!-- Ellipsis (three dots) inside the bubble -->
+  <circle cx="12" cy="11" r="1"></circle>
+  <circle cx="8" cy="11" r="1"></circle>
+  <circle cx="16" cy="11" r="1"></circle>
+</svg>
