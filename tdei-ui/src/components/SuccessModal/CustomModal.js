@@ -2,11 +2,12 @@ import React, { useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
 import successIcon from "../../assets/img/success-icon.svg";
 import style from "./SuccessModal.module.css";
-import ErrorIcon from '@mui/icons-material/Error';
+import ErrorIcon from "@mui/icons-material/Error";
 import datasetReleaseIcon from "../../assets/img/dataset-publish-confirmation.svg";
 import datasetDeleteIcon from "../../assets/img/dataset-delete-confirmation.svg";
+import warningIcon from "../../assets/img/icon-warning.svg";
 import { AuthContext } from "../../context";
-import NorthEastIcon from '@mui/icons-material/NorthEast';
+import NorthEastIcon from "@mui/icons-material/NorthEast";
 import { minWidth } from "@mui/system";
 
 // CustomModal component displays a modal with success or error message
@@ -17,83 +18,128 @@ const CustomModal = (props) => {
   let contentColor;
   switch (props.modaltype) {
     case "success":
-      iconComponent = <img src={successIcon} alt="success-icon" className={style.modalHeaderIcon}/>;
+      iconComponent = (
+        <img
+          src={successIcon}
+          alt="success-icon"
+          className={style.modalHeaderIcon}
+        />
+      );
       titleColor = "#59C3C8";
-      contentColor = '';
+      contentColor = "";
       break;
     case "error":
-      iconComponent = <ErrorIcon style={{ fontSize: '42px', color: '#c84349' }} />;
+      iconComponent = (
+        <ErrorIcon style={{ fontSize: "42px", color: "#c84349" }} />
+      );
       titleColor = "#c84349";
-      contentColor = '#FFD2D4';
+      contentColor = "#FFD2D4";
       break;
     case "release":
-      iconComponent = <img src={datasetReleaseIcon} alt="release-icon" className={style.modalHeaderIcon}/>;
+      iconComponent = (
+        <img
+          src={datasetReleaseIcon}
+          alt="release-icon"
+          className={style.modalHeaderIcon}
+        />
+      );
       titleColor = "#162848";
-      contentColor = '';
+      contentColor = "";
       break;
     case "deactivate":
-      iconComponent = <img src={datasetDeleteIcon} alt="deactivate-icon" className={style.modalHeaderIcon}/>;
+      iconComponent = (
+        <img
+          src={datasetDeleteIcon}
+          alt="deactivate-icon"
+          className={style.modalHeaderIcon}
+        />
+      );
       titleColor = "#162848";
-      contentColor = '';
+      contentColor = "";
+      break;
+    case "dataviewer":
+      iconComponent = (
+        <img
+          src={warningIcon}
+          alt="warning-icon"
+          className={style.modalHeaderIcon}
+        />
+      );
+      titleColor = "#162848";
+      contentColor = "";
       break;
     case "inclination":
-      iconComponent = <NorthEastIcon sx={{fontSize:'40px'}} />
+      iconComponent = <NorthEastIcon sx={{ fontSize: "40px" }} />;
       titleColor = "#162848";
-      contentColor = '';
+      contentColor = "";
       break;
     default:
       iconComponent = null;
-      titleColor = '#000';
-      contentColor = '';
+      titleColor = "#000";
+      contentColor = "";
   }
   const buttonStyle = props.modaltype === "error" ? { minWidth: "70px" } : {};
   return (
-      <Modal
-        {...props}
-        size="md"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        show={props.show}
-        onHide={props.onHide}
-        enforceFocus={false}
-        // Disable interaction if ReLoginModal is open
-        style={{
-          zIndex: isReLoginOpen ? 1049 : 1050, 
-          pointerEvents: isReLoginOpen ? "none" : "auto" 
-        }}
-      >
-        <Modal.Body>
-          <div className={style.customSuccessModal}>
-            {iconComponent}
-            <div className={style.title} style={{ color: titleColor }}>
-              {props.title}
-            </div>
-            <div className={style.customMessage}>{props.message}</div>
-            {props.content &&  
-            <div className={style.content} style={{ backgroundColor: contentColor}}>{props.content}</div>
-            }
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={props.show}
+      onHide={props.onHide}
+      enforceFocus={false}
+      // Disable interaction if ReLoginModal is open
+      style={{
+        zIndex: isReLoginOpen ? 1049 : 1050,
+        pointerEvents: isReLoginOpen ? "none" : "auto",
+      }}
+    >
+      <Modal.Body>
+        <div className={style.customSuccessModal}>
+          {iconComponent}
+          <div className={style.title} style={{ color: titleColor }}>
+            {props.title}
           </div>
-        </Modal.Body>
-        <Modal.Footer className={props.modaltype === "success" || props.modaltype === "error" ? style.footerStyle : ''}>
-        {props.modaltype != "success" && props.modaltype != "error" ? (
-            <Button
-              onClick={props.onHide}
-              variant="outline-secondary"
-              className="tdei-secondary-button"
-              disabled={props.isLoading}
+          <div className={style.customMessage}>{props.message}</div>
+          {props.content && (
+            <div
+              className={style.content}
+              style={{ backgroundColor: contentColor }}
             >
-              No, Cancel
-            </Button>
-          ) : null}
+              {props.content}
+            </div>
+          )}
+        </div>
+      </Modal.Body>
+      <Modal.Footer
+        className={
+          props.modaltype === "success" || props.modaltype === "error"
+            ? style.footerStyle
+            : ""
+        }
+      >
+        {props.modaltype != "success" && props.modaltype != "error" ? (
+          <Button
+            onClick={props.onHide}
+            variant="outline-secondary"
+            className="tdei-secondary-button"
+            disabled={props.isLoading}
+          >
+            No, Cancel
+          </Button>
+        ) : null}
         <Button
           style={buttonStyle}
           onClick={props.handler}
           disabled={props.isLoading}
           variant="outline-secondary"
-          className={`tdei-${["release", "deactivate", "inclination"].includes(props.modaltype)
+          className={`tdei-${
+            ["release", "deactivate", "dataviewer", "inclination"].includes(
+              props.modaltype
+            )
               ? "primary"
               : "rounded"
-            }-button ${props.modaltype === "error" ? "maroon-bg" : ""}`}
+          }-button ${props.modaltype === "error" ? "maroon-bg" : ""}`}
         >
           {props.btnlabel}
         </Button>

@@ -1,23 +1,42 @@
-import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useMutation } from "react-query";
 import { updateDataviewerPreferenceForDataset } from "../../services";
 import { getSelectedProjectGroup } from "../../selectors";
-import { useMutation } from "react-query";
 
-function useToggleDataviewer() {
-  const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
-  const [isDataviewerEnabled, setIsDataviewerEnabled] = useState(false);
+// const useToggleDataviewer = ({ onSuccess, onError }) => {
+//   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+//   const tdei_project_group_id = selectedProjectGroup?.tdei_project_group_id;
 
-  const toggleDataviewer = useMutation(
-    (datasetId) => updateDataviewerPreferenceForDataset(datasetId, tdei_project_group_id, isDataviewerEnabled),
+//   const mutation = useMutation(
+//     ({ tdei_dataset_id, data_viewer_allowed }) =>
+//       updateDataviewerPreferenceForDataset(
+//         tdei_dataset_id,
+//         data_viewer_allowed
+//       ),
+//     {
+//       onSuccess: (data) => {
+//         mutationOptions.onSuccess(data);
+//       },
+//       onError: (err) => {
+//         mutationOptions.onError(err);
+//       },
+//     }
+//   );
+
+//   return mutation;
+// };
+
+function useToggleDataviewer(mutationOptions) {
+  return useMutation(
+    ({ tdei_dataset_id, data_viewer_allowed }) =>
+      updateDataviewerPreferenceForDataset(
+        tdei_dataset_id,
+        data_viewer_allowed
+      ),
     {
-      onSuccess: () => {
-        setIsDataviewerEnabled((prev) => !prev);
-      },
+      ...mutationOptions,
     }
   );
-
-  return { isDataviewerEnabled, toggleDataviewer };
 }
 
 export default useToggleDataviewer;

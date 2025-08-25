@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import ClipboardCopy from "../../routes/Services/ClipBoardCopy";
 import { useNavigate } from "react-router-dom";
-import useIsPoc from "../../hooks/useIsPoc";
 import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import projectGroupIcon from "../../assets/img/icon-projectgroupIcon.svg";
 import SwitchIcon from "@mui/icons-material/Tune";
@@ -167,6 +166,10 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
     setProjectGroupSettingDailog(false);
   };
 
+  const canShowProjectGroupSettings = () => {
+    return project.roles.includes("poc");
+  };
+
   return (
     <div className={style.projectGroupsContainer}>
       <div className={style.block} key={id}>
@@ -183,16 +186,18 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
           </div>
         </div>
         <div className={style.buttonsAlignment}>
-          <div>
-            <Button className={style.settingsButton} onClick={openDailog}>
-              <FaCog />
-            </Button>
-            <ProjectGroupSettings
-              projectGroup={project}
-              show={isProjectGroupSettingsDailogOpen}
-              onHide={() => setProjectGroupSettingDailog(false)}
-            />
-          </div>
+          {canShowProjectGroupSettings() ? (
+            <div>
+              <Button className={style.settingsButton} onClick={openDailog}>
+                <FaCog />
+              </Button>
+              <ProjectGroupSettings
+                projectGroup={project}
+                show={isProjectGroupSettingsDailogOpen}
+                onHide={closeDailog}
+              />
+            </div>
+          ) : null}
 
           {isCurrent ? (
             <div className={style.currentProject}>
