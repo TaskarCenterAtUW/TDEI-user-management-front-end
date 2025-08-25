@@ -1,6 +1,6 @@
 import React from "react";
 import style from "./Datasets.module.css";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Badge } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
 import { workspaceUrl } from "../../services";
 import DatasetsActions from "./DatasetsActions";
@@ -9,6 +9,7 @@ import { updatedTime } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { show } from "../../store/notificationModal.slice";
 import useIsPoc from "../../hooks/useIsPoc";
+import dataViewerIcon from "../../assets/img/data-viewer-icon.svg";
 import useIsOswGenerator from "../../hooks/useIsOswGenerator";
 import { getSelectedProjectGroup } from "../../selectors";
 
@@ -126,6 +127,30 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                 >
                   {metadata.dataset_detail.name}{" "}
                 </span>
+                {data_viewer_allowed && (
+                  <Badge
+                    bg="" // This disables the default bootstrap color
+                    className="ms-2 d-inline-flex align-items-center"
+                    style={{
+                      cursor: "pointer",
+                      backgroundColor: "var(--primary-color)",
+                    }}
+                    onClick={() => {
+                      const viewerUrl = `https://dataviewer-dev.tdei.us/project-group/${project_group.tdei_project_group_id}/dataset/${tdei_dataset_id}`;
+                      window.open(viewerUrl, "_blank");
+                    }}
+                    title="Data viewer enabled"
+                  >
+                    <img
+                      src={dataViewerIcon}
+                      alt="Data viewer enabled"
+                      style={{
+                        height: "1.2em",
+                        filter: "brightness(0) invert(1)",
+                      }}
+                    />
+                  </Badge>
+                )}
               </div>
               <div className={style.datasetSecondaryInfoBlock}>
                 <span className="">
