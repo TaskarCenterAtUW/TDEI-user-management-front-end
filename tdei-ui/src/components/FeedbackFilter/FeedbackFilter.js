@@ -6,6 +6,7 @@ import style from "./FeedbackFilter.module.css";
 import DatasetAutocomplete from "../DatasetAutocomplete/DatasetAutocomplete";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import FeedbackSortRefresh from "../FeedbackSortRefresh/FeedbackSortRefresh";
+import ResponseToast from "../../components/ToastMessage/ResponseToast";
 
 const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
   const [selectedDatasetId, setSelectedDatasetId] = useState(null);
@@ -27,6 +28,9 @@ const handleSortChange = (field, order) => {
   };
 
   useEffect(() => {
+    if (validFromIso && validToIso && dayjs(validToIso).isBefore(dayjs(validFromIso))) {
+      return;
+    }
     onFiltersChange?.({
       datasetId: selectedDatasetId,
       from_date: validFromIso,  
@@ -55,6 +59,12 @@ const handleSortChange = (field, order) => {
     setSelectedDatasetId(id);
   };
 
+useEffect(() => {
+  if (validFromIso && validToIso && dayjs(validToIso).isBefore(dayjs(validFromIso))) {
+    setValidToIso(null); 
+  }
+}, [validFromIso, validToIso]);
+
   return (
     <div className={style.filterContainer}>
      <Row className="g-3 mb-2 align-items-end">
@@ -71,17 +81,6 @@ const handleSortChange = (field, order) => {
               placeholder="Enter dataset name to search feedback…"
             />
           </Form.Group>
-        </Col>
-
-        <Col xs={16} md={4} lg={3}>
-        <div className="d-flex justify-content-end align-items-end h-100">
-          <FeedbackSortRefresh
-            sortField={sortField}
-            sortOrder={sortOrder}
-            onSortChange={handleSortChange}
-            onRefresh={() => refreshData?.()}
-          />
-          </div>
         </Col>
       </Row>
       <Row className="g-3 mb-3 align-items-end">
@@ -113,6 +112,7 @@ const handleSortChange = (field, order) => {
             onChange={(dateIso) => { setValidFromIso(dateIso); refreshData?.(); }}
             dateValue={validFromIso}
             isFilter={true}
+            maxDate={validToIso ? dayjs(validToIso) : null}
           />
         </Col>
         <Col xs={12} md={4}>
@@ -125,6 +125,7 @@ const handleSortChange = (field, order) => {
             onChange={(dateIso) => { setValidToIso(dateIso); refreshData?.(); }}
             dateValue={validToIso}
             isFilter={true}
+            minDate={validFromIso ? dayjs(validFromIso) : null}
           />
         </Col>
       </Row>
