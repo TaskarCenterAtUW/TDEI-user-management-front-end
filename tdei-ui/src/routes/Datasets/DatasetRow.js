@@ -127,7 +127,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                 >
                   {metadata.dataset_detail.name}{" "}
                 </span>
-                {data_viewer_allowed && (
+                {project_group.data_viewer_allowed && data_viewer_allowed && (
                   <Badge
                     bg="" // This disables the default bootstrap color
                     className="ms-2 d-inline-flex align-items-center"
