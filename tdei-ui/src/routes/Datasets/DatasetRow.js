@@ -52,6 +52,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
   const dataViewerProps = () => {
     const canPerformDataViewerAction =
       (isPoc || isOswGenerator) &&
+      project_group.data_viewer_allowed &&
       status === "Publish" &&
       project_group.tdei_project_group_id ===
         selectedProjectGroup.tdei_project_group_id &&
@@ -127,7 +128,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                 >
                   {metadata.dataset_detail.name}{" "}
                 </span>
-                {data_viewer_allowed && (
+                {project_group.data_viewer_allowed && data_viewer_allowed && (
                   <Badge
                     bg="" // This disables the default bootstrap color
                     className="ms-2 d-inline-flex align-items-center"
