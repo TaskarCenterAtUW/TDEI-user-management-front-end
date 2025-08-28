@@ -52,6 +52,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
   const dataViewerProps = () => {
     const canPerformDataViewerAction =
       (isPoc || isOswGenerator) &&
+      project_group.data_viewer_allowed &&
       status === "Publish" &&
       project_group.tdei_project_group_id ===
         selectedProjectGroup.tdei_project_group_id &&
