@@ -15,7 +15,12 @@ export default function ResponseToast(props) {
           severity={props.type}
           variant="filled"
           className={style.toastMsgContainer}
-          sx={{ backgroundColor: props.type == "success" ? "#1EAD80" : "#c84349" }}
+          sx={{
+            backgroundColor:
+              props.type === "success" ? "#1EAD80" :
+                props.type === "info" ? "#1976d2" :
+                  "#c84349"
+          }}
         >
           <span className={style.contentPosition}>{props.message}</span>
         </Alert>

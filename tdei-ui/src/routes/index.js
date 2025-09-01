@@ -23,6 +23,7 @@ import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import PasswordResetConfirm from "../components/VerifyComponent/PasswordResetConfirm";
 import EmailVerification from "../components/VerifyComponent/EmailVerification";
 import ProjectGroupSwitch from "../components/ProjectGroupSwitcher/ProjectGroupSwitch";
+import Feedback from "./Feedback";
 
 const Router = () => {
   const { user } = useAuth();
@@ -32,9 +33,9 @@ const Router = () => {
       <>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/ForgotPassword" element={<ForgotPassword />}/>
-        <Route path="/passwordReset" element={<PasswordResetConfirm />}/>
-        <Route path="/emailVerify" element={<EmailVerification />}/>
+        <Route path="/ForgotPassword" element={<ForgotPassword />} />
+        <Route path="/passwordReset" element={<PasswordResetConfirm />} />
+        <Route path="/emailVerify" element={<EmailVerification />} />
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />
@@ -42,21 +43,34 @@ const Router = () => {
               <Route path="/projectGroup" element={<ProjectGroup />} />
             )}
             <Route path="/services" element={<Services />} />
-            <Route path="/jobs" element={<Jobs/>}/>
+            <Route path="/jobs" element={<Jobs />} />
             <Route path="/stations" element={<Stations />} />
-            <Route path="/datasets" element={<Datasets/>} />
-            <Route path="/projectGroupSwitch" element={<ProjectGroupSwitch/>} />
+            <Route path="/datasets" element={<Datasets />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route
+              path="/projectGroupSwitch"
+              element={<ProjectGroupSwitch />}
+            />
             <Route path="/members" element={<Members />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
-            <Route path="/CreateUpdateStation" element={<CreateUpdateStation />}/>
-            <Route path="station/edit/:id" element={<CreateUpdateStation />}/>       
-            <Route path="/CreateUpdateService" element={<CreateUpdateService />}/>   
-            <Route path="service/edit/:id/:serviceType" element={<CreateUpdateService />}/>  
-            <Route path="/UploadDataset" element={<UploadDataset/>}/>
-            <Route path="/CreateJob" element={<CreateJobService />}/>
-            <Route path="/EditMetadata" element={<EditMetadata />}/>
-            <Route path="/CloneDataset" element={<CloneDataset />}/>
+            <Route path="station/edit/:id" element={<CreateUpdateStation />} />
+            <Route
+              path="/CreateUpdateStation"
+              element={<CreateUpdateStation />}
+            />
+            <Route path="station/edit/:id" element={<CreateUpdateStation />} />
+            <Route
+              path="/CreateUpdateService"
+              element={<CreateUpdateService />}
+            />
+            <Route
+              path="service/edit/:id/:serviceType"
+              element={<CreateUpdateService />}
+            />
+            <Route path="/UploadDataset" element={<UploadDataset />} />
+            <Route path="/CreateJob" element={<CreateJobService />} />
+            <Route path="/EditMetadata" element={<EditMetadata />} />
+            <Route path="/CloneDataset" element={<CloneDataset />} />
           </Route>
         </Route>
       </>
