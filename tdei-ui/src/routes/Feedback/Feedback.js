@@ -16,10 +16,13 @@ import filterImg from './../../assets/img/filter.svg';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { useDownloadPGFeedbacks } from "../../hooks/feedback/useDownloadPGFeedbacks";
 
 const Feedback = () => {
      const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+     const { mutate: downloadCSV, isPending: isDownloading } = useDownloadPGFeedbacks();
      const [selectedButton, setSelectedButton] = useState(null);
+     const [isFeedbackDownloading, setIsFeedbackDownloading] = useState(false);
     const [filters, setFilters] = useState({
         datasetId: null,   
         from_date: null,   
@@ -76,9 +79,33 @@ const Feedback = () => {
         setSelectedButton(selectedButton === 'Filter' ? null : 'Filter');
     };
     const downloadData = () => {
-        setToastMessage("Feature coming soon!");
-        setToastType("info");
-        setShowToast(true);
+        setIsFeedbackDownloading(true);
+        const pgId = selectedProjectGroup?.tdei_project_group_id || selectedProjectGroup?.id;
+        if (!pgId) {
+            return;
+        }
+        // Current support: whole project group
+        downloadCSV(
+            { tdei_project_group_id: pgId },
+            {
+                onSuccess: ({ filename }) => {
+                    setToastMessage(`Downloaded ${filename || "feedbacks file"}.`);
+                    setToastType("success");
+                    setShowToast(true);
+                    setIsFeedbackDownloading(false);
+                },
+                onError: (err) => {
+                    const msg =
+                        (err?.response?.data && typeof err.response.data === "string" && err.response.data) ||
+                        err?.message ||
+                        "Failed to download CSV.";
+                    setToastMessage(msg);
+                    setToastType("error");
+                    setShowToast(true);
+                    setIsFeedbackDownloading(false);
+                },
+            }
+        );
     };
 
     return (
@@ -117,9 +144,9 @@ const Feedback = () => {
                     />
                     Filter
                 </Button>
-                <Button className="tdei-primary-button" onClick={downloadData} disabled={isLoading}>
+                <Button className="tdei-primary-button" onClick={downloadData} disabled={isFeedbackDownloading || isDownloading}>
                     <DownloadIcon className="me-2" />
-                    Download CSV
+                   {isFeedbackDownloading ? "Downloading CSV…" : "Download CSV"}
                 </Button>
             </div>
             {selectedButton === 'Filter' && (<FeedbackFilter
