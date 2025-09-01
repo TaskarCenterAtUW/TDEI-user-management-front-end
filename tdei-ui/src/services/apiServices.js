@@ -44,6 +44,20 @@ function replaceEmptyStringsWithNull(obj) {
     }
   }
 }
+// Helper function to remove null or undefined values from an object
+const compact = (obj) =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== null && v !== undefined));
+
+// Helper function to extract filename from Content-Disposition header
+const getFilename = (disposition, fallback = "feedbacks.csv") => {
+  if (!disposition) return fallback;
+  const match = /filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i.exec(disposition);
+  try {
+    return decodeURIComponent((match && (match[1] || match[2])) || fallback);
+  } catch {
+    return fallback;
+  }
+};
 
 export async function postProjectGroupCreation(data) {
   const res = await axios.post(`${url}/project-group`, data);
@@ -960,4 +974,53 @@ export async function getFeedbackSummary(tdei_project_group_id) {
   const params = {tdei_project_group_id}
   const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`,{params});
   return res.data;
+}
+
+export async function downloadPGFeedbacksCSV({
+  tdei_project_group_id,
+  tdei_dataset_id,
+  from_date,
+  to_date,
+  status,
+  sort_by = "created_at",
+  sort_order = "desc",
+  page_no,
+  page_size,
+} = {}) {
+  if (!tdei_project_group_id) {
+    throw new Error("tdei_project_group_id is required to download feedbacks.");
+  }
+
+  const params = compact({
+    tdei_dataset_id,
+    from_date,
+    to_date,
+    status,
+    sort_by,
+    sort_order,
+    page_no,
+    page_size,
+    format: "csv",
+  });
+
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/download/${tdei_project_group_id}`, {
+    responseType: "blob",
+    params,
+  });
+
+  const filename =
+    getFilename(res.headers["content-disposition"], `PG_${tdei_project_group_id}_issues.csv`);
+
+  return { blob: res.data, filename };
+}
+
+export function saveBlobAsFile(blob, filename) {
+  const href = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(href);
 }
