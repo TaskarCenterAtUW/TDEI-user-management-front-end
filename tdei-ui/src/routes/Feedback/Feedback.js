@@ -17,18 +17,25 @@ import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useDownloadPGFeedbacks } from "../../hooks/feedback/useDownloadPGFeedbacks";
+import { format } from "prettier";
+import Popover from "@mui/material/Popover";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
 
 const Feedback = () => {
-     const selectedProjectGroup = useSelector(getSelectedProjectGroup);
-     const { mutate: downloadCSV, isPending: isDownloading } = useDownloadPGFeedbacks();
-     const [selectedButton, setSelectedButton] = useState(null);
-     const [isFeedbackDownloading, setIsFeedbackDownloading] = useState(false);
+    const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+    const { mutate: downloadCSV, isPending: isDownloading } = useDownloadPGFeedbacks();
+    const [selectedButton, setSelectedButton] = useState(null);
+    const [isFeedbackDownloading, setIsFeedbackDownloading] = useState(false);
+    const [formatAnchorEl, setFormatAnchorEl] = useState(null);
     const [filters, setFilters] = useState({
-        datasetId: null,   
-        from_date: null,   
-        to_date: null,  
-        status : "",
-        searchText: "",  
+        datasetId: null,
+        from_date: null,
+        to_date: null,
+        status: "",
+        searchText: "",
         sort_by: "created_at",
         sort_order: "desc",
     });
@@ -75,18 +82,19 @@ const Feedback = () => {
     const handleCloseToast = () => {
         setShowToast(false);
     };
-       const toggleFilters = () => {
+    const toggleFilters = () => {
         setSelectedButton(selectedButton === 'Filter' ? null : 'Filter');
     };
-    const downloadData = () => {
+    const downloadData = (selectedFormat = "csv") => {
         setIsFeedbackDownloading(true);
         const pgId = selectedProjectGroup?.tdei_project_group_id || selectedProjectGroup?.id;
         if (!pgId) {
+            setIsFeedbackDownloading(false);
             return;
         }
         // Current support: whole project group
         downloadCSV(
-            { tdei_project_group_id: pgId },
+            { tdei_project_group_id: pgId, format: selectedFormat },
             {
                 onSuccess: ({ filename }) => {
                     setToastMessage(`Downloaded ${filename || "feedbacks file"}.`);
@@ -98,7 +106,7 @@ const Feedback = () => {
                     const msg =
                         (err?.response?.data && typeof err.response.data === "string" && err.response.data) ||
                         err?.message ||
-                        "Failed to download CSV.";
+                        "Failed to download file.";
                     setToastMessage(msg);
                     setToastType("error");
                     setShowToast(true);
@@ -106,6 +114,12 @@ const Feedback = () => {
                 },
             }
         );
+    };
+    const openFormatMenu = (e) => setFormatAnchorEl(e.currentTarget);
+    const closeFormatMenu = () => setFormatAnchorEl(null);
+    const handleChooseFormat = (fmt) => {
+        closeFormatMenu();
+        downloadData(fmt);
     };
 
     return (
@@ -144,16 +158,38 @@ const Feedback = () => {
                     />
                     Filter
                 </Button>
-                <Button className="tdei-primary-button" onClick={downloadData} disabled={isFeedbackDownloading || isDownloading}>
+                <Button
+                    className="tdei-primary-button"
+                    onClick={openFormatMenu}
+                    disabled={isFeedbackDownloading || isDownloading}
+                >
                     <DownloadIcon className="me-2" />
-                   {isFeedbackDownloading ? "Downloading CSV…" : "Download CSV"}
+                    {isFeedbackDownloading ? "Downloading…" : "Download Feedback"}
                 </Button>
+                <Popover
+                    open={Boolean(formatAnchorEl)}
+                    anchorEl={formatAnchorEl}
+                    onClose={closeFormatMenu}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                    PaperProps={{ sx: { mt: 1, minWidth: 220 } }}
+                >
+                    <List dense disablePadding>
+                        <ListItemButton onClick={() => handleChooseFormat("csv")} disabled={isFeedbackDownloading || isDownloading}>
+                            <ListItemText primary="CSV" />
+                        </ListItemButton>
+                        <Divider />
+                        <ListItemButton onClick={() => handleChooseFormat("geojson")} disabled={isFeedbackDownloading || isDownloading}>
+                            <ListItemText primary="GeoJSON"/>
+                        </ListItemButton>
+                    </List>
+                </Popover>
             </div>
             {selectedButton === 'Filter' && (<FeedbackFilter
                 refreshData={refreshData}
                 onFiltersChange={setFilters}
             />)}
-            
+
             <Container>
 
                 {isLoading ? (
@@ -190,22 +226,22 @@ const Feedback = () => {
                                                           ) : (
                                                               <ArrowDropDownIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
                                                           )} */}
-                                                </div>
-                                                <div
-                                                    className={style.sortableHeader}
-                                                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                                                    onClick={toggleApiSortByCreatedAt}
-                                                    title="Sort by submitted time (API)"
-                                                >
-                                                    <span>Submitted time</span>
-                                                    {filters.sort_by === 'created_at' ? (
-                                                        (filters.sort_order?.toLowerCase() === 'asc') ? (
-                                                            <ArrowDropUpIcon className={style.sortIcon} />
-                                                        ) : (
-                                                            <ArrowDropDownIcon className={style.sortIcon} />
-                                                        )
-                                                    ) : null}
-                                                </div>
+                                    </div>
+                                    <div
+                                        className={style.sortableHeader}
+                                        style={{ cursor: 'pointer', userSelect: 'none' }}
+                                        onClick={toggleApiSortByCreatedAt}
+                                        title="Sort by submitted time (API)"
+                                    >
+                                        <span>Submitted time</span>
+                                        {filters.sort_by === 'created_at' ? (
+                                            (filters.sort_order?.toLowerCase() === 'asc') ? (
+                                                <ArrowDropUpIcon className={style.sortIcon} />
+                                            ) : (
+                                                <ArrowDropDownIcon className={style.sortIcon} />
+                                            )
+                                        ) : null}
+                                    </div>
 
                                     <div className={style.sortableHeader}>
                                         Dataset and Element ID
@@ -238,13 +274,13 @@ const Feedback = () => {
                                                              </Button>
                                      */
                                 )}
-                                            <ResponseToast
-                                                showtoast={showToast}
-                                                handleClose={handleCloseToast}
-                                                message={toastMessage}
-                                                type={toastType}
-                                                autoHideDuration={3000}
-                                            />
+                                <ResponseToast
+                                    showtoast={showToast}
+                                    handleClose={handleCloseToast}
+                                    message={toastMessage}
+                                    type={toastType}
+                                    autoHideDuration={3000}
+                                />
 
                             </div>
                         )}
