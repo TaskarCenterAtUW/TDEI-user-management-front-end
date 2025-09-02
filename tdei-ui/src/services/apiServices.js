@@ -986,10 +986,13 @@ export async function downloadPGFeedbacksCSV({
   sort_order = "desc",
   page_no,
   page_size,
+  format, // "csv" or "geojson"
 } = {}) {
   if (!tdei_project_group_id) {
     throw new Error("tdei_project_group_id is required to download feedbacks.");
   }
+  const chosenFormat = (format || "csv").toLowerCase();
+  const isGeoJSON = chosenFormat === "geojson";
 
   const params = compact({
     tdei_dataset_id,
@@ -1000,16 +1003,24 @@ export async function downloadPGFeedbacksCSV({
     sort_order,
     page_no,
     page_size,
-    format: "csv",
+    format: chosenFormat,
   });
 
-  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/download/${tdei_project_group_id}`, {
-    responseType: "blob",
-    params,
-  });
+  const res = await axios.get(
+    `${osmUrl}/osw/dataset-viewer/feedbacks/download/${tdei_project_group_id}`,
+    {
+      responseType: "blob",
+      params,
+      headers: {
+        Accept: isGeoJSON ? "application/geo+json, application/json" : "text/csv",
+      },
+    }
+  );
+  const fallbackName = isGeoJSON
+    ? `PG_${tdei_project_group_id}_feedbacks.geojson`
+    : `PG_${tdei_project_group_id}_issues.csv`;
 
-  const filename =
-    getFilename(res.headers["content-disposition"], `PG_${tdei_project_group_id}_issues.csv`);
+  const filename = getFilename(res.headers["content-disposition"], fallbackName);
 
   return { blob: res.data, filename };
 }
