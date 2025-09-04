@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-
+import dayjs from "dayjs";
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL;
@@ -1034,4 +1034,40 @@ export function saveBlobAsFile(blob, filename) {
   a.click();
   a.remove();
   window.URL.revokeObjectURL(href);
+}
+export async function downloadStatsExport(variables = {}) {
+  const { __rangeLabel, ...params } = variables;
+
+  const cleaned = { ...params };
+  replaceEmptyStringsWithNull(cleaned);
+  const finalParams = compact(cleaned); 
+
+  const res =  await axios.get(`${osmUrl}/download-stats/export`, {
+    responseType: "blob",
+    params: finalParams,
+    headers: { Accept: "text/csv" },
+  });
+
+  const disposition = res.headers?.["content-disposition"];
+  const fallback = buildFallbackName(finalParams, variables.__rangeLabel);
+  const filename = getFilename(disposition, fallback);
+
+  return { blob: res.data, filename };
+}
+
+export function buildFallbackName(params = {}, rangeLabel = "") {
+  const { from_date, to_date } = params || {};
+  const fmt = (v) => (v && dayjs(v).isValid() ? dayjs(v).format("YYYY-MM-DD") : null);
+  const f = fmt(from_date);
+  const t = fmt(to_date);
+
+  if (f && t) return `download_stats_${f}_${t}.csv`;
+
+  switch (rangeLabel) {
+    case "LAST_7":  return "download_stats_last_7_days.csv";
+    case "LAST_30": return "download_stats_last_30_days.csv";
+    case "LAST_90": return "download_stats_last_90_days.csv";
+    case "ALL":     return "download_stats_all.csv";
+    default:        return `download_stats_${dayjs().format("YYYY-MM-DD")}.csv`;
+  }
 }

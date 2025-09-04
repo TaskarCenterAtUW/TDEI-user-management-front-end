@@ -24,6 +24,7 @@ import PasswordResetConfirm from "../components/VerifyComponent/PasswordResetCon
 import EmailVerification from "../components/VerifyComponent/EmailVerification";
 import ProjectGroupSwitch from "../components/ProjectGroupSwitcher/ProjectGroupSwitch";
 import Feedback from "./Feedback";
+import Reports from "./Reports/Reports";
 
 const Router = () => {
   const { user } = useAuth();
@@ -47,6 +48,9 @@ const Router = () => {
             <Route path="/stations" element={<Stations />} />
             <Route path="/datasets" element={<Datasets />} />
             <Route path="/feedback" element={<Feedback />} />
+            {user?.isAdmin && (
+              <Route path="/reports" element={<Reports />} />
+            )}
             <Route
               path="/projectGroupSwitch"
               element={<ProjectGroupSwitch />}
