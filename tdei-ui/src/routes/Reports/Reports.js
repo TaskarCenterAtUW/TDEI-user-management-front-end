@@ -1,195 +1,74 @@
-import React, { useMemo, useState } from "react";
-import style from "./Reports.module.css";
+import React, { useState } from "react";
 import Container from "../../components/Container/Container";
-import { Button, Form, Spinner } from "react-bootstrap";
-import DownloadIcon from "@mui/icons-material/Download";
-import ResponseToast from "../../components/ToastMessage/ResponseToast";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import IconButton from "@mui/material/IconButton";
-import clsx from "clsx";
-import DatePicker from "../../components/DatePicker/DatePicker";
-import { useDownloadStatsReport } from "../../hooks/reports/useDownloadStatsReport";
-import dayjs from "dayjs";
-import { buildApiParams } from "../../utils/helper";
+import style from "./Reports.module.css";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Typography from "@mui/material/Typography";
+import { StatsReportPanel } from "./panels/StatsReportPanel";
+import { UsersReportPanel } from "./panels/UsersReportPanel";
 
-const toYMD = (d) => d.toISOString().slice(0, 10);
+const reportsConfig = [
+  {
+    id: "stats-report",
+    title: "Usage Stats (CSV)",
+    subtitle: "Download usage stats by quick range or a custom date range",
+    Component: StatsReportPanel,
+    defaultExpanded: true,
+  },
+  {
+    id: "active-users",
+    title: "Active Users",
+    subtitle: "Download a CSV of currently active users",
+    Component: UsersReportPanel,
+    defaultExpanded: false,
+  },
+];
 
-function calcRange(range) {
-    const today = new Date();
-    const to = toYMD(today);
-    const back = (days) => {
-        const dt = new Date(today);
-        dt.setDate(dt.getDate() - days);
-        return toYMD(dt);
-    };
-    switch (range) {
-        case "LAST_7": return { from_date: back(7), to_date: to };
-        case "LAST_30": return { from_date: back(30), to_date: to };
-        case "LAST_90": return { from_date: back(90), to_date: to };
-        case "ALL": return { from_date: null, to_date: null };
-        default: return { from_date: null, to_date: null };
-    }
-}
+const Reports = () => {
+  const [expanded, setExpanded] = useState(
+    reportsConfig.find(r => r.defaultExpanded)?.id || reportsConfig[0].id
+  );
 
-const StatsReports = () => {
-    const [range, setRange] = useState("LAST_7");
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
-    const [downloading, setDownloading] = useState(false);
-    const [showToast, setShowToast] = useState(false);
-    const [toastType, setToastType] = useState("success");
-    const [toastMessage, setToastMessage] = useState("");
+  const handleChange = (panelId) => (_e, isExpanded) => {
+    setExpanded(isExpanded ? panelId : false);
+  };
 
-    const { mutate: downloadStats, isPending } = useDownloadStatsReport();
-
-    const payload = useMemo(() => {
-        if (range === "CUSTOM") return { from_date: fromDate || null, to_date: toDate || null };
-        return calcRange(range);
-    }, [range, fromDate, toDate]);
-
-    const onQuickRange = (r) => {
-        setRange(r);
-        if (r !== "CUSTOM") { setFromDate(""); setToDate(""); }
-    };
-
-    const validate = () => {
-        if (range === "CUSTOM") {
-            if (!fromDate || !toDate) {
-                setToastType("error"); setToastMessage("Please pick both From and To dates."); setShowToast(true);
-                return false;
-            }
-            if (toDate < fromDate) {
-                setToastType("error"); setToastMessage("To date should be greater than or equal to From date."); setShowToast(true);
-                return false;
-            }
-        }
-        return true;
-    };
-
-    const handleDownload = () => {
-        if (!validate()) return;
-        setDownloading(true);
-         const apiParams = buildApiParams(payload);
-        downloadStats({ ...apiParams, __rangeLabel: range }, {
-            onSuccess: ({ filename }) => {
-                setToastType("success");
-                setToastMessage(`Downloaded ${filename}.`);
-                setShowToast(true);
-                setDownloading(false);
-            },
-            onError: (err) => {
-                const msg = err?.message || "Failed to download CSV.";
-                setToastType("error");
-                setToastMessage(msg);
-                setShowToast(true);
-                setDownloading(false);
-            },
-        });
-    };
-
-    const clearCustom = () => { setFromDate(""); setToDate(""); };
-
-    return (
-        <div className={style.statsContainer}>
-            <div className={style.header}>
-                <div className={style.title}>
-                    <div className="page-header-title">Stats Reports</div>
-                    <div className="page-header-subtitle">Download usage stats as CSV</div>
-                </div>
-            </div>
-            <Container>
-                <div className={style.controlsCard}>
-                    <div className={style.quickRow}>
-                        <div className={style.quickLeft}>
-                            <span className={style.label}>Quick range</span>
-
-                            <button
-                                className={clsx(style.chip, range === "LAST_7" && style.chipActive)}
-                                onClick={() => onQuickRange("LAST_7")}
-                            >
-                                Last 7 days
-                            </button>
-                            <button
-                                className={clsx(style.chip, range === "LAST_30" && style.chipActive)}
-                                onClick={() => onQuickRange("LAST_30")}
-                            >
-                                Last 30 days
-                            </button>
-                            <button
-                                className={clsx(style.chip, range === "LAST_90" && style.chipActive)}
-                                onClick={() => onQuickRange("LAST_90")}
-                            >
-                                Last 90 days
-                            </button>
-                            <button
-                                className={clsx(style.chip, range === "ALL" && style.chipActive)}
-                                onClick={() => onQuickRange("ALL")}
-                                title="Omit dates to fetch all rows"
-                            >
-                                ALL
-                            </button>
-                            <button
-                                className={clsx(style.chip, range === "CUSTOM" && style.chipActive)}
-                                onClick={() => onQuickRange("CUSTOM")}
-                            >
-                                Custom
-                            </button>
-                        </div>
-                    </div>
-                    <div className={clsx(style.dateRow, range !== "CUSTOM" && style.customDisabled)}>
-                        <div className={style.dateField}>
-                            <label className={style.dateLabel}>From</label>
-                            <DatePicker
-                                isFilter
-                                label="From date"
-                                dateValue={fromDate}
-                                onChange={(iso) => setFromDate(iso)}
-                                maxDate={toDate ? dayjs(toDate) : undefined}
-                            />
-                        </div>
-
-                        <div className={style.dateField}>
-                            <label className={style.dateLabel}>To</label>
-                            <DatePicker
-                                isFilter
-                                label="To date"
-                                dateValue={toDate}
-                                onChange={(iso) => setToDate(iso)}
-                                minDate={fromDate ? dayjs(fromDate) : undefined}
-                            />
-                        </div>
-
-                        <Button
-                            variant="outline-secondary"
-                            onClick={clearCustom}
-                            disabled={range !== "CUSTOM"}
-                            className={style.clearBtn}
-                        >
-                            Clear
-                        </Button>
-                    </div>
-                    <div className={style.actionsRow}>
-                        <Button
-                            className={clsx("tdei-primary-button", style.downloadBtn)}
-                            onClick={handleDownload}
-                            disabled={downloading}
-                            title="Download CSV"
-                        >
-                            <DownloadIcon className="me-2" />
-                            {downloading ? "Downloading…" : "Download CSV"}
-                        </Button>
-                    </div>
-                </div>
-            </Container>
-            <ResponseToast
-                showtoast={showToast}
-                handleClose={() => setShowToast(false)}
-                message={toastMessage}
-                type={toastType}
-                autoHideDuration={3000}
-            />
+  return (
+    <div className={style.statsContainer}>
+      <div className={style.header}>
+        <div className={style.title}>
+          <div className="page-header-title">Reports</div>
+          <div className="page-header-subtitle">Download CSV reports</div>
         </div>
-    );
+      </div>
+
+      <Container>
+        <div className={style.accordionStack}>
+          {reportsConfig.map(({ id, title, subtitle, Component }) => (
+            <Accordion
+              key={id}
+              expanded={expanded === id}
+              onChange={handleChange(id)}
+              disableGutters
+              className={style.accordion}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} className={style.accSummary}>
+                <div className={style.accHeader}>
+                  <Typography variant="h6" className={style.accTitle}>{title}</Typography>
+                  {subtitle && <Typography className={style.accSubtitle}>{subtitle}</Typography>}
+                </div>
+              </AccordionSummary>
+              <AccordionDetails className={style.accDetails}>
+                <Component />
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </div>
+      </Container>
+    </div>
+  );
 };
 
-export default StatsReports;
+export default Reports;
