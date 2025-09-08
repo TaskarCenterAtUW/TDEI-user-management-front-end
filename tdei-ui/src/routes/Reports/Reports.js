@@ -12,7 +12,7 @@ import { UsersReportPanel } from "./panels/UsersReportPanel";
 const reportsConfig = [
   {
     id: "stats-report",
-    title: "Usage Stats (CSV)",
+    title: "Download Stats",
     subtitle: "Download usage stats by quick range or a custom date range",
     Component: StatsReportPanel,
     defaultExpanded: true,
