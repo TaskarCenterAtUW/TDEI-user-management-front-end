@@ -25,6 +25,7 @@ import { formatPhoneNumber } from "../../utils";
 import useDownloadUsers from "../../hooks/useDownloadActiveUsers";
 import DownloadIcon from '@mui/icons-material/Download';
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
+import ResponseToast from "../../components/ToastMessage/ResponseToast";
 
 
 const Members = () => {
@@ -39,6 +40,9 @@ const Members = () => {
   const [showRevokeModal, setShowRevokeModal] = React.useState(false);
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState("");
+  const [showToast, setShowToast] = React.useState(false);
+  const [toastType, setToastType] = React.useState("success");
+  const [toastMessage, setToastMessage] = React.useState("");
   const dispatch = useDispatch();
   const {
     data = [],
@@ -68,7 +72,19 @@ const Members = () => {
   const { mutate: downloadUsers, isLoading: isDownloadingUsers } = useDownloadUsers();
 
   const handleDownloadUsers = () => {
-    downloadUsers();
+   downloadUsers(undefined, {
+      onSuccess: ({ filename }) => {
+        setToastType("success");
+        setToastMessage(`Downloaded ${filename || "tdei-active-users.csv"}.`);
+        setShowToast(true);
+      },
+      onError: (err) => {
+        const msg = (err && err.message) || "Failed to download CSV.";
+        setToastType("error");
+        setToastMessage(msg);
+        setShowToast(true);
+      },
+    });
   };
 
 
@@ -142,7 +158,7 @@ const Members = () => {
               {user.isAdmin &&
                 (
                   <Button
-                    className={style.downloadButton}
+                     className={clsx("tdei-primary-button", style.downloadBtn)}
                     onClick={handleDownloadUsers}
                     disabled={isDownloadingUsers}
                   >
@@ -254,6 +270,13 @@ const Members = () => {
         }}
         handler={handleRemoveUser}
         isLoading={removeUserLoading}
+      />
+      <ResponseToast
+        showtoast={showToast}
+        handleClose={() => setShowToast(false)}
+        message={toastMessage}
+        type={toastType}
+        autoHideDuration={3000}
       />
     </Layout>
   );

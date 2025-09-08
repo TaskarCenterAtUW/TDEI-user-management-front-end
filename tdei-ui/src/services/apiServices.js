@@ -888,24 +888,24 @@ export async function updateServiceStatus(data) {
   return res.data;
 }
 export async function downloadUsers() {
-  try {
-    const response = await axios.get(`${url}/users/download`, {
+   try {
+    const res = await axios.get(`${url}/users/download`, {
       responseType: "blob",
+      headers: { Accept: "text/csv" },
     });
-    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
-    const a = document.createElement("a");
-    a.href = urlBlob;
-    a.download = `tdei-active-users.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(urlBlob);
-  } catch (error) {
-    console.error('There was a problem with the download operation:', error);
-    if (error.status === 404) {
-      return Promise.reject(new AxiosError("Download File Not Found!"));
+    const disposition = res.headers && res.headers["content-disposition"];
+    const filename = getFilename(disposition, "tdei-active-users.csv");
+    return { blob: res.data, filename };
+  } catch (err) {
+    const status = (err && err.response && err.response.status) || err && err.status;
+    if (status === 404) {
+      throw new Error("Download file not found.");
     }
-    return Promise.reject(new AxiosError(error));
+    const msg =
+      (err && err.response && err.response.data && err.response.data.message) ||
+      (err && err.message) ||
+      "Failed to download Active Users CSV.";
+    throw new Error(msg);
   }
 }
 export async function regenerateApiKey() {

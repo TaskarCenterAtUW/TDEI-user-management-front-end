@@ -134,17 +134,15 @@ export const StatsReportPanel = () => {
           disabled={downloading}
           title="Download CSV"
         >
-          <DownloadIcon className="me-2" />
-          {downloading ? "Downloading…" : "Download CSV"}
+           {downloading ? (
+            <Spinner size="sm" />
+          ) : (
+            <>
+              <DownloadIcon className="me-2" />  {downloading ? "Downloading…" : "Download CSV"}
+            </>
+          )}
         </Button>
       </div>
-
-      {downloading && (
-        <div className={style.loadingRow}>
-          <Spinner animation="border" size="sm" className="me-2" />
-          Preparing your CSV…
-        </div>
-      )}
 
       <ResponseToast
         showtoast={showToast}
