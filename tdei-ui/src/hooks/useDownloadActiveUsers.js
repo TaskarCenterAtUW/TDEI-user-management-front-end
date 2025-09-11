@@ -1,18 +1,14 @@
 import {useMutation} from "react-query";
 import { downloadUsers } from "../services";
-import { useDispatch } from "react-redux";
-import { show } from "../store/notificationModal.slice";
+import { saveBlobAsFile } from "../services";
 
-const useDownloadUsers = () => {
-    const dispatch = useDispatch();
-    return useMutation(downloadUsers, {
-      onSuccess: () => {
-        dispatch(show({ message: "Active users downloaded successfully", type: "success" }));
-      },
-      onError: (error) => {
-        dispatch(show({ message: error.message, type: "danger" }));
-      },
-    });
-  };
-
-export default useDownloadUsers;
+export default function useDownloadActiveUsers() {
+  return useMutation({
+    mutationFn: async () => {
+      const { blob, filename } = await downloadUsers();
+      const safeName = filename || "active-users.csv";
+      saveBlobAsFile(blob, safeName);
+      return { filename: safeName };
+    },
+  });
+}

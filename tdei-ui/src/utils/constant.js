@@ -7,6 +7,7 @@ import datasetIcon from "../assets/img/dataset-icon-menu.svg";
 import uploadDataSetIcon from "../assets/img/datasetIcon.svg";
 import jobsIcon from "../assets/img/icon_jobs.svg";
 import feedback from "../assets/img/feedback.svg";
+import stats from "../assets/img/stats.png";
 
 export const PHONE_REGEX =
   // eslint-disable-next-line
@@ -42,6 +43,11 @@ export const ADMIN_SIDE_NAV = [
     linkName: "Jobs",
     to: "/jobs",
     icon: jobsIcon,
+  },
+   {
+    linkName: "Reports",
+    to: "/reports",
+    icon: stats,
   },
 ];
 

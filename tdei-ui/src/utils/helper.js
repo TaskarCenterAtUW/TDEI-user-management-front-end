@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const getUserName = (user, isCurrentUser) => {
   if (!user.first_name && !user.last_name) {
     return `${user.username} ${isCurrentUser ? "(You)" : ""}`;
@@ -77,3 +79,10 @@ export const updatedTime = (time) => {
   
   return `${formattedDate}, ${formattedTime}`;
 };
+
+const toApiMDY = (v) => (v ? dayjs(v).format("MM-DD-YYYY") : null);
+
+export const buildApiParams = (p) => ({
+  from_date: p.from_date ? toApiMDY(p.from_date) : null,
+  to_date: p.to_date ? toApiMDY(p.to_date) : null,
+});
