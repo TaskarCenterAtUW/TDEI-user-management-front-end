@@ -73,8 +73,8 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
       </div>
       <>
         <Form noValidate>
-          <div className="d-flex align-items-center mb-3">
-            <div className="d-flex align-items-center me-4">
+          <div className="d-flex align-items-center mb-3 flex-wrap gap-3">
+            <div className={style.serviceFilterBlock}>
               <Form.Control
                 className={style.customFormControl}
                 aria-label="Text input with dropdown button"
@@ -86,7 +86,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
               />
             </div>
             {!fromCloneDataset && (
-              <div className="d-flex align-items-center">
+              <div className={style.serviceFilterBlock}>
                 <div>Type</div>
                 <div className={style.selectServiceFilter}>
                   <Select
@@ -100,7 +100,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
                     components={{
                       IndicatorSeparator: () => null
                     }}
-                    styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
+                    // styles={{ container: (provided) => ({ ...provided, width: '80%' }) }}
                   />
                 </div>
               </div>

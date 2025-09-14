@@ -32,11 +32,19 @@
 
 .datasetsTableHeaderRow{
     background-color: #F8F8F8;
-    padding: 10px 15px;
+    padding: 10px 25px;
     font-size: 14px;
     font-weight: bold;
     border: 1px solid #DDDDDD;
     border-radius: 5px;
+    .datasetCardHeader {
+      display: grid;
+      grid-template-columns: 40% repeat(4, minmax(100px, 1fr));
+      align-items: center;
+      .datasetHeaderItem{
+        padding-right: 20px;
+      }
+    }
 }
 .datasetsTableRow {
     margin-top:1rem;
@@ -50,8 +58,19 @@
     padding: 0px; 
     border-left: 8px solid var(--tdei-blue) ;
     .datasetCard {
+      display: grid;
+      grid-template-columns: 40% repeat(4, minmax(100px, 1fr));
       align-items: center;
       padding: 25px 20px;
+      .datasetItem{
+        padding-right: 20px;
+      }
+      .itemCenterAlign {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
     }
     /* .infoBlock {
       margin-left: 15px;
@@ -97,6 +116,8 @@
       text-overflow: ellipsis;
     }
     .datasetIdBlock {
+      display: flex;
+      align-items: center;
       border-top: 1px dashed #ddd;
       padding: 8px 20px;
       background-color: #fbfbfb;
@@ -196,6 +217,10 @@
 .dropdownContainer {
   display: flex;
   justify-content: center;
+  .fullWidth {
+    width: 100%;
+    text-align: center;
+  }
   .dropdownToggle {
     /* padding: 4px 10px !important; */
     &:hover {
@@ -204,6 +229,22 @@
   }
   .dropdownToggle::after {
     display: none; 
+  }
+  .datasetActionsButton {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    width: 50%;
+    margin-top: 10px;
+    &::after {
+      display: none; 
+    }
+    &:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
   }
   .dropdownCard {
     box-shadow: 0px 3px 6px #00000015;
@@ -278,6 +319,8 @@
   opacity: 1 !important; 
   width: 40px;
   height: 40px;
+  margin-top: 30px !important;
+  margin-right: 15px !important;
 }
 .sortByField {
   width: 300px;
@@ -311,6 +354,9 @@
   opacity: 1 !important; 
   padding: 24px;
   margin-bottom: 20px;
+  .datasetFilterBlock {
+    margin-bottom: 10px;
+  }
 }
 .labelWithClear {
   display: flex;
@@ -328,3 +374,120 @@
 .clearButton:hover {
   text-decoration: underline;
 }
+.mobileOnly {
+  display: none;
+}
+.primaryFilterContainer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  .primaryFilterBlock {
+    width: 240px;
+  }
+  .primaryFilterBlock_Released {
+    width: 240px;
+  }
+}
+.secondaryFilterContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+.typeNameTransform {
+  text-transform: uppercase;
+}
+
+
+@media only screen and (max-width: 992px) {
+  .datasetsTableHeaderRow {
+    display: none;
+  }
+  .datasetsTableRow {
+    border-left: unset;
+    border-top: 5px solid var(--tdei-blue) ;
+    .datasetCard {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 10px;
+      .datasetItem {
+        border-bottom: 1px dashed #cecece;
+        padding-bottom: 10px;
+        &:last-child {
+          border-bottom: none;
+          padding-bottom: 0px;
+        }
+      }
+      .itemCenterAlign {
+        justify-content: flex-start;
+      }
+    }
+    .datasetIdBlock {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+  .dropdownContainer {
+    justify-content: flex-start;
+  }
+  .mobileOnly {
+    display: block;
+    font-size: 14px;
+    color: #83879B;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .datasetIdBlock {
+    .verticalSeparator {
+      display: none;
+    }
+  }
+  .primaryFilterContainer {
+    .primaryFilterBlock {
+      width: 100%;
+    }
+    .primaryFilterBlock_Released {
+      width: 50%;
+    }
+  }
+  .secondaryFilterContainer {
+    justify-content: flex-start;
+    margin-left: 0px;
+  }
+  .sortFilterBtn {
+    margin-top: 20px !important;
+  }
+  .iconBtn {
+    margin-top: 20px !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .filterComponent{
+    padding: 15px;
+    .datasetFilterBlock {
+      margin-bottom: 5px;
+    }
+  }
+  .datasetsTableRow {
+    .datasetCard {
+      .datasetItem{
+        padding-right: 0px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .dropdownContainer {
+    .datasetActionsButton {
+      width: 100%;
+    }
+  }
+  .primaryFilterContainer {
+    .primaryFilterBlock_Released {
+      width: 100%;
+    }
+  }
+}
+

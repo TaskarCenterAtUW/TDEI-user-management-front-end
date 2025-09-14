@@ -8,6 +8,7 @@ import style from "./Jobs.module.css";
 import { useAuth } from "../../hooks/useAuth";
 import { useQueryClient } from "react-query";
 import refreshIcon from "./../../assets/img/icon-refresh.svg";
+import filterIcon from "./../../assets/img/filter.svg";
 import { debounce } from "lodash";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ import { IconButton } from "@mui/material";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import useIsMember from "../../hooks/roles/useIsMember";
+import { useMediaQuery } from 'react-responsive';
 
 const Jobs = () => {
     const { user } = useAuth();
@@ -32,6 +34,8 @@ const Jobs = () => {
     const isMember = useIsMember();
     const [sortedData, setSortedData] = useState([]);
     const [jobError, setJobError] = useState('');
+    const [showFilter, setShowFilter] = useState(true);
+    const isMobile = useMediaQuery({ maxWidth: 768 });
 
     // Options for job type dropdown
     const jobTypeOptions = [
@@ -198,6 +202,9 @@ const Jobs = () => {
             </div>
         );
     }
+    const handleToggleFilter = () => {
+        setShowFilter(!showFilter);
+    }
     return (
         <div className={style.jobsContainer}>
             <div className={style.header}>
@@ -215,8 +222,14 @@ const Jobs = () => {
             </div>
             <Container>
                 <>
-                    <div className={style.searchPanel}>
-                        <div className="d-flex flex-wrap">
+                    {isMobile && <div className={style.toggleFilterBlock}>
+                        <button type="button" className={style.filterBtn} onClick={handleToggleFilter}>
+                            <img src={filterIcon} className={style.filterIcon} alt="" aria-hidden="true" />
+                            {!showFilter ? "Show Filters" : "Hide Filters"}
+                        </button>
+                    </div>}
+                    {showFilter && <div className={style.searchPanel}>
+                        <div className="d-flex flex-wrap gap-3">
                             <Form.Control
                                 type="text"
                                 placeholder="Search Job Id"
@@ -260,7 +273,7 @@ const Jobs = () => {
                                 </IconButton>
                             </div>
                         </div>
-                    </div>
+                    </div>}
                     <div className={clsx(style.gridContainer, style.projectHeader)}>
                         <div className={style.sortableHeader}>
                             Job Type
@@ -288,19 +301,19 @@ const Jobs = () => {
                         </div>
                         <div>Message</div>
                         <div className={style.sortableHeader}>
-                            Status
-                            {sortConfig.key === 'status' && sortConfig.direction === 'ascending' ? (
-                                <ArrowDropUpIcon onClick={() => sortData('status')} className={style.sortIcon} />
-                            ) : (
-                                <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
-                            )}
-                        </div>
-                        <div className={style.sortableHeader}>
                             Created On
                             {sortConfig.key === 'created_at' && sortConfig.direction === 'ascending' ? (
                                 <ArrowDropUpIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
                             ) : (
                                 <ArrowDropDownIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
+                            )}
+                        </div>
+                        <div className={style.sortableHeader}>
+                            Status
+                            {sortConfig.key === 'status' && sortConfig.direction === 'ascending' ? (
+                                <ArrowDropUpIcon onClick={() => sortData('status')} className={style.sortIcon} />
+                            ) : (
+                                <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
                             )}
                         </div>
                     </div>

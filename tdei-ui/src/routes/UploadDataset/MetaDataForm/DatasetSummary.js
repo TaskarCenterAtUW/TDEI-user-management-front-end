@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, ErrorMessage } from "formik";
 import { Form } from "react-bootstrap";
+import style from "./MetaDataForm.module.css";
 
 const DatasetSummary = ({ formData, updateFormData }) => {
   const [country, setCountry] = React.useState("");
@@ -15,9 +16,9 @@ const DatasetSummary = ({ formData, updateFormData }) => {
   return (
     <Formik initialValues={formData} onSubmit={values => console.log(values)} >
        {({ handleChange }) => (
-        <div className="container">
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-md-6 column-style">
+        <div className={style.metaDataContainer}>
+          <div className="row">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="collection_name">
                 <Form.Label>Collection Name</Form.Label>
                 <Form.Control
@@ -88,7 +89,7 @@ const DatasetSummary = ({ formData, updateFormData }) => {
                 />
               </Form.Group>
             </div>
-            <div className="col-md-6 column-style">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="city">
                 <Form.Label>City</Form.Label>
                 <Form.Control

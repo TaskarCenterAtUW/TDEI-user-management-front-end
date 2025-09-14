@@ -189,11 +189,11 @@ body {
   padding: 20px;
 }
 
-.row {
+/* .row {
   display: flex;
   justify-content: space-between;
-  /* gap: 20px; */
-}
+  gap: 20px;
+} */
 
 .column-style {
   background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -246,4 +246,19 @@ input[type=checkbox] {
   margin-bottom: 2px;
   font-size: 26px;
   font-weight: 300;
+}
+.MuiStepper-horizontal > .MuiStep-horizontal {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+@media only screen and (max-width: 768px) {
+  .column-style {
+    flex: unset;
+    margin-right: 0px;
+    margin-bottom: 20px;
+    &:nth-last-child(1) {
+      margin-bottom: 0px;
+    }
+  }
 }

@@ -11,8 +11,8 @@
     font-weight: 600;
 }
 .copyIcon {
-    height: 20px;
-    padding: 0px 4px;
+    height: 18px;
+    margin-left: 2px;
     transition: transform .2s;
     cursor: pointer;
     &:hover {

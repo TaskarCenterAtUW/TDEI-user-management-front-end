@@ -172,7 +172,11 @@
   border-color: #2f3661;
 }
 .customFormControl {
-  max-width: 300px; 
+  width: 240px; 
+}
+.serviceFilterBlock {
+  display: flex;
+  align-items: center;
 }
 .stepComponentTitle {
   font-size: 16px;
@@ -187,4 +191,12 @@
   font-size: 1em;
   /* font-style: italic; */
   color: var(--primary-color);
+}
+@media only screen and (max-width: 600px) {
+  .serviceFilterBlock {
+      width: 100%;
+  }
+  .customFormControl, .selectServiceFilter {
+    width: 100%; 
+  }
 }

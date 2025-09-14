@@ -5,30 +5,32 @@ import style from "./Datasets.module.css"
 const DatasetTableHeader = ({ isReleasedDataList }) => {
     return (
         <Container className={style.datasetsTableHeaderRow} fluid>
-            <Row>
-                <Col md={5}>
+            <div className={style.datasetCardHeader}>
+                <div className={style.datasetHeaderItem}>
                     Dataset Name
-                </Col>
-                {isReleasedDataList && <Col>
-                    Project Group
-                </Col>}
-                <Col>
+                </div>
+                {isReleasedDataList && 
+                    <div className={style.datasetHeaderItem}>
+                        Project Group
+                    </div>
+                }
+                <div className={style.datasetHeaderItem}>
                     Service Name
-                </Col >
-                <Col>
+                </div >
+                <div className={style.datasetHeaderItem}>
                     Type
-                </Col>
-                {!isReleasedDataList && <Col className="d-flex justify-content-center">
+                </div>
+                {!isReleasedDataList && <div className={`${style.datasetHeaderItem} d-flex justify-content-center`}>
                     Status
-                </Col>}
+                </div>}
                 {/* <Col>
                     View
                 </Col> */}
-                <Col className="d-flex justify-content-center">
+                <div className={`${style.datasetHeaderItem} d-flex justify-content-center`}>
                     Action
-                </Col>
+                </div>
                 {/* } */}
-            </Row>
+            </div>
         </Container>
     )
 }

@@ -11,17 +11,17 @@
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
+  gap: 1rem !important;
 }
 
 .searchPanel input {
   width: 200px;
-  margin-right: 20px;
 }
 
 .selectPanel {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 0px;
 }
 
 .selectPanel>*:not(:last-child) {
@@ -46,14 +46,14 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 15% 10% 25% 20% 15% 15%;
+  grid-template-columns: repeat(1, 1fr) 120px repeat(4, 1fr);
   /* to be adjusted once action is added again */
-  grid-column-gap: 10px;
+  grid-column-gap: 15px;
   /* min-height: 70px; */
-  align-items: center;
+  align-items: flex-start;
   border-bottom: 1px solid #dddddd;
   border-radius: 0px;
-  padding: 0px 10px 15px 10px;
+  padding: 5px 10px 15px 10px;
   margin-bottom: 15px;
   font-size: 14px;
 }
@@ -158,7 +158,7 @@
 .downloadLink {
   color: #0969DA;
   cursor: pointer;
-  padding-top: 10px;
+  font-weight: 700;
   text-decoration: underline;
 }
 
@@ -579,9 +579,122 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.submittedByBlock {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+.userIcon {
+  width: 22px;
+  height: 22px;
+  margin-top: 3px;
+}
 .noDataText {
   font-size: 14px;
   color: var(--secondary-color);
   margin-left: 5px;
+}
+.mobileOnly {
+  display: none;
+}
+.statusFlexBox {
+  display: flex;
+  flex-direction: column;
+}
+.toggleFilterBlock {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+  .filterBtn {
+    border: 1px solid #CED4DA !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    padding: 6px 25px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    &:hover {
+      background-color: #F8F8F8;
+    }
+  }
+  .filterIcon {
+    width: 14px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .gridContainer {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 15px 10px 0px 15px;
+  }
+  .formRow {
+    flex-direction: column;
+  }
+  .formItem {
+    margin-right: 0px
+  }
+}
+
+@media (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: 1fr;
+    grid-gap: 10px;
+    padding: 10px 5px 10px 10px;
+    border-top: 5px solid var(--tdei-blue);
+  }
+  .gridContainer > .content {
+    border-bottom: 1px dashed #cecece;
+    padding-bottom: 10px;
+  }
+  .projectHeader {
+    display: none;
+  }
+  .mobileOnly {
+    display: block;
+    font-size: 14px;
+    color: #83879B;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .searchPanel {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    flex-direction: column;
+    align-items: baseline;
+  }
+  .searchPanel input {
+    width: 100%;
+  }
+  .selectPanel {
+    width: 100%;
+    flex-direction: column;
+    align-items: baseline;
+  }
+  .selectPanel .select {
+    width: 100%;
+  }
+  .form {
+    width: 100%;
+  }
+  .createJobSelectType {
+    width: 100%;
+  }
+  .bboxForm {
+    width: 100%;
+  }
+  .statusFlexBox {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  /* .toggleFilterBlock {
+    display: flex;
+  } */
 }
 

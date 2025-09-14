@@ -67,12 +67,32 @@
     background-color: #f8f8f8;
 
     .uploadWidgetTitle {
-      font-size: 16px;
-      font-weight: 700;
-      padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 15px 30px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
     }
 
     [class*='Container_container'] {
       padding: 0px;
     }
-  }
+}
+
+  
+@media only screen and (max-width: 900px) {
+    .stepsBlock {
+        border-right: none;
+        border-bottom: 1px solid #CCCCCC;
+        padding: 25px 25px;
+    }
+    .stepTimelineTitle {
+        font-size: 14px;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .stepsBlock {
+        padding: 25px 10px;
+    }
+}
