@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { toggle } from "../../store/sideMenuBar.slice";
 import resetPasswordIcon from "../../assets/img/reset_pass.svg";
 import logoutIcon from "../../assets/img/logout.svg";
+import iconMenu from "../../assets/img/icon-mobile-menu.svg";
 import ResetPassword from "../ResetPassword/ResetPassword";
 import useResetPassword from "../../hooks/useResetPassword";
 import { clear } from "../../store";
@@ -38,16 +39,16 @@ const Header = () => {
     <div className={style.container}>
       <div className={style.imgContainer}>
         {authenticated && (
-          <div
-            className={style.sideMenuIcon}
-            onClick={() => dispatch(toggle())}
+          <button
+            className={`${style.mobileMenuIcon} btn btn-outline-light d-md-none`}
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileSidebar"
           >
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
+            <img src={iconMenu} alt="Menu icon" />
+          </button>
         )}
-        <img src={tempLogo} className={style.logoImage} alt="logo" />
+        <img src={tempLogo} className={`${style.logoImage} ${authenticated && style.logoHidden}`} alt="TDEI logo" />
       </div>
       {authenticated ? (
         <div className={style.rightContainer}>

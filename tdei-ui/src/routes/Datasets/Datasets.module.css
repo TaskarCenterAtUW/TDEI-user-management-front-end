@@ -7,7 +7,7 @@
     padding-right: 20px;
     padding-top: 20px;
     padding-bottom: 0px;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
 }
 .datasetsTabsHeaderContainer{
     display: flex;
@@ -162,7 +162,7 @@
   .datasetsLayout {
     height: 100%;
     padding: 20px ;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
   }
   .link-with-hover-underline {
     position: relative;
