@@ -44,7 +44,7 @@
 .actionsRow {
   display: flex;
   justify-content: flex-start;
-  margin-top: 12px;
+  margin-top: 15px;
 }
 .accordionStack {
   display: flex;
@@ -74,10 +74,11 @@
 .accTitle {
   font-weight: 700 !important;
   color: #0f172a;
+  font-family: var(--primary-font-family) !important;
 }
 
 .accSubtitle {
-  font-family: 'Lato' !important;
+  font-family: var(--primary-font-family) !important;
   font-size: 14px !important;
   color: #6b7280 !important;
   font-weight: 400;
@@ -94,6 +95,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .usersText {
@@ -112,4 +115,10 @@
 .downloadButton:hover {
   background: var(--tdei-blue);
   border-radius: 4px;
+}
+
+@media only screen and (max-width: 600px) {
+  .dateRow {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }

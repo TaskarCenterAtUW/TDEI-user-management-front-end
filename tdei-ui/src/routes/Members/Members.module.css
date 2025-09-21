@@ -33,10 +33,12 @@
 }
 
 .adminGrid {
-  grid-template-columns: minmax(100px, 60%) minmax(100px, max-content);
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 20px;
 }
 .userGrid {
-  grid-template-columns: 30% 25% 35% 10%;
+  grid-template-columns: repeat(2, minmax(150px, 1fr)) 40% 10%;
+  gap: 20px;
 }
 .menuVertical {
   width: 28px;
@@ -44,7 +46,8 @@
 }
 
 .actionItem {
-  width: 28px;
+  display: flex;
+  justify-content: center;
 }
 
 .name {
@@ -56,6 +59,8 @@
 .address {
   color: var(--secondary-color);
   font-size: 14px;
+  word-break: break-all;
+  line-height: 18px;
 }
 
 .details {
@@ -68,7 +73,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
+  min-width: 40px;
   height: 40px;
   border-radius: 50%;
   background-color: var(--tdei-blue);
@@ -116,8 +121,10 @@
 }
 .searchWrapper {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 
 .downloadButton {
@@ -132,4 +139,65 @@
 .downloadButton:hover {
   background: var(--tdei-blue);
   border-radius: 4px;
+}
+.mobileOnly {
+  display: none;
+}
+.membersActionsButton {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 10px;
+  &::after {
+    display: none; 
+  }
+  &:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .userGrid, .adminGrid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 15px;
+    border-top: 5px solid var(--tdei-blue);
+  }
+  .actionItem {
+    justify-content: left;
+  }
+  .mobileOnly {
+    display: block;
+    font-size: 14px;
+    color: #83879B;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .roles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 0px;
+  }
+  .content, .roles, .details {
+    border-bottom: 1px dashed #cecece;
+    padding-bottom: 15px;
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0px;
+    }
+  }
+  .userHeader {
+    display: none;
+  }
+  .roleBlock:nth-child(2) {
+    margin-top: 5px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .searchPanel input {
+    width: 100%;
+  }
 }

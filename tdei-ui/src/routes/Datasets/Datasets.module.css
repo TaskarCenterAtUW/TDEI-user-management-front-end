@@ -121,7 +121,7 @@
       border-top: 1px dashed #ddd;
       padding: 8px 20px;
       background-color: #fbfbfb;
-      border-radius: 0px 0px 5px 0px;
+      border-radius: 0px 0px 5px 5px;
     }
 }
 .smallMargin{
@@ -403,7 +403,7 @@
     display: none;
   }
   .datasetsTableRow {
-    border-left: unset;
+    border-left: 1px solid #DDDDDD;
     border-top: 5px solid var(--tdei-blue) ;
     .datasetCard {
       display: grid;

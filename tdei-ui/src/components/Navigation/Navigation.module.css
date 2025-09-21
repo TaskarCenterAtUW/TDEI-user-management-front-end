@@ -9,15 +9,17 @@
 .menuItem {
   display: flex;
   align-items: center;
-  padding: 15px 20px;
-  color: #162848;
-  font-size: 15px;
+  padding: 18px 20px;
+  color: #42526e;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
 }
 .menuItem:hover {
   background-color: #f5f5f5;
-  color: #162848;
+  color: #42526e;
 }
 .menuItem.active {
   background-color: #f5f5f5;

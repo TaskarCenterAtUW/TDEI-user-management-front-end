@@ -36,12 +36,12 @@ const DatasetsTabsContainer = () => {
                     className="mb-2"
                 >
                     {(isAdmin || isDatasetsAccessible || isMember) && (
-                        <Tab eventKey="myDatasets" title={<span className={style.boldText}> <img className={style.smallMargin} src={datasetIcon} /> { isAdmin? "All Datasets" : "My Project Datasets"}</span>}>
+                        <Tab eventKey="myDatasets" title={<span className={style.boldText}> { isAdmin? "All Datasets" : "My Project Datasets"}</span>}>
                             <MyDatasets />
                         </Tab>
                     )}
                      {!isAdmin && (
-                    <Tab eventKey="releasedDatasets" title={<span className={style.boldText}> <img className={style.smallMargin} src={releasedDatasets} /> All Released Datasets</span>}>
+                    <Tab eventKey="releasedDatasets" title={<span className={style.boldText}> All Released Datasets</span>}>
                         <ReleasedDatasets />
                     </Tab>
                      )}

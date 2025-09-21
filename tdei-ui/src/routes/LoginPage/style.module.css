@@ -1,5 +1,5 @@
 .loginCard {
-  width: 450px;
+  max-width: 450px;
   margin-top: 50px;
 }
 .loginContainer {
@@ -27,4 +27,14 @@
   font-size: 12px;
   color: var(--secondary-color);
   margin-top: 5px;
+}
+
+@media only screen and (max-width: 600px) {
+  .loginCard {
+    margin-top: 0px;
+    max-width: 100%;
+    :global .card {
+        border: none;
+    }
+  }
 }

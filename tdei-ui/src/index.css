@@ -151,7 +151,7 @@ body {
   border:none;
 }
 .nav-tabs .nav-link.active {
-  color: black;
+  color: #162848;
   background-color: #fff;
   font-weight: 600;
   border-top: none;
@@ -260,5 +260,8 @@ input[type=checkbox] {
     &:nth-last-child(1) {
       margin-bottom: 0px;
     }
+  }
+  .page-header-title {
+    font-size: 16px;
   }
 }

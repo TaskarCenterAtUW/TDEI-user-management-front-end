@@ -116,6 +116,7 @@
 
   [class*='Container_container'] {
     padding: 0px;
+    box-shadow: 0px 1px 6px #22222230;
   }
 }
 

@@ -4,3 +4,9 @@
   border-radius: 5px;
   background-color: #ffffff;
 }
+@media only screen and (max-width: 600px) {
+  .container {
+    padding: 0px;
+    box-shadow: none;
+  }
+}

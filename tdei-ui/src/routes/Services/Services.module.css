@@ -192,11 +192,32 @@
   /* font-style: italic; */
   color: var(--primary-color);
 }
+@media only screen and (max-width: 768px) {
+  .block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px 15px;
+  }
+  .serviceDetailsContainer {
+    border-top: 5px solid var(--tdei-blue);
+    border-left: 1px solid #ddd;
+  }
+  .buttons {
+    width: 100%;
+    border-top: 1px dashed #cecece;
+    padding-top: 15px;
+  }
+}
 @media only screen and (max-width: 600px) {
   .serviceFilterBlock {
       width: 100%;
   }
   .customFormControl, .selectServiceFilter {
     width: 100%; 
+  }
+  .editButton, .deleteButton {
+    width: 50%;
+    justify-content: center;
   }
 }
