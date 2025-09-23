@@ -96,4 +96,7 @@
     .stepsBlock {
         padding: 25px 10px;
     }
+    .stepsTabContainer {
+        padding: 25px 20px;
+    }
 }

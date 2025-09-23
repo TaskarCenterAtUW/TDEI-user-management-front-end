@@ -119,10 +119,12 @@
   display: flex;
   color: #42526e;
   font-size: 14px;
+  font-weight: 500;
   margin-right: 10px;
   text-decoration: none;
   align-items: center;
   background: #f5f5f5;
+  padding: 8px 15px;
 }
 .editButton:hover,
 .editButton:active,
@@ -134,9 +136,11 @@
   display: flex;
   color: #c65d03;
   font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
   align-items: center;
   background: #f5f5f5;
+  padding: 8px 15px;
 }
 .deleteButton:hover,
 .deleteButton:active,

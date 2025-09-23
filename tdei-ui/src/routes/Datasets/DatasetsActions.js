@@ -8,8 +8,8 @@ import openConsoleIcon from "../../assets/img/action-open-console.svg";
 import cloneImg from "../../assets/img/clone-img.svg";
 import editImage from "../../assets/img/edit-img.svg";
 import downloadDatasetImg from "../../assets/img/download-img.svg";
-import dataViewerIcon from "../../assets/img/data-viewer-icon.svg";
-import dataViewerIconDisabled from "../../assets/img/data-viewer-icon-disabled.svg";
+import dataViewerIcon from "../../assets/img/icon-data-viewer.svg";
+import dataViewerIconDisabled from "../../assets/img/icon-data-viewer-off.svg";
 import NorthEastIcon from "@mui/icons-material/NorthEast";
 import useIsPoc from "../../hooks/useIsPoc";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
@@ -128,7 +128,7 @@ const DatasetsActions = ({
               variant="btn btn-link"
               className={style.datasetActionsButton}
             >
-              Dataset Actions
+              Manage Dataset
             </Dropdown.Toggle>
             ) : (
             <Dropdown.Toggle

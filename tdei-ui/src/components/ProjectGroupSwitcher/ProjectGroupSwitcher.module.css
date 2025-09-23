@@ -238,7 +238,7 @@
   pointer-events: none;
   font-size: 14px;
   color: #42526e;
-  padding: 8px 0px;
+  padding: 8px 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -254,18 +254,19 @@
 }
 
 .seeAllOptions {
-  padding: 8px 0px;
+  padding: 5px 5px;
   font-weight: 600;
   text-align: left;
   color:var(--primary-color);
   font-size: 14px;
-}
-.seeAllOptions:hover {
-  background-color: #f8f9fa;
+  &:hover {
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
 }
 .currentProjectGroupContainer,
 .dropdownHeader {
-  padding: 5px 0px;
+  padding: 5px 5px;
   font-size: 14px;
   text-align: left;
   font-weight: 700;
@@ -279,7 +280,7 @@
   border-bottom: 1px dashed #ccc;
 }
 .switchProjectContainer {
-  padding: 10px 10px;
+  padding: 10px 5px;
 }
 
 .currentProjectGroupLabel {
@@ -302,10 +303,14 @@
   font-size: 14px;
   color: #42526e;
   font-weight: 500;
-  padding: 10px 0px;
+  padding: 8px 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  &:hover {
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
 }
 .dropdownMenu {
   min-width: 240px;

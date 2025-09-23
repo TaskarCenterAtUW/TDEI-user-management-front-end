@@ -46,19 +46,20 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns:
+  grid-template-columns: repeat(4, minmax(100px, 1fr)) 15%;
+  /* grid-template-columns:
     minmax(240px, 2.2fr)
     minmax(180px, 1.6fr)
     minmax(140px, 1fr)
     minmax(220px, 1.8fr)
-    minmax(90px, .8fr);
+    minmax(90px, .8fr); */
   grid-column-gap: 16px;
   grid-row-gap: 6px;
   align-items: start;
   border-bottom: 1px solid #dddddd;
   padding: 0 10px 15px 10px;
   margin-bottom: 15px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .gridContainer > .content {
@@ -356,8 +357,8 @@
   border: 1px solid #CED4DA !important;
   border-radius: 8px !important;
   opacity: 1 !important;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
 }
 
 .jobStatusHeader {
@@ -594,57 +595,77 @@
 }
 .feedbackLocation {
     color:rgb(107, 114, 128);
-    font-size: 10px;
+    font-size: 12px;
     margin-top: 5px;
 }
 
 @media (max-width: 1200px) {
   .projectHeader { display: none; }
   .gridContainer {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-column-gap: 12px;
     grid-row-gap: 8px;
   }
-  .gridContainer > :nth-child(1) { grid-column: 1 / -1; }
+  /* .gridContainer > :nth-child(1) { grid-column: 1 / -1; }
 
   .gridContainer > :nth-child(2) { grid-column: 1; }
   .gridContainer > :nth-child(3) { grid-column: 2; }
   .gridContainer > :nth-child(4) { grid-column: 1 / -1; }
-  .gridContainer > :nth-child(5) { grid-column: 2; }
+  .gridContainer > :nth-child(5) { grid-column: 2; } */
 
+}
+
+@media (max-width: 992px) {
+  .gridContainer {
+    grid-template-columns: 1fr 1fr;
+    grid-row-gap: 10px;
+  }
 }
 
 @media (max-width: 768px) {
   .gridContainer {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-top: 5px solid var(--tdei-blue);
+    border-radius: 4px;
     grid-template-columns: 1fr;
-    grid-row-gap: 6px;
+    grid-row-gap: 10px;
+    p {
+      border-bottom: 1px dashed #cecece;
+      padding-bottom: 10px;
+      margin-bottom: 0px;
+      &:nth-last-child(1) {
+        border-bottom: none;
+        padding-bottom: 0px;
+      }
+    }
   }
-  .gridContainer > * {
+  /* .gridContainer > * {
     grid-column: 1 / -1;
-  }
+  } */
 }
 @media (max-width: 1200px) {
-  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Feedback Details"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Contact & Location"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Submitted time"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Dataset and Element ID"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Status"; display:block; font-weight:600; color:#6b7280; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Feedback Details"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Contact & Location"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Submitted time"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Dataset and Element ID"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Status"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
 }
 .filterBtn {
   border: 1px solid #CED4DA !important;
   border-radius: 8px !important;
   opacity: 1 !important; 
-  width: 120px;
-  height: 41px;
-  color: black !important;
-  font: normal normal normal 16px/22px Lato !important;
+  width: auto;
+  height: 40px;
+  padding: 5px 15px;
   text-transform: none !important;
-  margin-right: 10px !important;
+  display: flex;
+  align-items: center;
 }
 .actionsRight {
   display: flex;
   justify-content: flex-end;
   align-items: end;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 12px;  
 }

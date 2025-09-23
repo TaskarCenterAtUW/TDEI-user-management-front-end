@@ -266,7 +266,8 @@
     } 
   }
   .itemIcon {
-    margin-right: 10px;
+    margin-right: 12px;
+    width: 15px;
   }
   .inclinationIcon {
     color: #83879B;
@@ -481,6 +482,9 @@
 @media only screen and (max-width: 600px) {
   .dropdownContainer {
     .datasetActionsButton {
+      width: 100%;
+    }
+    .dropdownCard {
       width: 100%;
     }
   }

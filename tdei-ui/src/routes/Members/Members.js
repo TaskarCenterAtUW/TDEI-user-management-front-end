@@ -10,6 +10,8 @@ import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
 import userIcon from "./../../assets/img/icon-feather-user.svg";
+import iconEdit from "./../../assets/img/icon-edit.svg";
+import iconDelete from "./../../assets/img/icon-delete.svg";
 import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
@@ -218,15 +220,21 @@ const Members = () => {
                     </div>
                   )}
                   {user.userId !== list.user_id && !user.isAdmin && (<div className={style.actionItem}>
-                    <Dropdown align="end">
+                    <Dropdown align="end" className={style.fullWidthCenter}>
                       {isMobile ? (
-                        <Dropdown.Toggle
-                          id="dropdown-basic"
-                          variant="btn btn-link"
-                          className={style.membersActionsButton}
-                        >
-                          Manage User
-                        </Dropdown.Toggle>
+                        <div className={style.manageUserBlock}>
+                          <Dropdown.Item className={style.manageUserButton} id={list.user_id} onClick={handleUser}>
+                            <img src={iconEdit} alt="" aria-hidden="true" />
+                            Manage User
+                          </Dropdown.Item>
+                          <Dropdown.Item className={style.removeUserButton} id={list.user_id} onClick={() => {
+                            setShowConfirmModal(true);
+                            setSelectedUser(list);
+                          }}>
+                            <img src={iconDelete} alt="" aria-hidden="true" />
+                            Remove User
+                          </Dropdown.Item>
+                        </div>
                       ) : (
                         <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                       )}

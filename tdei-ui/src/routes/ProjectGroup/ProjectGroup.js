@@ -254,21 +254,24 @@ const ProjectGroup = () => {
                         ) : (
                           <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
                         )}
-                        <Dropdown.Menu align="end">
+                        <Dropdown.Menu align="end" className={style.dropdownCard}>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
+                            className={style.dropdownItem}
                             onClick={handlePoc}
                           >
                             Manage POC
                           </Dropdown.Item>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
+                            className={style.dropdownItem}
                             onClick={handleEdit}
                           >
                             Edit Project Group
                           </Dropdown.Item>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
+                            className={style.dropdownItem}
                             onClick={handleUpdateStatus}
                             disabled={
                               list.project_group_name ===
