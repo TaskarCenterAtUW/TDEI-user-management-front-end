@@ -135,7 +135,15 @@ const CreateJobService = () => {
 
     const filteredJobTypeOptions = jobTypeOptions.filter(option => 
         !(option.value === "dataset-tag-road" && (!isDataAccessible && !user?.isAdmin))
-    );    
+    );  
+    const twoGBJobTypes = [
+        'osw-validate',
+        'osw-convert',
+    ];
+    const dropzoneMaxSizeMB =
+        jobType && twoGBJobTypes.includes(jobType.value)
+            ? 2048
+            : 1024;  
 
     // Callback function invoked when a job creation API call is successful.
     const onSuccess = (data) => {
@@ -606,6 +614,7 @@ const CreateJobService = () => {
                     accept={getAcceptedFileTypes()}
                     format={getFileFormat()}
                     selectedFile={selectedFile}
+                    maxSizeMB={dropzoneMaxSizeMB}
                 />
                 <div className="d-flex align-items-start mt-2">
                     <Form.Text id="passwordHelpBlock" className={style.description}>
