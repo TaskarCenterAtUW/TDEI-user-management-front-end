@@ -151,24 +151,32 @@ const JobListItem = ({ jobItem }) => {
   return (
     <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
       <div className={style.content} tabIndex={0}>
+        <div className={style.mobileOnly}>Job Type</div>
         {displayJobType}
       </div>
       <div className={style.content} tabIndex={1}>
+        <div className={style.mobileOnly}>Job Id</div>
         Job Id: <span className={style.downloadLink}
           onClick={toggleInputDescModal}
           variant="link">{jobItem.job_id}</span>
       </div>
-      <div className={style.content} tabIndex={2} style={{width:'200px'}}>
-        <img src={UserIcon} alt="User icon" style={{ width: '18px', height: '18px', marginRight:'5px' }} /> 
-        <span
-          className={
-            (jobItem.requested_by?.length || 0) > 30
-              ? style.emailContentWrap
-              : style.emailContentNoWrap
-          }
-        >  {jobItem.requested_by}</span>
+      <div className={style.content} tabIndex={2}>
+        <div className={style.mobileOnly}>Submitted By</div>
+        <div className={style.submittedByBlock}>
+          <img src={UserIcon} alt="User icon" className={style.userIcon} /> 
+            <span
+              className={
+                (jobItem.requested_by?.length || 0) > 30
+                  ? style.emailContentWrap
+                  : style.emailContentNoWrap
+              }
+            >
+              {jobItem.requested_by}
+            </span>
+        </div>
       </div>
       <div className={style.content} tabIndex={3}>
+        <div className={style.mobileOnly}>Message</div>
         {jobItem.message && (
           <>
             <div className={style.errorMessageContent} tabIndex={0}>
@@ -231,19 +239,24 @@ const JobListItem = ({ jobItem }) => {
           )
         }
       </div>
-      <div tabIndex={4}>
-        <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase())}}>
-          {toPascalCase(jobItem.status)}
-        </div>
-        <div className={style.updatedInfo}>
-          {jobItem.status.toLowerCase() === "in-progress" ? "Started at:" : "Duration:"}  {getJobDuration(jobItem)}
-        </div>
-      </div>
-      <div tabIndex={4}>
+      <div className={style.content} tabIndex={4}>
+        <div className={style.mobileOnly}>Created On</div>
         <div className={style.updatedInfo}>
           {updatedTime(jobItem.created_at)}
         </div>
       </div>
+      <div className={style.statusFlexBox} tabIndex={4}>
+        <div className={style.mobileOnly}>Status</div>
+        <div className="">
+          <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase())}}>
+            {toPascalCase(jobItem.status)}
+          </div>
+          <div className={style.updatedInfo}>
+            {jobItem.status.toLowerCase() === "in-progress" ? "Started at:" : "Duration:"}  {getJobDuration(jobItem)}
+          </div>
+        </div>
+      </div>
+      
       <ShowJobMessageModal
         show={showMore}
         onHide={toggleShowMore}

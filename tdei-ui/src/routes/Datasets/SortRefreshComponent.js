@@ -44,7 +44,7 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, toggleFilters }
     };
 
     return (
-        <Row className="d-flex justify-content-end align-items-center" style={{ gap: '8px' }}>
+        <Row className={style.secondaryFilterContainer}>
             <Button
                 variant="outlined"
                 size="small"
@@ -82,7 +82,7 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, toggleFilters }
                     </MenuItem>
                 ))}
             </Menu>
-            <IconButton className={style.iconBtn} onClick={handleRefresh} sx={{ marginTop: '30px', marginRight: '12px' }}>
+            <IconButton className={style.iconBtn} onClick={handleRefresh}>
                 <RefreshIcon style={{ fontSize: 20 }} />
             </IconButton>
         </Row>

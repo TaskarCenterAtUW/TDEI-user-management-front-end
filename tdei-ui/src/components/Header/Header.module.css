@@ -13,6 +13,12 @@
   padding: 5px 8px;
   border-radius: 4px;
 }
+.mobileMenuIcon {
+  padding: 5px 8px;
+  &:hover {
+    background-color: #742cde;
+  }
+}
 .userIcon {
   width: 28px;
   cursor: pointer;
@@ -67,4 +73,10 @@
 .imgContainer {
   display: flex;
   align-items: center;
+}
+
+@media only screen and (max-width: 768px) {
+  .logoHidden {
+    display: none;
+  }
 }

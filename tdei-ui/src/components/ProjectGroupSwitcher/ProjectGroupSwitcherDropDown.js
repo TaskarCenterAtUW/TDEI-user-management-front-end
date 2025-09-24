@@ -7,6 +7,10 @@ import { set } from "../../store";
 import style from "./ProjectGroupSwitcher.module.css";
 import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import { clear } from "../../store";
+import iconArrowDown from "../../assets/img/icon-down-arrow.svg";
+import iconArrowUp from "../../assets/img/icon-up-arrow.svg";
+import iconSwitchProject from "../../assets/img/icon-switch-project.svg";
+import iconProjectGroup from "../../assets/img/icon-prj-grp.svg";
 
 const ProjectGroupSwitcherDropDown = () => {
   const dispatch = useDispatch();
@@ -77,44 +81,48 @@ const ProjectGroupSwitcherDropDown = () => {
           </div>
         </Dropdown.Toggle>
         <Dropdown.Menu className={style.dropdownMenu}>
-        <div className={style.currentProjectGroupContainer}>
+          <div className={style.currentProjectGroupContainer}>
             <span className={style.currentProjectGroupLabel}>Current Project Group:</span>
             <span className={style.currentProjectGroupName}>
+              <img src={iconProjectGroup} alt="" className={style.prjGrpIcon} />
               {selectedProjectGroup?.name || "None Selected"}
             </span>
           </div>
-        <Dropdown.Divider />
-        <Dropdown.Header className={style.dropdownHeader}>{"Switch Project Group"}</Dropdown.Header>
-          {limitedProjectGroups.map((projectGroup) => (
-            <Dropdown.Item
-              key={projectGroup.tdei_project_group_id}
-              onClick={() => {
-                if (projectGroup.tdei_project_group_id !== selectedProjectGroup?.tdei_project_group_id) {
-                  dispatch(set(projectGroup));
-                }
-              }}
-              disabled={projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id}
-              className={
-                projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id
-                  ? style.selectedProjectGroupItem
-                  : style.projectGroupNames
-              }
-            >
-              {projectGroup.project_group_name}
-            </Dropdown.Item>
-          ))}
-
-          {projectGroups.length > 5 && (
-            <>
-              <Dropdown.Divider />
+          {/* <Dropdown.Divider /> */}
+          <div className={style.switchProjectContainer}>
+            <Dropdown.Header className={style.dropdownHeader}>{"Switch Project Group:"}</Dropdown.Header>
+            {limitedProjectGroups.map((projectGroup) => (
               <Dropdown.Item
-                onClick={() => navigate("/projectGroupSwitch")}
-                className={style.seeAllOptions}
+                key={projectGroup.tdei_project_group_id}
+                onClick={() => {
+                  if (projectGroup.tdei_project_group_id !== selectedProjectGroup?.tdei_project_group_id) {
+                    dispatch(set(projectGroup));
+                  }
+                }}
+                disabled={projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id}
+                className={
+                  projectGroup.tdei_project_group_id === selectedProjectGroup?.tdei_project_group_id
+                    ? style.selectedProjectGroupItem
+                    : style.projectGroupNames
+                }
               >
-                See All Groups
+                {projectGroup.project_group_name}
+                <img src={iconSwitchProject} alt="" />
               </Dropdown.Item>
-            </>
-          )}
+            ))}
+
+            {projectGroups.length > 5 && (
+              <>
+                <Dropdown.Divider />
+                <Dropdown.Item
+                  onClick={() => navigate("/projectGroupSwitch")}
+                  className={style.seeAllOptions}
+                >
+                  See All Groups
+                </Dropdown.Item>
+              </>
+            )}
+          </div>
         </Dropdown.Menu>
       </Dropdown>
     </div>
@@ -133,10 +141,8 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     className={style.customElement}
   >
     {children}
-    <div>
-      <span data-arrow="downArrow">&#x25bc;</span>
-      <span data-arrow="upArrow">&#x25B2;</span>
-    </div>
+    <img src={iconArrowDown} data-arrow="downArrow" />
+    <img src={iconArrowUp} data-arrow="upArrow" />
   </button>
 ));
 

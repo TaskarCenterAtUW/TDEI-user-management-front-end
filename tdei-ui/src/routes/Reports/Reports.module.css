@@ -1,4 +1,4 @@
-.statsContainer { padding: 16px; background-color: #f7f9fc; }
+.statsContainer { padding: 20px; background-color: #ffffff; }
 .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 12px; margin-bottom: 8px; }
 .controlsCard { background: #fff; border: 1px solid #e9eef5; border-radius: 14px; padding: 16px; margin-top: 8px; box-shadow: 0 2px 10px rgba(16,24,40,0.04); }
 .label { font-weight: 600; color: #111827; margin-right: 6px; }
@@ -44,7 +44,7 @@
 .actionsRow {
   display: flex;
   justify-content: flex-start;
-  margin-top: 12px;
+  margin-top: 15px;
 }
 .accordionStack {
   display: flex;
@@ -74,10 +74,11 @@
 .accTitle {
   font-weight: 700 !important;
   color: #0f172a;
+  font-family: var(--primary-font-family) !important;
 }
 
 .accSubtitle {
-  font-family: 'Lato' !important;
+  font-family: var(--primary-font-family) !important;
   font-size: 14px !important;
   color: #6b7280 !important;
   font-weight: 400;
@@ -94,6 +95,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .usersText {
@@ -112,4 +115,10 @@
 .downloadButton:hover {
   background: var(--tdei-blue);
   border-radius: 4px;
+}
+
+@media only screen and (max-width: 600px) {
+  .dateRow {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }

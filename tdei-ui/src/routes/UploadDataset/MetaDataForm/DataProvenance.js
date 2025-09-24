@@ -3,6 +3,7 @@ import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
 import * as Yup from "yup";
+import style from "./MetaDataForm.module.css";
 
 const DatasetProvenance = ({ formData, updateFormData }) => {
 
@@ -41,9 +42,9 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
       validateOnChange={true}
       validateOnBlur={true} >
       {({ errors, touched, handleChange, handleBlur }) => (
-        <div className="container">
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-md-6 column-style">
+        <div className={style.metaDataContainer}>
+          <div className="row">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="full_dataset_name">
                 <Form.Label>Full Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
@@ -107,7 +108,7 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                 <ErrorMessage name="location_inaccuracy_factors" component="div" />
               </Form.Group>
             </div>
-            <div className="col-md-6 column-style">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="schema_validation_run">
                 <Form.Label>Schema Validation Run</Form.Label>
                 <RowRadioButtonsGroup

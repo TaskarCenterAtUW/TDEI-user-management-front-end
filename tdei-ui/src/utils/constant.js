@@ -1,13 +1,13 @@
-import dashboardIcon from "../assets/img/dashboard-icon.svg";
-import servicesIcon from "../assets/img/services-icon-menu.svg";
+import dashboardIcon from "../assets/img/icon-dashboard.svg";
+import servicesIcon from "../assets/img/icon-services.svg";
 import stationsIcon from "../assets/img/stations-icon.svg";
-import projectGroupIcon from "../assets/img/project-group-icon.svg";
-import membersIcon from "../assets/img/members-icon.svg";
-import datasetIcon from "../assets/img/dataset-icon-menu.svg";
+import projectGroupIcon from "../assets/img/icon-project-group.svg";
+import membersIcon from "../assets/img/icon-members.svg";
+import datasetIcon from "../assets/img/icon-datasets.svg";
 import uploadDataSetIcon from "../assets/img/datasetIcon.svg";
-import jobsIcon from "../assets/img/icon_jobs.svg";
-import feedback from "../assets/img/feedback.svg";
-import stats from "../assets/img/stats.png";
+import jobsIcon from "../assets/img/icon-jobs.svg";
+import feedback from "../assets/img/icon-feedback.svg";
+import stats from "../assets/img/icon-reports.svg";
 
 export const PHONE_REGEX =
   // eslint-disable-next-line

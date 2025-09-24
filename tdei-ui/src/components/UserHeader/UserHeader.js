@@ -76,7 +76,7 @@ const UserHeader = ({ roles }) => {
       {!user.isAdmin && (
         <div className={style.apiKey}>
           <div>My API Key</div>
-          <div className={style.maskedKey} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div className={style.maskedKey}>
             <div className={style.keyContainer}>
               {isLoading ? (
                 <span className={style.font14}>loading api key...</span>

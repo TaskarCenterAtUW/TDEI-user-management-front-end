@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import SchemaVersionDropdown from "./DropdownComponents/SchemaVersionDropdown";
 import { ClearIcon } from "@mui/x-date-pickers";
 import { IconButton } from "@mui/material";
+import style from "./MetaDataForm.module.css";
 
 
 const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFormData }) => {
@@ -54,9 +55,9 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
       validateOnBlur={true}
     >
       {({ errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched }) => (
-        <div className="container">
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-md-6 column-style">
+        <div className={style.metaDataContainer}>
+          <div className="row">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="name">
                 <Form.Label>Dataset Name<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
@@ -116,7 +117,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
                 />
               </Form.Group>
             </div>
-            <div className="col-md-6 column-style">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="collected_by">
                 <Form.Label>Collected By<span style={{ color: 'red' }}> *</span></Form.Label>
                 <Form.Control
@@ -227,7 +228,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
               </Form.Group>
             </div>
           </div>
-          <div className="row" style={{ marginTop: '20px' }}>
+          <div className="row">
           <div id="dataset_area" className="section-style">
             <Form.Label>Dataset Area</Form.Label>
             <div className="tdei-hint-text">(hint: Create the bounding box using {link} )</div>

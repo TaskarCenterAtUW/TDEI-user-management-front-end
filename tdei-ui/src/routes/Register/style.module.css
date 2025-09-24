@@ -1,5 +1,5 @@
 .registerCard {
-  width: 450px;
+  max-width: 450px;
   margin-top: 50px;
 }
 .registerContainer {
@@ -11,4 +11,13 @@
 .loginLogo {
   width: 100px;
   margin: 25px 0px;
+}
+@media only screen and (max-width: 600px) {
+  .registerCard {
+    margin-top: 0px;
+    max-width: 100%;
+    :global .card {
+        border: none;
+    }
+  }
 }

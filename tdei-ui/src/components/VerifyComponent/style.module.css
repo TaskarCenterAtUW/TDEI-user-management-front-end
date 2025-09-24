@@ -6,13 +6,8 @@
   }
 
   .registerCard {
-      width: 550px;
-      max-width: 500px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 50px;
-      padding: 10px;
+    max-width: 450px;
+    margin-top: 50px;
   }
 
   .backLink {
@@ -41,4 +36,14 @@
 
   .noPadding {
       padding-left: 0;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .registerCard {
+      margin-top: 0px;
+      max-width: 100%;
+      :global .card {
+          border: none;
+      }
+    }
   }

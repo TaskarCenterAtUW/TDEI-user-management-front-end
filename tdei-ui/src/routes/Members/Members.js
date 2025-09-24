@@ -10,6 +10,8 @@ import style from "./Members.module.css";
 import { getUserName } from "../../utils";
 import AssignRoles from "../../components/AssignRoles/AssignRoles";
 import userIcon from "./../../assets/img/icon-feather-user.svg";
+import iconEdit from "./../../assets/img/icon-edit.svg";
+import iconDelete from "./../../assets/img/icon-delete.svg";
 import { useAuth } from "../../hooks/useAuth";
 import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
@@ -26,6 +28,7 @@ import useDownloadUsers from "../../hooks/useDownloadActiveUsers";
 import DownloadIcon from '@mui/icons-material/Download';
 import useAssignRoles from "../../hooks/roles/useAssignRoles";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
+import { useMediaQuery } from 'react-responsive';
 
 
 const Members = () => {
@@ -44,6 +47,7 @@ const Members = () => {
   const [toastType, setToastType] = React.useState("success");
   const [toastMessage, setToastMessage] = React.useState("");
   const dispatch = useDispatch();
+  const isMobile = useMediaQuery({ maxWidth: 992 });
   const {
     data = [],
     isError,
@@ -175,7 +179,7 @@ const Members = () => {
             <div>Name & Email Id</div>
             <div>Contact Number</div>
             {!user.isAdmin && <div>Roles</div>}
-            {!user.isAdmin && <div>Action</div>}
+            {!user.isAdmin && <div className="text-center">Action</div>}
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
@@ -205,15 +209,35 @@ const Members = () => {
                       <div className={style.address}>{list.username}</div>
                     </div>
                   </div>
-                  <div className={style.content}>{formatPhoneNumber(list.phone)}</div>
-                  <div className={style.roles}>
-                    {!user.isAdmin && (
-                      <DisplayRolesList list={list} />
-                    )}
+                  <div className={style.content}>
+                    <div className={style.mobileOnly}>Contact Number</div>
+                    <div>{formatPhoneNumber(list.phone) || '--'}</div>
                   </div>
+                  {!user.isAdmin && (
+                    <div className={style.roles}>
+                      <div className={style.mobileOnly}>Roles</div>
+                      <DisplayRolesList list={list} />
+                    </div>
+                  )}
                   {user.userId !== list.user_id && !user.isAdmin && (<div className={style.actionItem}>
-                    <Dropdown align="end">
-                      <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
+                    <Dropdown align="end" className={style.fullWidthCenter}>
+                      {isMobile ? (
+                        <div className={style.manageUserBlock}>
+                          <Dropdown.Item className={style.manageUserButton} id={list.user_id} onClick={handleUser}>
+                            <img src={iconEdit} alt="" aria-hidden="true" />
+                            Manage User
+                          </Dropdown.Item>
+                          <Dropdown.Item className={style.removeUserButton} id={list.user_id} onClick={() => {
+                            setShowConfirmModal(true);
+                            setSelectedUser(list);
+                          }}>
+                            <img src={iconDelete} alt="" aria-hidden="true" />
+                            Remove User
+                          </Dropdown.Item>
+                        </div>
+                      ) : (
+                        <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
+                      )}
                       <Dropdown.Menu align="end">
                         <Dropdown.Item id={list.user_id} onClick={handleUser}>
                           Manage User
