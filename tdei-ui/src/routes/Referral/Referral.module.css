@@ -69,8 +69,8 @@
   display: grid;
   grid-template-columns:
     minmax(180px, 2fr)   /* Name */
-    minmax(100px, 1fr)   /* Type */
-    minmax(120px, 1fr)   /* Short Code */
+    minmax(100px, .8fr)   /* Type */
+    minmax(120px, 1.2fr)   /* Short Code */
     minmax(180px, 1.4fr) /* Valid Period */
     minmax(120px, 1fr)   /* Created */
     minmax(88px, .8fr)   /* Status (compact) */
@@ -206,7 +206,7 @@
   transform: translate(-50%, -50%);
 }
 
-.jobsContainer {
+.referralContainer {
   height: 100%;
   padding: 20px;
   background-color: #ffffff;

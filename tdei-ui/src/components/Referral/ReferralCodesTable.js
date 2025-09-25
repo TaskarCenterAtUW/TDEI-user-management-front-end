@@ -48,7 +48,7 @@ const statusPillStyle = (isActive, validFrom, validTo) => {
 
 const TypeChip = ({ type }) =>
   type === "campaign" ? (
-    <Chip size="small" color="primary" label="Campaign" />
+    <Chip size="small" color="primary" style={{backgroundColor:'var(--primary-color)'}} label="Campaign" />
   ) : (
     <Chip size="small" variant="outlined" label="Invite" />
   );
@@ -65,7 +65,6 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
 
   return (
     <div>
-      {/* Header row */}
       <div className={`${style.gridContainer} ${style.projectHeader}`}>
         <div className={style.sortableHeader}>Name</div>
         <div className={style.sortableHeader}>Type</div>
@@ -75,8 +74,6 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
         <div className={style.sortableHeader}>Status</div>
         { !isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`}>Actions</div>}
       </div>
-
-      {/* Rows */}
       {codes.map((code) => {
         const statusLabel = (() => {
           const now = new Date();
@@ -89,7 +86,6 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
 
         return (
           <div className={style.gridContainer} key={code.id}>
-            {/* Name + instructions */}
             <p className={`${style.content} ${style.emailContentWrap}`}>
               <span className={style.name}>{code.name}</span>
               {code.instructionsUrl && (
@@ -107,11 +103,7 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                 </div>
               )}
             </p>
-
-            {/* Type */}
             <p className={style.content}><TypeChip type={code.type} /></p>
-
-            {/* Short code + copy */}
             <p className={`${style.content} ${style.noWrap}`}>
               <code className={style.shortCodePill}>{code.shortCode}</code>
               <Tooltip title="Copy short code">
@@ -125,21 +117,13 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                 </IconButton>
               </Tooltip>
             </p>
-
-            {/* Valid period */}
             <p className={`${style.content} ${style.emailContentWrap} ${style.noWrap}`}>
               {fmtDate(code.validFrom)} <span className={style.mutedSep}>to</span> {fmtDate(code.validTo)}
             </p>
-
-            {/* Created */}
             <p className={`${style.content} ${style.noWrap}`}>{fmtDate(code.createdAt)}</p>
-
-            {/* Status */}
             <p className={`${style.content} ${style.noWrap}`}>
               <span style={statusPillStyle(code.isActive, code.validFrom, code.validTo)}>{statusLabel}</span>
             </p>
-
-            {/* Actions (Dataset-style dropdown) */}
             <p className={`${style.content} ${style.actionsCol}`}>
               <div className={style.dropdownContainer}>
                 <Dropdown>

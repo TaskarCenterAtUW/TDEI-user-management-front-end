@@ -26,6 +26,7 @@ import ProjectGroupSwitch from "../components/ProjectGroupSwitcher/ProjectGroupS
 import Feedback from "./Feedback";
 import Reports from "./Reports/Reports";
 import Referral from "./Referral/Referral";
+import CreateUpdateReferralCode from "./Referral/CreateUpdateReferralCode";
 
 const Router = () => {
   const { user } = useAuth();
@@ -77,6 +78,8 @@ const Router = () => {
             <Route path="/EditMetadata" element={<EditMetadata />} />
             <Route path="/CloneDataset" element={<CloneDataset />} />
             <Route path="/:id/referralCodes" element={<Referral />} />
+            <Route path="/:id/referralCodes/new" element={<CreateUpdateReferralCode />} />
+            <Route path="/:id/referralCodes/:codeId/edit" element={<CreateUpdateReferralCode />} />
           </Route>
         </Route>
       </>
