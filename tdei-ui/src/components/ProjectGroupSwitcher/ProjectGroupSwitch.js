@@ -208,15 +208,6 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
             </div>
           ) : null}
           {canManageReferrals && (
-            isMobile ? (
-              <Button
-                className={`tdei-primary-button ${style.manageReferralBtn}`}
-                onClick={() => navigate(`/${id}/referralCodes`)}
-              >
-                <QrCode2Icon fontSize="small" className="me-1" />
-                Manage Referral Codes
-              </Button>
-            ) : (
               <Tooltip title="Manage Referral Codes" arrow>
                 <div className={style.buttons}>
                   <Button
@@ -229,7 +220,6 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
                   </Button>
                 </div>
               </Tooltip>
-            )
           )}
 
           {isCurrent ? (
