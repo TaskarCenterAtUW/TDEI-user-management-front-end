@@ -1,0 +1,125 @@
+
+.dialogSized {
+  max-height: 92vh;
+}
+@supports (height: 100dvh) {
+  .dialogSized { max-height: 92dvh; }
+}
+.contentFlex {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;         
+}
+.modalBody {
+  flex: 1 1 auto;               
+  overflow-y: auto;             
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  min-height: 0;               
+  box-sizing: border-box;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 992px) {
+  .grid {
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 20px;
+  }
+}
+
+.qrCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+}
+.qrImage {
+  width: clamp(180px, 70vw, 256px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+}
+@media (max-height: 740px) {
+  .qrImage { width: clamp(170px, 64vw, 220px); }
+}
+@media (max-height: 620px) {
+  .qrImage { width: clamp(160px, 60vw, 200px); }
+}
+
+.linkWrap {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  max-width: 90%;
+  word-break: break-all;
+}
+.linkLabel { font-weight: 600; color: #111827; }
+.linkText  { margin-top: 2px; }
+
+.btnRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+@media (max-width: 420px) {
+  .btnRow > * { flex: 1 1 100%; }
+}
+
+.previewCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;   
+}
+
+.iframeWrap {
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  min-height: 0;
+}
+
+.iframe {
+  width: 100%;
+  height: min(440px, 56vh);   
+  border: none;
+  background: #fff;
+}
+@supports (height: 100dvh) {
+  .iframe { height: min(440px, 56dvh); }
+}
+
+@media (max-height: 560px) {
+  .modalBody { padding: 12px; }
+}
+.single {
+  grid-template-columns: 1fr;     
+  justify-items: center;          
+  align-content: start;           
+}
+
+.single .qrCol {
+  width: 100%;
+  max-width: 460px;               
+  margin: 0 auto;                 
+}
+
+.single .btnRow {
+  max-width: 460px;
+  margin-inline: auto;
+}
+@media (max-width: 420px) {
+  .single .qrCol,
+  .single .btnRow { max-width: none; }
+}
