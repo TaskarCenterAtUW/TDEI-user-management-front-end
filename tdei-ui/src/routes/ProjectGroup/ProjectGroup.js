@@ -28,7 +28,7 @@ import SuccessModal from "../../components/SuccessModal";
 import userIcon from "../../assets/img/icon-userAvatar.png";
 import ClipboardCopy from "../Services/ClipBoardCopy";
 import { DEFAULT_PROJECT_GROUP_NAME } from "../../utils";
-import Select from 'react-select';
+import Select from "react-select";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 
 const ProjectGroup = () => {
@@ -88,10 +88,11 @@ const ProjectGroup = () => {
     );
   };
 
-  const { mutate, isLoading: deleteProjectGroupLoading } = useActivateDeleteProjectGroup({
-    onSuccess,
-    onError,
-  });
+  const { mutate, isLoading: deleteProjectGroupLoading } =
+    useActivateDeleteProjectGroup({
+      onSuccess,
+      onError,
+    });
 
   const getData = (id) => {
     const list = data?.pages?.map((val) => val?.data).flat();
@@ -120,13 +121,16 @@ const ProjectGroup = () => {
         ? `Are you sure you want to activate the project group "${dataToEdit.project_group_name}" ?`
         : `Are you sure you want to deactivate the project group "${dataToEdit.project_group_name}"?`
     );
-    setStatusModalTitle(showInactive ? "Activate Project Group" : "Deactivate Project Group");
+    setStatusModalTitle(
+      showInactive ? "Activate Project Group" : "Deactivate Project Group"
+    );
     setStatusModalType(showInactive ? "success" : "deactivate");
-    setStatusModalAction(() => () =>
-      mutate({
-        tdei_project_group_id: dataToEdit.tdei_project_group_id,
-        status: showInactive
-      })
+    setStatusModalAction(
+      () => () =>
+        mutate({
+          tdei_project_group_id: dataToEdit.tdei_project_group_id,
+          status: showInactive,
+        })
     );
     setShowCustomModal(true);
   };
@@ -177,13 +181,15 @@ const ProjectGroup = () => {
             />
             <Select
               className={style.inactiveSelect}
-              value={inactiveOptions.find(option => option.value === showInactive)}
+              value={inactiveOptions.find(
+                (option) => option.value === showInactive
+              )}
               options={inactiveOptions}
               onChange={handleInactiveChange}
               defaultValue={{ label: "Show Active", value: false }}
               isSearchable={false}
               components={{
-                IndicatorSeparator: () => null
+                IndicatorSeparator: () => null,
               }}
             />
           </div>
@@ -197,8 +203,11 @@ const ProjectGroup = () => {
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
               {values?.data?.map((list) => (
-                <div className={style.projectGroupBlock} key={list.tdei_project_group_id}>
-                  <div className={style.gridContainer} >
+                <div
+                  className={style.projectGroupBlock}
+                  key={list.tdei_project_group_id}
+                >
+                  <div className={style.gridContainer}>
                     <div className={style.details}>
                       <img
                         src={projectgroupIcon}
@@ -206,12 +215,24 @@ const ProjectGroup = () => {
                         alt="sitemap-solid"
                       />
                       <div>
-                        <div className={style.name} title={list.project_group_name} tabIndex={0}>{list.project_group_name}</div>
-                        <div className={style.address} tabIndex={0}>{list.address}</div>
+                        <div
+                          className={style.name}
+                          title={list.project_group_name}
+                          tabIndex={0}
+                        >
+                          {list.project_group_name}
+                        </div>
+                        <div className={style.address} tabIndex={0}>
+                          {list.address}
+                        </div>
                       </div>
                     </div>
-                    <div className={style.content} tabIndex={0}>{list.url}</div>
-                    <div className={style.content} tabIndex={0}>{list.phone}</div>
+                    <div className={style.content} tabIndex={0}>
+                      {list.url}
+                    </div>
+                    <div className={style.content} tabIndex={0}>
+                      {list.phone}
+                    </div>
                     <div>
                       <DisplayList list={list} handlePoc={handlePoc} />
                     </div>
@@ -234,16 +255,24 @@ const ProjectGroup = () => {
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
                             onClick={handleUpdateStatus}
-                            disabled={list.project_group_name === DEFAULT_PROJECT_GROUP_NAME}
+                            disabled={
+                              list.project_group_name ===
+                              DEFAULT_PROJECT_GROUP_NAME
+                            }
                           >
-                            {showInactive ? 'Activate Project Group' : 'Deactivate Project Group'}
+                            {showInactive
+                              ? "Activate Project Group"
+                              : "Deactivate Project Group"}
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </div>
                   </div>
                   <div className={style.projectIdBlock}>
-                    <ClipboardCopy copyText={list.tdei_project_group_id} copyTitle={"Project Id"} />
+                    <ClipboardCopy
+                      copyText={list.tdei_project_group_id}
+                      copyTitle={"Project Id"}
+                    />
                   </div>
                 </div>
               ))}
@@ -289,14 +318,20 @@ const ProjectGroup = () => {
       <SuccessModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        message={`Project group ${showInactive ? 'Activated' : 'Deactivated'} successfully.`}
+        message={`Project group ${
+          showInactive ? "Activated" : "Deactivated"
+        } successfully.`}
       />
     </Layout>
   );
 };
 
 export const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
-  <button onClick={onClick} ref={ref} className={`btn btn-link ${style.actionButton}`}>
+  <button
+    onClick={onClick}
+    ref={ref}
+    className={`btn btn-link ${style.actionButton}`}
+  >
     <img src={menuVertical} className={style.menuVertical} alt="menu-verical" />
     {children}
   </button>
@@ -309,7 +344,9 @@ const DisplayList = ({ list, handlePoc }) => {
       {poc.length ? (
         <div className={style.pocList}>
           <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
-          <div className={style.content} tabIndex={0}>{getUserName(poc[0])}</div>
+          <div className={style.content} tabIndex={0}>
+            {getUserName(poc[0])}
+          </div>
           {poc.length > 1 ? (
             <OverlayTrigger
               trigger={["hover", "focus"]}
@@ -338,7 +375,9 @@ const DisplayList = ({ list, handlePoc }) => {
                 </Popover>
               }
             >
-              <div className={style.overlayList} tabIndex={0}>{`,+${poc.length - 1}`}</div>
+              <div className={style.overlayList} tabIndex={0}>{`,+${
+                poc.length - 1
+              }`}</div>
             </OverlayTrigger>
           ) : null}
         </div>
