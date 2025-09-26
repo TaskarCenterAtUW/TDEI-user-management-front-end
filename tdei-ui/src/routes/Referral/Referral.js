@@ -7,6 +7,8 @@ import ReferralCodesTable from "../../components/Referral/ReferralCodesTable";
 import style from "./Referral.module.css";
 import { useParams, useNavigate } from "react-router-dom";
 import Container from "../../components/Container/Container";
+import { getSelectedProjectGroup } from "../../selectors";
+import { useSelector } from "react-redux";
 
 const mockCodes = [
   {
@@ -52,6 +54,7 @@ const Referral = () => {
   const [showFilters, setShowFilters] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
 
   useEffect(() => {
     // TODO: API call to fetch by project group id `id`
@@ -65,7 +68,6 @@ const Referral = () => {
 
   const handleNewCode = () => navigate(`/${id}/referralCodes/new`);
 
-  // ⬇️ pass the selected row in route state (so edit page can prefill)
   const handleEdit = (code) =>
     navigate(`/${id}/referralCodes/${code.id}/edit`, {
       state: { referral: code },
@@ -83,7 +85,7 @@ const Referral = () => {
         <div className="titleBlock">
           <div className="page-header-title">Referral Codes</div>
           <div className="page-header-subtitle">
-            Manage and track your referral and invite codes
+            Manage and track your referral and invite codes of project group - <span className="fw-bold">{`${selectedProjectGroup.name}`}</span>.
           </div>
         </div>
 

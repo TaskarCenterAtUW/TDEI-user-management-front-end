@@ -9,40 +9,13 @@ import "./ReferralForm.module.css";
 import dayjs from "dayjs";
 import { referralValidationSchema, buildReferralInitialValues } from "./CreateUpdateReferralCode.validation";
 import styles from "./ReferralForm.module.css";
+import ShortCodePreview from "../../components/Referral/ShortCodePreview";
 
 const toIsoOrNull = (v) => {
   if (!v) return null;
   const d = new Date(v);
   return isNaN(d.getTime()) ? null : d.toISOString();
 };
-// Short code generator: NAME(4) + YY(from) + YY(to) + 3-char hash
-function generateShortCode(name = "", validFromISO, validToISO) {
-  const cleaned = (name || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-
-  // initials from first two words, then fill to length 4 with cleaned string
-  const words = (name || "").trim().split(/\s+/).filter(Boolean);
-  let prefix = "";
-  if (words.length >= 2) {
-    const initials = (words[0][0] || "") + (words[1][0] || "");
-    prefix = (initials + cleaned.replace(initials, "")).slice(0, 4).toUpperCase();
-  } else {
-    prefix = cleaned.slice(0, 4).toUpperCase();
-  }
-  if (prefix.length < 4) prefix = (prefix + "XXXX").slice(0, 4);
-
-  const fromYY = validFromISO ? new Date(validFromISO).getFullYear().toString().slice(-2) : "00";
-  const toYY = validToISO ? new Date(validToISO).getFullYear().toString().slice(-2) : "00";
-
-  // Stable 3-char hash from inputs (avoid random jitter)
-  const hashInput = `${name}|${fromYY}|${toYY}`;
-  let h = 0;
-  for (let i = 0; i < hashInput.length; i++) h = (h * 31 + hashInput.charCodeAt(i)) | 0;
-  const suffix = Math.abs(h).toString(36).toUpperCase().slice(0, 3).padEnd(3, "0");
-
-  return `${prefix}${fromYY}${toYY}${suffix}`;
-}
-
-
 const CreateUpdateReferralCode = () => {
   const { id: projectGroupId, codeId } = useParams();
   const navigate = useNavigate();
@@ -110,15 +83,18 @@ const CreateUpdateReferralCode = () => {
   return (
     <Formik
       enableReinitialize
-      initialValues={buildReferralInitialValues(referralFromState)}
+      initialValues={{
+        name: initialValues?.name || "",
+        type: initialValues?.type || "campaign",
+        validFrom: initialValues?.validFrom || "",
+        validTo: initialValues?.validTo || "",
+        instructionsUrl: initialValues?.instructionsUrl || "",
+        shortCode: initialValues?.shortCode || "",
+      }}
       validationSchema={referralValidationSchema}
       onSubmit={handleSubmit}
     >
       {({ values, errors, touched, handleChange, handleBlur, isSubmitting, setFieldValue }) => {
-        const computedShort =
-          isEdit
-            ? (selectedCode || "")
-            : generateShortCode(values.name, values.validFrom, values.validTo);
         return (
           <>
             <FormikForm noValidate>
@@ -248,12 +224,12 @@ const CreateUpdateReferralCode = () => {
                             </Form.Control.Feedback>
                           </Form.Group>
                           <div className="mt-3">
-                            <Form.Label>Short Code (Auto-generated)</Form.Label>
-                            <div className="p-2 bg-light rounded border">
-                              <code className="small">
-                                {computedShort || "—"}
-                              </code>
-                            </div>
+                            <ShortCodePreview
+                              isEdit={isEdit}
+                              initialShortCode={selectedCode?.shortCode}
+                              values={values}
+                              setFieldValue={setFieldValue}
+                            />
                           </div>
                         </div>
                       </div>

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 export const getUserName = (user, isCurrentUser) => {
   if (!user.first_name && !user.last_name) {
@@ -86,3 +87,56 @@ export const buildApiParams = (p) => ({
   from_date: p.from_date ? toApiMDY(p.from_date) : null,
   to_date: p.to_date ? toApiMDY(p.to_date) : null,
 });
+
+dayjs.extend(utc);
+
+const normalizeName = (name) =>
+  (name || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9]+/g, "")
+    .slice(0, 4)
+    .toUpperCase()
+    .padEnd(4, "X");
+
+const ymd = (v) => {
+  const d = dayjs(v);
+  return d.isValid() ? d.utc().format("YYYY-MM-DD") : "";
+};
+
+//3-char hash
+const hash3 = (s) => {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < 3; i++) out += alphabet[(h >>> (i * 7)) % alphabet.length];
+  return out;
+};
+
+/**
+ * genShortCode
+ * @param {string} name
+ * @param {string|Date} validFrom  (ISO string or Date)
+ * @param {string|Date} validTo    (ISO string or Date)
+ * @param {object} opts
+ * @param {string} opts.tokenPattern Dayjs format for the visible date token.
+ */
+export const genShortCode = (name, validFrom, validTo, opts = {}) => {
+  const pattern = opts.tokenPattern || "YY";
+  const n = normalizeName(name);
+
+  const from = dayjs(validFrom);
+  const to = dayjs(validTo);
+
+  if (!n || !from.isValid() || !to.isValid()) return "";
+
+  const fromTok = from.utc().format(pattern);
+  const toTok = to.utc().format(pattern);
+
+  const fp = `${n}|${ymd(validFrom)}|${ymd(validTo)}`;
+  return `${n}${fromTok}${toTok}${hash3(fp)}`;
+};
