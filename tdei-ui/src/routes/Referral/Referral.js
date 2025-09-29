@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button as RBButton, Spinner } from "react-bootstrap";
+import { Button as RBButton, Spinner, Form } from "react-bootstrap";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,6 +9,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import Container from "../../components/Container/Container";
 import { getSelectedProjectGroup } from "../../selectors";
 import { useSelector } from "react-redux";
+import { debounce } from "lodash";
+import Select from "react-select";
+import { getReferralCodes as fetchReferralCodesApi } from "../../services";
+import CustomModal from "../../components/SuccessModal/CustomModal";
+import { useDeleteReferralCode } from "../../hooks/referrals/useDeleteReferralCode";
+import ResponseToast from "../../components/ToastMessage/ResponseToast";
+
+const USE_MOCK = true;
 
 const mockCodes = [
   {
@@ -48,35 +56,176 @@ const mockCodes = [
   },
 ];
 
+// when API is ready, map backend item -> UI shape used by the table
+const mapApiToUi = (item) => ({
+  id: item.id,
+  name: item.name,
+  type: item.type === 1 ? "campaign" : "invite",
+  shortCode: item.code,
+  instructionsUrl: item.instructions_url || "",
+  validFrom: item.valid_from || null,
+  validTo: item.valid_to || null,
+  createdAt: item.created_at || null,
+  isActive: Boolean(item.is_active),
+  shareLink: `${process.env.REACT_APP_JOIN_BASE_URL || "https://app.example.com"}/join/${item.code}`,
+});
+
+const typeOptions = [
+  { value: "", label: "All" },
+  { value: "1", label: "Campaign" },
+  { value: "2", label: "Invite" },
+];
+
 const Referral = () => {
   const [codes, setCodes] = useState(mockCodes);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const { id } = useParams();
+  const { id: projectGroupId } = useParams();
   const navigate = useNavigate();
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
 
+  // filters
+  const [filters, setFilters] = useState({
+    name: "",
+    code: "",
+    type: "",
+  });
+
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [deleteId, setDeleteId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // your API delete hook
+  const { mutate: apiDelete, isLoading: isDeleting } = useDeleteReferralCode();
+  const [toast, setToast] = useState({
+    show: false,
+    type: "success",
+    message: "",
+    autoHideDuration: 3000,
+  });
+  const showToast = (type, message, autoHideDuration = 3000) =>
+    setToast({ show: true, type, message, autoHideDuration });
+  const handleToastClose = () => setToast((t) => ({ ...t, show: false }));
+
+  // debounced setters for text inputs
+  const debouncedSetName = useMemo(
+    () =>
+      debounce((v) =>
+        setFilters((prev) => ({ ...prev, name: v?.trim?.() ?? "" })), 300),
+    []
+  );
+  const debouncedSetCode = useMemo(
+    () =>
+      debounce((v) =>
+        setFilters((prev) => ({ ...prev, code: v?.trim?.() ?? "" })), 300),
+    []
+  );
+
   useEffect(() => {
-    // TODO: API call to fetch by project group id `id`
-    // setCodes(data)
-  }, [id]);
+    return () => {
+      debouncedSetName.cancel?.();
+      debouncedSetCode.cancel?.();
+    };
+  }, [debouncedSetName, debouncedSetCode]);
 
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 800);
-  };
+  // fetch (mock now; same call signature for API later)
+  useEffect(() => {
+    if (!projectGroupId) return;
 
-  const handleNewCode = () => navigate(`/${id}/referralCodes/new`);
+    let ignore = false;
+    const fetchReferrals = async () => {
+      setIsLoading(true);
+      try {
+        if (USE_MOCK) {
+          let rows = [...mockCodes];
+
+          if (filters.name) {
+            const q = filters.name.toLowerCase();
+            rows = rows.filter((r) => r.name.toLowerCase().includes(q));
+          }
+          if (filters.code) {
+            const q = filters.code.toLowerCase();
+            rows = rows.filter((r) => r.shortCode.toLowerCase().includes(q));
+          }
+          if (filters.type) {
+            const matchType = filters.type === "1" ? "campaign" : "invite";
+            rows = rows.filter((r) => r.type === matchType);
+          }
+          if (!ignore) setCodes(rows);
+        } else {
+          const typeNumber =
+            filters.type === "" ? undefined : Number(filters.type);
+
+          const res = await fetchReferralCodesApi(
+            projectGroupId,
+            1,
+            filters.name || undefined,
+            typeNumber, 
+            filters.code || undefined
+          );
+
+          const apiEnvelope = res?.data;
+          const uiRows = (apiEnvelope?.data ?? []).map(mapApiToUi);
+          if (!ignore) setCodes(uiRows);
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    };
+
+    fetchReferrals();
+    return () => {
+      ignore = true;
+    };
+  }, [projectGroupId, filters.name, filters.code, filters.type, refreshKey]);
+
+  const handleRefresh = () => setRefreshKey((k) => k + 1);
+
+  const handleNewCode = () => navigate(`/${projectGroupId}/referralCodes/new`);
 
   const handleEdit = (code) =>
-    navigate(`/${id}/referralCodes/${code.id}/edit`, {
+    navigate(`/${projectGroupId}/referralCodes/${code.id}/edit`, {
       state: { referral: code },
     });
 
-  const handleDelete = (deleteId) => {
-    setCodes((prev) => prev.filter((c) => c.id !== deleteId));
+  const handleDeleteRequest = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
   };
 
+  // CONFIRM delete
+  const confirmDelete = () => {
+    if (!deleteId) return;
+
+    if (USE_MOCK) {
+      // local remove
+      setCodes((prev) => prev.filter((c) => c.id !== deleteId));
+      setShowDeleteModal(false);
+      setDeleteId(null);
+      showToast("success", "Referral code deleted successfully.");
+      return;
+    }
+
+    // API delete + refresh/invalidate
+    apiDelete(
+      { projectGroupId, code_id: deleteId },
+      {
+        onSuccess: () => {
+          setCodes((prev) => prev.filter((c) => c.id !== deleteId));
+          setShowDeleteModal(false);
+          setDeleteId(null);
+          showToast("success", "Referral code deleted successfully.");
+        },
+        onError: (err) => {
+          const msg =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Failed to delete referral code.";
+          showToast("error", msg, 4000);
+        },
+      }
+    );
+  };
   const hasData = useMemo(() => codes.length > 0, [codes]);
 
   return (
@@ -85,7 +234,10 @@ const Referral = () => {
         <div className="titleBlock">
           <div className="page-header-title">Referral Codes</div>
           <div className="page-header-subtitle">
-            Manage and track your referral and invite codes of project group - <span className="fw-bold">{`${selectedProjectGroup.name}`}</span>.
+            Manage and track your referral and invite codes of project group -{" "}
+            <span className="fw-bold">
+              {selectedProjectGroup?.name ?? "—"}
+            </span>.
           </div>
         </div>
 
@@ -105,6 +257,7 @@ const Referral = () => {
             variant="outline-secondary"
             onClick={handleRefresh}
             disabled={isLoading}
+            title="Refresh"
           >
             {isLoading ? (
               <Spinner size="sm" animation="border" className="me-2" />
@@ -119,16 +272,6 @@ const Referral = () => {
           </RBButton>
         </div>
       </div>
-
-      {showFilters && (
-        <div
-          className="mb-3"
-          style={{ border: "1px dashed #ddd", padding: 12, borderRadius: 8 }}
-        >
-          <span className="text-muted">Filters coming soon…</span>
-        </div>
-      )}
-
       {isLoading ? (
         <div
           className="d-flex justify-content-center align-items-center"
@@ -144,13 +287,63 @@ const Referral = () => {
         </div>
       ) : (
         <Container>
+          {showFilters && (
+            <div className={style.searchPanel}>
+              <div className="d-flex flex-wrap gap-3">
+                <Form.Control
+                  type="text"
+                  placeholder="Search by referral code name"
+                  onChange={(e) => debouncedSetName(e.target.value)}
+                  aria-label="Search by name"
+                />
+                <Form.Control
+                  type="text"
+                  placeholder="Search by referral code value"
+                  onChange={(e) => debouncedSetCode(e.target.value)}
+                  aria-label="Search by code"
+                />
+                <div className={style.selectPanel}>
+                  <label htmlFor="typeSelect" className={style.selectLabel}>
+                    Type
+                  </label>
+                  <Select
+                    inputId="typeSelect"
+                    className={style.select}
+                    options={typeOptions}
+                    value={typeOptions.find((o) => o.value === filters.type)}
+                    onChange={(opt) =>
+                      setFilters((prev) => ({ ...prev, type: opt?.value || "" }))
+                    }
+                    isClearable={false}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
           <ReferralCodesTable
             codes={codes}
-            onEdit={handleEdit}      
-            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onDelete={handleDeleteRequest}
           />
         </Container>
       )}
+      <CustomModal
+        show={showDeleteModal}
+        onHide={() => !isDeleting && setShowDeleteModal(false)}
+        handler={confirmDelete}
+        isLoading={isDeleting}
+        modaltype="deactivate"
+        title="Delete referral code?"
+        message="This action cannot be undone."
+        btnlabel={isDeleting ? "Deleting…" : "Yes, Delete"}
+      />
+      <ResponseToast
+        showtoast={toast.show}
+        type={toast.type}
+        message={toast.message}
+        autoHideDuration={toast.autoHideDuration}
+        handleClose={handleToastClose}
+      />
     </div>
   );
 };

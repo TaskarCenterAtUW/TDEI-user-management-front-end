@@ -1071,3 +1071,54 @@ export function buildFallbackName(params = {}, rangeLabel = "") {
     default:        return `download_stats_${dayjs().format("YYYY-MM-DD")}.csv`;
   }
 }
+
+export async function getReferralCodes({
+  projectGroupId,
+  page = 1,
+  name,
+  type,   
+  code,
+  pageSize = 10
+}) {
+  if (!projectGroupId) {
+    throw new Error("projectGroupId is required");
+  }
+  const params = {
+    page_no: page,
+    page_size: pageSize,
+  };
+  if (code) params.code = code;
+  if (name) params.name = name;
+  if (type !== undefined && type !== null) params.type = type;
+
+  const res = await axios.get(
+    `${osmUrl}/project-group/${projectGroupId}/referral-codes`,
+    { params }
+  );
+
+  // Expecting: { total_items, per_page, current_page, total_pages, data: [...] }
+  return {
+    page,
+    data: res.data,
+  };
+}
+
+export async function createReferralCode(projectGroupId,data) {
+  const res = await axios.post(
+    `${osmUrl}/project-group/${projectGroupId}/referral-codes`,
+    data
+  );
+  return res.data;
+}
+export async function updateReferralCode(projectGroupId,code_id,data) {
+  const res = await axios.put(
+    `${osmUrl}/project-group/${projectGroupId}/referral-codes/${code_id}`,
+    data
+  );
+  return res.data;
+}
+export async function deleteReferralCode(projectGroupId,code_id) {
+  const res = await axios.delete(
+    `${osmUrl}/project-group/${projectGroupId}/referral-codes/${code_id}`);
+  return res.data;
+}
