@@ -1,17 +1,14 @@
-/* URL preview iframe */
 .previewIframe {
   width: 100%;
   border: 0;
   border-radius: 8px;
-  height: 420px;            /* desktop default */
+  height: 420px;            
 }
 
-/* large tablet */
 @media (max-width: 1200px) {
   .previewIframe { height: 360px; }
 }
 
-/* tablet */
 @media (max-width: 992px) {
   .previewIframe { height: 300px; }
 }
@@ -31,3 +28,50 @@
 .previewIframeBox > iframe {
   flex: 1 1 auto;
 }
+
+.actionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;   
+  gap: 10px;
+  min-width: 0;            
+  white-space: nowrap;     
+  overflow: hidden;        
+}
+
+.actionBarLeft {
+  display: flex;
+  align-items: center;
+  min-height: 40px;              
+}
+.actionBarSubtitle {
+  display: inline-block;
+  max-width: 60vw;         
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: baseline;
+}
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+    flex-shrink: 0;   
+}
+.actionButtons :global(.btn),
+.actionButtons :global(.tdei-primary-button),
+.actionButtons :global(.tdei-secondary-button) {
+  margin: 0 !important;
+}
+
+@media (max-width: 600px) {
+  .actionBar { gap: 8px; }
+  .actionBarSubtitle { max-width: 52vw; }
+  :global(.page-header-title) { font-size: 1rem; }
+}
+    

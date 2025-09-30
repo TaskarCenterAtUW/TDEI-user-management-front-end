@@ -13,28 +13,7 @@ import { getReferralCodes } from "../../services";
 import useUpdateReferralCode from "../../hooks/referrals/useUpdateReferralCode";
 import useCreateReferral from "../../hooks/referrals/useCreateReferral";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
-
-const USE_MOCK = true;
-
-const MOCK_ROWS = [
-  {
-    id: "1",
-    name: "Summer Campaign 2024",
-    type: "campaign",
-    shortCode: "SUMM2424ABC",
-    instructionsUrl: "https://wearemotto.com/",
-    validFrom: "2024-06-01",
-    validTo: "2024-08-31",
-  },
-  {
-    id: "2",
-    name: "Friend Invite",
-    type: "invite",
-    shortCode: "FRIE2424XYZ",
-    validFrom: "2024-01-01",
-    validTo: "2024-12-31",
-  },
-];
+import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
 
 const toIsoOrNull = (v) => {
   if (!v) return null;
@@ -79,10 +58,10 @@ const CreateUpdateReferralCode = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const { projectGroup, loading: pgLoading } = useGetProjectGroupById(projectGroupId);
   const editing = Boolean(codeId);
   const referralFromState = location.state?.referral || null;
-  
+
   // This ensures that if user refreshes the page, we still have the name in query for prefill logic.
   React.useEffect(() => {
     if (editing && referralFromState?.name && !searchParams.get("name")) {
@@ -93,6 +72,18 @@ const CreateUpdateReferralCode = () => {
   }, [editing, referralFromState, searchParams, setSearchParams]);
 
   const nameFromQuery = searchParams.get("name") || undefined;
+  const groupName = pgLoading ? "…" : (projectGroup?.project_group_name || "—");
+  const headerSubtitle = editing
+    ? (
+      <>
+        You’re editing a referral code in project group — <span className="fw-bold">{groupName}</span>.
+      </>
+    )
+    : (
+      <>
+        You’re creating a referral code in project group — <span className="fw-bold">{groupName}</span>.
+      </>
+    );
 
   // Prefill loader state
   const [initLoading, setInitLoading] = React.useState(editing && !referralFromState);
@@ -101,13 +92,13 @@ const CreateUpdateReferralCode = () => {
     referralFromState
       ? stateItemToForm(referralFromState)
       : {
-          name: "",
-          type: "campaign",
-          instructionsUrl: "",
-          validFrom: "",
-          validTo: "",
-          shortCode: "",
-        }
+        name: "",
+        type: "campaign",
+        instructionsUrl: "",
+        validFrom: "",
+        validTo: "",
+        shortCode: "",
+      }
   );
 
   // Prefill on edit: by projectGroupId + name 
@@ -121,33 +112,20 @@ const CreateUpdateReferralCode = () => {
       setInitLoading(true);
       setInitError("");
       try {
-        if (USE_MOCK) {
-          const match =
-            (nameFromQuery &&
-              MOCK_ROWS.find(
-                (r) => r.name.toLowerCase() === nameFromQuery.toLowerCase()
-              )) ||
-            null;
-
-          if (!ignore) {
-            if (!match) throw new Error("Referral not found.");
-            setFormInit(stateItemToForm(match));
-          }
-        } else {
-          if (!projectGroupId || !nameFromQuery) {
-            throw new Error("Missing projectGroupId or name.");
-          }
-          const resp = await getReferralCodes({
-            projectGroupId,
-            page: 1,
-            name: nameFromQuery,
-            pageSize: 1,
-          });
-          const apiResponse = resp?.data;
-          const first = apiResponse?.data?.[0] || null;
-          if (!first) throw new Error("Referral not found.");
-          if (!ignore) setFormInit(apiItemToForm(first));
+        if (!projectGroupId || !codeId) {
+          throw new Error("Missing projectGroupId or Code.");
         }
+        const resp = await getReferralCodes({
+          projectGroupId,
+          page: 1,
+          name: nameFromQuery,
+          pageSize: 1,
+          codeId,
+        });
+        const apiResponse = resp?.data;
+        const first = apiResponse?.data?.[0] || null;
+        if (!first) throw new Error("Referral not found.");
+        if (!ignore) setFormInit(apiItemToForm(first));
       } catch (e) {
         if (!ignore) setInitError(e?.message || "Failed to load referral.");
       } finally {
@@ -196,7 +174,9 @@ const CreateUpdateReferralCode = () => {
         await createReferral({ projectGroupId, data: payload });
         showToast("success", "Referral created successfully.");
       }
-      navigate(`/${projectGroupId}/referralCodes`);
+      setTimeout(() => {
+        navigate(`/${projectGroupId}/referralCodes`);
+      }, 600);
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
@@ -250,11 +230,15 @@ const CreateUpdateReferralCode = () => {
 
           return (
             <FormikForm noValidate>
-              {/* Header */}
               <div style={{ padding: "20px" }}>
-                <div className="header">
-                  <div className="page-header-title">{headerTitle}</div>
-                  <div className="d-flex gap-2">
+                <div className={styles.actionBar}>
+                  <div>
+                    <div className="page-header-title">{headerTitle}</div>
+                    <div className={`page-header-subtitle ${styles.actionBarSubtitle}`}>
+                      {headerSubtitle}
+                    </div>
+                  </div>
+                  <div className={styles.actionButtons}>
                     <Button
                       type="button"
                       variant="outline-secondary"
@@ -275,7 +259,6 @@ const CreateUpdateReferralCode = () => {
                     </Button>
                   </div>
                 </div>
-
                 <Container className="mt-2">
                   <div className="row g-3">
                     <div className="col-12 col-lg-8 d-flex">
@@ -303,11 +286,17 @@ const CreateUpdateReferralCode = () => {
                           </Form.Group>
 
                           <Form.Group className="mb-3" controlId="type">
-                            <Form.Label>Type</Form.Label>
+                            <Form.Label>Type  <span style={{ color: "red" }}>*</span></Form.Label>
                             <Form.Select
                               name="type"
                               value={values.type}
-                              onChange={handleChange}
+                              onChange={(e) => {
+                                const next = e.target.value;
+                                setFieldValue("type", next);
+                                if (next === "campaign") {
+                                  setFieldValue("validTo", null, false);
+                                }
+                              }}
                               onBlur={handleBlur}
                             >
                               <option value="campaign">Campaign</option>
@@ -317,7 +306,7 @@ const CreateUpdateReferralCode = () => {
 
                           <div className="row">
                             <div className="col-12 col-md-6">
-                              <Form.Label>Valid From</Form.Label>
+                              <Form.Label>Valid From  <span style={{ color: "red" }}>*</span></Form.Label>
                               <Field name="validFrom">
                                 {({ field, form }) => (
                                   <DatePicker
@@ -334,25 +323,26 @@ const CreateUpdateReferralCode = () => {
                                 <div className="text-danger small mt-1">{errors.validFrom}</div>
                               ) : null}
                             </div>
-
-                            <div className="col-12 col-md-6 mt-3 mt-md-0">
-                              <Form.Label>Valid To</Form.Label>
-                              <Field name="validTo">
-                                {({ field, form }) => (
-                                  <DatePicker
-                                    field={field}
-                                    form={form}
-                                    label="Valid To"
-                                    dateValue={values.validTo}
-                                    minDate={values.validFrom ? dayjs(values.validFrom) : undefined}
-                                    onChange={(iso) => form.setFieldValue("validTo", iso)}
-                                  />
-                                )}
-                              </Field>
-                              {touched.validTo && errors.validTo ? (
-                                <div className="text-danger small mt-1">{errors.validTo}</div>
-                              ) : null}
-                            </div>
+                            {values.type !== "campaign" && (
+                              <div className="col-12 col-md-6 mt-3 mt-md-0">
+                                <Form.Label>Valid To  <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Field name="validTo">
+                                  {({ field, form }) => (
+                                    <DatePicker
+                                      field={field}
+                                      form={form}
+                                      label="Valid To"
+                                      dateValue={values.validTo}
+                                      minDate={values.validFrom ? dayjs(values.validFrom) : undefined}
+                                      onChange={(iso) => form.setFieldValue("validTo", iso)}
+                                    />
+                                  )}
+                                </Field>
+                                {touched.validTo && errors.validTo ? (
+                                  <div className="text-danger small mt-1">{errors.validTo}</div>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
 
                           <Form.Group className="mt-3" controlId="instructionsUrl">

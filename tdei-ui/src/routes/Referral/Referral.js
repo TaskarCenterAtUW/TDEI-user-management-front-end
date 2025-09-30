@@ -7,57 +7,16 @@ import ReferralCodesTable from "../../components/Referral/ReferralCodesTable";
 import style from "./Referral.module.css";
 import { useParams, useNavigate } from "react-router-dom";
 import Container from "../../components/Container/Container";
-import { getSelectedProjectGroup } from "../../selectors";
-import { useSelector } from "react-redux";
-import { debounce } from "lodash";
 import Select from "react-select";
-import { getReferralCodes as fetchReferralCodesApi } from "../../services";
+import { debounce } from "lodash";
+import { getReferralCodes } from "../../services";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import { useDeleteReferralCode } from "../../hooks/referrals/useDeleteReferralCode";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
-const USE_MOCK = true;
 
-const mockCodes = [
-  {
-    id: "1",
-    name: "Summer Campaign 2024",
-    type: "campaign",
-    shareLink: "https://app.example.com/join/SUMM2424ABC",
-    shortCode: "SUMM2424ABC",
-    instructionsUrl: "https://wearemotto.com/",
-    validFrom: "2024-06-01",
-    validTo: "2024-08-31",
-    createdAt: "2024-05-15",
-    isActive: true,
-  },
-  {
-    id: "2",
-    name: "Friend Invite",
-    type: "invite",
-    shareLink: "https://app.example.com/join/FRIE2424XYZ",
-    shortCode: "FRIE2424XYZ",
-    validFrom: "2024-01-01",
-    validTo: "2024-12-31",
-    createdAt: "2024-01-01",
-    isActive: true,
-  },
-  {
-    id: "3",
-    name: "Beta Testing Program",
-    type: "invite",
-    shareLink: "https://app.example.com/join/BETA2424DEF",
-    shortCode: "BETA2424DEF",
-    instructionsUrl: "https://example.com/beta-instructions",
-    validFrom: "2024-03-01",
-    validTo: "2024-05-01",
-    createdAt: "2024-02-15",
-    isActive: false,
-  },
-];
-
-// when API is ready, map backend item -> UI shape used by the table
 const mapApiToUi = (item) => ({
   id: item.id,
   name: item.name,
@@ -78,26 +37,21 @@ const typeOptions = [
 ];
 
 const Referral = () => {
-  const [codes, setCodes] = useState(mockCodes);
+  const [codes, setCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const { id: projectGroupId } = useParams();
   const navigate = useNavigate();
-const { projectGroup, loading: pgLoading, error: pgError, notFound } =
-useGetProjectGroupById(projectGroupId);
+  const handleBack = () => navigate(-1);
 
-  // filters
-  const [filters, setFilters] = useState({
-    name: "",
-    code: "",
-    type: "",
-  });
+  const { projectGroup, loading: pgLoading } = useGetProjectGroupById(projectGroupId);
+  const [filters, setFilters] = useState({ name: "", code: "", type: "" });
+  const [query, setQuery] = useState({ name: "", code: "" });
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // your API delete hook
   const { mutate: apiDelete, isLoading: isDeleting } = useDeleteReferralCode();
   const [toast, setToast] = useState({
     show: false,
@@ -112,14 +66,16 @@ useGetProjectGroupById(projectGroupId);
   // debounced setters for text inputs
   const debouncedSetName = useMemo(
     () =>
-      debounce((v) =>
-        setFilters((prev) => ({ ...prev, name: v?.trim?.() ?? "" })), 300),
+      debounce((v) => {
+        setFilters((prev) => ({ ...prev, name: v?.trim?.() ?? "" }));
+      }, 300),
     []
   );
   const debouncedSetCode = useMemo(
     () =>
-      debounce((v) =>
-        setFilters((prev) => ({ ...prev, code: v?.trim?.() ?? "" })), 300),
+      debounce((v) => {
+        setFilters((prev) => ({ ...prev, code: v?.trim?.() ?? "" }));
+      }, 300),
     []
   );
 
@@ -130,52 +86,36 @@ useGetProjectGroupById(projectGroupId);
     };
   }, [debouncedSetName, debouncedSetCode]);
 
-  // fetch (mock now; same call signature for API later)
+  // Fetch
   useEffect(() => {
     if (!projectGroupId) return;
 
     let ignore = false;
-    const fetchReferrals = async () => {
+
+    (async () => {
       setIsLoading(true);
       try {
-        if (USE_MOCK) {
-          let rows = [...mockCodes];
-
-          if (filters.name) {
-            const q = filters.name.toLowerCase();
-            rows = rows.filter((r) => r.name.toLowerCase().includes(q));
-          }
-          if (filters.code) {
-            const q = filters.code.toLowerCase();
-            rows = rows.filter((r) => r.shortCode.toLowerCase().includes(q));
-          }
-          if (filters.type) {
-            const matchType = filters.type === "1" ? "campaign" : "invite";
-            rows = rows.filter((r) => r.type === matchType);
-          }
-          if (!ignore) setCodes(rows);
-        } else {
-          const typeNumber =
-            filters.type === "" ? undefined : Number(filters.type);
-
-          const res = await fetchReferralCodesApi(
-            projectGroupId,
-            1,
-            filters.name || undefined,
-            typeNumber, 
-            filters.code || undefined
-          );
-
-          const apiEnvelope = res?.data;
-          const uiRows = (apiEnvelope?.data ?? []).map(mapApiToUi);
-          if (!ignore) setCodes(uiRows);
-        }
+        const typeNumber = filters.type === "" ? undefined : Number(filters.type);
+        const { data: envelope } = await getReferralCodes({
+          projectGroupId,
+          page: 1,
+          name: filters.name || undefined,
+          type: typeNumber,
+          code: filters.code || undefined,
+          pageSize: 10,
+        });
+        const uiRows = Array.isArray(envelope?.data)
+          ? envelope.data.map(mapApiToUi)
+          : [];
+        if (!ignore) setCodes(uiRows);
+      } catch (e) {
+        console.error("Failed to fetch referral codes:", e);
+        if (!ignore) setCodes([]);
       } finally {
         if (!ignore) setIsLoading(false);
       }
-    };
+    })();
 
-    fetchReferrals();
     return () => {
       ignore = true;
     };
@@ -184,12 +124,11 @@ useGetProjectGroupById(projectGroupId);
   const handleRefresh = () => setRefreshKey((k) => k + 1);
 
   const handleNewCode = () => navigate(`/${projectGroupId}/referralCodes/new`);
-
   const handleEdit = (code) =>
-    navigate(`/${projectGroupId}/referralCodes/${code.id}/edit?name=${encodeURIComponent(code.name)}`, {
-   state: { referral: code },
- });
-
+    navigate(
+      `/${projectGroupId}/referralCodes/${code.id}/edit?name=${encodeURIComponent(code.name)}`,
+      { state: { referral: code } }
+    );
   const handleDeleteRequest = (id) => {
     setDeleteId(id);
     setShowDeleteModal(true);
@@ -198,17 +137,6 @@ useGetProjectGroupById(projectGroupId);
   // CONFIRM delete
   const confirmDelete = () => {
     if (!deleteId) return;
-
-    if (USE_MOCK) {
-      // local remove
-      setCodes((prev) => prev.filter((c) => c.id !== deleteId));
-      setShowDeleteModal(false);
-      setDeleteId(null);
-      showToast("success", "Referral code deleted successfully.");
-      return;
-    }
-
-    // API delete + refresh/invalidate
     apiDelete(
       { projectGroupId, code_id: deleteId },
       {
@@ -228,21 +156,32 @@ useGetProjectGroupById(projectGroupId);
       }
     );
   };
-  const hasData = useMemo(() => codes.length > 0, [codes]);
+  const hasData = codes.length > 0;
 
   return (
     <div className={style.referralContainer}>
       <div className={style.header}>
         <div className="titleBlock">
-          <div className="page-header-title">Referral Codes</div>
-          <div className="page-header-subtitle">
-            Manage and track your referral and invite codes of project group -{" "}
-            <span className="fw-bold">
-             {pgLoading ? "…" : (projectGroup?.project_group_name || "—")}
-            </span>.
+          <div className="d-flex align-items-start gap-2">
+            <RBButton
+              variant="outline-secondary"
+              onClick={handleBack}
+              aria-label="Go back"
+              className="px-2 py-1"
+            >
+              <ArrowBackIosNewIcon fontSize="small" />
+            </RBButton>
+            <div>
+              <div className="page-header-title">Referral Codes</div>
+              <div className="page-header-subtitle">
+                Manage and track your referral and invite codes of project group –{" "}
+                <span className="fw-bold">
+                  {pgLoading ? "…" : (projectGroup?.project_group_name || "—")}
+                </span>.
+              </div>
+            </div>
           </div>
         </div>
-
         <div className={style.actionsRight}>
           <RBButton
             className={style.filterBtn}
@@ -253,7 +192,6 @@ useGetProjectGroupById(projectGroupId);
             <FilterListIcon fontSize="small" className="me-1" />
             Filter
           </RBButton>
-
           <RBButton
             className={style.filterBtn}
             variant="outline-secondary"
@@ -267,68 +205,78 @@ useGetProjectGroupById(projectGroupId);
               <RefreshIcon fontSize="small" className="me-1" />
             )}
           </RBButton>
-
           <RBButton className="tdei-primary-button" onClick={handleNewCode}>
             <AddIcon fontSize="small" className="me-1" />
             New Code
           </RBButton>
         </div>
       </div>
-      {isLoading ? (
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ height: 200 }}
-        >
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading…</span>
-          </Spinner>
-        </div>
-      ) : !hasData ? (
-        <div className="alert alert-info" role="alert">
-          No referral codes available.
-        </div>
-      ) : (
-        <Container>
-          {showFilters && (
-            <div className={style.searchPanel}>
-              <div className="d-flex flex-wrap gap-3">
-                <Form.Control
-                  type="text"
-                  placeholder="Search by referral code name"
-                  onChange={(e) => debouncedSetName(e.target.value)}
-                  aria-label="Search by name"
+
+      {/* Filters are OUTSIDE the loading/table branch, so they never unmount */}
+      <Container>
+        {showFilters && (
+          <div className={style.searchPanel}>
+            <div className="d-flex flex-wrap gap-3">
+              <Form.Control
+                type="text"
+                placeholder="Search by referral code name"
+                value={query.name}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setQuery((q) => ({ ...q, name: v }));
+                  debouncedSetName(v);
+                }}
+                aria-label="Search by name"
+              />
+              <Form.Control
+                type="text"
+                placeholder="Search by referral code value"
+                value={query.code}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setQuery((q) => ({ ...q, code: v }));
+                  debouncedSetCode(v);
+                }}
+                aria-label="Search by code"
+              />
+              <div className={style.selectPanel}>
+                <label htmlFor="typeSelect" className={style.selectLabel}>
+                  Type
+                </label>
+                <Select
+                  inputId="typeSelect"
+                  className={style.select}
+                  options={typeOptions}
+                  value={typeOptions.find((o) => o.value === filters.type)}
+                  onChange={(opt) =>
+                    setFilters((prev) => ({ ...prev, type: opt?.value || "" }))
+                  }
+                  isClearable={false}
                 />
-                <Form.Control
-                  type="text"
-                  placeholder="Search by referral code value"
-                  onChange={(e) => debouncedSetCode(e.target.value)}
-                  aria-label="Search by code"
-                />
-                <div className={style.selectPanel}>
-                  <label htmlFor="typeSelect" className={style.selectLabel}>
-                    Type
-                  </label>
-                  <Select
-                    inputId="typeSelect"
-                    className={style.select}
-                    options={typeOptions}
-                    value={typeOptions.find((o) => o.value === filters.type)}
-                    onChange={(opt) =>
-                      setFilters((prev) => ({ ...prev, type: opt?.value || "" }))
-                    }
-                    isClearable={false}
-                  />
-                </div>
               </div>
             </div>
-          )}
+          </div>
+
+        )}
+        {/* Results */}
+        {isLoading ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ height: 200 }}>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading…</span>
+            </Spinner>
+          </div>
+        ) : !hasData ? (
+          <div className="alert alert-info" role="alert">
+            No referral codes available.
+          </div>
+        ) : (
           <ReferralCodesTable
             codes={codes}
             onEdit={handleEdit}
             onDelete={handleDeleteRequest}
           />
-        </Container>
-      )}
+        )}
+      </Container>
       <CustomModal
         show={showDeleteModal}
         onHide={() => !isDeleting && setShowDeleteModal(false)}

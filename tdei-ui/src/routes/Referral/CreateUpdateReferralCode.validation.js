@@ -23,17 +23,22 @@ export const referralValidationSchema = yup.object({
     .nullable()
     .required("Valid from date is required"),
 
-  validTo: yup
-    .date()
-    .transform((val, orig) => (orig ? new Date(orig) : null))
-    .typeError("Valid to date is required")
-    .nullable()
-    .required("Valid to date is required")
-    .when("validFrom", (validFrom, schema) =>
-      validFrom
-        ? schema.min(validFrom, "Valid to date must be after valid from date")
-        : schema
-    ),
+  // If type === "campaign": ignore/hide and force null.
+  // Otherwise: optional, but if provided must be >= validFrom.
+  validTo: yup.lazy((value, ctx) => {
+    const { type, validFrom } = ctx.parent;
+    if (type === "campaign") {
+      return yup.mixed().nullable().transform(() => null);
+    }
+    return yup
+      .date()
+      .transform((val, orig) => (orig ? new Date(orig) : null))
+      .nullable()
+      .required("Valid to date is required")
+      .when("validFrom", (vf, schema) =>
+        vf ? schema.min(vf, "Valid to date must be after valid from date") : schema
+      );
+  }),
 
   instructionsUrl: yup
     .string()

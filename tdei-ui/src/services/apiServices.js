@@ -1092,7 +1092,7 @@ export async function getReferralCodes({
   if (type !== undefined && type !== null) params.type = type;
 
   const res = await axios.get(
-    `${osmUrl}/project-group/${projectGroupId}/referral-codes`,
+    `${url}/project-group/${projectGroupId}/referral-codes`,
     { params }
   );
 
@@ -1105,20 +1105,20 @@ export async function getReferralCodes({
 
 export async function createReferralCode(projectGroupId,data) {
   const res = await axios.post(
-    `${osmUrl}/project-group/${projectGroupId}/referral-codes`,
+    `${url}/project-group/${projectGroupId}/referral-codes`,
     data
   );
   return res.data;
 }
 export async function updateReferralCode(projectGroupId,code_id,data) {
   const res = await axios.put(
-    `${osmUrl}/project-group/${projectGroupId}/referral-codes/${code_id}`,
+    `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`,
     data
   );
   return res.data;
 }
 export async function deleteReferralCode(projectGroupId,code_id) {
   const res = await axios.delete(
-    `${osmUrl}/project-group/${projectGroupId}/referral-codes/${code_id}`);
+    `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`);
   return res.data;
 }

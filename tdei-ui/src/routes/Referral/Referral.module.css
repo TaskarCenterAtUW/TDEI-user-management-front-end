@@ -626,7 +626,7 @@
 
   .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Name"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Type"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Short Code"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Referral Code"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Valid Period"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Created"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(6)::before { content: "Status"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
@@ -665,7 +665,7 @@
 @media (max-width: 1200px) {
   .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Name"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Type"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Short Code"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Referral Code"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Valid Period"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
   .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Created"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
 }

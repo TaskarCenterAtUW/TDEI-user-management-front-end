@@ -68,7 +68,7 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
       <div className={`${style.gridContainer} ${style.projectHeader}`}>
         <div className={style.sortableHeader}>Name</div>
         <div className={style.sortableHeader}>Type</div>
-        <div className={style.sortableHeader}>Short Code</div>
+        <div className={style.sortableHeader}>Referral Code</div>
         <div className={style.sortableHeader}>Valid Period</div>
         <div className={style.sortableHeader}>Created</div>
         <div className={style.sortableHeader}>Status</div>
@@ -106,11 +106,11 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
             <p className={style.content}><TypeChip type={code.type} /></p>
             <p className={`${style.content} ${style.noWrap}`}>
               <code className={style.shortCodePill}>{code.shortCode}</code>
-              <Tooltip title="Copy short code">
+              <Tooltip title="Copy referral code">
                 <IconButton
                   size="small"
                   onClick={() => copyToClipboard(code.shortCode)}
-                  aria-label="Copy short code"
+                  aria-label="Copy referral code"
                   className={style.itemIcon}
                 >
                   <ContentCopyIcon fontSize="inherit" />
