@@ -2,28 +2,67 @@ import React from "react";
 import { Formik, Field, Form as FormikForm } from "formik";
 import { Button, Form, Spinner } from "react-bootstrap";
 import Container from "../../components/Container/Container";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DatePicker from "../../components/DatePicker/DatePicker";
 import "./ReferralForm.module.css";
 import dayjs from "dayjs";
 import { referralValidationSchema } from "./CreateUpdateReferralCode.validation";
 import styles from "./ReferralForm.module.css";
 import ShortCodePreview from "../../components/Referral/ShortCodePreview";
+import { getReferralCodes } from "../../services";
 import useUpdateReferralCode from "../../hooks/referrals/useUpdateReferralCode";
 import useCreateReferral from "../../hooks/referrals/useCreateReferral";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 
 const USE_MOCK = true;
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const MOCK_ROWS = [
+  {
+    id: "1",
+    name: "Summer Campaign 2024",
+    type: "campaign",
+    shortCode: "SUMM2424ABC",
+    instructionsUrl: "https://wearemotto.com/",
+    validFrom: "2024-06-01",
+    validTo: "2024-08-31",
+  },
+  {
+    id: "2",
+    name: "Friend Invite",
+    type: "invite",
+    shortCode: "FRIE2424XYZ",
+    validFrom: "2024-01-01",
+    validTo: "2024-12-31",
+  },
+];
 
 const toIsoOrNull = (v) => {
   if (!v) return null;
   const d = new Date(v);
-  return isNaN(d.getTime()) ? null : d.toISOString();
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
 };
 
-// UI -> API payload mapper
+// API -> form values
+const apiItemToForm = (item) => ({
+  name: item?.name ?? "",
+  type: item?.type === 1 ? "campaign" : "invite",
+  instructionsUrl: item?.instructions_url || "",
+  validFrom: item?.valid_from || "",
+  validTo: item?.valid_to || "",
+  shortCode: item?.code || "",
+});
+
+// STATE/Mock -> form values
+const stateItemToForm = (r) => ({
+  name: r?.name || "",
+  type: r?.type || "campaign",
+  instructionsUrl: r?.instructionsUrl || "",
+  validFrom: r?.validFrom ? toIsoOrNull(r.validFrom) : "",
+  validTo: r?.validTo ? toIsoOrNull(r.validTo) : "",
+  shortCode: r?.shortCode || "",
+});
+
+// UI -> API payload
 const uiToApi = (values, codeId) => ({
   id: codeId || undefined,
   name: values.name,
@@ -39,50 +78,94 @@ const CreateUpdateReferralCode = () => {
   const { id: projectGroupId, codeId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const referralFromState = location.state?.referral || null;
-
-  const fallbackFromMock =
-    !referralFromState && codeId
-      ? {
-        id: codeId,
-        name: "",
-        type: "campaign",
-        shareLink: "",
-        shortCode: "FALLBACKCODE",
-        instructionsUrl: "",
-        validFrom: "",
-        validTo: "",
-        createdAt: "",
-        isActive: true,
-      }
-      : null;
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const editing = Boolean(codeId);
-  const initial = referralFromState || fallbackFromMock || {
-    name: "",
-    type: "campaign",
-    instructionsUrl: "",
-    validFrom: null,
-    validTo: null,
-    shortCode: "",
-  };
+  const referralFromState = location.state?.referral || null;
+  
+  // This ensures that if user refreshes the page, we still have the name in query for prefill logic.
+  React.useEffect(() => {
+    if (editing && referralFromState?.name && !searchParams.get("name")) {
+      const params = new URLSearchParams(searchParams);
+      params.set("name", referralFromState.name);
+      setSearchParams(params, { replace: true });
+    }
+  }, [editing, referralFromState, searchParams, setSearchParams]);
 
-  const headerTitle = editing ? "Edit Referral Code" : "Create Referral Code";
-  const primaryButtonText = editing ? "Update" : "Create";
-  const selectedCode = location.state?.referral?.shortCode || null;
+  const nameFromQuery = searchParams.get("name") || undefined;
 
-  // mutations (only used when USE_MOCK === false)
-  const { mutateAsync: updateReferral, isLoading: isUpdating } =
-    useUpdateReferralCode();
-  const {
-    mutateAsync: createReferral,
-    isLoading: isCreating,
-  } = useCreateReferral({
-    onSuccess: () => { },
-    onError: () => { },
-  });
+  // Prefill loader state
+  const [initLoading, setInitLoading] = React.useState(editing && !referralFromState);
+  const [initError, setInitError] = React.useState("");
+  const [formInit, setFormInit] = React.useState(() =>
+    referralFromState
+      ? stateItemToForm(referralFromState)
+      : {
+          name: "",
+          type: "campaign",
+          instructionsUrl: "",
+          validFrom: "",
+          validTo: "",
+          shortCode: "",
+        }
+  );
 
-  // toast
+  // Prefill on edit: by projectGroupId + name 
+  React.useEffect(() => {
+    let ignore = false;
+
+    const prefill = async () => {
+      if (!editing) return;
+      if (referralFromState) return;
+
+      setInitLoading(true);
+      setInitError("");
+      try {
+        if (USE_MOCK) {
+          const match =
+            (nameFromQuery &&
+              MOCK_ROWS.find(
+                (r) => r.name.toLowerCase() === nameFromQuery.toLowerCase()
+              )) ||
+            null;
+
+          if (!ignore) {
+            if (!match) throw new Error("Referral not found.");
+            setFormInit(stateItemToForm(match));
+          }
+        } else {
+          if (!projectGroupId || !nameFromQuery) {
+            throw new Error("Missing projectGroupId or name.");
+          }
+          const resp = await getReferralCodes({
+            projectGroupId,
+            page: 1,
+            name: nameFromQuery,
+            pageSize: 1,
+          });
+          const apiResponse = resp?.data;
+          const first = apiResponse?.data?.[0] || null;
+          if (!first) throw new Error("Referral not found.");
+          if (!ignore) setFormInit(apiItemToForm(first));
+        }
+      } catch (e) {
+        if (!ignore) setInitError(e?.message || "Failed to load referral.");
+      } finally {
+        if (!ignore) setInitLoading(false);
+      }
+    };
+
+    prefill();
+    return () => {
+      ignore = true;
+    };
+  }, [editing, referralFromState, projectGroupId, nameFromQuery]);
+
+  // Mutations
+  const { mutateAsync: updateReferral, isLoading: isUpdating } = useUpdateReferralCode();
+  const { mutateAsync: createReferral, isLoading: isCreating } = useCreateReferral();
+
+  // Toast
   const [toast, setToast] = React.useState({
     show: false,
     type: "success",
@@ -92,6 +175,9 @@ const CreateUpdateReferralCode = () => {
   const showToast = (type, message, autoHideDuration = 3000) =>
     setToast({ show: true, type, message, autoHideDuration });
   const handleToastClose = () => setToast((t) => ({ ...t, show: false }));
+
+  const headerTitle = editing ? "Edit Referral Code" : "Create Referral Code";
+  const primaryButtonText = editing ? "Update" : "Create";
 
   const handleCancel = () => navigate(-1);
 
@@ -103,30 +189,13 @@ const CreateUpdateReferralCode = () => {
         validTo: toIsoOrNull(values.validTo),
       };
       const payload = uiToApi(normalized, codeId);
-      if (USE_MOCK) {
-        await sleep(400);
-        showToast(
-          "success",
-          editing ? "Referral updated successfully." : "Referral created successfully."
-        );
-        navigate(`/${projectGroupId}/referralCodes`);
-        return;
-      }
-
       if (editing) {
-        // API update
-        await updateReferral({
-          projectGroupId,
-          code_id: codeId,
-          data: payload,
-        });
+        await updateReferral({ projectGroupId, code_id: codeId, data: payload });
         showToast("success", "Referral updated successfully.");
       } else {
-        // API create
         await createReferral({ projectGroupId, data: payload });
         showToast("success", "Referral created successfully.");
       }
-
       navigate(`/${projectGroupId}/referralCodes`);
     } catch (err) {
       const msg =
@@ -139,17 +208,31 @@ const CreateUpdateReferralCode = () => {
     }
   };
 
+  // Loading / error for prefill
+  if (initLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: 240 }}>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading…</span>
+        </Spinner>
+      </div>
+    );
+  }
+  if (editing && initError) {
+    return <div className="alert alert-danger">Prefill error: {initError}</div>;
+  }
+
   return (
     <>
       <Formik
         enableReinitialize
         initialValues={{
-          name: initial?.name || "",
-          type: initial?.type || "campaign",
-          validFrom: toIsoOrNull(initial?.validFrom) || "",
-          validTo: toIsoOrNull(initial?.validTo) || "",
-          instructionsUrl: initial?.instructionsUrl || "",
-          shortCode: initial?.shortCode || "",
+          name: formInit.name,
+          type: formInit.type,
+          validFrom: formInit.validFrom,
+          validTo: formInit.validTo,
+          instructionsUrl: formInit.instructionsUrl,
+          shortCode: formInit.shortCode,
         }}
         validationSchema={referralValidationSchema}
         onSubmit={handleSubmit}
@@ -181,11 +264,7 @@ const CreateUpdateReferralCode = () => {
                     >
                       Cancel
                     </Button>
-                    <Button
-                      type="submit"
-                      className="tdei-primary-button"
-                      disabled={submitting}
-                    >
+                    <Button type="submit" className="tdei-primary-button" disabled={submitting}>
                       {submitting ? (
                         <>
                           <Spinner size="sm" className="me-2" /> Saving…
@@ -246,21 +325,13 @@ const CreateUpdateReferralCode = () => {
                                     form={form}
                                     label="Valid From"
                                     dateValue={values.validFrom}
-                                    maxDate={
-                                      values.validTo
-                                        ? dayjs(values.validTo)
-                                        : undefined
-                                    }
-                                    onChange={(iso) =>
-                                      form.setFieldValue("validFrom", iso)
-                                    }
+                                    maxDate={values.validTo ? dayjs(values.validTo) : undefined}
+                                    onChange={(iso) => form.setFieldValue("validFrom", iso)}
                                   />
                                 )}
                               </Field>
                               {touched.validFrom && errors.validFrom ? (
-                                <div className="text-danger small mt-1">
-                                  {errors.validFrom}
-                                </div>
+                                <div className="text-danger small mt-1">{errors.validFrom}</div>
                               ) : null}
                             </div>
 
@@ -273,21 +344,13 @@ const CreateUpdateReferralCode = () => {
                                     form={form}
                                     label="Valid To"
                                     dateValue={values.validTo}
-                                    minDate={
-                                      values.validFrom
-                                        ? dayjs(values.validFrom)
-                                        : undefined
-                                    }
-                                    onChange={(iso) =>
-                                      form.setFieldValue("validTo", iso)
-                                    }
+                                    minDate={values.validFrom ? dayjs(values.validFrom) : undefined}
+                                    onChange={(iso) => form.setFieldValue("validTo", iso)}
                                   />
                                 )}
                               </Field>
                               {touched.validTo && errors.validTo ? (
-                                <div className="text-danger small mt-1">
-                                  {errors.validTo}
-                                </div>
+                                <div className="text-danger small mt-1">{errors.validTo}</div>
                               ) : null}
                             </div>
                           </div>
@@ -301,10 +364,7 @@ const CreateUpdateReferralCode = () => {
                               value={values.instructionsUrl || ""}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              isInvalid={
-                                touched.instructionsUrl &&
-                                !!errors.instructionsUrl
-                              }
+                              isInvalid={touched.instructionsUrl && !!errors.instructionsUrl}
                             />
                             <Form.Control.Feedback type="invalid">
                               {errors.instructionsUrl}
@@ -314,8 +374,7 @@ const CreateUpdateReferralCode = () => {
                           <div className="mt-3">
                             <ShortCodePreview
                               isEdit={editing}
-                              // was `selectedCode?.shortCode` (string), fixed:
-                              initialShortCode={selectedCode || initial.shortCode || ""}
+                              initialShortCode={formInit.shortCode || ""}
                               values={values}
                               setFieldValue={setFieldValue}
                             />
@@ -332,9 +391,7 @@ const CreateUpdateReferralCode = () => {
                         <div className="card-body">
                           {values.instructionsUrl ? (
                             <>
-                              <div className="text-muted small mb-2">
-                                Preview of instructions URL:
-                              </div>
+                              <div className="text-muted small mb-2">Preview of instructions URL:</div>
                               <div className="border rounded p-2 bg-light">
                                 <iframe
                                   title="URL Preview"
@@ -346,17 +403,13 @@ const CreateUpdateReferralCode = () => {
                                 type="button"
                                 variant="outline-secondary"
                                 className="w-100 mt-2"
-                                onClick={() =>
-                                  window.open(values.instructionsUrl, "_blank")
-                                }
+                                onClick={() => window.open(values.instructionsUrl, "_blank")}
                               >
                                 Open in New Tab
                               </Button>
                             </>
                           ) : (
-                            <div className="text-muted">
-                              Add an Instructions URL to preview.
-                            </div>
+                            <div className="text-muted">Add an Instructions URL to preview.</div>
                           )}
                         </div>
                       </div>

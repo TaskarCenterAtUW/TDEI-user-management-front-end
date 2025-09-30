@@ -15,6 +15,7 @@ import { getReferralCodes as fetchReferralCodesApi } from "../../services";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import { useDeleteReferralCode } from "../../hooks/referrals/useDeleteReferralCode";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
+import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
 
 const USE_MOCK = true;
 
@@ -82,7 +83,8 @@ const Referral = () => {
   const [showFilters, setShowFilters] = useState(false);
   const { id: projectGroupId } = useParams();
   const navigate = useNavigate();
-  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+const { projectGroup, loading: pgLoading, error: pgError, notFound } =
+useGetProjectGroupById(projectGroupId);
 
   // filters
   const [filters, setFilters] = useState({
@@ -184,9 +186,9 @@ const Referral = () => {
   const handleNewCode = () => navigate(`/${projectGroupId}/referralCodes/new`);
 
   const handleEdit = (code) =>
-    navigate(`/${projectGroupId}/referralCodes/${code.id}/edit`, {
-      state: { referral: code },
-    });
+    navigate(`/${projectGroupId}/referralCodes/${code.id}/edit?name=${encodeURIComponent(code.name)}`, {
+   state: { referral: code },
+ });
 
   const handleDeleteRequest = (id) => {
     setDeleteId(id);
@@ -236,7 +238,7 @@ const Referral = () => {
           <div className="page-header-subtitle">
             Manage and track your referral and invite codes of project group -{" "}
             <span className="fw-bold">
-              {selectedProjectGroup?.name ?? "—"}
+             {pgLoading ? "…" : (projectGroup?.project_group_name || "—")}
             </span>.
           </div>
         </div>
