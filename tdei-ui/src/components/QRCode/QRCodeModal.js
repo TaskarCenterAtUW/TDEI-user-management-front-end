@@ -61,14 +61,13 @@ export default function QRCodeModal({
         scrollable
         fullscreen="sm-down"
         aria-labelledby="qr-modal-title"
-        dialogClassName={style.dialogSized}     // ensure good max-height
-        contentClassName={style.contentFlex}    // make content flex column
+        dialogClassName={style.dialogSized}    
+        contentClassName={style.contentFlex}    
       >
         <Modal.Header closeButton>
           <Modal.Title id="qr-modal-title">QR Code for {codeName}</Modal.Title>
         </Modal.Header>
 
-        {/* This body itself scrolls (React-Bootstrap + our CSS) */}
         <Modal.Body className={style.modalBody}>
            <div className={`${style.grid} ${!instructionsUrl ? style.single : ""}`}>
             {/* Left: QR + link + actions */}
@@ -107,7 +106,7 @@ export default function QRCodeModal({
               </div>
             </div>
 
-            {/* Right: instructions preview (iframe scrolls itself) */}
+            {/* Right: instructions preview */}
             {instructionsUrl && (
               <div className={style.previewCol}>
                 <div>

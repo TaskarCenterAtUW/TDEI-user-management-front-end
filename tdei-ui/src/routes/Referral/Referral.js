@@ -211,8 +211,6 @@ const Referral = () => {
           </RBButton>
         </div>
       </div>
-
-      {/* Filters are OUTSIDE the loading/table branch, so they never unmount */}
       <Container>
         {showFilters && (
           <div className={style.searchPanel}>

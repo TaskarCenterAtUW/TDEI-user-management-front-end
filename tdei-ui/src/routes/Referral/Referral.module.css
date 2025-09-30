@@ -788,27 +788,19 @@
     white-space: normal !important;
     width: 100%;
   }
-
-  /* Make container + dropdown + toggle take full width */
   .actionsCol .dropdownContainer,
   .actionsCol .dropdown {
     width: 100% !important;
   }
-
-  /* Important for full-width menu: avoid Popper constraining the menu */
   .actionsCol .dropdown {
     position: static !important;
   }
-
-  /* The "Manage Code" button (toggle) full-width */
   .actionsCol .actionsButtonMobile,
   .actionsCol .dropdown > .dropdown-toggle {
     width: 100% !important;
     display: block !important;
     text-align: center;
   }
-
-  /* Make the menu match the button width 1:1 */
   .actionsCol .dropdown-menu {
     width: 100% !important;
     min-width: 100% !important;
