@@ -25,13 +25,13 @@ const AuthProvider = ({ children }) => {
       const base64Url = accessToken.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const decodedToken = JSON.parse(window.atob(base64));
-          // Check if the token is expired
-          if (decodedToken.exp * 1000 < Date.now()) { 
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            dispatch(clear());
-            return null; 
-        }
+      // Check if the token is expired
+      if (decodedToken.exp * 1000 < Date.now()) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        dispatch(clear());
+        return null;
+      }
       return decodedToken;
     } catch (error) {
       console.error("Failed to decode token:", error);
@@ -55,30 +55,39 @@ const AuthProvider = ({ children }) => {
 
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    const hadSession = localStorage.getItem("refreshToken");
-    if (!accessToken && hadSession) {
-      setToastMessage({
-        showtoast: true,
-        message: "Session expired. You have been logged out.",
-        type: "warning",
-      });
-      setTimeout(() => {
-        signout();
-      }, 2000);
-    }
-    else {
-      let tokenDetails = decodeToken(accessToken);
-      if (tokenDetails) {
-        setUserContext(tokenDetails);
-      } else {
-        signout();
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    // No tokens -> anonymous; do nothing (let public routes like /register work)
+    if (!accessToken) {
+      if (refreshToken) {
+        // Had a session but lost access token -> show toast and sign out
+        setToastMessage({
+          showtoast: true,
+          message: "Session expired. You have been logged out.",
+          type: "warning",
+        });
+        setTimeout(() => {
+          signout();
+        }, 2000);
       }
+      // If neither token exists: just return. No redirect.
+      return;
     }
-    // Register the token expired event handler
-    setTokenExpiredCallback(() => {
-      setIsReLoginOpen(true);
-      // localStorage.setItem("relogin", true);
-    });
+
+    // Has access token -> decode & set context
+    const tokenDetails = decodeToken(accessToken);
+    if (tokenDetails) {
+      setUserContext(tokenDetails);
+    } else {
+      // Invalid/expired token -> clear tokens, treat as anonymous (no redirect here)
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      dispatch(clear());
+      setUser(null);
+    }
+
+    // Re-login callback for refresh failures
+    setTokenExpiredCallback(() => setIsReLoginOpen(true));
   }, []);
 
   React.useEffect(() => {
@@ -89,7 +98,7 @@ const AuthProvider = ({ children }) => {
     const accessToken = localStorage.getItem("accessToken");
     // const relogin = localStorage.getItem("relogin");
     // Anonymous paths
-    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify"];
+    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify", "/invite-instructions"];
     if (!accessToken && location && !excludePaths.includes(location.pathname) && location.pathname !== '/') {
       setToastMessage({
         showtoast: true,
@@ -138,19 +147,10 @@ const AuthProvider = ({ children }) => {
   }, []);
 
 
-  const signin = async (
-    { username, password },
-    successCallback,
-    errorCallback
-  ) => {
+  const signin = async ({ username, password }, successCallback, errorCallback) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL}/authenticate`,
-        {
-          username,
-          password,
-        }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_URL}/authenticate`, { username, password });
+
       const accessToken = response.data.access_token;
       const refreshToken = response.data.refresh_token;
       localStorage.setItem("accessToken", accessToken);
@@ -159,19 +159,23 @@ const AuthProvider = ({ children }) => {
       // Force every other tab to refresh.
       localStorage.setItem("forceRefresh", Date.now().toString());
 
-      let tokenDetails = decodeToken(accessToken);
+      const tokenDetails = decodeToken(accessToken);
       if (tokenDetails) {
         setUserContext(tokenDetails);
-        successCallback(response);
-        navigate(origin);
+        successCallback?.(response);
+
+        // Prefer the originally requested protected route
+        const from = location.state?.from?.pathname || "/";
+        navigate(from, { replace: true });
       } else {
         signout();
       }
     } catch (err) {
       console.log(err);
-      errorCallback(err);
+      errorCallback?.(err);
     }
   };
+
 
   const handleReLogin = async (password) => {
     const email = user?.emailId;
