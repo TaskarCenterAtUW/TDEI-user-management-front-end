@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 export const getUserName = (user, isCurrentUser) => {
   if (!user.first_name && !user.last_name) {
@@ -86,3 +87,73 @@ export const buildApiParams = (p) => ({
   from_date: p.from_date ? toApiMDY(p.from_date) : null,
   to_date: p.to_date ? toApiMDY(p.to_date) : null,
 });
+
+dayjs.extend(utc);
+
+/**
+ * Generate a short, uppercase, alphanumeric code.
+ * Works with: name only, name + one date, or name + both dates.
+ *
+ * Examples:
+ *  genShortCode("Summer Campaign", null, null)          -> SUMM6QK
+ *  genShortCode("Summer Campaign", "2025-06-01", null)  -> SUMM25F9P
+ *  genShortCode("Summer Campaign", "2025-06-01", "2025-08-31") -> SUMM25286Z2
+ */
+export function genShortCode(name, validFrom, validTo, opts = {}) {
+  const pattern = opts.tokenPattern || "YY"; 
+
+  // Base from name (first 4 alphanumerics uppercased). Fallback to "REF".
+  const base = normalizeName(name) || "REF";
+
+  // Optional date tokens (alphanumeric only)
+  const fromTok = tokenFromDate(validFrom, pattern);
+  const toTok   = tokenFromDate(validTo, pattern);
+
+  // Stable 3-char hash from whatever inputs are present
+  const fp = `${base}|${ymd(validFrom)}|${ymd(validTo)}`;
+  const suffix = hash3(fp);
+
+  // Compose:
+  // - no dates:          BASE + hash   => SUMM6QK
+  // - 1 date:            BASE + F + hash   => SUMM25F9P
+  // - 2 dates:           BASE + F + T + hash => SUMM25286Z2
+  const middle =
+    fromTok && toTok ? `${fromTok}${toTok}` :
+    fromTok || toTok  ? `${fromTok || toTok}` :
+    "";
+
+  return `${base}${middle}${suffix}`;
+}
+
+// -------- helpers --------
+
+function normalizeName(name) {
+  if (!name) return "";
+  // keep letters/numbers only, take first 4, uppercase
+  const cleaned = String(name).replace(/[^a-zA-Z0-9]/g, "");
+  return cleaned.substring(0, 4).toUpperCase();
+}
+
+function tokenFromDate(d, pattern) {
+  if (!d) return "";
+  const m = dayjs(d);
+  return m.isValid() ? m.utc().format(pattern).replace(/[^A-Za-z0-9]/g, "") : "";
+}
+
+function ymd(d) {
+  if (!d) return "";
+  const m = dayjs(d);
+  return m.isValid() ? m.utc().format("YYYY-MM-DD") : "";
+}
+
+// Stable 3-char hash from a string (0–9 A–Z)
+function hash3(str) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  // map to 3 base36 chars
+  const n = (h >>> 0).toString(36).toUpperCase();
+  return (n.length >= 3 ? n.slice(-3) : n.padStart(3, "0"));
+}

@@ -18,6 +18,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { set } from "../../store";
 import { FaCog } from "react-icons/fa";
 import ProjectGroupSettings from "../ProjectGroupSettings/ProjectGroupSettings";
+import QrCode2Icon from "@mui/icons-material/QrCode2";
+import Tooltip from "@mui/material/Tooltip";
+import { useMediaQuery } from "react-responsive";
 
 const ProjectGroupSwitch = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -48,7 +51,7 @@ const ProjectGroupSwitch = () => {
       navigate("/");
     }
   };
-  // Sync Redux state when localStorage changes (cross-tab update)
+
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "selectedProjectGroup") {
@@ -157,6 +160,7 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
   const selectedIcon = isCurrent ? <CheckCircleIcon /> : <SwitchIcon />;
   const [isProjectGroupSettingsDailogOpen, setProjectGroupSettingDailog] =
     React.useState(false);
+  const navigate = useNavigate();
 
   const openDailog = () => {
     setProjectGroupSettingDailog(true);
@@ -172,6 +176,8 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
       project.roles.includes("osw_data_generator")
     );
   };
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const canManageReferrals = project.roles.includes("poc");
 
   return (
     <div className={style.projectGroupsContainer}>
@@ -201,6 +207,20 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
               />
             </div>
           ) : null}
+          {canManageReferrals && (
+              <Tooltip title="Manage Referral Codes" arrow>
+                <div className={style.buttons}>
+                  <Button
+                    className={style.switchButton}
+                    onClick={() => navigate(`/${id}/referralCodes`)}
+                    variant="link"
+                  >
+                    <QrCode2Icon />
+
+                  </Button>
+                </div>
+              </Tooltip>
+          )}
 
           {isCurrent ? (
             <div className={style.currentProject}>
