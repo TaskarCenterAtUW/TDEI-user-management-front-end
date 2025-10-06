@@ -3,13 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, Container, Row, Col, Spinner } from "react-bootstrap";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import style from "./Referral.module.css";
+import axios from "axios";
 
-const isMobileLike = () => {
-    const ua = navigator.userAgent || "";
-    const isTouchMac = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
-    return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(ua) || isTouchMac;
+const clearInvite = () => {
+    try { sessionStorage.removeItem("inviteRegPayload"); } catch { }
 };
-
 function openDeepLink(url, onBlocked) {
     const a = document.createElement("a");
     a.href = url;
@@ -65,42 +63,84 @@ export default function InviteInstructions() {
     const [toast, setToast] = useState({ show: false, msg: "", type: "success" });
 
     useEffect(() => {
-        if (!instructionsUrl || !oneTimeToken) {
-            // Missing data -> go back to register
-            navigate("/register", { replace: true });
+        if (!oneTimeToken) {
+            sessionStorage.removeItem("inviteRegPayload");
+            // Missing data -> go to login
+            navigate("/login", { replace: true });
         }
     }, [instructionsUrl, oneTimeToken, navigate]);
 
-    const handleContinue = () => {
+    const isMobileUA = () =>
+        /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
+
+    // const handleContinue = () => {
+    //     if (!oneTimeToken) return;
+
+    //     const env =
+    //         process.env.REACT_APP_DEEPLINK_ENV ||
+    //         process.env.REACT_APP_ENV ||
+    //         "dev";
+
+    //     const deepLink = `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
+
+    //     if (isMobileLike()) {
+    //         setBusy(true);
+    //         openDeepLink(deepLink, {
+    //             onOpened: () => { clearInvite(); /* app opened */ },
+    //             onBlocked: () => {
+    //                 setBusy(false);
+    //                 // Keep inviteRegPayload for retry
+    //                 setToast({ show: true, type: "warning", msg: "If the app didn’t open, open it manually and try again." });
+    //             }
+    //         });
+    //         return;
+    //     }
+    //     clearInvite();
+    //     // Desktop -> Workspaces FE
+    //     const workspacesUrl =
+    //         process.env.REACT_APP_TDEI_WORKSPACE_URL ||
+    //         `${window.location.origin}/workspaces`;
+    //     window.location.href = workspacesUrl;
+    // };
+
+    const handleContinue = async () => {
         if (!oneTimeToken) return;
+        setBusy(true);
+        try {
+            // API expects the one-time token in the header, empty body
+            const resp = await axios.post(
+                `${process.env.REACT_APP_URL}/refresh-token`,
+                "",
+                { headers: { accept: "application/json", refresh_token: oneTimeToken } }
+            );
 
-        const env =
-            process.env.REACT_APP_DEEPLINK_ENV ||
-            process.env.REACT_APP_ENV ||
-            "dev";
+            const access = resp?.data?.access_token;
+            const refresh = resp?.data?.refresh_token;
+            if (!access || !refresh) throw new Error("Invalid refresh response");
 
-        const deepLink = `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
+            // persist for desktop session continuity
+            localStorage.setItem("accessToken", access);
+            localStorage.setItem("refreshToken", refresh);
+            sessionStorage.removeItem("inviteRegPayload");
 
-        if (isMobileLike()) {
-            setBusy(true);
-            openDeepLink(deepLink, () => {
-                setToast({
-                    show: true,
-                    msg: "If the app didn’t open, install/open the app and try again.",
-                    type: "warning",
-                });
-                setBusy(false);
+            if (isMobileUA()) {
+                // mobile deep link with *refresh* token
+                window.location.href = `avivscr://?code=${encodeURIComponent(refresh)}`;
+            } else {
+                // desktop redirect to Workspaces FE
+                const workspacesUrl =
+                    process.env.REACT_APP_TDEI_WORKSPACE_URL;
+                window.location.href = workspacesUrl;
+            }
+        } catch (err) {
+            setBusy(false);
+            setToast({
+                show: true,
+                type: "error",
+                msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
             });
-            return;
         }
-
-        // Desktop -> Workspaces FE
-        const workspacesUrl =
-            process.env.REACT_APP_TDEI_WORKSPACE_URL ||
-            `${window.location.origin}/workspaces`;
-        window.location.href = workspacesUrl;
     };
-
     return (
         <div className={style.inviteContainer}>
             <Container className="py-4">
@@ -108,29 +148,25 @@ export default function InviteInstructions() {
                     <Col lg={10} xl={9}>
                         <Card>
                             <Card.Header>
-                                <h5 className="mb-0">Complete Your Setup</h5>
+                                <h5 className="mb-0">Registration Complete</h5>
                             </Card.Header>
                             <Card.Body>
                                 <p className="text-muted mb-3">
-                                    Please review the instructions below and then click <strong>Continue</strong>.
+                                    {instructionsUrl
+                                        ? <>Please review the instructions below and then click <strong>Continue</strong>.</>
+                                        : <>No additional instructions were provided. Click <strong>Continue</strong> to proceed.</>}
                                 </p>
-
-                                <div className="mb-3">
-                                    <small className="text-muted">Instructions URL</small>
-                                    <div className="text-break">{instructionsUrl}</div>
-                                </div>
-
-                                <div
-                                    style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}
-                                    className="mb-3"
-                                >
-                                    <iframe
-                                        src={instructionsUrl}
-                                        title="Instructions"
-                                        style={{ width: "100%", height: "50vh", border: 0 }}
-                                    />
-                                </div>
-
+                                {instructionsUrl && (
+                                    <>
+                                        <div className="mb-2">
+                                            <small className="text-muted">Instructions URL</small>
+                                            <div className="text-break">{instructionsUrl}</div>
+                                        </div>
+                                        <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }} className="mb-3">
+                                            <iframe src={instructionsUrl} title="Instructions" style={{ width: "100%", height: "60vh", border: 0 }} />
+                                        </div>
+                                    </>
+                                )}
                                 <div className="d-flex gap-2">
                                     <Button
                                         className="tdei-primary-button"
@@ -146,13 +182,13 @@ export default function InviteInstructions() {
                                             "Continue"
                                         )}
                                     </Button>
-                                    <Button
+                                    {instructionsUrl && ( <Button
                                         variant="outline-secondary"
                                         className="tdei-secondary-button"
                                         onClick={() => window.open(instructionsUrl, "_blank")}
                                     >
                                         Open in New Tab
-                                    </Button>
+                                    </Button>)}
                                 </div>
                             </Card.Body>
                         </Card>

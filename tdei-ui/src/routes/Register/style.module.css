@@ -2,22 +2,68 @@
   max-width: 450px;
   margin-top: 50px;
 }
+
 .registerContainer {
   background-image: url(./../../../public/assets/img/bg_login.png);
   background-repeat: no-repeat;
   background-size: cover;
   min-height: calc(100vh - 60px);
 }
+
 .loginLogo {
   width: 100px;
   margin: 25px 0px;
 }
+
 @media only screen and (max-width: 600px) {
   .registerCard {
     margin-top: 0px;
     max-width: 100%;
+
     :global .card {
-        border: none;
+      border: none;
     }
+  }
+}
+
+.inviteNote {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--purple-background-light);
+  border: 1px solid var(--primary-color);
+  border-radius: 10px;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.inviteIcon {
+  flex: 0 0 auto;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.inviteText {
+  white-space: normal;
+}
+
+.inviteCode {
+  flex: 1 1 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: #ffffff;
+  color: var(--primary-color);
+  border: 1px dashed var(--primary-color);
+  padding: 2px 8px;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+@media (min-width: 480px) {
+  .inviteCode {
+    flex: 0 0 auto;
   }
 }

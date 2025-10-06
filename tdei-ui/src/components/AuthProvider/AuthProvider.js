@@ -53,42 +53,95 @@ const AuthProvider = ({ children }) => {
   };
 
 
+  // Init on mount: set user context or handle expired tokens; register relogin callback
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
-    // No tokens -> anonymous; do nothing (let public routes like /register work)
+    const p = (location?.pathname || "/").toLowerCase();
+    const anon = new Set([
+      "/login",
+      "/register",
+      "/forgotpassword",
+      "/passwordreset",
+      "/emailverify",
+      "/invite-instructions",
+      "/", // optional
+    ]);
+
+    // No access token
     if (!accessToken) {
-      if (refreshToken) {
-        // Had a session but lost access token -> show toast and sign out
+      // If we had a session and we're on a protected page -> real expiry
+      if (refreshToken && !anon.has(p)) {
         setToastMessage({
           showtoast: true,
           message: "Session expired. You have been logged out.",
           type: "warning",
         });
         setTimeout(() => {
-          signout();
+          signout(); // your signout navigates to /login
         }, 2000);
       }
-      // If neither token exists: just return. No redirect.
-      return;
-    }
-
-    // Has access token -> decode & set context
-    const tokenDetails = decodeToken(accessToken);
-    if (tokenDetails) {
-      setUserContext(tokenDetails);
+      // If no tokens at all (first visit / anonymous), just allow public routes like /register
     } else {
-      // Invalid/expired token -> clear tokens, treat as anonymous (no redirect here)
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      dispatch(clear());
-      setUser(null);
+      // We have an access token -> try to decode and set user
+      const details = decodeToken(accessToken);
+      if (details) {
+        setUserContext(details);
+      } else {
+        // Expired/invalid token -> clear and treat as anonymous.
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        dispatch(clear());
+        setUser(null);
+      }
     }
 
-    // Re-login callback for refresh failures
-    setTokenExpiredCallback(() => setIsReLoginOpen(true));
+    // Relogin: when token-expired event fires (e.g., 401 during API), open modal.
+    setTokenExpiredCallback(() => {
+      setIsReLoginOpen(true);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Guard on navigation: only act on protected routes; suppress during relogin modal
+  React.useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    const p = (location?.pathname || "/").toLowerCase();
+    const anon = new Set([
+      "/login",
+      "/register",
+      "/forgotpassword",
+      "/passwordreset",
+      "/emailverify",
+      "/invite-instructions",
+      "/", // optional
+    ]);
+
+    const onProtected = !anon.has(p);
+
+    if (!accessToken && onProtected) {
+      // If relogin modal is open, do NOTHING
+      if (isReLoginOpen) return;
+
+      if (refreshToken) {
+        // Real expiry on a protected page -> show toast, send to login
+        setToastMessage({
+          showtoast: true,
+          message: "Session expired. You have been logged out.",
+          type: "warning",
+        });
+        navigate("/login", { replace: true, state: { from: location } });
+      } else {
+        // Manual logout removed refresh token → no toast, just ensure we're on /login
+        navigate("/login", { replace: true });
+      }
+    }
+  }, [location, isReLoginOpen, navigate]);
+
+
 
   React.useEffect(() => {
     //----------------------------

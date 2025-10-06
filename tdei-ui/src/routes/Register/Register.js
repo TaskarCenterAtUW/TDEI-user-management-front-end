@@ -89,13 +89,16 @@ const Register = () => {
       const res = await axios.post(`${process.env.REACT_APP_URL}/register`, payload);
       const data = res?.data?.data;
 
+      const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
+      const oneTimeToken    = data?.token || "";
+
       setToastMessage("Registration successful!");
       setToastType("success");
       setShowToast(true);
       setLoading(false);
 
       // Branch based on presence of instructions_url
-      if (data?.instructions_url && data?.token) {
+    if (instructionsUrl || oneTimeToken) {
         // persist in sessionStorage as a fallback in case user refreshes page
         sessionStorage.setItem(
           "inviteRegPayload",
@@ -309,6 +312,26 @@ const Register = () => {
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
+                      {inviteCode && (
+                        <div className={style.inviteNote} role="note" aria-live="polite">
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            className={style.inviteIcon}
+                          >
+                            <path
+                              d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm0 14.25a.75.75 0 1 1 0 1.5h-1.5a.75.75 0 1 1 0-1.5H12zm0-9a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 7.25zm0 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0V11a.75.75 0 0 1 .75-.75z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span className={style.inviteText}>
+                            Registering with referral code
+                          </span>
+                          <code className={style.inviteCode}>{inviteCode}</code>
+                        </div>
+                      )}
                       <div className="mt-5">
                         Already have an account?{" "}
                         <Link className="tdei-primary-link" to={"/login"}>
