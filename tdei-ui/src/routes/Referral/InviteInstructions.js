@@ -16,7 +16,7 @@ function openDeepLink(url, onBlocked) {
     document.body.appendChild(a);
     a.click();
 
-    // try via iframe (works in some other browsers)
+    // try via iframe
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.src = url;
@@ -44,6 +44,8 @@ function openDeepLink(url, onBlocked) {
 export default function InviteInstructions() {
     const location = useLocation();
     const navigate = useNavigate();
+    const env = (process.env.REACT_APP_ENV || "dev").trim();
+    
 
     // Fallback data saved by Register.js (sessionStorage.setItem('inviteRegPayload', ...))
     const fallback = useMemo(() => {
@@ -73,36 +75,7 @@ export default function InviteInstructions() {
     const isMobileUA = () =>
         /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
 
-    // const handleContinue = () => {
-    //     if (!oneTimeToken) return;
-
-    //     const env =
-    //         process.env.REACT_APP_DEEPLINK_ENV ||
-    //         process.env.REACT_APP_ENV ||
-    //         "dev";
-
-    //     const deepLink = `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
-
-    //     if (isMobileLike()) {
-    //         setBusy(true);
-    //         openDeepLink(deepLink, {
-    //             onOpened: () => { clearInvite(); /* app opened */ },
-    //             onBlocked: () => {
-    //                 setBusy(false);
-    //                 // Keep inviteRegPayload for retry
-    //                 setToast({ show: true, type: "warning", msg: "If the app didn’t open, open it manually and try again." });
-    //             }
-    //         });
-    //         return;
-    //     }
-    //     clearInvite();
-    //     // Desktop -> Workspaces FE
-    //     const workspacesUrl =
-    //         process.env.REACT_APP_TDEI_WORKSPACE_URL ||
-    //         `${window.location.origin}/workspaces`;
-    //     window.location.href = workspacesUrl;
-    // };
-
+    // Continue button handler: call refresh-token API, handle deep link (mobile) or redirect (desktop)
     const handleContinue = async () => {
         if (!oneTimeToken) return;
         setBusy(true);
@@ -124,8 +97,10 @@ export default function InviteInstructions() {
             sessionStorage.removeItem("inviteRegPayload");
 
             if (isMobileUA()) {
-                // mobile deep link with *refresh* token
-                window.location.href = `avivscr://?code=${encodeURIComponent(refresh)}`;
+                // mobile deep link with refresh token
+                const deeplink =
+                    `avivscr://?code=${encodeURIComponent(refresh)}&env=${encodeURIComponent(env)}`;
+                window.location.href = deeplink;
             } else {
                 // desktop redirect to Workspaces FE
                 const workspacesUrl =
