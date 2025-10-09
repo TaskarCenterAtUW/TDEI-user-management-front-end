@@ -66,7 +66,7 @@ const AuthProvider = ({ children }) => {
       "/passwordreset",
       "/emailverify",
       "/invite-instructions",
-      "/", // optional
+      "/app-link/",
     ]);
 
     // No access token
@@ -117,7 +117,7 @@ const AuthProvider = ({ children }) => {
       "/passwordreset",
       "/emailverify",
       "/invite-instructions",
-      "/", // optional
+       "/app-link/",
     ]);
 
     const onProtected = !anon.has(p);
@@ -151,7 +151,7 @@ const AuthProvider = ({ children }) => {
     const accessToken = localStorage.getItem("accessToken");
     // const relogin = localStorage.getItem("relogin");
     // Anonymous paths
-    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify", "/invite-instructions"];
+    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify", "/invite-instructions","/app-link/"];
     if (!accessToken && location && !excludePaths.includes(location.pathname) && location.pathname !== '/') {
       setToastMessage({
         showtoast: true,

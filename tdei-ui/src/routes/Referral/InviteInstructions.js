@@ -16,7 +16,6 @@ export default function InviteInstructions() {
     const location = useLocation();
     const navigate = useNavigate();
     const env = (process.env.REACT_APP_ENV || "dev").trim();
-
     const [busy, setBusy] = useState(false);
     const [toast, setToast] = useState({ show: false, msg: "", type: "success" });
     const [showInstallModal, setShowInstallModal] = useState(false);
@@ -37,7 +36,6 @@ export default function InviteInstructions() {
 
     useEffect(() => {
         if (!oneTimeToken) {
-            sessionStorage.removeItem("inviteRegPayload");
             navigate("/login", { replace: true });
         }
     }, [oneTimeToken, navigate]);
@@ -46,26 +44,31 @@ export default function InviteInstructions() {
         if (!oneTimeToken) return;
         setBusy(true);
         try {
-            const resp = await axios.post(
-                `${process.env.REACT_APP_URL}/refresh-token`,
-                "",
-                { headers: { accept: "application/json", refresh_token: oneTimeToken } }
-            );
-            const access = resp?.data?.access_token;
-            const refresh = resp?.data?.refresh_token;
-            if (!access || !refresh) throw new Error("Invalid refresh response");
-            localStorage.setItem("accessToken", access);
-            localStorage.setItem("refreshToken", refresh);
-            sessionStorage.removeItem("inviteRegPayload");
-
             if (isMobileUA()) {
-                const deeplink = `avivscr://?code=${encodeURIComponent(refresh)}&env=${encodeURIComponent(env)}`;
-                setDeepLinkUrl(deeplink);
-                setShowInstallModal(true);
+                // For mobile users, we do NOT log them in.
+                // We pass the oneTimeToken directly to the app.
+                const universalLink = `${window.location.origin}/app-link/?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
+                sessionStorage.removeItem("inviteRegPayload");
+                // Set the handoff state and then redirect.
+                setHandoffComplete(true);
+                window.location.replace(universalLink);
+
             } else {
-                // desktop redirect to Workspaces FE
-                const workspacesUrl =
-                    process.env.REACT_APP_TDEI_WORKSPACE_URL;
+                // For desktop users, we log them in
+                const resp = await axios.post(
+                    `${process.env.REACT_APP_URL}/refresh-token`,
+                    "",
+                    { headers: { accept: "application/json", refresh_token: oneTimeToken } }
+                );
+                const access = resp?.data?.access_token;
+                const refresh = resp?.data?.refresh_token;
+                if (!access || !refresh) throw new Error("Invalid refresh response");
+
+                localStorage.setItem("accessToken", access);
+                localStorage.setItem("refreshToken", refresh);
+                sessionStorage.removeItem("inviteRegPayload");
+
+                const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/workspaces`;
                 window.location.href = workspacesUrl;
             }
         } catch (err) {

@@ -29,6 +29,7 @@ import Referral from "./Referral/Referral";
 import CreateUpdateReferralCode from "./Referral/CreateUpdateReferralCode";
 import RequireGuest from "../components/RequireGuest/RequireGuest";
 import InviteInstructions from "./Referral/InviteInstructions";
+import AppLinkFallback from "../AppLinkFallback";
 
 const Router = () => {
   const { user } = useAuth();
@@ -43,6 +44,7 @@ const Router = () => {
           <Route path="/passwordReset" element={<PasswordResetConfirm />} />
           <Route path="/emailVerify" element={<EmailVerification />} />
           <Route path="/invite-instructions" element={<InviteInstructions />} />
+          <Route path="/app-link/*" element={<AppLinkFallback />} />
         </Route>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
