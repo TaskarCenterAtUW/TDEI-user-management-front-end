@@ -27,6 +27,9 @@ import Feedback from "./Feedback";
 import Reports from "./Reports/Reports";
 import Referral from "./Referral/Referral";
 import CreateUpdateReferralCode from "./Referral/CreateUpdateReferralCode";
+import RequireGuest from "../components/RequireGuest/RequireGuest";
+import InviteInstructions from "./Referral/InviteInstructions";
+import AppLinkFallback from "../AppLinkFallback";
 
 const Router = () => {
   const { user } = useAuth();
@@ -34,11 +37,15 @@ const Router = () => {
   return (
     <Routes>
       <>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/ForgotPassword" element={<ForgotPassword />} />
-        <Route path="/passwordReset" element={<PasswordResetConfirm />} />
-        <Route path="/emailVerify" element={<EmailVerification />} />
+        <Route element={<RequireGuest />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/ForgotPassword" element={<ForgotPassword />} />
+          <Route path="/passwordReset" element={<PasswordResetConfirm />} />
+          <Route path="/emailVerify" element={<EmailVerification />} />
+          <Route path="/invite-instructions" element={<InviteInstructions />} />
+          <Route path="/app-link/*" element={<AppLinkFallback />} />
+        </Route>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />

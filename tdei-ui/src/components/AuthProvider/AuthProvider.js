@@ -25,13 +25,13 @@ const AuthProvider = ({ children }) => {
       const base64Url = accessToken.split(".")[1];
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const decodedToken = JSON.parse(window.atob(base64));
-          // Check if the token is expired
-          if (decodedToken.exp * 1000 < Date.now()) { 
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            dispatch(clear());
-            return null; 
-        }
+      // Check if the token is expired
+      if (decodedToken.exp * 1000 < Date.now()) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        dispatch(clear());
+        return null;
+      }
       return decodedToken;
     } catch (error) {
       console.error("Failed to decode token:", error);
@@ -53,33 +53,95 @@ const AuthProvider = ({ children }) => {
   };
 
 
+  // Init on mount: set user context or handle expired tokens; register relogin callback
   React.useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    const hadSession = localStorage.getItem("refreshToken");
-    if (!accessToken && hadSession) {
-      setToastMessage({
-        showtoast: true,
-        message: "Session expired. You have been logged out.",
-        type: "warning",
-      });
-      setTimeout(() => {
-        signout();
-      }, 2000);
-    }
-    else {
-      let tokenDetails = decodeToken(accessToken);
-      if (tokenDetails) {
-        setUserContext(tokenDetails);
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    const p = (location?.pathname || "/").toLowerCase();
+    const anon = new Set([
+      "/login",
+      "/register",
+      "/forgotpassword",
+      "/passwordreset",
+      "/emailverify",
+      "/invite-instructions",
+      "/app-link/",
+    ]);
+
+    // No access token
+    if (!accessToken) {
+      // If we had a session and we're on a protected page -> real expiry
+      if (refreshToken && !anon.has(p)) {
+        setToastMessage({
+          showtoast: true,
+          message: "Session expired. You have been logged out.",
+          type: "warning",
+        });
+        setTimeout(() => {
+          signout(); // your signout navigates to /login
+        }, 2000);
+      }
+      // If no tokens at all (first visit / anonymous), just allow public routes like /register
+    } else {
+      // We have an access token -> try to decode and set user
+      const details = decodeToken(accessToken);
+      if (details) {
+        setUserContext(details);
       } else {
-        signout();
+        // Expired/invalid token -> clear and treat as anonymous.
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        dispatch(clear());
+        setUser(null);
       }
     }
-    // Register the token expired event handler
+
+    // Relogin: when token-expired event fires (e.g., 401 during API), open modal.
     setTokenExpiredCallback(() => {
       setIsReLoginOpen(true);
-      // localStorage.setItem("relogin", true);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Guard on navigation: only act on protected routes; suppress during relogin modal
+  React.useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    const p = (location?.pathname || "/").toLowerCase();
+    const anon = new Set([
+      "/login",
+      "/register",
+      "/forgotpassword",
+      "/passwordreset",
+      "/emailverify",
+      "/invite-instructions",
+       "/app-link/",
+    ]);
+
+    const onProtected = !anon.has(p);
+
+    if (!accessToken && onProtected) {
+      // If relogin modal is open, do NOTHING
+      if (isReLoginOpen) return;
+
+      if (refreshToken) {
+        // Real expiry on a protected page -> show toast, send to login
+        setToastMessage({
+          showtoast: true,
+          message: "Session expired. You have been logged out.",
+          type: "warning",
+        });
+        navigate("/login", { replace: true, state: { from: location } });
+      } else {
+        // Manual logout removed refresh token → no toast, just ensure we're on /login
+        navigate("/login", { replace: true });
+      }
+    }
+  }, [location, isReLoginOpen, navigate]);
+
+
 
   React.useEffect(() => {
     //----------------------------
@@ -89,7 +151,7 @@ const AuthProvider = ({ children }) => {
     const accessToken = localStorage.getItem("accessToken");
     // const relogin = localStorage.getItem("relogin");
     // Anonymous paths
-    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify"];
+    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify", "/invite-instructions","/app-link/"];
     if (!accessToken && location && !excludePaths.includes(location.pathname) && location.pathname !== '/') {
       setToastMessage({
         showtoast: true,
@@ -138,19 +200,10 @@ const AuthProvider = ({ children }) => {
   }, []);
 
 
-  const signin = async (
-    { username, password },
-    successCallback,
-    errorCallback
-  ) => {
+  const signin = async ({ username, password }, successCallback, errorCallback) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL}/authenticate`,
-        {
-          username,
-          password,
-        }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_URL}/authenticate`, { username, password });
+
       const accessToken = response.data.access_token;
       const refreshToken = response.data.refresh_token;
       localStorage.setItem("accessToken", accessToken);
@@ -159,19 +212,23 @@ const AuthProvider = ({ children }) => {
       // Force every other tab to refresh.
       localStorage.setItem("forceRefresh", Date.now().toString());
 
-      let tokenDetails = decodeToken(accessToken);
+      const tokenDetails = decodeToken(accessToken);
       if (tokenDetails) {
         setUserContext(tokenDetails);
-        successCallback(response);
-        navigate(origin);
+        successCallback?.(response);
+
+        // Prefer the originally requested protected route
+        const from = location.state?.from?.pathname || "/";
+        navigate(from, { replace: true });
       } else {
         signout();
       }
     } catch (err) {
       console.log(err);
-      errorCallback(err);
+      errorCallback?.(err);
     }
   };
+
 
   const handleReLogin = async (password) => {
     const email = user?.emailId;

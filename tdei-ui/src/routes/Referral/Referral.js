@@ -17,18 +17,21 @@ import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupB
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 
-const mapApiToUi = (item) => ({
-  id: item.id,
-  name: item.name,
-  type: item.type === 1 ? "campaign" : "invite",
-  shortCode: item.code,
-  instructionsUrl: item.instructions_url || "",
-  validFrom: item.valid_from || null,
-  validTo: item.valid_to || null,
-  createdAt: item.created_at || null,
-  isActive: Boolean(item.is_active),
-  shareLink: `${process.env.REACT_APP_JOIN_BASE_URL || "https://app.example.com"}/join/${item.code}`,
-});
+const mapApiToUi = (item) => {
+  const base = (process.env.REACT_APP_PORTAL_URL || "https://portal-dev.tdei.us").replace(/\/+$/, "");
+  return {
+    id: item.id,
+    name: item.name,
+    type: item.type === 1 ? "campaign" : "invite",
+    shortCode: item.code,
+    instructionsUrl: item.instructions_url || "",
+    validFrom: item.valid_from || null,
+    validTo: item.valid_to || null,
+    createdAt: item.created_at || null,
+    isActive: Boolean(item.is_active),
+    shareLink: `${base}/register?code=${encodeURIComponent(item.code)}`,
+  };
+};
 
 const typeOptions = [
   { value: "", label: "All" },

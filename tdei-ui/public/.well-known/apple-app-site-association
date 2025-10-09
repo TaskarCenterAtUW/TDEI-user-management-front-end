@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appID": "G8MQVE5WWW.tech.opentoall.aviv.scoutroute",
+        "paths": [
+          "/app-link/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "G8MQVE5WWW.tech.opentoall.aviv.scoutroute"
+    ]
+  }
+}
