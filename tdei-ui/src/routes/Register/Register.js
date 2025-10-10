@@ -36,6 +36,10 @@ const Register = () => {
   ).trim();
 
   useEffect(() => {
+    sessionStorage.removeItem("inviteHandoffDone");
+  }, []);
+
+  useEffect(() => {
     // If there's a raw invite code in the URL but not in the "code" param, redirect to add it.
     if (rawInvite && !searchParams.get("code")) {
       navigate({
