@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Form, Button, Card, InputGroup } from "react-bootstrap";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
@@ -23,6 +23,11 @@ const LoginPage = () => {
     username: "",
     password: "",
   };
+
+  useEffect(() => {
+    sessionStorage.removeItem("inviteHandoffDone");
+    sessionStorage.removeItem("inviteRegPayload");
+  }, []);
 
   const validationSchema = yup.object().shape({
     username: yup.string().required("Email Id is required"),
@@ -56,6 +61,7 @@ const LoginPage = () => {
   if (auth.user) {
     return <Navigate to={location.state?.from?.pathname || "/"} replace />;
   }
+
 
   return (
     <div className={style.loginContainer}>

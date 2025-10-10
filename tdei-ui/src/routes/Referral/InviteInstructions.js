@@ -4,6 +4,7 @@ import { Button, Card, Container, Row, Col, Spinner, Modal } from "react-bootstr
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import style from "./Referral.module.css";
 import axios from "axios";
+import ErrorIcon from "@mui/icons-material/Error";
 
 const isMobileUA = () =>
     /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
@@ -15,12 +16,20 @@ const isIOS = () =>
 export default function InviteInstructions() {
     const location = useLocation();
     const navigate = useNavigate();
+    const hasInviteContext = useMemo(
+        () => !!sessionStorage.getItem("inviteRegPayload"),
+        []
+    );
     const env = (process.env.REACT_APP_ENV || "dev").trim();
     const [busy, setBusy] = useState(false);
     const [toast, setToast] = useState({ show: false, msg: "", type: "success" });
     const [showInstallModal, setShowInstallModal] = useState(false);
     const [deepLinkUrl, setDeepLinkUrl] = useState("");
     const [handoffComplete, setHandoffComplete] = useState(false);
+    const handoffDone = useMemo(
+        () => sessionStorage.getItem("inviteHandoffDone") === "1",
+        []
+    );
 
     // Fallback data saved by Register.js
     const fallback = useMemo(() => {
@@ -35,23 +44,79 @@ export default function InviteInstructions() {
         state.oneTimeToken || fallback.oneTimeToken || "";
 
     useEffect(() => {
-        if (!oneTimeToken) {
-            navigate("/login", { replace: true });
+        if (!hasInviteContext || !oneTimeToken) {
+            const t = setTimeout(() => navigate("/login", { replace: true }), 2000);
+            return () => clearTimeout(t);
         }
-    }, [oneTimeToken, navigate]);
+    }, [hasInviteContext, oneTimeToken, navigate]);
+
+    if (!hasInviteContext || !oneTimeToken) {
+        return (
+            <Container className="py-5">
+                <Row className="justify-content-center">
+                    <Col sm={11} md={9} lg={7} xl={6}>
+                        <Card className="shadow-sm">
+                            <Card.Body className="text-center p-4">
+                                <div className="mb-3">
+                                    <div
+                                        className="d-inline-flex align-items-center justify-content-center rounded-circle"
+                                        style={{ width: 56, height: 56, background: "#f3f4f6" }}
+                                    >
+                                      <ErrorIcon style={{ color: "#DC2626" }} fontSize="medium" />
+                                    </div>
+                                </div>
+                                <h5 className="mb-2">This page needs your invite context</h5>
+                                <p className="text-muted mb-4">
+                                    We couldn’t find your registration handoff details. This can happen after
+                                    navigating back or refreshing. You can continue to login or start a fresh
+                                    registration.
+                                </p>
+                                <div className="d-flex flex-wrap gap-2 justify-content-center">
+                                    <Button
+                                        className="tdei-primary-button"
+                                        onClick={() => navigate("/login", { replace: true })}
+                                    >
+                                        Go to Login
+                                    </Button>
+                                    <Button
+                                        variant="outline-secondary"
+                                        className="tdei-secondary-button"
+                                        onClick={() => navigate("/register", { replace: true })}
+                                    >
+                                        Start Over
+                                    </Button>
+                                </div>
+                                <div className="text-muted mt-3" style={{ fontSize: 12 }}>
+                                    Redirecting to login shortly…
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
 
     const handleContinue = async () => {
         if (!oneTimeToken) return;
         setBusy(true);
         try {
             if (isMobileUA()) {
-                // For mobile users, we do NOT log them in.
-                // We pass the oneTimeToken directly to the app.
-                const universalLink = `${window.location.origin}/app-link/?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
                 sessionStorage.removeItem("inviteRegPayload");
-                // Set the handoff state and then redirect.
-                setHandoffComplete(true);
-                window.location.replace(universalLink);
+                sessionStorage.setItem("inviteHandoffDone", "1");
+                if (isIOS()) {
+                    // iOS Flow: Use the Universal Link.
+                    const universalLink = `${window.location.origin}/app-link/?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
+                    window.location.replace(universalLink);
+                    setHandoffComplete(true);
+                } else {
+                    // Android Flow: Use the custom schema and show the modal.
+                    const schemaLink = `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
+                    setDeepLinkUrl(schemaLink);
+                    setShowInstallModal(true);
+                    setHandoffComplete(true);
+                    // The button in the modal will handle the redirect and state updates.
+                }
 
             } else {
                 // For desktop users, we log them in
@@ -67,6 +132,7 @@ export default function InviteInstructions() {
                 localStorage.setItem("accessToken", access);
                 localStorage.setItem("refreshToken", refresh);
                 sessionStorage.removeItem("inviteRegPayload");
+                sessionStorage.removeItem("inviteHandoffDone");
 
                 const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/workspaces`;
                 window.location.href = workspacesUrl;
@@ -80,7 +146,7 @@ export default function InviteInstructions() {
             });
         }
     };
-     const handleModalAction = () => {
+    const handleModalAction = () => {
         setShowInstallModal(false);
         setBusy(false);
         setHandoffComplete(true);
@@ -109,7 +175,7 @@ export default function InviteInstructions() {
                                 )}
 
                                 <div className="d-flex gap-2 mt-3">
-                             {!handoffComplete ? (
+                                    {!handoffDone && !handoffComplete ? (
                                         <>
                                             <Button
                                                 className="tdei-primary-button"
@@ -155,6 +221,7 @@ export default function InviteInstructions() {
                                     window.location.href = deepLinkUrl;
                                     setShowInstallModal(false);
                                     handleModalAction();
+                                    sessionStorage.setItem("inviteHandoffDone", "1");
                                 }}
                             >
                                 Open App
