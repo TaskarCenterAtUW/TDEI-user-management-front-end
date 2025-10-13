@@ -29,6 +29,8 @@ const AuthProvider = ({ children }) => {
       if (decodedToken.exp * 1000 < Date.now()) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("inviteHandoffDone");
+        sessionStorage.removeItem("inviteRegPayload");
         dispatch(clear());
         return null;
       }
@@ -92,6 +94,8 @@ const AuthProvider = ({ children }) => {
         // Expired/invalid token -> clear and treat as anonymous.
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("inviteHandoffDone");
+        sessionStorage.removeItem("inviteRegPayload");
         dispatch(clear());
         setUser(null);
       }
@@ -265,6 +269,8 @@ const AuthProvider = ({ children }) => {
   const signout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("inviteHandoffDone");
+    sessionStorage.removeItem("inviteRegPayload");
     dispatch(clear());
     setUser(null);
     navigate("/login");
