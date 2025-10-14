@@ -5,6 +5,7 @@ import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import style from "./Referral.module.css";
 import axios from "axios";
 import ErrorIcon from "@mui/icons-material/Error";
+import { SHOW_REFERRALS } from "../../utils";
 
 const isMobileUA = () =>
     /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
@@ -49,6 +50,11 @@ export default function InviteInstructions() {
             return () => clearTimeout(t);
         }
     }, [hasInviteContext, oneTimeToken, navigate]);
+
+    if (!SHOW_REFERRALS) {
+        navigate("/login", { replace: true });
+        return null;
+    }
 
     if (!hasInviteContext || !oneTimeToken) {
         return (
