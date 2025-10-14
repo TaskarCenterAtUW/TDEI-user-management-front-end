@@ -30,6 +30,7 @@ import CreateUpdateReferralCode from "./Referral/CreateUpdateReferralCode";
 import RequireGuest from "../components/RequireGuest/RequireGuest";
 import InviteInstructions from "./Referral/InviteInstructions";
 import AppLinkFallback from "../AppLinkFallback";
+import { SHOW_REFERRALS } from "../utils/helper";
 
 const Router = () => {
   const { user } = useAuth();
@@ -43,8 +44,12 @@ const Router = () => {
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/passwordReset" element={<PasswordResetConfirm />} />
           <Route path="/emailVerify" element={<EmailVerification />} />
-          <Route path="/invite-instructions" element={<InviteInstructions />} />
-          <Route path="/app-link/*" element={<AppLinkFallback />} />
+          {SHOW_REFERRALS && (
+            <>
+              <Route path="/invite-instructions" element={<InviteInstructions />} />
+              <Route path="/app-link/*" element={<AppLinkFallback />} />
+            </>
+          )}
         </Route>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
@@ -84,9 +89,13 @@ const Router = () => {
             <Route path="/CreateJob" element={<CreateJobService />} />
             <Route path="/EditMetadata" element={<EditMetadata />} />
             <Route path="/CloneDataset" element={<CloneDataset />} />
-            <Route path="/:id/referralCodes" element={<Referral />} />
-            <Route path="/:id/referralCodes/new" element={<CreateUpdateReferralCode />} />
-            <Route path="/:id/referralCodes/:codeId/edit" element={<CreateUpdateReferralCode />} />
+            {SHOW_REFERRALS && (
+              <>
+                <Route path="/:id/referralCodes" element={<Referral />} />
+                <Route path="/:id/referralCodes/new" element={<CreateUpdateReferralCode />} />
+                <Route path="/:id/referralCodes/:codeId/edit" element={<CreateUpdateReferralCode />} />
+              </>
+            )}
           </Route>
         </Route>
       </>

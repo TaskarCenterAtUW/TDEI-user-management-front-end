@@ -14,6 +14,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import CustomModal from "../../components/SuccessModal/CustomModal";
+import { SHOW_REFERRALS } from "../../utils";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -29,19 +30,23 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const rawInvite = (searchParams.get("code")
-    || searchParams.get("referral_code")
-    || searchParams.get("refferal_code")
-    || ""
-  ).trim();
+  const rawInvite = SHOW_REFERRALS
+    ? (
+      (searchParams.get("code")
+        || searchParams.get("referral_code")
+        || searchParams.get("refferal_code")
+        || ""
+      ).trim()
+    )
+    : "";
 
   useEffect(() => {
-    sessionStorage.removeItem("inviteHandoffDone");
+    if (SHOW_REFERRALS) sessionStorage.removeItem("inviteHandoffDone");
   }, []);
 
   useEffect(() => {
     // If there's a raw invite code in the URL but not in the "code" param, redirect to add it.
-    if (rawInvite && !searchParams.get("code")) {
+    if (SHOW_REFERRALS && rawInvite && !searchParams.get("code")) {
       navigate({
         pathname: "/register",
         search: `?${createSearchParams({ code: rawInvite })}`,
@@ -49,7 +54,7 @@ const Register = () => {
     }
   }, [rawInvite, searchParams, navigate]);
 
-  const inviteCode = rawInvite;
+  const inviteCode = SHOW_REFERRALS ? rawInvite : "";
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -87,14 +92,14 @@ const Register = () => {
         email: values.email,
         phone: values.phone,
         password: values.password,
-        ...(inviteCode ? { code: inviteCode } : {}),
+        ...(SHOW_REFERRALS && inviteCode ? { code: inviteCode } : {}),
       };
 
       const res = await axios.post(`${process.env.REACT_APP_URL}/register`, payload);
       const data = res?.data?.data;
 
       const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
-      const oneTimeToken    = data?.token || "";
+      const oneTimeToken = data?.token || "";
 
       setToastMessage("Registration successful!");
       setToastType("success");
@@ -102,7 +107,8 @@ const Register = () => {
       setLoading(false);
 
       // Branch based on presence of instructions_url
-    if (instructionsUrl || oneTimeToken) {
+      const hasInviteFlow = SHOW_REFERRALS && (instructionsUrl || oneTimeToken);
+      if (hasInviteFlow) {
         // persist in sessionStorage as a fallback in case user refreshes page
         sessionStorage.setItem(
           "inviteRegPayload",
@@ -316,7 +322,7 @@ const Register = () => {
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
-                      {inviteCode && (
+                      {SHOW_REFERRALS && inviteCode && (
                         <div className={style.inviteNote} role="note" aria-live="polite">
                           <svg
                             width="16"
