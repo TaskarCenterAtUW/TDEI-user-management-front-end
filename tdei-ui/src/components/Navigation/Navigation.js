@@ -5,10 +5,16 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ADMIN_SIDE_NAV, POC_SIDE_NAV } from "../../utils";
 import tdeiLogo from "./../../assets/img/tdei_logo.svg";
+import useIsPoc from "../../hooks/useIsPoc";
 
 function Navigation() {
   const { user } = useAuth();
-  const NAVBAR = user?.isAdmin ? ADMIN_SIDE_NAV : POC_SIDE_NAV;
+  const isPocUser = useIsPoc();
+  const BASE_NAV = user?.isAdmin ? ADMIN_SIDE_NAV : POC_SIDE_NAV;
+  // If the user is a POC, show all links. If not, hide the Feedback link.
+  const NAVBAR = BASE_NAV.filter(item =>
+    isPocUser ? true : item.to !== "/feedback"
+  );
   const handleLinkClick = () => {
     const offcanvasEl = document.querySelector('.offcanvas.show');
     if (offcanvasEl) {
