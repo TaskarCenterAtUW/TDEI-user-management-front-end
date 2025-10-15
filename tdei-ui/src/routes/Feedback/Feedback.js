@@ -135,7 +135,7 @@ const Feedback = () => {
                 <IconButton
                     className={style.iconBtn}
                     onClick={refreshData}
-                    sx={{ marginTop: '0px', marginRight: '8px', height: '40px' }}
+                    sx={{ height: '40px' }}
                     title="Refresh feedback list"  >
                     <RefreshIcon style={{ fontSize: 20 }} />
                 </IconButton>
@@ -153,7 +153,6 @@ const Feedback = () => {
                     <img
                         src={filterImg}
                         alt="Filter"
-                        style={{ width: 20, height: 15 }}
                         className="me-2"
                     />
                     Filter

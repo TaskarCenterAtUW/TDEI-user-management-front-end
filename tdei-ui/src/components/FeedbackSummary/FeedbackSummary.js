@@ -2,10 +2,10 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import style from "./FeedbackSummary.module.css";
-import feedbackIcon from "../../assets/img/feedback.svg";
-import warningIcon from "../../assets/img/icon-warning.svg";
-import iconSuccess from "../../assets/img/success-icon.svg";
-import iconDelete from "../../assets/img/icon-delete.svg";
+import iconTotalFeedback from "../../assets/img/icon-total-feedback.svg";
+import iconOverdue from "../../assets/img/icon-overdue.svg";
+import iconTurnAround from "../../assets/img/icon-turnaroundtime.svg";
+import iconOpenIssues from "../../assets/img/icon-open-issues.svg";
 import useGetFeedbackSummary from "../../hooks/feedback/useGetFeedbackSummary";
 import { Spinner } from "react-bootstrap";
 import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
@@ -64,28 +64,28 @@ const FeedbackSummary = () => {
     {
       title: "Total Feedback",
       value: feedbackData.total_count,
-      icon: <img src={feedbackIcon} className={style.cardIcon} alt="Total Feedback" />,
+      icon: <img src={iconTotalFeedback} className={style.cardIcon} alt="Total Feedback" />,
       bgColor: "#E3F2FD",
       iconColor: "#1976D2"
     },
     {
       title: "Turn Around Time",
        value: pgLoading ? "Loading…" : (turnaroundLabel || "NA"),
-      icon: <img src={iconSuccess} className={style.cardIcon} alt="Last 3 Months" />,
+      icon: <img src={iconTurnAround} className={style.cardIcon} alt="Last 3 Months" />,
       bgColor: "#E8F5E8",
       iconColor: "#4CAF50"
     },
     {
       title: "Overdue",
       value: feedbackData.total_overdues,
-      icon: <img src={warningIcon} className={style.cardIcon} alt="Overdue" />,
+      icon: <img src={iconOverdue} className={style.cardIcon} alt="Overdue" />,
       bgColor: "#FFF3E0",
       iconColor: "#FF9800"
     },
     {
       title: "Open Issues",
       value: feedbackData.total_open,
-      icon: <img src={iconDelete} className={style.cardIcon} alt="Open Issues" />,
+      icon: <img src={iconOpenIssues} className={style.cardIcon} alt="Open Issues" />,
       bgColor: "#FFEBEE",
       iconColor: "#F44336"
     }

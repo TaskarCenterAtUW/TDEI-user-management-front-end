@@ -20,6 +20,7 @@ import style from "./steps.module.css";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from '../../selectors';
 import { useAuth } from "../../hooks/useAuth";
+import { useMediaQuery } from 'react-responsive';
 
 // Custom Icon component for service upload
 export const ServiceIcon = () => (
@@ -100,6 +101,7 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = user.isAdmin;
+  const isMobile = useMediaQuery({ maxWidth: 900 });
 
   useEffect(() => {
     if (currentStep == 0) {
@@ -350,31 +352,33 @@ export default function VerticalStepper({ stepsData, onStepsComplete,currentStep
   // Rendering the vertical stepper component
   return (
     <Box className={style.uploadDatasetStepsLayout}>
-      <Grid container spacing={0} columns={15}>
-        <Grid item xs={4}>
+      <Grid container spacing={0} columns={12}>
+        <Grid item xs={12} sm={12} md={3}>
           <Box className={style.stepsBlock}>
-            <Stepper nonLinear activeStep={activeStep} orientation='vertical' sx={{
+            <Stepper nonLinear activeStep={activeStep} orientation={isMobile ? 'horizontal' : 'vertical'}  sx={{
               '& .MuiStepConnector-line': {
-                minHeight: '50px',
+                minHeight: isMobile ? 'unset' : '50px',
+                width: isMobile ? '100%' : 'unset',
                 borderLeftStyle: 'dashed',
-                marginY: "-5px",
-                marginX: "9px",
+                marginTop: isMobile ? "-9px" : "-5px",
+                marginBottom: isMobile ? "0px" : "-5px",
+                marginX: isMobile ? "0px" : "9px",
                 borderColor: "#DDDDDD",
                 borderWidth: "2px",
               }
             }} >
               {stepsData.map((step, index) => (
                 <Step key={index} completed={completed[index]}>
-                  <StepLabel StepIconComponent={ColorlibStepIcon}>
+                  <StepLabel StepIconComponent={ColorlibStepIcon} sx={{ flexDirection: isMobile ? 'column' : 'row' }}>
                     <div className={style.stepTimelineTitle}>{step.title}</div>
-                    <div className={style.stepTimelineSubTitle}>{step.subtitle}</div>
+                    {!isMobile && <div className={style.stepTimelineSubTitle}>{step.subtitle}</div> }
                   </StepLabel>
                 </Step>
               ))}
             </Stepper>
           </Box>
         </Grid>
-        <Grid item xs={11}>
+        <Grid item xs={12} sm={12} md={9}>
           <Grid container >
             <Grid item xs={12}>
               <Container className={style.stepsTabContainer}>

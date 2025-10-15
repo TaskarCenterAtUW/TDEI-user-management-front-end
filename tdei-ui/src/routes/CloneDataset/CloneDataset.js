@@ -86,11 +86,11 @@ const CloneDataset = () => {
         <div className={style.layout}>
             <Container>
                 <div className={style.uploadWidgetTitle}>
-                    <span className={style.cloneDatasetTitle}>Clone Dataset</span>
-                    <span className={style.content}>
+                    <div className={style.cloneDatasetTitle}>Clone Dataset</div>
+                    <div className={style.content}>
                         <img src={cloneFileImage} className={style.icon} alt="" />
                         <span>Data file cloning from <span className={style.description}>{dataset && dataset.metadata.dataset_detail.name}</span></span>
-                    </span>
+                    </div>
                 </div>
                 <CloneDatasetStepper
                     stepsData={stepsData}

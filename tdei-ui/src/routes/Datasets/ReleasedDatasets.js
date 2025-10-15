@@ -242,10 +242,10 @@ const ReleasedDatasets = () => {
   return (
     <div>
       <Form noValidate>
-        <Row className="mb-3" style={{ marginTop: '20px' }}>
-          <Col md={5}>
-            <Form.Group className="d-flex align-items-center">
-              <div style={{ width: '24vw', paddingRight: '20px' }}>
+        <Row className="my-3 gx-0">
+          <Col md={12} lg={6}>
+            <Form.Group className={style.primaryFilterContainer}>
+              <div className={style.primaryFilterBlock_Released}>
                 <Form.Label>Type</Form.Label>
                 <Select
                   isSearchable={false}
@@ -257,7 +257,7 @@ const ReleasedDatasets = () => {
               </div>
             </Form.Group>
           </Col>
-          <Col md={7}>
+          <Col md={12} lg={6}>
             <SortRefreshComponent
               handleRefresh={handleRefresh}
               handleSortChange={handleSortChange}
@@ -271,7 +271,7 @@ const ReleasedDatasets = () => {
         {showFilters && (
           <div className={style.filterComponent}>
             <Row className="mb-3">
-              <Col md={4}>
+              <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
                     <Form.Label>Dataset</Form.Label>
@@ -296,7 +296,7 @@ const ReleasedDatasets = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col md={4}>
+              <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
                     <Form.Label>Project Group</Form.Label>
@@ -315,7 +315,7 @@ const ReleasedDatasets = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col md={4}>
+              <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
                     <Form.Label>Service</Form.Label>
@@ -332,8 +332,8 @@ const ReleasedDatasets = () => {
                 </Form.Group>
               </Col>
             </Row>
-            <Row className="d-flex justify-content-start">
-              <Col md={4}>
+            <Row className="">
+              <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
                     <Form.Label>Dataset ID</Form.Label>
@@ -358,7 +358,7 @@ const ReleasedDatasets = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col md={4}>
+              <Col md={4} className={style.datasetFilterBlock}>
                 <div className={style.labelWithClear}>
                   <Form.Label>Valid From</Form.Label>
                   <span
@@ -378,7 +378,7 @@ const ReleasedDatasets = () => {
                   isFilter={true}
                 />
               </Col>
-              <Col md={4}>
+              <Col md={4} className={style.datasetFilterBlock}>
                 <div className={style.labelWithClear}>
                   <Form.Label>Valid To</Form.Label>
                   <span

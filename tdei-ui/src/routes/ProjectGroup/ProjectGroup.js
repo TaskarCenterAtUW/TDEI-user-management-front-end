@@ -30,6 +30,7 @@ import ClipboardCopy from "../Services/ClipBoardCopy";
 import { DEFAULT_PROJECT_GROUP_NAME } from "../../utils";
 import Select from "react-select";
 import CustomModal from "../../components/SuccessModal/CustomModal";
+import { useMediaQuery } from 'react-responsive';
 
 const ProjectGroup = () => {
   const [, setQuery] = React.useState("");
@@ -60,6 +61,7 @@ const ProjectGroup = () => {
     isFetchingNextPage,
     isLoading,
   } = useGetProjectGroups(debounceQuery, showInactive);
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
@@ -198,7 +200,7 @@ const ProjectGroup = () => {
             <div>URL</div>
             <div>Contact Number</div>
             <div>POC</div>
-            <div>Action</div>
+            <div className="text-center">Action</div>
           </div>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
@@ -228,32 +230,48 @@ const ProjectGroup = () => {
                       </div>
                     </div>
                     <div className={style.content} tabIndex={0}>
-                      {list.url}
+                      <div className={style.mobileOnly}>URL</div>
+                      {list.url || `--`}
                     </div>
                     <div className={style.content} tabIndex={0}>
-                      {list.phone}
+                      <div className={style.mobileOnly}>Contact Number</div>
+                      {list.phone || `--`}
                     </div>
-                    <div>
+                    <div className={style.content}>
+                      <div className={style.mobileOnly}>POC</div>
                       <DisplayList list={list} handlePoc={handlePoc} />
                     </div>
                     <div className={style.actionItem}>
-                      <Dropdown align="end">
-                        <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
-                        <Dropdown.Menu align="end">
+                      <Dropdown align="end" className={style.fullWidth}>
+                        {isMobile ? (
+                          <Dropdown.Toggle
+                            id="dropdown-basic"
+                            variant="btn btn-link"
+                            className={style.projectGroupActionsButton}
+                          >
+                            Manage Project Group
+                          </Dropdown.Toggle>
+                        ) : (
+                          <Dropdown.Toggle as={ActionItem}></Dropdown.Toggle>
+                        )}
+                        <Dropdown.Menu align="end" className={style.dropdownCard}>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
+                            className={style.dropdownItem}
                             onClick={handlePoc}
                           >
                             Manage POC
                           </Dropdown.Item>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
+                            className={style.dropdownItem}
                             onClick={handleEdit}
                           >
                             Edit Project Group
                           </Dropdown.Item>
                           <Dropdown.Item
                             id={list.tdei_project_group_id}
+                            className={style.dropdownItem}
                             onClick={handleUpdateStatus}
                             disabled={
                               list.project_group_name ===
@@ -344,7 +362,7 @@ const DisplayList = ({ list, handlePoc }) => {
       {poc.length ? (
         <div className={style.pocList}>
           <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
-          <div className={style.content} tabIndex={0}>
+          <div tabIndex={0}>
             {getUserName(poc[0])}
           </div>
           {poc.length > 1 ? (
@@ -363,9 +381,7 @@ const DisplayList = ({ list, handlePoc }) => {
                               className={style.pocUserIcon}
                               alt="user-icon"
                             />
-                            <div className={style.content}>
-                              {getUserName(val)}
-                            </div>
+                            {getUserName(val)}
                           </div>
                         );
                       }

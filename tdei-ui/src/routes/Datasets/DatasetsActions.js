@@ -8,8 +8,8 @@ import openConsoleIcon from "../../assets/img/action-open-console.svg";
 import cloneImg from "../../assets/img/clone-img.svg";
 import editImage from "../../assets/img/edit-img.svg";
 import downloadDatasetImg from "../../assets/img/download-img.svg";
-import dataViewerIcon from "../../assets/img/data-viewer-icon.svg";
-import dataViewerIconDisabled from "../../assets/img/data-viewer-icon-disabled.svg";
+import dataViewerIcon from "../../assets/img/icon-data-viewer.svg";
+import dataViewerIconDisabled from "../../assets/img/icon-data-viewer-off.svg";
 import NorthEastIcon from "@mui/icons-material/NorthEast";
 import useIsPoc from "../../hooks/useIsPoc";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
@@ -17,6 +17,7 @@ import useIsOswGenerator from "../../hooks/useIsOswGenerator";
 import useIsMember from "../../hooks/roles/useIsMember";
 import { useAuth } from "../../hooks/useAuth";
 import useIsDataTypeGenerator from "../../hooks/useIsDataTypeGenerator";
+import { useMediaQuery } from 'react-responsive';
 
 const DatasetsActions = ({
   status,
@@ -37,6 +38,8 @@ const DatasetsActions = ({
   const canClone = isDataGenerator || user?.isAdmin || isMember;
   const canAddIncline = isPocUser || user?.isAdmin || isOswGenerator;
   const canPublish = isPocUser || user?.isAdmin || isDataTypeGenerator;
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   //Role based available actions
   const actions = [
@@ -118,18 +121,28 @@ const DatasetsActions = ({
   return (
     actions.length > 0 && (
       <div className={style.dropdownContainer}>
-        <Dropdown onSelect={onAction}>
-          <Dropdown.Toggle
-            id="dropdown-basic"
-            variant="btn btn-link"
-            className={style.dropdownToggle}
-          >
-            <img
-              src={menuOptionIcon}
-              className={style.moreActionIcon}
-              alt="Menu Options"
-            />
-          </Dropdown.Toggle>
+        <Dropdown onSelect={onAction} className={style.fullWidth}>
+          {isMobile ? (
+            <Dropdown.Toggle
+              id="dropdown-basic"
+              variant="btn btn-link"
+              className={style.datasetActionsButton}
+            >
+              Manage Dataset
+            </Dropdown.Toggle>
+            ) : (
+            <Dropdown.Toggle
+              id="dropdown-basic"
+              variant="btn btn-link"
+              className={style.dropdownToggle}
+            >
+              <img
+                src={menuOptionIcon}
+                className={style.moreActionIcon}
+                alt="Menu Options"
+              />
+            </Dropdown.Toggle>
+          )}
           <Dropdown.Menu className={style.dropdownCard}>
             {actions.map(({ key, label, icon }) => (
               <Dropdown.Item key={key} eventKey={key} className={style.itemRow}>

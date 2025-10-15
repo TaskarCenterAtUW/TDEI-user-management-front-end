@@ -8,12 +8,14 @@ import IconButton from "@mui/material/IconButton";
 import { show } from "../../store/notification.slice";
 import { useDispatch } from "react-redux";
 import JSZip from "jszip";
+import { useMediaQuery } from 'react-responsive';
 
 // Functional component Dropzone
 function Dropzone({ onDrop, accept, format, selectedFile }) {
   const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
   const MAX_SIZE_MB = 1024;
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
     if (selectedFile instanceof File) {
@@ -144,7 +146,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
             <div>
               <img src={uploadIcon} style={{ height: 20, marginBottom: "10px" }} />
               <div className={style.title}>
-                Drop files here or click to upload.
+                {isMobile ? 'Click here to upload files.' : 'Drop files here or click to upload.'}
               </div>
               <div className={style.subtile}>Allowed format {format}</div>
             </div>

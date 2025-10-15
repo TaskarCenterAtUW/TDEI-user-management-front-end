@@ -63,16 +63,40 @@
 }
 .layout {
     height: 100%;
-    padding: 10px;
+    padding: 20px;
     background-color: #f8f8f8;
 
     .uploadWidgetTitle {
-      font-size: 16px;
-      font-weight: 700;
-      padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 15px 30px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
     }
 
     [class*='Container_container'] {
       padding: 0px;
+      box-shadow: 0px 1px 6px #22222230;
     }
-  }
+}
+
+  
+@media only screen and (max-width: 900px) {
+    .stepsBlock {
+        border-right: none;
+        border-bottom: 1px solid #CCCCCC;
+        padding: 25px 25px;
+    }
+    .stepTimelineTitle {
+        font-size: 14px;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .stepsBlock {
+        padding: 25px 10px;
+    }
+    .stepsTabContainer {
+        padding: 25px 20px;
+    }
+}

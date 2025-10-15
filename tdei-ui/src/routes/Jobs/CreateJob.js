@@ -816,7 +816,7 @@ const CreateJobService = () => {
                             {renderFormFields()}
                         </form>
                     </div>
-                    <div className={`${jobType ? style.buttonContainer : style.fixedButtonContainer}`}>
+                    <div className={style.buttonContainer}>
                         <Button
                             className={style.buttonSecondaryCustomised}
                             onClick={handlePop}

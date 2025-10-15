@@ -6,6 +6,7 @@ import DatePicker from '../../../components/DatePicker/DatePicker';
 import ChipInput from '../../../components/ChipInput/ChipInput';
 import { ClearIcon } from "@mui/x-date-pickers";
 import { IconButton } from "@mui/material";
+import style from "./MetaDataForm.module.css";
 
 const Maintenance = ({ formData, updateFormData }) => {
 
@@ -35,9 +36,9 @@ const Maintenance = ({ formData, updateFormData }) => {
   return (
     <Formik initialValues={formData} onSubmit={values => console.log(values)} >
       {({ handleChange, handleBlur, setFieldTouched }) => (
-        <div className="container">
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-md-6 column-style">
+        <div className={style.metaDataContainer}>
+          <div className="row">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="official_maintainer">
                 <Form.Label>Official Maintainer</Form.Label>
                 <ChipInput 
@@ -82,7 +83,7 @@ const Maintenance = ({ formData, updateFormData }) => {
                 />
               </Form.Group>
             </div>
-            <div className="col-md-6 column-style">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="authorization_chain" style={{ marginTop: '15px' }}>
                 <Form.Label>Authorization Chain</Form.Label>
                 <Form.Control
