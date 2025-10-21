@@ -46,6 +46,18 @@ export const referralValidationSchema = yup.object({
     .nullable()
     .url("Must be a valid URL")
     .notRequired(),
+
+  redirectUrlOption: yup.mixed()
+    .oneOf(["", "workspace", "custom"])
+    .notRequired(),
+
+  redirectUrl: yup
+    .string()
+    .trim()
+    .nullable()
+    .transform(v => (v === "" ? null : v))
+    .url("Enter a valid URL")
+    .notRequired(),
 });
 
 /**

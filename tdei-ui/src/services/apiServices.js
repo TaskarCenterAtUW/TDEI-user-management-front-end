@@ -1122,3 +1122,17 @@ export async function deleteReferralCode(projectGroupId,code_id) {
     `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`);
   return res.data;
 }
+
+export async function postAssignReferralCode(referral_code) {
+  const res = await axios.post(`${url}/referral-codes/${referral_code}`);
+  return res.data;
+}
+
+export async function getReferralCodeDetails(referral_code) {
+  const res = await axios.get(`${url}/referral-codes/${referral_code}`);
+  return res.data;
+}
+export async function referralSignIn(referral_code, data) {
+  const res = await axios.post(`${url}/authenticate/${referral_code}`, data);
+  return res.data;
+}
