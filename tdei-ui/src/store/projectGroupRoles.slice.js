@@ -15,7 +15,7 @@ const projectGroupRolesSlice = createSlice({
     },
     clear() {
       localStorage.removeItem("selectedProjectGroup");
-      return {};
+      return null;
     },
   },
 });

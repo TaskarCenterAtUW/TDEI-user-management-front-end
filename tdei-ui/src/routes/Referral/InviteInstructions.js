@@ -6,13 +6,18 @@ import style from "./Referral.module.css";
 import axios from "axios";
 import ErrorIcon from "@mui/icons-material/Error";
 import { SHOW_REFERRALS } from "../../utils";
+import { saveAuthTokensFromPromo } from '../../utils/helper';
 
 const isMobileUA = () =>
-    /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
+  /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
 
 const isIOS = () =>
-    /iPad|iPhone|iPod/i.test(navigator.userAgent || "") ||
-    (/Macintosh/i.test(navigator.userAgent || "") && navigator.maxTouchPoints > 1);
+  /iPad|iPhone|iPod/i.test(navigator.userAgent || "") ||
+  (/Macintosh/i.test(navigator.userAgent || "") && navigator.maxTouchPoints > 1);
+
+const hardReplace = (url) => window.location.replace(url);
+
+const replacePathOnly = (url) => window.history.replaceState(null, "", url);
 
 function resolveFlow(location) {
   const qs = new URLSearchParams(location?.search || "");
@@ -31,6 +36,10 @@ function resolveFlow(location) {
   return fromQuery || fromState || fromSession || inferred;
 }
 
+// Normalize a value across many possible keys/cases
+const pick = (obj, keys, fallback = "") =>
+  keys.reduce((acc, k) => (acc !== undefined && acc !== null ? acc : obj?.[k]), undefined) ?? fallback;
+
 export default function InviteInstructions() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,11 +55,11 @@ export default function InviteInstructions() {
     []
   );
 
-  // Determine flow type
-  const flow = resolveFlow(location); 
+  // Determine flow
+  const flow = resolveFlow(location);
   const isPromo = flow === "promo";
 
-  // Registration fallback
+  // Load fallbacks
   const regFallback = useMemo(() => {
     try { return JSON.parse(sessionStorage.getItem("inviteRegPayload") || "{}"); }
     catch { return {}; }
@@ -66,18 +75,20 @@ export default function InviteInstructions() {
   const state = (location && location.state) || {};
 
   const instructionsUrl = isPromo
-    ? (state.instructions_url || state.instruction_url || promoFallback.instruction_url || promoFallback.instructions_url || "")
-    : (state.instructions_url || state.instructionsUrl || regFallback.instructions_url || regFallback.instructionsUrl || "");
+    ? pick(state, ["instructions_url", "instruction_url", "instructionsUrl"], pick(promoFallback, ["instructions_url", "instruction_url", "instructionsUrl"], ""))
+    : pick(state, ["instructions_url", "instructionsUrl"], pick(regFallback, ["instructions_url", "instructionsUrl"], ""));
 
   const oneTimeToken = isPromo
-    ? (state.token || promoFallback.token || "")
-    : (state.oneTimeToken || regFallback.oneTimeToken || "");
+    ? pick(state, ["token", "oneTimeToken"], pick(promoFallback, ["token", "oneTimeToken"], ""))
+    : pick(state, ["oneTimeToken", "token"], pick(regFallback, ["oneTimeToken", "token"], ""));
 
-  const redirectUrl = isPromo
-    ? (state.redirect_url || promoFallback.redirect_url || "")
-    : ""; // registration flow does not use redirect_url
+  const redirectUrl =  pick(state, ["redirect_url", "redirectUrl", "redirection_url"], pick(promoFallback, ["redirect_url", "redirectUrl", "redirection_url"], ""))
 
-  // Guards & redirects
+  const promoToken = isPromo
+    ? (state.token || promoFallback.token || null)
+    : null;
+
+  // Guards & redirects for missing context
   useEffect(() => {
     if (!SHOW_REFERRALS) {
       navigate("/login", { replace: true });
@@ -93,76 +104,95 @@ export default function InviteInstructions() {
     }
   }, [SHOW_REFERRALS, isPromo, instructionsUrl, oneTimeToken, redirectUrl, navigate]);
 
-  const handleContinue = async () => {
-    // --- PROMO FLOW: direct redirect if present; else install links ---
-    if (isPromo) {
-      setBusy(true);
-      try {
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-          sessionStorage.removeItem("promoSigninPayload");
-          sessionStorage.removeItem("handoffFlow");
-          return;
-        }
-        const installUrl = isIOS()
-          ? process.env.REACT_APP_IOS_INSTALL_URL
-          : process.env.REACT_APP_ANDROID_INSTALL_URL;
-        if (installUrl) {
-          window.location.href = installUrl;
-          sessionStorage.removeItem("promoSigninPayload");
-          sessionStorage.removeItem("handoffFlow");
-        } else {
-          setToast({ show: true, type: "warning", msg: "No redirect URL provided. Please install the app to continue." });
-          setBusy(false);
-        }
-      } catch (err) {
-        setToast({ show: true, type: "error", msg: err?.message || "Failed to continue" });
-        setBusy(false);
+  const exchangeAndRedirectDesktop = async (token, destUrlIfAny) => {
+    // Common desktop path for both flows: exchange token → store → redirect
+    const resp = await axios.post(
+      `${process.env.REACT_APP_OSM_URL}/refresh-token`, token,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-      return;
-    }
+    );
+    const access = resp?.data?.access_token;
+    const refresh = resp?.data?.refresh_token;
+    if (!access || !refresh) throw new Error("Invalid refresh response");
 
-    // --- REGISTRATION FLOW ---
-    if (!oneTimeToken) return;
+    localStorage.setItem("accessToken", access);
+    localStorage.setItem("refreshToken", refresh);
+
+    // Clean up session storage
+    sessionStorage.removeItem("inviteRegPayload");
+    sessionStorage.removeItem("inviteHandoffDone");
+    sessionStorage.removeItem("promoSigninPayload");
+    sessionStorage.removeItem("handoffFlow");
+
+    if (destUrlIfAny) {
+      window.location.href = destUrlIfAny;
+    } else {
+      const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/`;
+      window.location.href = workspacesUrl;
+    }
+  };
+
+  const handleContinue = async () => {
+  const onMobile = isMobileUA();
+  const iOS = isIOS();
+
+  if (onMobile) sessionStorage.setItem("handoffInProgress", "1");
+
+  // If redirect_url is present, it wins (both promo + registration)
+  if (redirectUrl) {
+    // If promo provided a web destination, we stay on web.
+
+    sessionStorage.removeItem("handoffInProgress");
+    sessionStorage.removeItem("promoSigninPayload");
+    sessionStorage.removeItem("handoffFlow");
+    return hardReplace(redirectUrl);
+  }
+
+  // No redirect_url. Choose mobile or desktop paths.
+    if (onMobile) {
+      // MOBILE (promo or reg) → app-link or modal
+      const appLinkUrl = oneTimeToken
+        ? `${window.location.origin}/app-link/?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`
+        : `${window.location.origin}/app-link/?env=${encodeURIComponent(env)}`;
+
+      if (iOS) {
+        // iOS: direct to Universal Link
+        sessionStorage.removeItem("promoSigninPayload");
+        sessionStorage.removeItem("handoffFlow");
+        sessionStorage.setItem("handoffInProgress", "1");
+        replacePathOnly(appLinkUrl);
+        setTimeout(() => {
+          window.location.assign(appLinkUrl);
+        }, 0);
+
+        setHandoffComplete(true);
+        return;
+      }
+
+    // ANDROID: replace the current history entry with /app-link, then open modal
+    replacePathOnly(appLinkUrl);
+    const schema = oneTimeToken
+      ? `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`
+      : `avivscr://?env=${encodeURIComponent(env)}`;
+
+    setDeepLinkUrl(schema);
+    setShowInstallModal(true);
+    setHandoffComplete(true);
+    return;
+  }
+
+  // DESKTOP
+  // PROMO: tokens were already stored on LoginPage
+  // REG: exchange the oneTimeToken and land in the portal.
+  if (!isPromo) {
     setBusy(true);
     try {
-      if (isMobileUA()) {
-        sessionStorage.removeItem("inviteRegPayload");
-        sessionStorage.setItem("inviteHandoffDone", "1");
-        sessionStorage.setItem("handoffFlow", "reg");
-        if (isIOS()) {
-          // iOS Universal Link
-          const universalLink = `${window.location.origin}/app-link/?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
-          window.location.replace(universalLink);
-          setHandoffComplete(true);
-        } else {
-          // Android: custom scheme + modal
-          const schemaLink = `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`;
-          setDeepLinkUrl(schemaLink);
-          setShowInstallModal(true);
-          setHandoffComplete(true);
-        }
-      } else {
-        // Desktop:
-        const resp = await axios.post(
-          `${process.env.REACT_APP_URL}/refresh-token`,
-          "",
-          { headers: { accept: "application/json", refresh_token: oneTimeToken } }
-        );
-        const access = resp?.data?.access_token;
-        const refresh = resp?.data?.refresh_token;
-        if (!access || !refresh) throw new Error("Invalid refresh response");
-
-        localStorage.setItem("accessToken", access);
-        localStorage.setItem("refreshToken", refresh);
-        sessionStorage.removeItem("inviteRegPayload");
-        sessionStorage.removeItem("inviteHandoffDone");
-        sessionStorage.removeItem("handoffFlow");
-
-        const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/workspaces`;
-        window.location.href = workspacesUrl;
-      }
+      await exchangeAndRedirectDesktop(oneTimeToken, process.env.REACT_APP_TDEI_WORKSPACE_URL || "");
     } catch (err) {
+      sessionStorage.removeItem("handoffInProgress");
       setBusy(false);
       setToast({
         show: true,
@@ -170,13 +200,38 @@ export default function InviteInstructions() {
         msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
       });
     }
-  };
+  } else {
+    // Promo desktop, no redirect_url → go to workspace/home
+    sessionStorage.removeItem("promoSigninPayload");
+    sessionStorage.removeItem("handoffFlow");
+    sessionStorage.removeItem("handoffInProgress");
+    const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/`;
+    hardReplace(workspacesUrl);
+  }
+};
 
   const handleModalAction = () => {
     setShowInstallModal(false);
     setBusy(false);
     setHandoffComplete(true);
   };
+
+useEffect(() => {
+  if (sessionStorage.getItem('handoffInProgress') !== '1') return;
+  const clearHandoff = () => {
+    sessionStorage.removeItem('handoffInProgress');
+  };
+  const onVisibility = () => {
+    if (!document.hidden) clearHandoff();
+  };
+  window.addEventListener('focus', clearHandoff);
+  document.addEventListener('visibilitychange', onVisibility);
+  return () => {
+    window.removeEventListener('focus', clearHandoff);
+    document.removeEventListener('visibilitychange', onVisibility);
+  };
+}, []);
+
 
   if (!SHOW_REFERRALS) return null;
 
@@ -273,6 +328,7 @@ export default function InviteInstructions() {
                       )}
                     </>
                   ) : (
+                    // Only show the mobile “action required” message for reg flow
                     !isPromo && (
                       <div className="alert alert-success" role="alert">
                         <strong>Action Required on Mobile.</strong> You can now continue in the app or close this window.
@@ -285,8 +341,8 @@ export default function InviteInstructions() {
           </Col>
         </Row>
 
-        {/* Android deep-link modal (registration flow only) */}
-        {!isPromo && (
+        {/* Android deep-link modal (registration and promo on Android) */}
+        {isMobileUA() && !isIOS() && (
           <Modal show={showInstallModal} onHide={() => setShowInstallModal(false)} centered>
             <Modal.Header closeButton>
               <Modal.Title>Continue in the App</Modal.Title>
@@ -303,6 +359,7 @@ export default function InviteInstructions() {
                     setShowInstallModal(false);
                     handleModalAction();
                     sessionStorage.setItem("inviteHandoffDone", "1");
+                    sessionStorage.setItem("handoffInProgress", "1");
                   }}
                 >
                   Open App
@@ -311,14 +368,11 @@ export default function InviteInstructions() {
                   variant="outline-secondary"
                   className="tdei-secondary-button"
                   as="a"
-                  href={isIOS()
-                    ? process.env.REACT_APP_IOS_INSTALL_URL
-                    : process.env.REACT_APP_ANDROID_INSTALL_URL
-                  }
+                  href={process.env.REACT_APP_ANDROID_INSTALL_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {isIOS() ? "Install iOS App (TestFlight)" : "Install Android App"}
+                  Install Android App
                 </Button>
               </div>
             </Modal.Body>

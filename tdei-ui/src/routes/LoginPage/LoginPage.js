@@ -15,6 +15,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
  import ReferralBanner from "../../components/Referral/ReferralBanner";
  import { SHOW_REFERRALS } from "../../utils";
  import useReferralSignIn from "../../hooks/referrals/useReferralSignIn";
+ import {saveAuthTokensFromPromo} from '../../utils/helper';
+
 
 const LoginPage = () => {
   const [searchParams] = useSearchParams();
@@ -51,16 +53,22 @@ const LoginPage = () => {
   }
 }, [codeFromUrl]);
 
+
+
   const promoSignin = useReferralSignIn({
     onSuccess: (resp) => {
       setLoading(false);
       sessionStorage.setItem("promoSigninPayload", JSON.stringify(resp || {}));
       sessionStorage.setItem("handoffFlow", "promo");
+       // Only save tokens to localStorage for desktop
+      if (!/Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "")) {
+        if (resp?.token) saveAuthTokensFromPromo(resp.token);
+      }
      navigate("/invite-instructions?flow=promo", {
         replace: true,
         state: {
           isPromo: true,                                 
-          instructions_url: resp?.instruction_url || resp?.Instruction_url || "",
+          instructions_url: resp?.instructions_url || resp?.instructions_url || "",
           token: resp?.token || "",
           redirect_url: resp?.redirect_url || "",
           referral_code: referralCode || ""

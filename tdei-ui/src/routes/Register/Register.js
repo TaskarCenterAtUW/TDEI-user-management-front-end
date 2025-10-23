@@ -108,6 +108,7 @@ const Register = () => {
 
       const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
       const oneTimeToken = data?.token || "";
+      const redirectUrl    = data?.redirect_url || data?.redirectUrl || "";
 
       setToastMessage("Registration successful!");
       setToastType("success");
@@ -124,6 +125,7 @@ const Register = () => {
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
+            redirect_url: redirectUrl || ""
           })
         );
         sessionStorage.setItem("handoffFlow", "reg"); 
@@ -134,6 +136,7 @@ const Register = () => {
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
+            redirect_url: redirectUrl || ""
           },
         });
       } else {

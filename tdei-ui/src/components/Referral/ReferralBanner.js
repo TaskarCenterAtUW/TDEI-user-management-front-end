@@ -18,9 +18,17 @@ export default function ReferralBanner({ code, context = "register" }) {
 
   return (
     <div className={`${styles.referralBanner} mb-3`}>
-      <div className={styles.referralRow}>
         <div className={styles.referralInfo}>
+           <div className={styles.referralRow}>
           <div className={styles.referralTitle}>Referral Code:</div>
+          <div className={styles.referralCode}>{String(code).toUpperCase()}</div>
+          </div>
+                    {details && (details.name || details.description) && (
+            <div className={styles.referralDetails}>
+              <strong>{details.name}</strong>
+              {details?.description ? ` — ${details.description}` : ""}
+            </div>
+          )}
           <div className={styles.referralSubtle}>
             {context === "login"
               ? "You're signing in with a referral code"
@@ -37,21 +45,14 @@ export default function ReferralBanner({ code, context = "register" }) {
           {!!error && (
             <Alert className="mt-2 mb-0" variant="warning">
               {error?.response?.data?.message ||
-                error?.message ||
+                 error?.response?.data || error?.message ||
                 "Failed to load referral details."}
             </Alert>
           )}
 
-          {details && (details.name || details.description) && (
-            <div className={styles.referralDetails}>
-              <strong>{details.name}</strong>
-              {details?.description ? ` — ${details.description}` : ""}
-            </div>
-          )}
-        </div>
 
-        <div className={styles.referralCode}>{String(code).toUpperCase()}</div>
+        </div>
       </div>
-    </div>
+
   );
 }

@@ -1124,7 +1124,7 @@ export async function deleteReferralCode(projectGroupId,code_id) {
 }
 
 export async function postAssignReferralCode(referral_code) {
-  const res = await axios.post(`${url}/referral-codes/${referral_code}`);
+  const res = await axios.post(`${url}/referral-codes/apply/${referral_code}`);
   return res.data;
 }
 

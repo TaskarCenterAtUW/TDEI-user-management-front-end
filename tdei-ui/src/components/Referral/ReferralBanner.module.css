@@ -1,10 +1,11 @@
-
 .referralBanner {
   margin: 8px 0 16px 0;
   padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(135, 62, 242, 0.06);            
-  border: 1px solid rgba(135, 62, 242, 0.25);      
+  background: rgba(135, 62, 242, 0.06);
+  border: 1px solid rgba(135, 62, 242, 0.25);
+  width: 100%;
+  box-sizing: border-box;       
 }
 
 .referralRow {
@@ -23,43 +24,35 @@
   font-weight: 700;
   font-size: 18px;
   color: #2f3661;
-  margin: 0 0 4px 0;
+  white-space: nowrap; 
+  margin: 0;
 }
+.referralSubtle { color: var(--secondary-color); font-size: 14px; margin-top: 8px; }
 
-.referralLabel {
-  color: var(--secondary-color);
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.referralSubtle {
-  color: var(--secondary-color);
-  font-size: 14px;
-  margin-top: 2px;
+.referralTitle {
+  font-weight: 700;
+  font-size: 18px;
+  color: #2f3661;
+  margin: 0;
+  flex: 0 0 auto;               
+  white-space: nowrap;          
 }
 
 .referralCode {
-  flex: 0 0 auto;
+  flex: 1 1 auto;               
   font-weight: 800;
   letter-spacing: 0.02em;
   color: var(--primary-color);
   font-size: 18px;
-  word-break: break-word;
   text-transform: uppercase;
+  word-break: break-word;       
+  overflow-wrap: anywhere;
+  white-space: normal;
+  line-break: anywhere;
+  min-width: 0;                 
 }
-
-.referralDetails {
-  margin-top: 8px;
-  color: var(--secondary-color);
-  font-size: 13px;
-}
-
-.referralInline {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.referralDetails { margin-top: 8px; color: var(--secondary-color); font-size: 16px; }
+.referralInline { margin-top: 8px; display: flex; gap: 8px; align-items: center; }
 
 @media (max-width: 480px) {
   .referralRow {
@@ -73,21 +66,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .referralBanner,
-  .referralRow {
-    transition: none !important;
-  }
-}
-
-@media (min-width: 768px) {
-  .referralLabel,
-  .referralSubtle {
-    white-space: nowrap;
-  }
-}
-
-@media (min-width: 768px) {
-  .referralCode {
-    flex: 0 1 40%;         
-  }
+  .referralBanner, .referralRow { transition: none !important; }
 }

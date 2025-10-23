@@ -15,18 +15,26 @@ const validationSchema = yup.object().shape({
 
 const ApplyReferralCode = ({ show, onHide }) => {
   const [toast, setToast] = useState({ show: false, type: "success", message: "" });
-
-  const handleToastClose = () => setToast((t) => ({ ...t, show: false }));
+  const [closeAfterToast, setCloseAfterToast] = useState(false);
+  const handleToastClose = () => {
+    setToast((t) => ({ ...t, show: false }));
+    if (closeAfterToast) {
+      reset?.();
+      onHide?.();
+      setCloseAfterToast(false);
+    }
+  };
 
   const { mutate, isLoading, error, reset } = useApplyReferralCode({
     onSuccess: () => {
       setToast({ show: true, type: "success", message: "Referral code applied successfully." });
-      onHide?.();
+      setCloseAfterToast(true);
     },
     onError: (err) => {
       const msg =
         err?.response?.data?.message ||
         err?.message ||
+        err?.response?.data || 
         "Failed to apply referral code.";
       setToast({ show: true, type: "error", message: msg });
     },
