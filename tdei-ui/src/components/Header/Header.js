@@ -14,7 +14,7 @@ import ResetPassword from "../ResetPassword/ResetPassword";
 import useResetPassword from "../../hooks/useResetPassword";
 import { clear } from "../../store";
 import ApplyReferralCode from "../Referral/ApplyReferralCode";
-import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -73,7 +73,7 @@ const Header = () => {
                 </Dropdown.Item>
                  <Dropdown.Divider />
                  <Dropdown.Item onClick={() => setShowReferralModal(true)}>
-                 <ConfirmationNumberIcon className="iconImg" style={{ fontSize: '20px' }} />
+                 <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '20px', color:'#8A93A3' }} />
                   Apply Referral Code
                 </Dropdown.Item>
                 <Dropdown.Divider />
