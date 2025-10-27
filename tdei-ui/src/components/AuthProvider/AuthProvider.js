@@ -57,6 +57,7 @@ const AuthProvider = ({ children }) => {
 
   // Init on mount: set user context or handle expired tokens; register relogin callback
   React.useEffect(() => {
+    const handoffInProgress = sessionStorage.getItem('handoffInProgress') === '1';
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
@@ -75,6 +76,7 @@ const AuthProvider = ({ children }) => {
     if (!accessToken) {
       // If we had a session and we're on a protected page -> real expiry
       if (refreshToken && !anon.has(p)) {
+        if (handoffInProgress) return; 
         setToastMessage({
           showtoast: true,
           message: "Session expired. You have been logged out.",
@@ -103,6 +105,7 @@ const AuthProvider = ({ children }) => {
 
     // Relogin: when token-expired event fires (e.g., 401 during API), open modal.
     setTokenExpiredCallback(() => {
+      if (sessionStorage.getItem('handoffInProgress') === '1') return;
       setIsReLoginOpen(true);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,6 +113,7 @@ const AuthProvider = ({ children }) => {
 
   // Guard on navigation: only act on protected routes; suppress during relogin modal
   React.useEffect(() => {
+    const handoffInProgress = sessionStorage.getItem('handoffInProgress') === '1';
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
@@ -127,6 +131,7 @@ const AuthProvider = ({ children }) => {
     const onProtected = !anon.has(p);
 
     if (!accessToken && onProtected) {
+      if (handoffInProgress) return;
       // If relogin modal is open, do NOTHING
       if (isReLoginOpen) return;
 
@@ -151,7 +156,7 @@ const AuthProvider = ({ children }) => {
     //----------------------------
     //Case when the page gets refreshed then we ensure that authenticated page is not displayed to the user without access token
     //----------------------------
-
+    if (sessionStorage.getItem('handoffInProgress') === '1') return;
     const accessToken = localStorage.getItem("accessToken");
     // const relogin = localStorage.getItem("relogin");
     // Anonymous paths
@@ -267,10 +272,14 @@ const AuthProvider = ({ children }) => {
   };
 
   const signout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    sessionStorage.removeItem("inviteHandoffDone");
-    sessionStorage.removeItem("inviteRegPayload");
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem("selectedProjectGroup");
+    sessionStorage.removeItem('inviteHandoffDone');
+    sessionStorage.removeItem('inviteRegPayload');
+    sessionStorage.removeItem('promoSigninPayload');
+    sessionStorage.removeItem('handoffFlow');
+    sessionStorage.removeItem('handoffInProgress');
     dispatch(clear());
     setUser(null);
     navigate("/login");
@@ -281,7 +290,6 @@ const AuthProvider = ({ children }) => {
   };
 
   let value = { user, signin, signout, setIsReLoginOpen, isReLoginOpen };
-
 
   return (
     <AuthContext.Provider value={value}>
