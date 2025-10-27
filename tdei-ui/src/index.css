@@ -265,3 +265,19 @@ input[type=checkbox] {
     font-size: 16px;
   }
 }
+
+.form-check-input[type="radio"],
+input[type="radio"] {
+  accent-color: var(--primary-color) !important;
+}
+
+.form-check .form-check-input.form-check-input[type="radio"]:checked {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Focus ring */
+.form-check .form-check-input.form-check-input[type="radio"]:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(135, 62, 242, 0.25) !important;
+}

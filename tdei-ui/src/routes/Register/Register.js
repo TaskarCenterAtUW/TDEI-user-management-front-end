@@ -14,6 +14,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import CustomModal from "../../components/SuccessModal/CustomModal";
+import { SHOW_REFERRALS } from "../../utils";
+import ReferralBanner from "../../components/Referral/ReferralBanner";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -29,19 +31,30 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const rawInvite = (searchParams.get("code")
-    || searchParams.get("referral_code")
-    || searchParams.get("refferal_code")
-    || ""
-  ).trim();
+  const rawInvite = SHOW_REFERRALS
+    ? (
+      (searchParams.get("code")
+        || searchParams.get("referral_code")
+        || searchParams.get("refferal_code")
+        || ""
+      ).trim()
+    )
+    : "";
+
+
+ React.useEffect(() => {
+   if (SHOW_REFERRALS && rawInvite) {
+     sessionStorage.setItem("referralCode", rawInvite);
+   }
+ }, [rawInvite]);
 
   useEffect(() => {
-    sessionStorage.removeItem("inviteHandoffDone");
+    if (SHOW_REFERRALS) sessionStorage.removeItem("inviteHandoffDone");
   }, []);
 
   useEffect(() => {
     // If there's a raw invite code in the URL but not in the "code" param, redirect to add it.
-    if (rawInvite && !searchParams.get("code")) {
+    if (SHOW_REFERRALS && rawInvite && !searchParams.get("code")) {
       navigate({
         pathname: "/register",
         search: `?${createSearchParams({ code: rawInvite })}`,
@@ -49,7 +62,7 @@ const Register = () => {
     }
   }, [rawInvite, searchParams, navigate]);
 
-  const inviteCode = rawInvite;
+  const inviteCode = SHOW_REFERRALS ? rawInvite : "";
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -87,14 +100,15 @@ const Register = () => {
         email: values.email,
         phone: values.phone,
         password: values.password,
-        ...(inviteCode ? { code: inviteCode } : {}),
+        ...(SHOW_REFERRALS && inviteCode ? { code: inviteCode } : {}),
       };
 
       const res = await axios.post(`${process.env.REACT_APP_URL}/register`, payload);
       const data = res?.data?.data;
 
       const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
-      const oneTimeToken    = data?.token || "";
+      const oneTimeToken = data?.token || "";
+      const redirectUrl    = data?.redirect_url || data?.redirectUrl || "";
 
       setToastMessage("Registration successful!");
       setToastType("success");
@@ -102,7 +116,8 @@ const Register = () => {
       setLoading(false);
 
       // Branch based on presence of instructions_url
-    if (instructionsUrl || oneTimeToken) {
+      const hasInviteFlow = SHOW_REFERRALS && (instructionsUrl || oneTimeToken);
+      if (hasInviteFlow) {
         // persist in sessionStorage as a fallback in case user refreshes page
         sessionStorage.setItem(
           "inviteRegPayload",
@@ -110,16 +125,19 @@ const Register = () => {
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
+            redirect_url: redirectUrl || ""
           })
         );
+        sessionStorage.setItem("handoffFlow", "reg"); 
         // go to the instructions page
-        navigate("/invite-instructions", {
+        navigate("/invite-instructions?flow=reg", {
+          replace: true,
           state: {
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
+            redirect_url: redirectUrl || ""
           },
-          replace: true,
         });
       } else {
         // Normal flow -> email verification page
@@ -153,6 +171,9 @@ const Register = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
+                 {SHOW_REFERRALS && inviteCode && (
+                 <ReferralBanner code={inviteCode} context="register" />
+               )}
                 <Formik
                   initialValues={initialValues}
                   onSubmit={handleSubmit}
@@ -316,31 +337,11 @@ const Register = () => {
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
-                      {inviteCode && (
-                        <div className={style.inviteNote} role="note" aria-live="polite">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                            className={style.inviteIcon}
-                          >
-                            <path
-                              d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm0 14.25a.75.75 0 1 1 0 1.5h-1.5a.75.75 0 1 1 0-1.5H12zm0-9a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 7.25zm0 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0V11a.75.75 0 0 1 .75-.75z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                          <span className={style.inviteText}>
-                            Registering with referral code
-                          </span>
-                          <code className={style.inviteCode}>{inviteCode}</code>
-                        </div>
-                      )}
                       <div className="mt-5">
                         Already have an account?{" "}
-                        <Link className="tdei-primary-link" to={"/login"}>
-                          Sign in
-                        </Link>
+                        <Link
+                          className="tdei-primary-link"
+                          to={SHOW_REFERRALS && inviteCode ? `/login?code=${encodeURIComponent(inviteCode)}` : "/login"} >Sign in</Link>
                       </div>
                     </Form>
                   )}

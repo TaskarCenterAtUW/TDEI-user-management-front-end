@@ -13,12 +13,15 @@ import iconMenu from "../../assets/img/icon-mobile-menu.svg";
 import ResetPassword from "../ResetPassword/ResetPassword";
 import useResetPassword from "../../hooks/useResetPassword";
 import { clear } from "../../store";
+import ApplyReferralCode from "../Referral/ApplyReferralCode";
+import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 
 const Header = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const authenticated = !!user?.name;
   const [showModal, setShowModal] = React.useState(false);
+  const [showReferralModal, setShowReferralModal] = React.useState(false);
 
   const handleLogout = () => {
     //Broadcast a 'forceLogout' event to other tabs
@@ -68,6 +71,11 @@ const Header = () => {
                   <img src={resetPasswordIcon} className="iconImg" />
                   Reset Password
                 </Dropdown.Item>
+                 <Dropdown.Divider />
+                 <Dropdown.Item onClick={() => setShowReferralModal(true)}>
+                 <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '20px', color:'#8A93A3' }} />
+                  Apply Referral Code
+                </Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={handleLogout}>
                   <img src={logoutIcon} className="iconImg" />
@@ -82,6 +90,7 @@ const Header = () => {
         show={showModal}
         onHide={() => setShowModal(false)}
       />
+       <ApplyReferralCode show={showReferralModal} onHide={() => setShowReferralModal(false)} />
     </div>
   );
 };

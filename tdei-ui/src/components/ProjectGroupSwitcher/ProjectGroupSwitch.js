@@ -21,6 +21,7 @@ import ProjectGroupSettings from "../ProjectGroupSettings/ProjectGroupSettings";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import Tooltip from "@mui/material/Tooltip";
 import { useMediaQuery } from "react-responsive";
+import { SHOW_REFERRALS } from "../../utils";
 
 const ProjectGroupSwitch = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
@@ -177,7 +178,7 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
     );
   };
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const canManageReferrals = project.roles.includes("poc");
+  const canManageReferrals = SHOW_REFERRALS && project.roles.includes("poc");
 
   return (
     <div className={style.projectGroupsContainer}>
@@ -211,6 +212,7 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
               <Tooltip title="Manage Referral Codes" arrow>
                 <div className={style.buttons}>
                   <Button
+                   style={{ display: SHOW_REFERRALS ? "inline-flex" : "none" }}
                     className={style.switchButton}
                     onClick={() => navigate(`/${id}/referralCodes`)}
                     variant="link"

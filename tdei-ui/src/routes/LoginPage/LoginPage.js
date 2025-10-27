@@ -11,8 +11,15 @@ import * as yup from "yup";
 import ForgotPassModal from "../../components/ForgotPassModal/ForgotPassModal";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+ import { useSearchParams } from "react-router-dom";
+ import ReferralBanner from "../../components/Referral/ReferralBanner";
+ import { SHOW_REFERRALS } from "../../utils";
+ import useReferralSignIn from "../../hooks/referrals/useReferralSignIn";
+ import {saveAuthTokensFromPromo} from '../../utils/helper';
+
 
 const LoginPage = () => {
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
@@ -34,21 +41,72 @@ const LoginPage = () => {
     password: yup.string().required("Password is required"),
   });
 
+   const codeFromUrl = (searchParams.get("code") || "").trim();
+   const referralCode = SHOW_REFERRALS ? codeFromUrl : "";
+
+ React.useEffect(() => {
+  if (!SHOW_REFERRALS) return;
+  if (codeFromUrl) {
+    sessionStorage.setItem("referralCode", codeFromUrl);
+  } else {
+    sessionStorage.removeItem("referralCode");
+  }
+}, [codeFromUrl]);
+
+
+
+  const promoSignin = useReferralSignIn({
+    onSuccess: (resp) => {
+      setLoading(false);
+      sessionStorage.setItem("promoSigninPayload", JSON.stringify(resp || {}));
+      sessionStorage.setItem("handoffFlow", "promo");
+       // Only save tokens to localStorage for desktop
+      if (!/Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "")) {
+        if (resp?.token) saveAuthTokensFromPromo(resp.token);
+      }
+     navigate("/invite-instructions?flow=promo", {
+        replace: true,
+        state: {
+          isPromo: true,                                 
+          instructions_url: resp?.instructions_url || resp?.instructions_url || "",
+          token: resp?.token || "",
+          redirect_url: resp?.redirect_url || "",
+          referral_code: referralCode || ""
+        }
+      });
+    },
+   onError: (err) => {
+     setLoading(false);
+     sessionStorage.removeItem("referralCode");
+     const status = err?.response?.status || err?.status;
+     if (status === 404 || status === 410) {
+       dispatch(show({ message: "Promo code is invalid or expired.", type: "warning" }));
+     } else {
+       dispatch(show({ message: "Invalid credentials or error in sign in", type: "danger" }));
+     }
+   }
+ });
+
   const handleSignIn = async (values) => {
     setLoading(true);
+    if (SHOW_REFERRALS && referralCode) {
+      // PROMO FLOW: only call the referralSignIn API
+      promoSignin.mutate({ referral_code: referralCode, data: values });
+      return;
+    }
+    // Normal login flow
     auth.signin(
       values,
-      (data) => {
-        setLoading(false);
-      },
+      () => setLoading(false),
       (err) => {
         console.error(err);
         setLoading(false);
-        if(err.status === 403 || err.response.status === 403){
-           navigate("/emailVerify", {
-            state: {  
+        sessionStorage.removeItem("referralCode");
+        if (err?.status === 403 || err?.response?.status === 403) {
+          navigate("/emailVerify", {
+            state: {
               actionText: "Your email address has not been verified. Please verify your email before logging in.",
-              email: values.username 
+              email: values.username
             }
           });
         } else {
@@ -71,6 +129,9 @@ const LoginPage = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
+                 {SHOW_REFERRALS && referralCode && (
+                   <ReferralBanner code={referralCode} context="login" />
+                 )}
                 <div className={style.loginTitle}>Welcome!</div>
                 <div className={style.loginSubTitle}>
                   Please login to your account.
