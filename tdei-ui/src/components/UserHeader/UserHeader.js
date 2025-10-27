@@ -112,72 +112,7 @@ const UserHeader = ({ roles }) => {
               copyTitle={"Project Id"}
             />
           )}
-          {selectedProjectGroup && isPoc && (
-            <div key={selectedProjectGroup.tdei_project_group_id} className={style.dvCard}>
-              <div className={style.dvHeader}>
-                <div>
-                  <div className={style.dvActions}>
-                    <div className={style.dvTitle}>Dataviewer Setting</div>
-                    {dvPending ? (
-                      <span className={style.statePending} aria-live="polite">Loading…</span>
-                    ) : (
-                      <span
-                        className={dvOn ? style.stateOn : style.stateOff}
-                        aria-label={`Dataviewer is ${dvOn ? "ON" : "OFF"}`}
-                      >
-                        {dvOn ? "ON" : "OFF"}
-                      </span>
-                    )}
-                  </div>
-                  <div className={style.dvSubtitle}>
-                    Enable or disable the dataviewer for your project
-                  </div>
-                </div>
 
-                <div className={style.dvActions}>
-
-                  <Button
-                    className={style.manageBtn}
-                    onClick={() => setShowSettings(true)}
-                    disabled={dvPending}
-                  >
-                    Manage
-                  </Button>
-                </div>
-              </div>
-              {dvOn && !dvPending && <div className={style.dvDivider} />}
-
-              {dvOn && !dvPending && (
-                <div className={style.dvUrlBlock}>
-                  <div className={style.roleText}>Dataviewer URL</div>
-                  <InputGroup className={style.dvUrlGroup}>
-                    <Form.Control
-                      type="text"
-                      value={viewerUrl}
-                      readOnly
-                      className={style.dvUrlInput}
-                    />
-                    <Button
-                      variant="outline-light"
-                      className={style.dvCopyBtn}
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(viewerUrl);
-                          setCopyViewerUrl(true);
-                          setTimeout(() => setCopyViewerUrl(false), 1200);
-                        } catch {
-                        }
-                      }}
-                      disabled={!viewerUrl}
-                      title={copyViewerUrl ? "Copied!" : "Copy"}
-                    >
-                      <FaCopy />
-                    </Button>
-                  </InputGroup>
-                </div>
-              )}
-            </div>
-          )}
           {/* === end Dataviewer card === */}
         </>
       ) : (
@@ -245,7 +180,73 @@ const UserHeader = ({ roles }) => {
           </div>
         </div>
       )}
+      {selectedProjectGroup && isPoc && (<div className={style.apiKey}></div>)}
+      {selectedProjectGroup && isPoc && (
+        <div key={selectedProjectGroup.tdei_project_group_id} className={style.dvCard}>
+          <div className={style.dvHeader}>
+            <div>
+              <div className={style.dvActions}>
+                <div className={style.dvTitle}>Dataviewer Setting</div>
+                {dvPending ? (
+                  <span className={style.statePending} aria-live="polite">Loading…</span>
+                ) : (
+                  <span
+                    className={dvOn ? style.stateOn : style.stateOff}
+                    aria-label={`Dataviewer is ${dvOn ? "ON" : "OFF"}`}
+                  >
+                    {dvOn ? "ON" : "OFF"}
+                  </span>
+                )}
+              </div>
+              <div className={style.dvSubtitle}>
+                Enable or disable the dataviewer for your project
+              </div>
+            </div>
 
+            <div className={style.dvActions}>
+
+              <Button
+                className={style.manageBtn}
+                onClick={() => setShowSettings(true)}
+                disabled={dvPending}
+              >
+                Manage
+              </Button>
+            </div>
+          </div>
+          {dvOn && !dvPending && <div className={style.dvDivider} />}
+
+          {dvOn && !dvPending && (
+            <div className={style.dvUrlBlock}>
+              <div className={style.roleText}>Dataviewer URL</div>
+              <InputGroup className={style.dvUrlGroup}>
+                <Form.Control
+                  type="text"
+                  value={viewerUrl}
+                  readOnly
+                  className={style.dvUrlInput}
+                />
+                <Button
+                  variant="outline-light"
+                  className={style.dvCopyBtn}
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(viewerUrl);
+                      setCopyViewerUrl(true);
+                      setTimeout(() => setCopyViewerUrl(false), 1200);
+                    } catch {
+                    }
+                  }}
+                  disabled={!viewerUrl}
+                  title={copyViewerUrl ? "Copied!" : "Copy"}
+                >
+                  <FaCopy />
+                </Button>
+              </InputGroup>
+            </div>
+          )}
+        </div>
+      )}
       {(isPoc || user.isAdmin) && selectedProjectGroup && (
         <ProjectGroupSettings
           show={showSettings}
