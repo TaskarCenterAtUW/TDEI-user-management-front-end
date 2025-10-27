@@ -36,6 +36,23 @@ function resolveFlow(location) {
   return fromQuery || fromState || fromSession || inferred;
 }
 
+const tokenToString = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") return val.trim();
+  if (typeof val === "object") {
+   // Check common token keys
+    return (
+      (typeof val.refresh_token === "string" && val.refresh_token.trim()) ||
+      (typeof val.access_token === "string"  && val.access_token.trim())  ||
+      (typeof val.token === "string"         && val.token.trim())         ||
+      (typeof val.oneTimeToken === "string"  && val.oneTimeToken.trim())  ||
+      ""
+    );
+  }
+  return "";
+};
+
+
 // Normalize a value across many possible keys/cases
 const pick = (obj, keys, fallback = "") =>
   keys.reduce((acc, k) => (acc !== undefined && acc !== null ? acc : obj?.[k]), undefined) ?? fallback;
@@ -78,10 +95,11 @@ export default function InviteInstructions() {
     ? pick(state, ["instructions_url", "instruction_url", "instructionsUrl"], pick(promoFallback, ["instructions_url", "instruction_url", "instructionsUrl"], ""))
     : pick(state, ["instructions_url", "instructionsUrl"], pick(regFallback, ["instructions_url", "instructionsUrl"], ""));
 
-  const oneTimeToken = isPromo
-    ? pick(state, ["token", "oneTimeToken"], pick(promoFallback, ["token", "oneTimeToken"], ""))
-    : pick(state, ["oneTimeToken", "token"], pick(regFallback, ["oneTimeToken", "token"], ""));
+  const raw = isPromo
+  ? pick(state, ["token", "oneTimeToken"], pick(promoFallback, ["token", "oneTimeToken"], ""))
+  : pick(state, ["oneTimeToken", "token"], pick(regFallback, ["oneTimeToken", "token"], ""));
 
+  const oneTimeToken = tokenToString(raw);
   const redirectUrl =  pick(state, ["redirect_url", "redirectUrl", "redirection_url"], pick(promoFallback, ["redirect_url", "redirectUrl", "redirection_url"], ""))
 
   const promoToken = isPromo
