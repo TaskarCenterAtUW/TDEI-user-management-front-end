@@ -113,10 +113,10 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
 
   return (
     <Container className={style.datasetsTableRow} fluid>
-      <Row className={style.datasetCard}>
-        <Col md={5}>
-          <div className="d-flex align-items-center flex-wrap">
-            <div className="me-3">
+      <div className={style.datasetCard}>
+        <div className={style.datasetItem}>
+          <div className="d-flex align-items-center flex-wrap gap-2">
+            <div className="me-2">
               <img src={datasetRowIcon} alt="Dataset Icon" />
             </div>
             <div className={style.infoBlock}>
@@ -162,9 +162,10 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
               </div>
             </div>
           </div>
-        </Col>
+        </div>
         {!isReleasedList ? null : (
-          <Col>
+          <div className={style.datasetItem}>
+            <div className={style.mobileOnly}>Project Group</div>
             <div
               className={style.serviceName}
               title={dataset.project_group.name}
@@ -172,20 +173,23 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
             >
               {dataset.project_group.name}
             </div>
-          </Col>
+          </div>
         )}
-        <Col>
+        <div className={style.datasetItem}>
+          <div className={style.mobileOnly}>Service Name</div>
           <div className={style.serviceName} title={service.name} tabIndex={0}>
             {service.name}
           </div>
-        </Col>
-        <Col>
-          <div className="" tabIndex={0}>
+        </div>
+        <div className={style.datasetItem}>
+          <div className={style.mobileOnly}>Type</div>
+          <div className={style.typeNameTransform} tabIndex={0}>
             {data_type === "Osw" ? "OSW" : data_type}
           </div>
-        </Col>
+        </div>
         {isReleasedList ? null : (
-          <Col className="d-flex justify-content-center">
+          <div className={`${style.datasetItem} ${style.itemCenterAlign}`}>
+            <div className={style.mobileOnly}>Status</div>
             <div
               className={style.statusContainer}
               style={{ backgroundColor: getStatusColor() }}
@@ -193,10 +197,11 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
             >
               {status === "Publish" ? "Released" : status}
             </div>
-          </Col>
+          </div>
         )}
         {/* {isReleasedList ? null : ( */}
-        <Col>
+        <div className={style.datasetItem}>
+          {/* <div className={style.mobileOnly}>Action</div> */}
           <DatasetsActions
             status={status}
             onAction={handleDropdownSelect}
@@ -204,14 +209,14 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
             data_type={data_type}
             dataViewerProps={dataViewerProps()}
           />
-        </Col>
+        </div>
         {/* )} */}
-      </Row>
-      <div className={`${style.datasetIdBlock} d-flex align-items-center`}>
+      </div>
+      <div className={style.datasetIdBlock}>
         <ClipboardCopy copyText={tdei_dataset_id} copyTitle={"Id"} />
         {dataset.derived_from_dataset_id && (
           <>
-            <span className={style.separator}> | </span>
+            <span className={style.verticalSeparator}></span>
             <ClipboardCopy
               copyText={dataset.derived_from_dataset_id}
               copyTitle={"Derived Dataset Id"}

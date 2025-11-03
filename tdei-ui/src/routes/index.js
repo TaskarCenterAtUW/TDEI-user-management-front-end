@@ -24,6 +24,13 @@ import PasswordResetConfirm from "../components/VerifyComponent/PasswordResetCon
 import EmailVerification from "../components/VerifyComponent/EmailVerification";
 import ProjectGroupSwitch from "../components/ProjectGroupSwitcher/ProjectGroupSwitch";
 import Feedback from "./Feedback";
+import Reports from "./Reports/Reports";
+import Referral from "./Referral/Referral";
+import CreateUpdateReferralCode from "./Referral/CreateUpdateReferralCode";
+import RequireGuest from "../components/RequireGuest/RequireGuest";
+import InviteInstructions from "./Referral/InviteInstructions";
+import AppLinkFallback from "../AppLinkFallback";
+import { SHOW_REFERRALS } from "../utils/helper";
 
 const Router = () => {
   const { user } = useAuth();
@@ -31,11 +38,19 @@ const Router = () => {
   return (
     <Routes>
       <>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/ForgotPassword" element={<ForgotPassword />} />
-        <Route path="/passwordReset" element={<PasswordResetConfirm />} />
-        <Route path="/emailVerify" element={<EmailVerification />} />
+        <Route element={<RequireGuest />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/ForgotPassword" element={<ForgotPassword />} />
+          <Route path="/passwordReset" element={<PasswordResetConfirm />} />
+          <Route path="/emailVerify" element={<EmailVerification />} />
+          {SHOW_REFERRALS && (
+            <>
+              <Route path="/invite-instructions" element={<InviteInstructions />} />
+              <Route path="/app-link/*" element={<AppLinkFallback />} />
+            </>
+          )}
+        </Route>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />
@@ -47,6 +62,9 @@ const Router = () => {
             <Route path="/stations" element={<Stations />} />
             <Route path="/datasets" element={<Datasets />} />
             <Route path="/feedback" element={<Feedback />} />
+            {user?.isAdmin && (
+              <Route path="/reports" element={<Reports />} />
+            )}
             <Route
               path="/projectGroupSwitch"
               element={<ProjectGroupSwitch />}
@@ -71,6 +89,13 @@ const Router = () => {
             <Route path="/CreateJob" element={<CreateJobService />} />
             <Route path="/EditMetadata" element={<EditMetadata />} />
             <Route path="/CloneDataset" element={<CloneDataset />} />
+            {SHOW_REFERRALS && (
+              <>
+                <Route path="/:id/referralCodes" element={<Referral />} />
+                <Route path="/:id/referralCodes/new" element={<CreateUpdateReferralCode />} />
+                <Route path="/:id/referralCodes/:codeId/edit" element={<CreateUpdateReferralCode />} />
+              </>
+            )}
           </Route>
         </Route>
       </>

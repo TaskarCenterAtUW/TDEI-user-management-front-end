@@ -37,11 +37,7 @@ const Root = () => {
         </div>
       ) : (
         <div className="d-flex">
-          {flag && (
-            <div className={style.navigationBlock}>
-              <Navigation />
-            </div>
-          )}
+          <Navigation />
           <div className={style.contentBlock}>
             <Outlet roles={roles} />
           </div>

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-
+import dayjs from "dayjs";
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL;
@@ -888,24 +888,24 @@ export async function updateServiceStatus(data) {
   return res.data;
 }
 export async function downloadUsers() {
-  try {
-    const response = await axios.get(`${url}/users/download`, {
+   try {
+    const res = await axios.get(`${url}/users/download`, {
       responseType: "blob",
+      headers: { Accept: "text/csv" },
     });
-    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
-    const a = document.createElement("a");
-    a.href = urlBlob;
-    a.download = `tdei-active-users.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(urlBlob);
-  } catch (error) {
-    console.error('There was a problem with the download operation:', error);
-    if (error.status === 404) {
-      return Promise.reject(new AxiosError("Download File Not Found!"));
+    const disposition = res.headers && res.headers["content-disposition"];
+    const filename = getFilename(disposition, "tdei-active-users.csv");
+    return { blob: res.data, filename };
+  } catch (err) {
+    const status = (err && err.response && err.response.status) || err && err.status;
+    if (status === 404) {
+      throw new Error("Download file not found.");
     }
-    return Promise.reject(new AxiosError(error));
+    const msg =
+      (err && err.response && err.response.data && err.response.data.message) ||
+      (err && err.message) ||
+      "Failed to download Active Users CSV.";
+    throw new Error(msg);
   }
 }
 export async function regenerateApiKey() {
@@ -1034,4 +1034,91 @@ export function saveBlobAsFile(blob, filename) {
   a.click();
   a.remove();
   window.URL.revokeObjectURL(href);
+}
+export async function downloadStatsExport(variables = {}) {
+  const { __rangeLabel, ...params } = variables;
+
+  const cleaned = { ...params };
+  replaceEmptyStringsWithNull(cleaned);
+  const finalParams = compact(cleaned); 
+
+  const res =  await axios.get(`${osmUrl}/download-stats/export`, {
+    responseType: "blob",
+    params: finalParams,
+    headers: { Accept: "text/csv" },
+  });
+
+  const disposition = res.headers?.["content-disposition"];
+  const fallback = buildFallbackName(finalParams, variables.__rangeLabel);
+  const filename = getFilename(disposition, fallback);
+
+  return { blob: res.data, filename };
+}
+
+export function buildFallbackName(params = {}, rangeLabel = "") {
+  const { from_date, to_date } = params || {};
+  const fmt = (v) => (v && dayjs(v).isValid() ? dayjs(v).format("YYYY-MM-DD") : null);
+  const f = fmt(from_date);
+  const t = fmt(to_date);
+
+  if (f && t) return `download_stats_${f}_${t}.csv`;
+
+  switch (rangeLabel) {
+    case "LAST_7":  return "download_stats_last_7_days.csv";
+    case "LAST_30": return "download_stats_last_30_days.csv";
+    case "LAST_90": return "download_stats_last_90_days.csv";
+    case "ALL":     return "download_stats_all.csv";
+    default:        return `download_stats_${dayjs().format("YYYY-MM-DD")}.csv`;
+  }
+}
+
+export async function getReferralCodes({
+  projectGroupId,
+  page = 1,
+  name,
+  type,   
+  code,
+  pageSize = 10
+}) {
+  if (!projectGroupId) {
+    throw new Error("projectGroupId is required");
+  }
+  const params = {
+    page_no: page,
+    page_size: pageSize,
+  };
+  if (code) params.code = code;
+  if (name) params.name = name;
+  if (type !== undefined && type !== null) params.type = type;
+
+  const res = await axios.get(
+    `${url}/project-group/${projectGroupId}/referral-codes`,
+    { params }
+  );
+
+  // Expecting: { total_items, per_page, current_page, total_pages, data: [...] }
+  return {
+    page,
+    data: res.data,
+  };
+}
+
+export async function createReferralCode(projectGroupId,data) {
+  const res = await axios.post(
+    `${url}/project-group/${projectGroupId}/referral-codes`,
+    data
+  );
+  return res.data;
+}
+export async function updateReferralCode(projectGroupId,code_id,data) {
+  const res = await axios.put(
+    `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`,
+    data
+  );
+  return res.data;
+}
+export async function deleteReferralCode(projectGroupId,code_id) {
+  const res = await axios.delete(
+    `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`);
+  return res.data;
 }

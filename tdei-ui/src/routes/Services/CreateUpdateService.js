@@ -176,7 +176,7 @@ const CreateUpdateService = () => {
                         <Form noValidate onSubmit={handleSubmit}>
                             <div className="header">
                                 <div className="page-header-title">  {getHeader()}</div>
-                                <div className="d-grid gap-2 d-md-flex">
+                                <div className="d-flex gap-2">
                                     <Button
                                         variant="ouline-secondary"
                                         className="tdei-secondary-button"

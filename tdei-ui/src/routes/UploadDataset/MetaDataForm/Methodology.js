@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import { Modal, Button, Form } from "react-bootstrap";
 import RowRadioButtonsGroup from "../../../components/RowRadioButtonsGroup/RowRadioButtonsGroup";
+import style from "./MetaDataForm.module.css";
 
 const Methodology = ({ formData, updateFormData }) => {
 
@@ -21,9 +22,9 @@ const handleFieldChange = (e) => {
   return (
     <Formik initialValues={formData} onSubmit={values => console.log(values)} >
         {({ handleChange, handleBlur, setFieldTouched }) => (
-        <div className="container">
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-md-6 column-style">
+        <div className={style.metaDataContainer}>
+          <div className="row">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="point_data_collection_device">
                 <Form.Label>Point Data Collection Device</Form.Label>
                 <Form.Control
@@ -127,7 +128,7 @@ const handleFieldChange = (e) => {
                 />
               </Form.Group>
             </div>
-            <div className="col-md-6 column-style">
+            <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="preprocessing_location">
                 <Form.Label>Preprocessing Location</Form.Label>
                 <Form.Control

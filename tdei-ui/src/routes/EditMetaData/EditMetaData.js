@@ -17,6 +17,7 @@ import useEditMetadata from '../../hooks/datasets/useEditMetadata';
 import { EDIT_META_DATA } from '../../utils';
 import CustomModal from '../../components/SuccessModal/CustomModal';
 import { GET_DATASETS } from '../../utils';
+import { useMediaQuery } from 'react-responsive';
 
 const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
     position: 'relative',
@@ -164,6 +165,7 @@ export default function EditMetadata() {
     const [showToast, setToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [error, setError] = useState("");
+    const isMobile = useMediaQuery({ maxWidth: 900 });
 
     const onSuccess = (data) => {
         setLoading(false);
@@ -300,10 +302,10 @@ export default function EditMetadata() {
             <Container>
                 <div className={style.uploadWidgetTitle}>Update Metadata - {dataset && dataset.metadata && dataset.metadata.dataset_detail && dataset.metadata.dataset_detail.name}</div>
                 <Box className={style.uploadDatasetStepsLayout}>
-                    <Grid container spacing={0} columns={15}>
-                        <Grid item xs={4}>
+                    <Grid container spacing={0} columns={12}>
+                        <Grid item xs={12} sm={12} md={3}>
                             <Box className={style.stepsBlock}>
-                                <Stepper nonLinear activeStep={activeStep} orientation='vertical'>
+                                <Stepper nonLinear activeStep={activeStep} orientation={isMobile ? 'horizontal' : 'vertical'}>
                                     <Step key={0} completed={completed[0]}>
                                         <StepLabel StepIconComponent={ColorlibStepIcon}>
                                             <div className={style.stepTimelineTitle}>Metadata</div>
@@ -313,7 +315,7 @@ export default function EditMetadata() {
                                 </Stepper>
                             </Box>
                         </Grid>
-                        <Grid item xs={11}>
+                        <Grid itemxs={12} sm={12} md={9}>
                             <Grid container>
                                 <Grid item xs={12}>
                                     <div className={style.stepsTabContainer}>

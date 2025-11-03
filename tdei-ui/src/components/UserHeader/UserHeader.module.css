@@ -28,6 +28,8 @@
   padding-top: 20px;
   color: #6e7897;
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
   overflow: hidden;
   white-space: nowrap;
@@ -45,10 +47,10 @@
   border-radius: 4px;
   height: 35px;
   display: flex;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
   padding: 5px 15px 5px 15px;
-  margin-left: 10px;
   min-width: 525px;
   max-width: 48%;
   overflow:hidden;
@@ -56,7 +58,6 @@
 }
 .buttonContainer {
   display: flex;
-  margin-left: 20px;
   flex-wrap: nowrap;
 }
 
@@ -89,4 +90,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+@media only screen and (max-width: 768px) {
+  .maskedKey {
+    flex-direction: column;
+    height: auto;
+    min-width: 100%;
+    width: 100%;
+  }
+  .buttonContainer {
+    width: 100%;
+    justify-content: space-evenly;
+    border-top: 1px dashed #d0d0d0;
+    padding: 10px 0px;
+  }
 }

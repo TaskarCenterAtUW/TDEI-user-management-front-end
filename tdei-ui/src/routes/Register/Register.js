@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Row, Form, Button, Card, Col, InputGroup } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Row, Form, Button, Card, Col, InputGroup, Alert, Spinner } from "react-bootstrap";
+import { Link, useNavigate, useSearchParams, createSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
@@ -14,6 +14,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import CustomModal from "../../components/SuccessModal/CustomModal";
+import { SHOW_REFERRALS } from "../../utils";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,33 @@ const Register = () => {
   const auth = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
+  const rawInvite = SHOW_REFERRALS
+    ? (
+      (searchParams.get("code")
+        || searchParams.get("referral_code")
+        || searchParams.get("refferal_code")
+        || ""
+      ).trim()
+    )
+    : "";
+
+  useEffect(() => {
+    if (SHOW_REFERRALS) sessionStorage.removeItem("inviteHandoffDone");
+  }, []);
+
+  useEffect(() => {
+    // If there's a raw invite code in the URL but not in the "code" param, redirect to add it.
+    if (SHOW_REFERRALS && rawInvite && !searchParams.get("code")) {
+      navigate({
+        pathname: "/register",
+        search: `?${createSearchParams({ code: rawInvite })}`,
+      }, { replace: true });
+    }
+  }, [rawInvite, searchParams, navigate]);
+
+  const inviteCode = SHOW_REFERRALS ? rawInvite : "";
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -40,19 +67,13 @@ const Register = () => {
 
   const validationSchema = yup.object().shape({
     firstName: yup.string().required("First Name is required"),
-    email: yup
-      .string()
-      .email("Invalid email Id")
-      .required("Please enter email Id"),
+    email: yup.string().email("Invalid email Id").required("Please enter email Id"),
     phone: yup.string().matches(PHONE_REGEX, "Invalid phone number"),
-    password: yup
-      .string()
+    password: yup.string()
       .matches(/^(?=.*[a-z])(?=.*\d)(?=.*[A-Z])(?=.*[!\"#$%&'()*+,\-./:;<=>?@[\]^_`{|}~])(?!.*\s).{8,255}$/,
         "Password must be minimum of 8 characters in length, requires at least one lower case, one upper case, one special character and a number."
       ).required("Please enter password"),
-    confirm: yup
-      .string()
-      .oneOf([yup.ref("password"), null], "Confirm password does not match")
+    confirm: yup.string().oneOf([yup.ref("password"), null], "Confirm password does not match")
       .required("Please confirm password"),
   });
 
@@ -65,40 +86,70 @@ const Register = () => {
     }
     setLoading(true);
     try {
-      await axios.post(`${process.env.REACT_APP_URL}/register`, {
+      const payload = {
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
         phone: values.phone,
         password: values.password,
-      });
+        ...(SHOW_REFERRALS && inviteCode ? { code: inviteCode } : {}),
+      };
+
+      const res = await axios.post(`${process.env.REACT_APP_URL}/register`, payload);
+      const data = res?.data?.data;
+
+      const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
+      const oneTimeToken = data?.token || "";
+
       setToastMessage("Registration successful!");
       setToastType("success");
       setShowToast(true);
       setLoading(false);
-      setTimeout(() => {
-        navigate("/emailVerify", {
-          state: {  
-            actionText: "Your email verification link has been sent. Please verify your email before logging in.",
-            email: values.email
-          }
+
+      // Branch based on presence of instructions_url
+      const hasInviteFlow = SHOW_REFERRALS && (instructionsUrl || oneTimeToken);
+      if (hasInviteFlow) {
+        // persist in sessionStorage as a fallback in case user refreshes page
+        sessionStorage.setItem(
+          "inviteRegPayload",
+          JSON.stringify({
+            instructions_url: data.instructions_url,
+            oneTimeToken: data.token,
+            email: data.email,
+          })
+        );
+        // go to the instructions page
+        navigate("/invite-instructions", {
+          state: {
+            instructions_url: data.instructions_url,
+            oneTimeToken: data.token,
+            email: data.email,
+          },
+          replace: true,
         });
-      }, 2000);
+      } else {
+        // Normal flow -> email verification page
+        setTimeout(() => {
+          navigate("/emailVerify", {
+            state: {
+              actionText:
+                "Your email verification link has been sent. Please verify your email before logging in.",
+              email: values.email,
+            },
+            replace: true,
+          });
+        }, 1200);
+      }
     } catch (err) {
       setLoading(false);
-      setToastMessage(err.response?.data ?? "Error in registering");
+      setToastMessage(err?.response?.data ?? "Error in registering");
       setToastType("error");
       setShowToast(true);
     }
   };
-  const handleCloseToast = () => {
-    setShowToast(false);
-  };
 
-  // Handler for closing the Terms modal (OK button)
-  const handleCloseTermsModal = () => {
-    setShowTermsModal(false);
-  };
+  const handleCloseToast = () => setShowToast(false);
+  const handleCloseTermsModal = () => setShowTermsModal(false);
 
   return (
     <div className={style.registerContainer}>
@@ -206,6 +257,7 @@ const Register = () => {
                           <InputGroup.Text
                             onClick={() => setShowPassword(!showPassword)}
                             style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
                           >
                             {showPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
                           </InputGroup.Text>
@@ -230,6 +282,7 @@ const Register = () => {
                           <InputGroup.Text
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                           >
                             {showConfirmPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
                           </InputGroup.Text>
@@ -269,6 +322,26 @@ const Register = () => {
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
+                      {SHOW_REFERRALS && inviteCode && (
+                        <div className={style.inviteNote} role="note" aria-live="polite">
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            className={style.inviteIcon}
+                          >
+                            <path
+                              d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm0 14.25a.75.75 0 1 1 0 1.5h-1.5a.75.75 0 1 1 0-1.5H12zm0-9a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 7.25zm0 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0V11a.75.75 0 0 1 .75-.75z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span className={style.inviteText}>
+                            Registering with referral code
+                          </span>
+                          <code className={style.inviteCode}>{inviteCode}</code>
+                        </div>
+                      )}
                       <div className="mt-5">
                         Already have an account?{" "}
                         <Link className="tdei-primary-link" to={"/login"}>

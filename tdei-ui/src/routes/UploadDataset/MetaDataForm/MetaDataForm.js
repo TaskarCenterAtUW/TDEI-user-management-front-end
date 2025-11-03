@@ -190,19 +190,19 @@ const MetaDataForm = ({ selectedData, onUpdateFormData, dataType, isDatasetPubli
                         className="mb-2"
                     >
                         <Tab eventKey="dataset_detail" title={<span className={style.boldText}> Dataset Details</span>}>
-                        <DatasetDetails dataType={dataType} isDatasetPublished={isDatasetPublished} formData={formData.dataset_detail} updateFormData={(values) => handleUpdateFormData('dataset_detail', values)} />
+                            <DatasetDetails dataType={dataType} isDatasetPublished={isDatasetPublished} formData={formData.dataset_detail} updateFormData={(values) => handleUpdateFormData('dataset_detail', values)} />
                         </Tab>
                         <Tab eventKey="data_provenance" title={<span className={style.boldText}> Data Provenance</span>}>
-                        <DatasetProvenance formData={formData.data_provenance} updateFormData={(values) => handleUpdateFormData('data_provenance', values)} />
+                            <DatasetProvenance formData={formData.data_provenance} updateFormData={(values) => handleUpdateFormData('data_provenance', values)} />
                         </Tab>
                         <Tab eventKey="dataset_summary" title={<span className={style.boldText}> Dataset Summary</span>}>
-                        <DatasetSummary formData={formData.dataset_summary} updateFormData={(values) => handleUpdateFormData('dataset_summary', values)} />
+                            <DatasetSummary formData={formData.dataset_summary} updateFormData={(values) => handleUpdateFormData('dataset_summary', values)} />
                         </Tab>
                         <Tab eventKey="maintenance" title={<span className={style.boldText}> Maintenance</span>}>
-                        <Maintenance formData={formData.maintenance} updateFormData={(values) => handleUpdateFormData('maintenance', values)} />
+                            <Maintenance formData={formData.maintenance} updateFormData={(values) => handleUpdateFormData('maintenance', values)} />
                         </Tab>
                         <Tab eventKey="methodology" title={<span className={style.boldText}> Methodology</span>}>
-                        <Methodology formData={formData.methodology} updateFormData={(values) => handleUpdateFormData('methodology', values)} />
+                            <Methodology formData={formData.methodology} updateFormData={(values) => handleUpdateFormData('methodology', values)} />
                         </Tab>
                     </Tabs>
                 </div>

@@ -2,6 +2,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
   padding-bottom: 20px;
 }
 
@@ -10,6 +12,8 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 15px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .searchPanel input {
@@ -42,8 +46,8 @@
 
 .gridContainer {
   display: grid;
-  grid-template-columns: 25% 25% 20% 20% 10%;
-  grid-column-gap: 10px;
+  grid-template-columns: 25% repeat(4, minmax(120px, 1fr));
+  gap: 20px;
   align-items: center;
   padding: 25px 25px;
   font-size: 14px;
@@ -54,9 +58,10 @@
   cursor: pointer;
 }
 
-/* .actionItem {
-  width: 28px;
-} */
+.actionItem {
+  display: flex;
+  justify-content: center;
+}
 
 .actionButton {
   padding: 2px 2px;
@@ -99,6 +104,8 @@
 
 .content {
   font-size: 16px;
+  word-break: break-word;
+  line-height: 20px;
 }
 
 .notAssigned {
@@ -122,7 +129,7 @@
 .pocList {
   display: flex;
   align-items: center;
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 5px;
 }
 
@@ -156,4 +163,68 @@
 }
 .inactiveSelect{
   width: 150px;
+}
+.projectGroupActionsButton {
+  background-color: transparent;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 10px;
+  &::after {
+    display: none; 
+  }
+  &:hover {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+  }
+}
+.mobileOnly {
+  display: none;
+}
+.fullWidth {
+  width: 100%;
+  text-align: center;
+}
+.dropdownCard {
+  .dropdownItem {
+    padding: 8px 10px;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .gridContainer {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 10px;
+  }
+  .projectHeader {
+    display: none;
+  }
+  .projectGroupBlock {
+    border-top: 5px solid var(--tdei-blue);
+    border-left: 1px solid #ddd;
+  }
+  .mobileOnly {
+    display: block;
+    font-size: 14px;
+    color: #83879B;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .content {
+    border-bottom: 1px dashed #cecece;
+    padding-bottom: 10px;
+  }
+  .details {
+    border-bottom: 1px dashed #cecece;
+    padding-bottom: 15px;
+  }
+}
+@media only screen and (max-width: 600px) {
+  .projectGroupActionsButton {
+    width: 100%;
+  }
+  .dropdownCard {
+    width: 100%;
+  }
 }
