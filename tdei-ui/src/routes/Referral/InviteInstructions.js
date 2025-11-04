@@ -159,17 +159,24 @@ export default function InviteInstructions() {
 
   if (onMobile) sessionStorage.setItem("handoffInProgress", "1");
 
-  // If redirect_url is present, it wins (both promo + registration)
-  if (redirectUrl) {
-    // If promo provided a web destination, we stay on web.
+    // If redirect_url is present, it wins (both promo  registration)
+    if (redirectUrl) {
+      const url = new URL(redirectUrl, window.location.origin);
+      const isAppLink = url.pathname.replace(/\/+$/, "") === "/app-link";
 
-    sessionStorage.removeItem("handoffInProgress");
-    sessionStorage.removeItem("promoSigninPayload");
-    sessionStorage.removeItem("handoffFlow");
-    return hardReplace(redirectUrl);
-  }
+      if (!isAppLink) {
+        // Non-app-link destinations → always go there
+        sessionStorage.removeItem("handoffInProgress");
+        sessionStorage.removeItem("promoSigninPayload");
+        sessionStorage.removeItem("handoffFlow");
+        return hardReplace(url.toString());
+      }
+      // If it IS /app-link, don't redirect here.
+      // Let the existing mobile flow below construct the correct /app-link?code&env
+      // so iOS gets the Smart Banner and Android gets the deep-link reliably.
+    }
 
-  // No redirect_url. Choose mobile or desktop paths.
+  // No (or intentionally ignored) redirect_url → choose mobile/desktop paths
     if (onMobile) {
       // MOBILE (promo or reg) → app-link or modal
       const appLinkUrl = oneTimeToken
@@ -190,16 +197,11 @@ export default function InviteInstructions() {
         return;
       }
 
-    // ANDROID: replace the current history entry with /app-link, then open modal
-    replacePathOnly(appLinkUrl);
-    const schema = oneTimeToken
-      ? `avivscr://?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`
-      : `avivscr://?env=${encodeURIComponent(env)}`;
-
-    setDeepLinkUrl(schema);
-    setShowInstallModal(true);
-    setHandoffComplete(true);
-    return;
+    // ANDROID: move to app-link page that triggers deep-link
+      sessionStorage.setItem("handoffInProgress", "1");
+      sessionStorage.setItem("inviteHandoffDone", "1");
+      window.location.replace(appLinkUrl);        
+      return;
   }
 
   // DESKTOP
@@ -358,45 +360,6 @@ useEffect(() => {
             </Card>
           </Col>
         </Row>
-
-        {/* Android deep-link modal (registration and promo on Android) */}
-        {isMobileUA() && !isIOS() && (
-          <Modal show={showInstallModal} onHide={() => setShowInstallModal(false)} centered>
-            <Modal.Header closeButton>
-              <Modal.Title>Continue in the App</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p className="mb-3">
-                Your setup is complete. Open the app to continue, or install it if you haven't already.
-              </p>
-              <div className="d-flex flex-column gap-2">
-                <Button
-                  className="tdei-primary-button"
-                  onClick={() => {
-                    window.location.href = deepLinkUrl;
-                    setShowInstallModal(false);
-                    handleModalAction();
-                    sessionStorage.setItem("inviteHandoffDone", "1");
-                    sessionStorage.setItem("handoffInProgress", "1");
-                  }}
-                >
-                  Open App
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  className="tdei-secondary-button"
-                  as="a"
-                  href={process.env.REACT_APP_ANDROID_INSTALL_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Install Android App
-                </Button>
-              </div>
-            </Modal.Body>
-          </Modal>
-        )}
-
         <ResponseToast
           showtoast={toast.show}
           handleClose={() => setToast({ ...toast, show: false })}
