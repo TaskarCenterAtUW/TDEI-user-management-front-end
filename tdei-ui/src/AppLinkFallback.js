@@ -1,25 +1,43 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 
 const isIOS = () =>
   /iPad|iPhone|iPod/i.test(navigator.userAgent || '') ||
   (/Macintosh/i.test(navigator.userAgent || '') && navigator.maxTouchPoints > 1);
 
+const getQuery = () => new URLSearchParams(window.location.search);
+
+const buildAndroidDeepLink = (code, env) => {
+  const p = new URLSearchParams();
+  if (env) p.set('env', env);
+  if (code) p.set('code', code);
+  return `avivscr://?${p.toString()}`;
+};
+
 export default function AppLinkFallback() {
   const ios = isIOS();
   const iosInstall = useMemo(() => process.env.REACT_APP_IOS_INSTALL_URL || '', []);
   const androidInstall = useMemo(() => process.env.REACT_APP_ANDROID_INSTALL_URL || '', []);
 
+  const [deepLinkUrl, setDeepLinkUrl] = useState('');
+
   useEffect(() => {
+    // build deep link once
+    const qs = getQuery();
+    const code = qs.get('code') || '';
+    const env = qs.get('env') || (process.env.REACT_APP_ENV || 'dev');
+    setDeepLinkUrl(buildAndroidDeepLink(code || undefined, env || undefined));
+  }, []);
+
+  useEffect(() => {
+    // existing handoff guards
     sessionStorage.setItem('handoffInProgress', '1');
-    const clearHandoff = () => {
-      sessionStorage.removeItem('handoffInProgress');
-    };
+    const clearHandoff = () => sessionStorage.removeItem('handoffInProgress');
 
     window.addEventListener('focus', clearHandoff);
     const onPageShow = (e) => {
       clearHandoff();
-      if (e.persisted) {
+      if (e && e.persisted) {
         window.location.replace(window.location.href);
       }
     };
@@ -36,11 +54,9 @@ export default function AppLinkFallback() {
     };
   }, []);
 
-  const instructionText = ios ? (
-    <>If you have the app installed, tap <strong>“Open”</strong> in the banner at the top.</>
-  ) : (
-    <>If you have the app installed, choose it from the prompt that appears.</>
-  );
+  const instructionText = ios
+    ? <>If you have the app installed, tap <strong>“Open”</strong> in the banner at the top.</>
+    : <>If you have the app installed, tap <strong>Open Android App</strong> below.</>;
 
   const installUrl = ios ? iosInstall : androidInstall;
   const hasInstallUrl = !!installUrl;
@@ -65,10 +81,25 @@ export default function AppLinkFallback() {
               )}
 
               <div className="d-grid gap-2">
-                {hasInstallUrl && (
+                {!ios && deepLinkUrl && (
                   <Button
                     variant="primary"
                     className="tdei-primary-button"
+                    onClick={() => {
+                      // mark handoff start; navigate to scheme
+                      sessionStorage.setItem('inviteHandoffDone', '1');
+                      sessionStorage.setItem('handoffInProgress', '1');
+                      window.location.href = deepLinkUrl;
+                    }}
+                  >
+                    Open Android App
+                  </Button>
+                )}
+
+                {hasInstallUrl && (
+                  <Button
+                    variant="outline-secondary"
+                    className="tdei-secondary-button"
                     as="a"
                     href={installUrl}
                     target="_blank"
