@@ -11,6 +11,10 @@ function useGetProjectGroupById(tdei_project_group_id) {
   const [projectGroup, setProjectGroup] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
+  // allow manual refresh
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refetch = () => setRefreshKey(k => k + 1);
+
   useEffect(() => {
     if (!tdei_project_group_id) {
       setProjectGroup(null);
@@ -54,9 +58,9 @@ function useGetProjectGroupById(tdei_project_group_id) {
       .finally(() => setLoading(false));
 
     return () => cancel && cancel();
-  }, [tdei_project_group_id]);
+  }, [tdei_project_group_id, refreshKey]);
 
-  return { loading, error, projectGroup, notFound };
+  return { loading, error, projectGroup, notFound, refetch };
 }
 
 export default useGetProjectGroupById;

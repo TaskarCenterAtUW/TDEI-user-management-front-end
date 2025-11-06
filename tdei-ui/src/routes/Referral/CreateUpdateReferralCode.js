@@ -14,6 +14,11 @@ import useUpdateReferralCode from "../../hooks/referrals/useUpdateReferralCode";
 import useCreateReferral from "../../hooks/referrals/useCreateReferral";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
+import { APP_LINK_URL } from "../../utils/constant";
+
+const WORKSPACE_URL =
+  process.env.REACT_APP_TDEI_WORKSPACE_URL ||
+  "";
 
 const toIsoOrNull = (v) => {
   if (!v) return null;
@@ -22,36 +27,78 @@ const toIsoOrNull = (v) => {
 };
 
 // API -> form values
-const apiItemToForm = (item) => ({
-  name: item?.name ?? "",
-  type: item?.type === 1 ? "campaign" : "invite",
-  instructionsUrl: item?.instructions_url || "",
-  validFrom: item?.valid_from || "",
-  validTo: item?.valid_to || "",
-  shortCode: item?.code || "",
-});
+const apiItemToForm = (item) => {
+  const apiRedirect = (item?.redirect_url ?? "").trim();
+  const isWorkspace =
+    (!!apiRedirect && /^https?:\/\/workspaces/i.test(apiRedirect)) ||
+    (!!WORKSPACE_URL && apiRedirect === WORKSPACE_URL);
+  const isAviv = !!apiRedirect && apiRedirect.startsWith(APP_LINK_URL);
+
+  return {
+    name: item?.name ?? "",
+    type: item?.type === 1 ? "campaign" : "invite",
+    instructionsUrl: item?.instructions_url || "",
+    validFrom: item?.valid_from || "",
+    validTo: item?.valid_to || "",
+    shortCode: item?.code || "",
+    redirectUrlOption: apiRedirect
+      ? (isWorkspace ? "workspace" : (isAviv ? "aviv" : "custom"))
+      : "aviv",
+    redirectUrl: (!isWorkspace && !isAviv) ? apiRedirect : "",
+  };
+};
 
 // STATE/Mock -> form values
-const stateItemToForm = (r) => ({
-  name: r?.name || "",
-  type: r?.type || "campaign",
-  instructionsUrl: r?.instructionsUrl || "",
-  validFrom: r?.validFrom ? toIsoOrNull(r.validFrom) : "",
-  validTo: r?.validTo ? toIsoOrNull(r.validTo) : "",
-  shortCode: r?.shortCode || "",
-});
+const stateItemToForm = (r) => {
+  const raw = (r?.redirectUrl ?? r?.redirect_url ?? "").trim();
+  const isWorkspace =
+    (!!raw && /^https?:\/\/workspaces/i.test(raw)) ||
+    (!!WORKSPACE_URL && raw === WORKSPACE_URL);
+  const isAviv = !!raw && raw.startsWith(APP_LINK_URL);
+
+  return {
+    name: r?.name || "",
+    type: r?.type || "campaign",
+    instructionsUrl: r?.instructionsUrl || "",
+    validFrom: r?.validFrom ? toIsoOrNull(r.validFrom) : "",
+    validTo: r?.validTo ? toIsoOrNull(r.validTo) : "",
+    shortCode: r?.shortCode || "",
+    redirectUrlOption: raw ? (isWorkspace ? "workspace" : (isAviv ? "aviv" : "custom")) : "aviv",
+    redirectUrl: (isWorkspace || isAviv) ? "" : raw,
+  };
+};
+
+const compact = (obj) =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== null));
 
 // UI -> API payload
-const uiToApi = (values, codeId) => ({
-  id: codeId || undefined,
-  name: values.name,
-  type: values.type === "campaign" ? 1 : 2,
-  valid_from: values.validFrom || null,
-  code: values.shortCode,
-  valid_to: values.validTo || null,
-  instructions_url: values.instructionsUrl || null,
-  description: null,
-});
+const uiToApi = (values, codeId) => {
+
+  let redirect_url;
+  if (values.redirectUrlOption === "workspace") {
+    // Send workspace URL from env (only if we actually have one)
+    redirect_url = WORKSPACE_URL || undefined;
+  } else if (values.redirectUrlOption === "custom") {
+    const custom = (values.redirectUrl || "").trim();
+    redirect_url = custom ? custom : undefined;
+  } else if (values.redirectUrlOption === "aviv") {
+    redirect_url = APP_LINK_URL;
+  } else {
+    redirect_url = undefined;
+  }
+
+  return compact({
+    id: codeId || undefined,
+    name: values.name,
+    type: values.type === "campaign" ? 1 : 2,
+    valid_from: values.validFrom || null,
+    code: values.shortCode,
+    valid_to: values.validTo || null,
+    instructions_url: values.instructionsUrl || null,
+    description: null,
+    redirect_url,
+  });
+};
 
 const CreateUpdateReferralCode = () => {
   const { id: projectGroupId, codeId } = useParams();
@@ -98,6 +145,8 @@ const CreateUpdateReferralCode = () => {
         validFrom: "",
         validTo: "",
         shortCode: "",
+        redirectUrl:"",
+        redirectUrlOption: "aviv",
       }
   );
 
@@ -142,6 +191,10 @@ const CreateUpdateReferralCode = () => {
   // Mutations
   const { mutateAsync: updateReferral, isLoading: isUpdating } = useUpdateReferralCode();
   const { mutateAsync: createReferral, isLoading: isCreating } = useCreateReferral();
+  const typeDescriptions = {
+    campaign: "Use for marketing campaigns and promotional activities with specific goals",
+    invite: "Use for personal invitations and direct referrals to individual users"
+  };
 
   // Toast
   const [toast, setToast] = React.useState({
@@ -213,6 +266,8 @@ const CreateUpdateReferralCode = () => {
           validTo: formInit.validTo,
           instructionsUrl: formInit.instructionsUrl,
           shortCode: formInit.shortCode,
+          redirectUrlOption: formInit.redirectUrlOption ?? "",
+          redirectUrl: formInit.redirectUrl ?? "",
         }}
         validationSchema={referralValidationSchema}
         onSubmit={handleSubmit}
@@ -302,8 +357,10 @@ const CreateUpdateReferralCode = () => {
                               <option value="campaign">Campaign</option>
                               <option value="invite">Invite</option>
                             </Form.Select>
+                            <div className="form-text mt-1">
+                              {typeDescriptions[values.type]}
+                            </div>
                           </Form.Group>
-
                           <div className="row">
                             <div className="col-12 col-md-6">
                               <Form.Label>Valid From  <span style={{ color: "red" }}>*</span></Form.Label>
@@ -360,6 +417,84 @@ const CreateUpdateReferralCode = () => {
                               {errors.instructionsUrl}
                             </Form.Control.Feedback>
                           </Form.Group>
+                          <Form.Group className="mb-3 mt-4" controlId="redirectUrlOption">
+                            <Form.Label>Post-Signup Redirection</Form.Label>
+                            {!!WORKSPACE_URL && (
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="redirectUrlOption"
+                                  id="redirect-workspace"
+                                  value="workspace"
+                                  checked={values.redirectUrlOption === "workspace"}
+                                  onChange={() => {
+                                    setFieldValue("redirectUrlOption", "workspace");
+                                    setFieldValue("redirectUrl", "", false);
+                                  }}
+                                />
+                                <Form.Label className="form-check-label" htmlFor="redirect-workspace">
+                                  Workspaces
+                                  <div className="text-muted small">
+                                    Redirects users to the main workspace dashboard after signup
+                                  </div>
+                                </Form.Label>
+                              </div>
+                            )}
+                            <div className="form-check mt-3">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="redirectUrlOption"
+                                id="redirect-custom"
+                                value="custom"
+                                checked={values.redirectUrlOption === "custom"}
+                                onChange={() => setFieldValue("redirectUrlOption", "custom")}
+                              />
+                              <Form.Label className="form-check-label" htmlFor="redirect-custom">
+                                Custom URL
+                                <div className="text-muted small">Specify your own custom redirection URL</div>
+                              </Form.Label>
+                            </div>
+                            <div className="form-check mt-3">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="redirectUrlOption"
+                                id="redirect-aviv"
+                                value="aviv"
+                                checked={values.redirectUrlOption === "aviv"}
+                                onChange={() => {
+                                  setFieldValue("redirectUrlOption", "aviv");
+                                  setFieldValue("redirectUrl", "", false);
+                                }}
+                              />
+                              <Form.Label className="form-check-label" htmlFor="redirect-aviv">
+                                Aviv Scoute Route app
+                                <div className="text-muted small">
+                                  Redirect to Aviv Scoute Route Mobile app
+                                </div>
+                              </Form.Label>
+                            </div>
+                          </Form.Group>
+
+                          {values.redirectUrlOption === "custom" && (
+                            <Form.Group className="mt-3 mb-3" controlId="redirectUrl">
+                              <Form.Label>Custom Redirection URL</Form.Label>
+                              <Form.Control
+                                type="url"
+                                name="redirectUrl"
+                                placeholder="https://example.com/redirect"
+                                value={values.redirectUrl}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.redirectUrl && !!errors.redirectUrl}
+                              />
+                              <Form.Control.Feedback type="invalid">
+                                {errors.redirectUrl}
+                              </Form.Control.Feedback>
+                            </Form.Group>
+                          )}
 
                           <div className="mt-3">
                             <ShortCodePreview
