@@ -232,6 +232,7 @@ const CreateUpdateReferralCode = () => {
       }, 600);
     } catch (err) {
       const msg =
+      err?.response?.data ||
         err?.response?.data?.message ||
         err?.message ||
         (editing ? "Failed to update referral." : "Failed to create referral.");
