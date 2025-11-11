@@ -23,7 +23,17 @@ const Root = () => {
       }
     }
   }, [projectGroupData, dispatch, selectedProjectGroup]);
-  const roles = selectedProjectGroup?.roles;
+
+    if (!selectedProjectGroup || !selectedProjectGroup.roles) {
+    return (
+      <Container fluid className="p-0">
+        <div className={`${style.loaderCenter} d-flex justify-content-center`}>
+          <Spinner size="lg" style={{ width: "3rem", height: "3rem" }} variant="secondary" />
+        </div>
+      </Container>
+    );
+  }
+  const roles = selectedProjectGroup?.roles || [];
   return (
     <Container fluid className="p-0">
       {isError ? <div>Error in getting roles</div> : null}
