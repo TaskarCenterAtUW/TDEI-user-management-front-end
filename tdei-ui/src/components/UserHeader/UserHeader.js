@@ -47,12 +47,13 @@ const UserHeader = ({ roles }) => {
   } = useGetProjectGroupById(selectedProjectGroup?.tdei_project_group_id);
 
   const dvRaw =
-    freshPG?.data_viewer_config?.dataset_viewer_allowed ??
-    selectedProjectGroup?.data_viewer_config?.dataset_viewer_allowed;
+    (freshPG?.data_viewer_config?.dataset_viewer_allowed ??
+      selectedProjectGroup?.data_viewer_config?.dataset_viewer_allowed ??
+      false);
 
   const dvPending =
     !!selectedProjectGroup?.tdei_project_group_id &&
-    (pgLoading || dvRaw === undefined || dvRaw === null);
+    (pgLoading || dvRaw === undefined);
   const dvOn = dvRaw === true;
 
 
