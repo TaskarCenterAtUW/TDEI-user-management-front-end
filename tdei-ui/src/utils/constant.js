@@ -136,3 +136,7 @@ export const SAMPLE_SPATIAL_JOIN = {
   aggregate: ["ARRAY_AGG(highway) as lamps"],
 };
 export const DEFAULT_PROJECT_GROUP_NAME = "TDEI Default";
+const APP_LINK_URL =
+  process.env.REACT_APP_APP_LINK_URL ||
+  `${window.location.origin}/app-link/`;
+export { APP_LINK_URL };

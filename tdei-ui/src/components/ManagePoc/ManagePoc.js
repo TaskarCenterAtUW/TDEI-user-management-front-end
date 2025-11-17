@@ -163,7 +163,7 @@ const ManagePoc = (props) => {
               </div>
               {isError ? (
                 <Alert variant={"danger"}>
-                  {error.data || "Error in assigning POC"}
+                  {error.response.data || error.data || "Error in assigning POC"}
                 </Alert>
               ) : null}
               <Formik

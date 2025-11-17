@@ -30,6 +30,7 @@ const mapApiToUi = (item) => {
     createdAt: item.created_at || null,
     isActive: Boolean(item.is_active),
     shareLink: `${base}/register?code=${encodeURIComponent(item.code)}`,
+    redirectUrl: item.redirect_url || "",
   };
 };
 

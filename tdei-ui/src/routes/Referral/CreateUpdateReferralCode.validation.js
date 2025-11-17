@@ -26,7 +26,7 @@ export const referralValidationSchema = yup.object({
   // If type === "campaign": ignore/hide and force null.
   // Otherwise: optional, but if provided must be >= validFrom.
   validTo: yup.lazy((value, ctx) => {
-    const { type, validFrom } = ctx.parent;
+    const { type, validFrom } = ctx.parent || {};
     if (type === "campaign") {
       return yup.mixed().nullable().transform(() => null);
     }
@@ -46,6 +46,27 @@ export const referralValidationSchema = yup.object({
     .nullable()
     .url("Must be a valid URL")
     .notRequired(),
+
+  // Allow "aviv" | "workspace" | "custom"
+  redirectUrlOption: yup
+    .mixed()
+    .oneOf(["aviv", "workspace", "custom"], "Choose a redirection option")
+    .required("Choose a redirection option"),
+
+  // Only required when "custom"; otherwise force null
+  redirectUrl: yup.string().when("redirectUrlOption", {
+    is: "custom",
+    then: (schema) =>
+      schema
+        .trim()
+        .required("Custom URL is required")
+        .url("Enter a valid URL"),
+    otherwise: (schema) =>
+      schema
+        .transform(() => null)
+        .nullable()
+        .notRequired(),
+  }),
 });
 
 /**

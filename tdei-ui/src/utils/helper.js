@@ -158,4 +158,11 @@ function hash3(str) {
   return (n.length >= 3 ? n.slice(-3) : n.padStart(3, "0"));
 }
 
-export const SHOW_REFERRALS = false; // flip later to true
+export const SHOW_REFERRALS = true; // flip later to true
+
+export function saveAuthTokensFromPromo(tokenObj) {
+  if (!tokenObj) return;
+  localStorage.setItem("accessToken", tokenObj.access_token || "");
+  localStorage.setItem("refreshToken", tokenObj.refresh_token || "");
+  window.dispatchEvent(new Event("tokenRefreshed"));
+}

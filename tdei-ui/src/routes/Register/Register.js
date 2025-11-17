@@ -15,6 +15,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import CustomModal from "../../components/SuccessModal/CustomModal";
 import { SHOW_REFERRALS } from "../../utils";
+import ReferralBanner from "../../components/Referral/ReferralBanner";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,13 @@ const Register = () => {
       ).trim()
     )
     : "";
+
+
+ React.useEffect(() => {
+   if (SHOW_REFERRALS && rawInvite) {
+     sessionStorage.setItem("referralCode", rawInvite);
+   }
+ }, [rawInvite]);
 
   useEffect(() => {
     if (SHOW_REFERRALS) sessionStorage.removeItem("inviteHandoffDone");
@@ -100,6 +108,7 @@ const Register = () => {
 
       const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
       const oneTimeToken = data?.token || "";
+      const redirectUrl    = data?.redirect_url || data?.redirectUrl || "";
 
       setToastMessage("Registration successful!");
       setToastType("success");
@@ -116,16 +125,19 @@ const Register = () => {
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
+            redirect_url: redirectUrl || ""
           })
         );
+        sessionStorage.setItem("handoffFlow", "reg"); 
         // go to the instructions page
-        navigate("/invite-instructions", {
+        navigate("/invite-instructions?flow=reg", {
+          replace: true,
           state: {
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
+            redirect_url: redirectUrl || ""
           },
-          replace: true,
         });
       } else {
         // Normal flow -> email verification page
@@ -159,6 +171,9 @@ const Register = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
+                 {SHOW_REFERRALS && inviteCode && (
+                 <ReferralBanner code={inviteCode} context="register" />
+               )}
                 <Formik
                   initialValues={initialValues}
                   onSubmit={handleSubmit}
@@ -322,31 +337,11 @@ const Register = () => {
                       >
                         {loading ? "Creating Account..." : "Create Account"}
                       </Button>
-                      {SHOW_REFERRALS && inviteCode && (
-                        <div className={style.inviteNote} role="note" aria-live="polite">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                            className={style.inviteIcon}
-                          >
-                            <path
-                              d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm0 14.25a.75.75 0 1 1 0 1.5h-1.5a.75.75 0 1 1 0-1.5H12zm0-9a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 7.25zm0 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0V11a.75.75 0 0 1 .75-.75z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                          <span className={style.inviteText}>
-                            Registering with referral code
-                          </span>
-                          <code className={style.inviteCode}>{inviteCode}</code>
-                        </div>
-                      )}
                       <div className="mt-5">
                         Already have an account?{" "}
-                        <Link className="tdei-primary-link" to={"/login"}>
-                          Sign in
-                        </Link>
+                        <Link
+                          className="tdei-primary-link"
+                          to={SHOW_REFERRALS && inviteCode ? `/login?code=${encodeURIComponent(inviteCode)}` : "/login"} >Sign in</Link>
                       </div>
                     </Form>
                   )}
