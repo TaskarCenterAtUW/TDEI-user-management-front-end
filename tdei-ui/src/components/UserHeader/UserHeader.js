@@ -84,8 +84,9 @@ const UserHeader = ({ roles }) => {
       },
     });
 
-  const role = user.isAdmin ? "TDEI Admin" : roles?.join(", ") || "";
-  const authorizedUser = user.isAdmin || !!roles?.length;
+  const projectRoles = selectedProjectGroup?.roles || [];
+  const role = user.isAdmin ? "TDEI Admin" : projectRoles.join(", ") || "";
+  const authorizedUser = user.isAdmin || projectRoles.length > 0;
   const API_KEY = data?.apiKey;
   const maskedKey = maskString(API_KEY, { maskAll: true, maskSpace: false });
 
