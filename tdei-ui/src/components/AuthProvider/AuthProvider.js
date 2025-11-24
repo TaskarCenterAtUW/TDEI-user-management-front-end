@@ -280,8 +280,9 @@ const AuthProvider = ({ children }) => {
     sessionStorage.removeItem('promoSigninPayload');
     sessionStorage.removeItem('handoffFlow');
     sessionStorage.removeItem('handoffInProgress');
-    dispatch(clear());
     setUser(null);
+    dispatch(clear());
+    localStorage.removeItem("selectedProjectGroup"); 
     navigate("/login");
   };
 
