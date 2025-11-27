@@ -74,7 +74,7 @@ const Header = () => {
                  <Dropdown.Divider />
                  <Dropdown.Item onClick={() => setShowReferralModal(true)}>
                  <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '20px', color:'#8A93A3' }} />
-                  Apply Referral Code
+                  Join With Referral Code
                 </Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={handleLogout}>

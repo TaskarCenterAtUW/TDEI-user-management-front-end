@@ -107,7 +107,6 @@ const ProjectGroupSwitcherDropDown = () => {
                 }
               >
                 {projectGroup.project_group_name}
-                <img src={iconSwitchProject} alt="" />
               </Dropdown.Item>
             ))}
 
