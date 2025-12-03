@@ -244,6 +244,17 @@ const UserHeader = ({ roles }) => {
                 >
                   <FaCopy />
                 </Button>
+                <Button
+                  variant="outline-light"
+                  className={style.dvCopyBtn}
+                  onClick={() =>
+                     window.open(viewerUrl, "_blank")
+                  }
+                  disabled={!viewerUrl}
+                  title="Open in new tab"
+                >
+                  <FaGlobe />
+                </Button>
               </InputGroup>
             </div>
           )}
