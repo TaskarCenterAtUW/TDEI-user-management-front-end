@@ -13,16 +13,30 @@ const Root = () => {
   const dispatch = useDispatch();
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const flag = useSelector(getSideMenuFlag);
+  const accessToken = localStorage.getItem("accessToken");
+
   React.useEffect(() => {
-    const isEmptyObject = (obj) => Object.keys(obj).length === 0;
-    if ((selectedProjectGroup === null || isEmptyObject(selectedProjectGroup)) && projectGroupData?.pages?.[0]?.data?.length > 0) {
+    // Only auto-select when:
+    // - user is logged in
+    // - there is no tdei_project_group_id yet
+    // - roles API has returned at least one PG
+    if (
+      accessToken &&
+      !selectedProjectGroup?.tdei_project_group_id &&
+      projectGroupData?.pages?.[0]?.data?.length > 0
+    ) {
       const firstProjectGroup = projectGroupData.pages[0].data[0];
       if (firstProjectGroup) {
-        console.log("Setting first project group:", firstProjectGroup);
+        console.log("[Root] Auto-selecting first PG:", firstProjectGroup);
         dispatch(set(firstProjectGroup));
       }
     }
-  }, [projectGroupData, dispatch, selectedProjectGroup]);
+  }, [
+    accessToken,
+    projectGroupData,
+    dispatch,
+    selectedProjectGroup?.tdei_project_group_id,
+  ]);
 
     if (!selectedProjectGroup || !selectedProjectGroup.roles) {
     return (

@@ -35,7 +35,7 @@ const ApplyReferralCode = ({ show, onHide }) => {
         err?.response?.data?.message ||
         err?.message ||
         err?.response?.data || 
-        "Failed to apply referral code.";
+        "Failed to join with referral code.";
       setToast({ show: true, type: "error", message: msg });
     },
   });
@@ -57,13 +57,13 @@ const ApplyReferralCode = ({ show, onHide }) => {
         >
           <Modal.Header closeButton>
             <Modal.Title id="apply-referral-code-title">
-              Apply Referral Code
+              Join With Referral Code
             </Modal.Title>
           </Modal.Header>
 
           {error ? (
             <Alert variant="danger">
-              {error?.response?.data?.message || "Failed to apply referral code."}
+              {error?.response?.data?.message || "Failed to join with referral code."}
             </Alert>
           ) : null}
 
