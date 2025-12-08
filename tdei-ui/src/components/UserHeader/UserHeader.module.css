@@ -182,7 +182,8 @@
 .dvUrlInput {
   background: #f6f7fb;
   border: 1px solid #eef2f7;
-  color: #111827;
+  text-decoration: underline;
+  padding: 5px 10px;
 }
 .dvCopyBtn {
   background: #fff;

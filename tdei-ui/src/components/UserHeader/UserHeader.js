@@ -227,6 +227,12 @@ const UserHeader = ({ roles }) => {
                   value={viewerUrl}
                   readOnly
                   className={style.dvUrlInput}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    if (viewerUrl) {
+                      window.open(viewerUrl, "_blank", "noopener,noreferrer");
+                    }
+                  }}
                 />
                 <Button
                   variant="outline-light"
