@@ -1,33 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import FormControl from '@mui/material/FormControl';
 import Select from 'react-select';
 
 const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion, dataType }) => {
-  const options = dataType
-  ? [
-      dataType === 'osw' && { value: 'v0.2', label: 'v0.2' },
-      dataType === 'pathways' && { value: 'v1.0', label: 'v1.0' },
-      dataType === 'flex' && { value: 'v2.0', label: 'v2.0' },
-    ].filter(Boolean)
-  : [
-      { value: 'v0.2', label: 'v0.2' },
-      { value: 'v1.0', label: 'v1.0' },
-      { value: 'v2.0', label: 'v2.0' },
+  const options = useMemo(() => {
+    if (dataType === "osw") {
+      return [
+        { value: "v0.3", label: "v0.3" },                
+      ];
+    }
+    if (dataType === "pathways") {
+      return [{ value: "v1.0", label: "v1.0" }];
+    }
+    if (dataType === "flex") {
+      return [{ value: "v2.0", label: "v2.0" }];
+    }
+    return [
+      { value: "v0.3", label: "v0.3" },
     ];
-  
+  }, [dataType]);
+
   const [currentValue, setCurrentValue] = useState(null);
 
   useEffect(() => {
     if (schemaVersion !== undefined && schemaVersion !== null) {
-      const selectedOption = options.find(option => option.value === schemaVersion);
+      const selectedOption = options.find((option) => option.value === schemaVersion);
+      // If schemaVersion is v0.2 for existing datasets, it will still be found and displayed,
+      // even though that option is disabled.
       setCurrentValue(selectedOption ?? "");
+    } else {
+      setCurrentValue(null);
     }
-  }, [schemaVersion]);
+  }, [schemaVersion, options]);
 
   const handleChange = (selectedOption) => {
-    const dataSource = selectedOption ? selectedOption.value : '';
-    form.setFieldValue(field.name, dataSource);
-    onChange(dataSource);
+    const value = selectedOption ? selectedOption.value : "";
+    form.setFieldValue(field.name, value);
+    if (onChange) {
+      onChange(value);
+    }
     setCurrentValue(selectedOption);
   };
 
