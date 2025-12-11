@@ -386,7 +386,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
     const schemaVersion = dataset_detail.schema_version;
     const custom_metadata = dataset_detail.custom_metadata;
     const schemaVersionMapping = {
-      osw: ["v0.2", "v0.3"],
+      osw: ["v0.3"],
       flex: ["v2.0"],
       pathways: ["v1.0"],
     };
@@ -398,7 +398,7 @@ export default function CloneDatasetStepper({ stepsData, onStepsComplete, curren
       }
     }
     if (schemaVersionMapping[serviceType] && !schemaVersionMapping[serviceType].includes(schemaVersion)) {
-      return `For service type "${serviceType}", Schema Version must be one of: ${schemaVersionMapping[serviceType].join(", ")}`;
+      return `For service type "${serviceType}", Schema Version must be ${schemaVersionMapping[serviceType].join(", ")}`;
     }
       if (!data_provenance || !data_provenance.full_dataset_name) {
         return "Full Dataset Name in Data Provenance is required";

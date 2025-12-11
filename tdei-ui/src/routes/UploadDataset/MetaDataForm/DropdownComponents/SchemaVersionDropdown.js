@@ -6,8 +6,7 @@ const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion, dataType 
   const options = useMemo(() => {
     if (dataType === "osw") {
       return [
-        { value: "v0.2", label: "v0.2", isDisabled: true }, // can be shown but not selected
-        { value: "v0.3", label: "v0.3" },                   // active
+        { value: "v0.3", label: "v0.3" },                
       ];
     }
     if (dataType === "pathways") {
@@ -17,7 +16,6 @@ const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion, dataType 
       return [{ value: "v2.0", label: "v2.0" }];
     }
     return [
-      { value: "v0.2", label: "v0.2", isDisabled: true },
       { value: "v0.3", label: "v0.3" },
     ];
   }, [dataType]);
