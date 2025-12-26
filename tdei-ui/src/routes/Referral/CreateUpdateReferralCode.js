@@ -8,13 +8,15 @@ import "./ReferralForm.module.css";
 import dayjs from "dayjs";
 import { referralValidationSchema } from "./CreateUpdateReferralCode.validation";
 import styles from "./ReferralForm.module.css";
-import ShortCodePreview from "../../components/Referral/ShortCodePreview";
+// import ShortCodePreview from "../../components/Referral/ShortCodePreview"; // Removed
 import { getReferralCodes } from "../../services";
+import useGetReferralCodeDetails from "../../hooks/referrals/useGetReferralCodeDetails"; // Added
 import useUpdateReferralCode from "../../hooks/referrals/useUpdateReferralCode";
 import useCreateReferral from "../../hooks/referrals/useCreateReferral";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
 import { APP_LINK_URL } from "../../utils/constant";
+import { generateCandidateCode } from "../../utils/helper"; // Added
 
 const WORKSPACE_URL =
   process.env.REACT_APP_TDEI_WORKSPACE_URL ||
@@ -72,7 +74,7 @@ const compact = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== null));
 
 // UI -> API payload
-const uiToApi = (values, codeId) => {
+const uiToApi = (values, codeId, finalCode) => {
 
   let redirect_url;
   if (values.redirectUrlOption === "workspace") {
@@ -92,7 +94,7 @@ const uiToApi = (values, codeId) => {
     name: values.name,
     type: values.type === "campaign" ? 1 : 2,
     valid_from: values.validFrom || null,
-    code: values.shortCode,
+    code: finalCode || values.shortCode, // Use passed finalCode for creation
     valid_to: values.validTo || null,
     instructions_url: values.instructionsUrl || null,
     description: null,
@@ -145,7 +147,7 @@ const CreateUpdateReferralCode = () => {
         validFrom: "",
         validTo: "",
         shortCode: "",
-        redirectUrl:"",
+        redirectUrl: "",
         redirectUrlOption: "aviv",
       }
   );
@@ -191,6 +193,7 @@ const CreateUpdateReferralCode = () => {
   // Mutations
   const { mutateAsync: updateReferral, isLoading: isUpdating } = useUpdateReferralCode();
   const { mutateAsync: createReferral, isLoading: isCreating } = useCreateReferral();
+  const { mutateAsync: checkCode } = useGetReferralCodeDetails(); // Check availability
   const typeDescriptions = {
     campaign: "Use for marketing campaigns and promotional activities with specific goals",
     invite: "Use for personal invitations and direct referrals to individual users"
@@ -212,33 +215,73 @@ const CreateUpdateReferralCode = () => {
 
   const handleCancel = () => navigate(-1);
 
+  // Generation Loading State
+  const [isGenerating, setIsGenerating] = React.useState(false);
+
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsGenerating(true);
     try {
       const normalized = {
         ...values,
         validFrom: toIsoOrNull(values.validFrom),
         validTo: toIsoOrNull(values.validTo),
       };
-      const payload = uiToApi(normalized, codeId);
+
+      let finalCode = values.shortCode;
+
+      // Only generate if creating
+      if (!editing) {
+        let attempts = 0;
+        const MAX_ATTEMPTS = 5;
+        let unique = false;
+
+        while (attempts < MAX_ATTEMPTS && !unique) {
+          const candidate = generateCandidateCode(
+            groupName,
+            values.name,
+            values.type,
+            values.redirectUrlOption
+          );
+
+          try {
+            // checkCode success means code exists (collision)
+            await checkCode(candidate);
+            console.log(`Collision detected for ${candidate}. Retrying...`);
+            attempts++;
+          } catch (err) {
+            // checkCode failure means code DOES NOT exist (unique)
+            finalCode = candidate;
+            unique = true;
+          }
+        }
+
+        if (!unique) {
+          throw new Error("Unable to generate a unique code after multiple attempts. Please try again.");
+        }
+      }
+
+      const payload = uiToApi(normalized, codeId, finalCode);
+
       if (editing) {
         await updateReferral({ projectGroupId, code_id: codeId, data: payload });
         showToast("success", "Referral updated successfully.");
       } else {
         await createReferral({ projectGroupId, data: payload });
-        showToast("success", "Referral created successfully.");
+        showToast("success", `Referral created: ${finalCode}`, 5000);
       }
       setTimeout(() => {
         navigate(`/${projectGroupId}/referralCodes`);
-      }, 600);
+      }, 1000); // Increased slightly for user to read code
     } catch (err) {
       const msg =
-      err?.response?.data ||
+        err?.response?.data ||
         err?.response?.data?.message ||
         err?.message ||
         (editing ? "Failed to update referral." : "Failed to create referral.");
       showToast("error", msg, 4000);
     } finally {
       setSubmitting(false);
+      setIsGenerating(false);
     }
   };
 
@@ -282,7 +325,7 @@ const CreateUpdateReferralCode = () => {
           isSubmitting,
           setFieldValue,
         }) => {
-          const submitting = isSubmitting || isCreating || isUpdating;
+          const submitting = isSubmitting || isCreating || isUpdating || isGenerating;
 
           return (
             <FormikForm noValidate>
@@ -307,7 +350,8 @@ const CreateUpdateReferralCode = () => {
                     <Button type="submit" className="tdei-primary-button" disabled={submitting}>
                       {submitting ? (
                         <>
-                          <Spinner size="sm" className="me-2" /> Saving…
+                          <Spinner size="sm" className="me-2" />
+                          {isGenerating ? "Generating unique code..." : "Saving..."}
                         </>
                       ) : (
                         primaryButtonText
@@ -497,14 +541,15 @@ const CreateUpdateReferralCode = () => {
                             </Form.Group>
                           )}
 
-                          <div className="mt-3">
-                            <ShortCodePreview
-                              isEdit={editing}
-                              initialShortCode={formInit.shortCode || ""}
-                              values={values}
-                              setFieldValue={setFieldValue}
-                            />
-                          </div>
+                          {editing && (
+                            <div className="mt-4 p-3 bg-light rounded">
+                              <label className="form-label d-block mb-1">Referral Code</label>
+                              <div className="d-flex align-items-center" style={{ minHeight: "24px" }}>
+                                <code>{values.shortCode}</code>
+                              </div>
+                            </div>
+                          )}
+
                         </div>
                       </div>
                     </div>
