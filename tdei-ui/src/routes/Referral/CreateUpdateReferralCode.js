@@ -248,19 +248,19 @@ const CreateUpdateReferralCode = () => {
           );
 
           try {
-            // checkCode success means code exists (collision)
+            // checkCode success (200 OK) means code EXISTS -> Collision
             await checkCode(candidate);
             console.log(`Collision detected for ${candidate}. Retrying...`);
             attempts++;
           } catch (err) {
-            // checkCode failure means code DOES NOT exist (unique)
+            // checkCode failure (e.g. 404) means code DOES NOT EXIST -> Unique
             finalCode = candidate;
             unique = true;
           }
         }
 
         if (!unique) {
-          throw new Error("Unable to generate a unique code after multiple attempts. Please try again.");
+          throw new Error("We couldn't generate a unique code for this name after multiple attempts. Please try modifying the referral name and try again.");
         }
       }
 
@@ -315,12 +315,20 @@ const CreateUpdateReferralCode = () => {
       }
 
     } catch (err) {
-      const msg =
+      let msg =
         err?.response?.data ||
         err?.response?.data?.message ||
         err?.message ||
         (editing ? "Failed to update referral." : "Failed to create referral.");
 
+      // If the API says "Code already exists" (collision on create) OR our loop threw the exhaustion error
+      const isCollisionError =
+        (typeof msg === 'string' && msg.toLowerCase().includes("code already exists")) ||
+        (err.message && err.message.includes("We couldn't generate a unique code"));
+
+      if (isCollisionError) {
+        msg = "We couldn't generate a unique code for this name after multiple attempts. Please try modifying the referral name and try again.";
+      }
       setModal({
         show: true,
         type: "error",
@@ -529,12 +537,12 @@ const CreateUpdateReferralCode = () => {
                                     setFieldValue("redirectUrl", "", false);
                                   }}
                                 />
-                                <Form.Label className="form-check-label" htmlFor="redirect-workspace">
+                                <label className="form-check-label" htmlFor="redirect-workspace">
                                   Workspaces
                                   <div className="text-muted small">
                                     Redirects users to the main workspace dashboard after signup
                                   </div>
-                                </Form.Label>
+                                </label>
                               </div>
                             )}
                             <div className="form-check mt-3">
@@ -547,10 +555,10 @@ const CreateUpdateReferralCode = () => {
                                 checked={values.redirectUrlOption === "custom"}
                                 onChange={() => setFieldValue("redirectUrlOption", "custom")}
                               />
-                              <Form.Label className="form-check-label" htmlFor="redirect-custom">
+                              <label className="form-check-label" htmlFor="redirect-custom">
                                 Custom URL
                                 <div className="text-muted small">Specify your own custom redirection URL</div>
-                              </Form.Label>
+                              </label>
                             </div>
                             <div className="form-check mt-3">
                               <input
@@ -565,12 +573,12 @@ const CreateUpdateReferralCode = () => {
                                   setFieldValue("redirectUrl", "", false);
                                 }}
                               />
-                              <Form.Label className="form-check-label" htmlFor="redirect-aviv">
+                              <label className="form-check-label" htmlFor="redirect-aviv">
                                 Aviv Scoute Route app
                                 <div className="text-muted small">
                                   Redirect to Aviv Scoute Route Mobile app
                                 </div>
-                              </Form.Label>
+                              </label>
                             </div>
                           </Form.Group>
 
