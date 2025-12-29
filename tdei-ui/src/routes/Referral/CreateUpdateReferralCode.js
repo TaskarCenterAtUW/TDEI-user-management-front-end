@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form as FormikForm } from "formik";
 import { Button, Form, Spinner } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import Container from "../../components/Container/Container";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DatePicker from "../../components/DatePicker/DatePicker";
@@ -8,15 +9,15 @@ import "./ReferralForm.module.css";
 import dayjs from "dayjs";
 import { referralValidationSchema } from "./CreateUpdateReferralCode.validation";
 import styles from "./ReferralForm.module.css";
-// import ShortCodePreview from "../../components/Referral/ShortCodePreview"; // Removed
 import { getReferralCodes } from "../../services";
-import useGetReferralCodeDetails from "../../hooks/referrals/useGetReferralCodeDetails"; // Added
+import useGetReferralCodeDetails from "../../hooks/referrals/useGetReferralCodeDetails";
 import useUpdateReferralCode from "../../hooks/referrals/useUpdateReferralCode";
 import useCreateReferral from "../../hooks/referrals/useCreateReferral";
-import ResponseToast from "../../components/ToastMessage/ResponseToast";
+import CustomModal from "../../components/SuccessModal/CustomModal";
 import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
 import { APP_LINK_URL } from "../../utils/constant";
-import { generateCandidateCode } from "../../utils/helper"; // Added
+import { generateCandidateCode } from "../../utils/helper";
+import copyIcon from "../../assets/img/icon-copy-id.svg";
 
 const WORKSPACE_URL =
   process.env.REACT_APP_TDEI_WORKSPACE_URL ||
@@ -78,7 +79,7 @@ const uiToApi = (values, codeId, finalCode) => {
 
   let redirect_url;
   if (values.redirectUrlOption === "workspace") {
-    // Send workspace URL from env (only if we actually have one)
+    // Send workspace URL from env
     redirect_url = WORKSPACE_URL || undefined;
   } else if (values.redirectUrlOption === "custom") {
     const custom = (values.redirectUrl || "").trim();
@@ -199,16 +200,19 @@ const CreateUpdateReferralCode = () => {
     invite: "Use for personal invitations and direct referrals to individual users"
   };
 
-  // Toast
-  const [toast, setToast] = React.useState({
+  // Modal State
+  const [modal, setModal] = useState({
     show: false,
     type: "success",
+    title: "",
     message: "",
-    autoHideDuration: 3000,
+    content: null,
+    onHide: () => { },
+    handler: () => { }
   });
-  const showToast = (type, message, autoHideDuration = 3000) =>
-    setToast({ show: true, type, message, autoHideDuration });
-  const handleToastClose = () => setToast((t) => ({ ...t, show: false }));
+  const [copied, setCopied] = useState(false);
+
+  const hideModal = () => setModal(prev => ({ ...prev, show: false }));
 
   const headerTitle = editing ? "Edit Referral Code" : "Create Referral Code";
   const primaryButtonText = editing ? "Update" : "Create";
@@ -264,21 +268,68 @@ const CreateUpdateReferralCode = () => {
 
       if (editing) {
         await updateReferral({ projectGroupId, code_id: codeId, data: payload });
-        showToast("success", "Referral updated successfully.");
+        setModal({
+          show: true,
+          type: "success",
+          title: "Success",
+          message: "Referral updated successfully.",
+          btnlabel: "OK",
+          handler: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          },
+          onHide: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          }
+        });
       } else {
         await createReferral({ projectGroupId, data: payload });
-        showToast("success", `Referral created: ${finalCode}`, 5000);
+
+        // Success Modal for creation with Copy feature
+        setModal({
+          show: true,
+          type: "success",
+          title: "Success",
+          message: "Referral code created successfully.",
+          content: (
+            <div className="d-flex align-items-center justify-content-center">
+              <span className="me-2">Your referral code is:</span>
+              <div className="d-inline-flex align-items-center p-1 border rounded bg-light">
+                <span className={styles.referralContent}>{finalCode}</span>
+                <CopyToClipboard text={finalCode} onCopy={() => setCopied(true)}>
+                  <Button variant="link" className="d-flex p-0 ms-2">
+                    <img src={copyIcon} className={styles.copyIcon} alt="Copy Id" />
+                  </Button>
+                </CopyToClipboard>
+              </div>
+            </div>
+          ),
+          btnlabel: "OK",
+          handler: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          },
+          onHide: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          }
+        });
+        setCopied(false);
       }
-      setTimeout(() => {
-        navigate(`/${projectGroupId}/referralCodes`);
-      }, 1000); // Increased slightly for user to read code
+
     } catch (err) {
       const msg =
         err?.response?.data ||
         err?.response?.data?.message ||
         err?.message ||
         (editing ? "Failed to update referral." : "Failed to create referral.");
-      showToast("error", msg, 4000);
+
+      setModal({
+        show: true,
+        type: "error",
+        title: "Error",
+        message: msg,
+        btnlabel: "Close",
+        handler: hideModal,
+        onHide: hideModal
+      });
     } finally {
       setSubmitting(false);
       setIsGenerating(false);
@@ -351,7 +402,7 @@ const CreateUpdateReferralCode = () => {
                       {submitting ? (
                         <>
                           <Spinner size="sm" className="me-2" />
-                          {isGenerating ? "Generating unique code..." : "Saving..."}
+                          {isGenerating ? "Generating Referral Code..." : "Saving..."}
                         </>
                       ) : (
                         primaryButtonText
@@ -594,12 +645,16 @@ const CreateUpdateReferralCode = () => {
       </Formik>
 
       {/* Toast */}
-      <ResponseToast
-        showtoast={toast.show}
-        type={toast.type}
-        message={toast.message}
-        autoHideDuration={toast.autoHideDuration}
-        handleClose={handleToastClose}
+      {/* Custom Modal */}
+      <CustomModal
+        show={modal.show}
+        modaltype={modal.type}
+        title={modal.title}
+        message={modal.message}
+        content={modal.content}
+        btnlabel={modal.btnlabel}
+        handler={modal.handler}
+        onHide={modal.onHide}
       />
     </>
   );
