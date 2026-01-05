@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Col, Form, Modal, Row} from "react-bootstrap";
+import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const ShowJobMessageModal = (props) => {
     return (
@@ -47,10 +47,14 @@ const ShowJobMessageModal = (props) => {
                         background: '#404040',
                         color: 'white',
                         overflowY: 'auto',
-                        overflowX: 'hidden',
+                        overflowX: 'auto',
                         borderRadius: '4px'
                     }}>
-                        <p>{props.message.message}</p>
+                        <p style={{
+                            margin: 0,
+                            whiteSpace: 'pre-wrap',
+                            wordWrap: 'break-word'
+                        }}>{props.message.message}</p>
                     </div>
                 </Form>
             </Modal.Body>

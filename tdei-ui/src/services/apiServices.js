@@ -450,9 +450,8 @@ export async function postCreateJob(data) {
         `bbox=${parseFloat(data[4].east)}`,
         `bbox=${parseFloat(data[4].north)}`,
       ];
-      url = `${url}?tdei_dataset_id=${data[2]}&file_type=${
-        data[3]
-      }&${bboxParams.join("&")}`;
+      url = `${url}?tdei_dataset_id=${data[2]}&file_type=${data[3]
+        }&${bboxParams.join("&")}`;
       response = await axios.post(url);
     } else if (data[0] === "osw/dataset-tag-road" || data[0] === "osw/union") {
       response = await axios.post(url, {}, config);
@@ -521,8 +520,8 @@ export async function postUploadDataset(data) {
     service_type === "flex"
       ? "gtfs-flex"
       : service_type === "pathways"
-      ? "gtfs-pathways"
-      : "osw";
+        ? "gtfs-pathways"
+        : "osw";
   const url = data[1].derived_from_dataset_id
     ? `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}?derived_from_dataset_id=${data[1].derived_from_dataset_id}`
     : `${osmUrl}/${file_end_point}/upload/${data[0].tdei_project_group_id}/${data[0].tdei_service_id}`;
@@ -888,7 +887,7 @@ export async function updateServiceStatus(data) {
   return res.data;
 }
 export async function downloadUsers() {
-   try {
+  try {
     const res = await axios.get(`${url}/users/download`, {
       responseType: "blob",
       headers: { Accept: "text/csv" },
@@ -961,7 +960,7 @@ export async function searchFeedback(
     page_no,
     page_size,
   };
-  if(status != null && status !== undefined && status !== "") {
+  if (status != null && status !== undefined && status !== "") {
     params.status = status;
   }
   const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks`, { params });
@@ -971,8 +970,8 @@ export async function searchFeedback(
 }
 
 export async function getFeedbackSummary(tdei_project_group_id) {
-  const params = {tdei_project_group_id}
-  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`,{params});
+  const params = { tdei_project_group_id }
+  const res = await axios.get(`${osmUrl}/osw/dataset-viewer/feedbacks/metadata`, { params });
   return res.data;
 }
 
@@ -1040,9 +1039,9 @@ export async function downloadStatsExport(variables = {}) {
 
   const cleaned = { ...params };
   replaceEmptyStringsWithNull(cleaned);
-  const finalParams = compact(cleaned); 
+  const finalParams = compact(cleaned);
 
-  const res =  await axios.get(`${osmUrl}/download-stats/export`, {
+  const res = await axios.get(`${osmUrl}/download-stats/export`, {
     responseType: "blob",
     params: finalParams,
     headers: { Accept: "text/csv" },
@@ -1064,11 +1063,11 @@ export function buildFallbackName(params = {}, rangeLabel = "") {
   if (f && t) return `download_stats_${f}_${t}.csv`;
 
   switch (rangeLabel) {
-    case "LAST_7":  return "download_stats_last_7_days.csv";
+    case "LAST_7": return "download_stats_last_7_days.csv";
     case "LAST_30": return "download_stats_last_30_days.csv";
     case "LAST_90": return "download_stats_last_90_days.csv";
-    case "ALL":     return "download_stats_all.csv";
-    default:        return `download_stats_${dayjs().format("YYYY-MM-DD")}.csv`;
+    case "ALL": return "download_stats_all.csv";
+    default: return `download_stats_${dayjs().format("YYYY-MM-DD")}.csv`;
   }
 }
 
@@ -1076,7 +1075,7 @@ export async function getReferralCodes({
   projectGroupId,
   page = 1,
   name,
-  type,   
+  type,
   code,
   pageSize = 10
 }) {
@@ -1103,21 +1102,21 @@ export async function getReferralCodes({
   };
 }
 
-export async function createReferralCode(projectGroupId,data) {
+export async function createReferralCode(projectGroupId, data) {
   const res = await axios.post(
     `${url}/project-group/${projectGroupId}/referral-codes`,
     data
   );
   return res.data;
 }
-export async function updateReferralCode(projectGroupId,code_id,data) {
+export async function updateReferralCode(projectGroupId, code_id, data) {
   const res = await axios.put(
     `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`,
     data
   );
   return res.data;
 }
-export async function deleteReferralCode(projectGroupId,code_id) {
+export async function deleteReferralCode(projectGroupId, code_id) {
   const res = await axios.delete(
     `${url}/project-group/${projectGroupId}/referral-codes/${code_id}`);
   return res.data;
@@ -1129,7 +1128,13 @@ export async function postAssignReferralCode(referral_code) {
 }
 
 export async function getReferralCodeDetails(referral_code) {
-  const res = await axios.get(`${url}/referral-codes/${referral_code}`);
+  const res = await axios.get(`${url}/referral-codes/${referral_code}`, {
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    }
+  });
   return res.data;
 }
 export async function referralSignIn(referral_code, data) {

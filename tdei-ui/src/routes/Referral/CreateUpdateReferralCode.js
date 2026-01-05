@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form as FormikForm } from "formik";
 import { Button, Form, Spinner } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import Container from "../../components/Container/Container";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DatePicker from "../../components/DatePicker/DatePicker";
@@ -8,13 +9,15 @@ import "./ReferralForm.module.css";
 import dayjs from "dayjs";
 import { referralValidationSchema } from "./CreateUpdateReferralCode.validation";
 import styles from "./ReferralForm.module.css";
-import ShortCodePreview from "../../components/Referral/ShortCodePreview";
 import { getReferralCodes } from "../../services";
+import useGetReferralCodeDetails from "../../hooks/referrals/useGetReferralCodeDetails";
 import useUpdateReferralCode from "../../hooks/referrals/useUpdateReferralCode";
 import useCreateReferral from "../../hooks/referrals/useCreateReferral";
-import ResponseToast from "../../components/ToastMessage/ResponseToast";
+import CustomModal from "../../components/SuccessModal/CustomModal";
 import useGetProjectGroupById from "../../hooks/projectGroup/useGetProjectGroupById";
 import { APP_LINK_URL } from "../../utils/constant";
+import { generateCandidateCode } from "../../utils/helper";
+import copyIcon from "../../assets/img/icon-copy-id.svg";
 
 const WORKSPACE_URL =
   process.env.REACT_APP_TDEI_WORKSPACE_URL ||
@@ -72,11 +75,11 @@ const compact = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== null));
 
 // UI -> API payload
-const uiToApi = (values, codeId) => {
+const uiToApi = (values, codeId, finalCode) => {
 
   let redirect_url;
   if (values.redirectUrlOption === "workspace") {
-    // Send workspace URL from env (only if we actually have one)
+    // Send workspace URL from env
     redirect_url = WORKSPACE_URL || undefined;
   } else if (values.redirectUrlOption === "custom") {
     const custom = (values.redirectUrl || "").trim();
@@ -92,7 +95,7 @@ const uiToApi = (values, codeId) => {
     name: values.name,
     type: values.type === "campaign" ? 1 : 2,
     valid_from: values.validFrom || null,
-    code: values.shortCode,
+    code: finalCode || values.shortCode, // Use passed finalCode for creation
     valid_to: values.validTo || null,
     instructions_url: values.instructionsUrl || null,
     description: null,
@@ -145,7 +148,7 @@ const CreateUpdateReferralCode = () => {
         validFrom: "",
         validTo: "",
         shortCode: "",
-        redirectUrl:"",
+        redirectUrl: "",
         redirectUrlOption: "aviv",
       }
   );
@@ -191,54 +194,153 @@ const CreateUpdateReferralCode = () => {
   // Mutations
   const { mutateAsync: updateReferral, isLoading: isUpdating } = useUpdateReferralCode();
   const { mutateAsync: createReferral, isLoading: isCreating } = useCreateReferral();
+  const { mutateAsync: checkCode } = useGetReferralCodeDetails(); // Check availability
   const typeDescriptions = {
     campaign: "Use for marketing campaigns and promotional activities with specific goals",
     invite: "Use for personal invitations and direct referrals to individual users"
   };
 
-  // Toast
-  const [toast, setToast] = React.useState({
+  // Modal State
+  const [modal, setModal] = useState({
     show: false,
     type: "success",
+    title: "",
     message: "",
-    autoHideDuration: 3000,
+    content: null,
+    onHide: () => { },
+    handler: () => { }
   });
-  const showToast = (type, message, autoHideDuration = 3000) =>
-    setToast({ show: true, type, message, autoHideDuration });
-  const handleToastClose = () => setToast((t) => ({ ...t, show: false }));
+  const [copied, setCopied] = useState(false);
+
+  const hideModal = () => setModal(prev => ({ ...prev, show: false }));
 
   const headerTitle = editing ? "Edit Referral Code" : "Create Referral Code";
   const primaryButtonText = editing ? "Update" : "Create";
 
   const handleCancel = () => navigate(-1);
 
+  // Generation Loading State
+  const [isGenerating, setIsGenerating] = React.useState(false);
+
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsGenerating(true);
     try {
       const normalized = {
         ...values,
         validFrom: toIsoOrNull(values.validFrom),
         validTo: toIsoOrNull(values.validTo),
       };
-      const payload = uiToApi(normalized, codeId);
+
+      let finalCode = values.shortCode;
+
+      // Only generate if creating
+      if (!editing) {
+        let attempts = 0;
+        const MAX_ATTEMPTS = 5;
+        let unique = false;
+
+        while (attempts < MAX_ATTEMPTS && !unique) {
+          const candidate = generateCandidateCode(
+            groupName,
+            values.name,
+            values.type,
+            values.redirectUrlOption
+          );
+
+          try {
+            // checkCode success (200 OK) means code EXISTS -> Collision
+            await checkCode(candidate);
+            console.log(`Collision detected for ${candidate}. Retrying...`);
+            attempts++;
+          } catch (err) {
+            // checkCode failure (e.g. 404) means code DOES NOT EXIST -> Unique
+            finalCode = candidate;
+            unique = true;
+          }
+        }
+
+        if (!unique) {
+          throw new Error("We couldn't generate a unique code for this name after multiple attempts. Please try modifying the referral name and try again.");
+        }
+      }
+
+      const payload = uiToApi(normalized, codeId, finalCode);
+
       if (editing) {
         await updateReferral({ projectGroupId, code_id: codeId, data: payload });
-        showToast("success", "Referral updated successfully.");
+        setModal({
+          show: true,
+          type: "success",
+          title: "Success",
+          message: "Referral updated successfully.",
+          btnlabel: "OK",
+          handler: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          },
+          onHide: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          }
+        });
       } else {
         await createReferral({ projectGroupId, data: payload });
-        showToast("success", "Referral created successfully.");
+
+        // Success Modal for creation with Copy feature
+        setModal({
+          show: true,
+          type: "success",
+          title: "Success",
+          message: "Referral code created successfully.",
+          content: (
+            <div className="d-flex align-items-center justify-content-center">
+              <span className="me-2">Your referral code is:</span>
+              <div className="d-inline-flex align-items-center p-1 border rounded bg-light">
+                <span className={styles.referralContent}>{finalCode}</span>
+                <CopyToClipboard text={finalCode} onCopy={() => setCopied(true)}>
+                  <Button variant="link" className="d-flex p-0 ms-2">
+                    <img src={copyIcon} className={styles.copyIcon} alt="Copy Id" />
+                  </Button>
+                </CopyToClipboard>
+              </div>
+            </div>
+          ),
+          btnlabel: "OK",
+          handler: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          },
+          onHide: () => {
+            navigate(`/${projectGroupId}/referralCodes`);
+          }
+        });
+        setCopied(false);
       }
-      setTimeout(() => {
-        navigate(`/${projectGroupId}/referralCodes`);
-      }, 600);
+
     } catch (err) {
-      const msg =
-      err?.response?.data ||
+      let msg =
+        err?.response?.data ||
         err?.response?.data?.message ||
         err?.message ||
         (editing ? "Failed to update referral." : "Failed to create referral.");
-      showToast("error", msg, 4000);
+
+      // If the API says "Code already exists" (collision on create) OR our loop threw the exhaustion error
+      const isCollisionError =
+        (typeof msg === 'string' && msg.toLowerCase().includes("code already exists")) ||
+        (err.message && err.message.includes("We couldn't generate a unique code"));
+
+      if (isCollisionError) {
+        msg = "We couldn't generate a unique code for this name after multiple attempts. Please try modifying the referral name and try again.";
+      }
+      setModal({
+        show: true,
+        type: "error",
+        title: "Error",
+        message: msg,
+        btnlabel: "Close",
+        handler: hideModal,
+        onHide: hideModal
+      });
     } finally {
       setSubmitting(false);
+      setIsGenerating(false);
     }
   };
 
@@ -282,7 +384,7 @@ const CreateUpdateReferralCode = () => {
           isSubmitting,
           setFieldValue,
         }) => {
-          const submitting = isSubmitting || isCreating || isUpdating;
+          const submitting = isSubmitting || isCreating || isUpdating || isGenerating;
 
           return (
             <FormikForm noValidate>
@@ -307,7 +409,8 @@ const CreateUpdateReferralCode = () => {
                     <Button type="submit" className="tdei-primary-button" disabled={submitting}>
                       {submitting ? (
                         <>
-                          <Spinner size="sm" className="me-2" /> Saving…
+                          <Spinner size="sm" className="me-2" />
+                          {isGenerating ? "Generating Referral Code..." : "Saving..."}
                         </>
                       ) : (
                         primaryButtonText
@@ -434,12 +537,12 @@ const CreateUpdateReferralCode = () => {
                                     setFieldValue("redirectUrl", "", false);
                                   }}
                                 />
-                                <Form.Label className="form-check-label" htmlFor="redirect-workspace">
+                                <label className="form-check-label" htmlFor="redirect-workspace">
                                   Workspaces
                                   <div className="text-muted small">
                                     Redirects users to the main workspace dashboard after signup
                                   </div>
-                                </Form.Label>
+                                </label>
                               </div>
                             )}
                             <div className="form-check mt-3">
@@ -452,10 +555,10 @@ const CreateUpdateReferralCode = () => {
                                 checked={values.redirectUrlOption === "custom"}
                                 onChange={() => setFieldValue("redirectUrlOption", "custom")}
                               />
-                              <Form.Label className="form-check-label" htmlFor="redirect-custom">
+                              <label className="form-check-label" htmlFor="redirect-custom">
                                 Custom URL
                                 <div className="text-muted small">Specify your own custom redirection URL</div>
-                              </Form.Label>
+                              </label>
                             </div>
                             <div className="form-check mt-3">
                               <input
@@ -470,12 +573,12 @@ const CreateUpdateReferralCode = () => {
                                   setFieldValue("redirectUrl", "", false);
                                 }}
                               />
-                              <Form.Label className="form-check-label" htmlFor="redirect-aviv">
+                              <label className="form-check-label" htmlFor="redirect-aviv">
                                 Aviv Scoute Route app
                                 <div className="text-muted small">
                                   Redirect to Aviv Scoute Route Mobile app
                                 </div>
-                              </Form.Label>
+                              </label>
                             </div>
                           </Form.Group>
 
@@ -497,14 +600,15 @@ const CreateUpdateReferralCode = () => {
                             </Form.Group>
                           )}
 
-                          <div className="mt-3">
-                            <ShortCodePreview
-                              isEdit={editing}
-                              initialShortCode={formInit.shortCode || ""}
-                              values={values}
-                              setFieldValue={setFieldValue}
-                            />
-                          </div>
+                          {editing && (
+                            <div className="mt-4 p-3 bg-light rounded">
+                              <label className="form-label d-block mb-1">Referral Code</label>
+                              <div className="d-flex align-items-center" style={{ minHeight: "24px" }}>
+                                <code>{values.shortCode}</code>
+                              </div>
+                            </div>
+                          )}
+
                         </div>
                       </div>
                     </div>
@@ -549,12 +653,16 @@ const CreateUpdateReferralCode = () => {
       </Formik>
 
       {/* Toast */}
-      <ResponseToast
-        showtoast={toast.show}
-        type={toast.type}
-        message={toast.message}
-        autoHideDuration={toast.autoHideDuration}
-        handleClose={handleToastClose}
+      {/* Custom Modal */}
+      <CustomModal
+        show={modal.show}
+        modaltype={modal.type}
+        title={modal.title}
+        message={modal.message}
+        content={modal.content}
+        btnlabel={modal.btnlabel}
+        handler={modal.handler}
+        onHide={modal.onHide}
       />
     </>
   );
