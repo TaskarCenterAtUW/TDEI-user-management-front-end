@@ -109,7 +109,7 @@ export default function AppLinkFallback() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {ios ? 'Install iOS App (TestFlight)' : 'Install Android App'}
+                    {ios ? 'Install iOS App' : 'Install Android App'}
                   </Button>
                 )}
               </div>
