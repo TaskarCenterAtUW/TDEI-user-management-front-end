@@ -9,7 +9,8 @@ import { SHOW_REFERRALS } from "../../utils";
 import { saveAuthTokensFromPromo } from '../../utils/helper';
 
 const isMobileUA = () =>
-  /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
+  /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "") ||
+  (/Macintosh/i.test(navigator.userAgent || "") && navigator.maxTouchPoints > 1);
 
 const isIOS = () =>
   /iPad|iPhone|iPod/i.test(navigator.userAgent || "") ||
@@ -40,12 +41,12 @@ const tokenToString = (val) => {
   if (!val) return "";
   if (typeof val === "string") return val.trim();
   if (typeof val === "object") {
-   // Check common token keys
+    // Check common token keys
     return (
       (typeof val.refresh_token === "string" && val.refresh_token.trim()) ||
-      (typeof val.access_token === "string"  && val.access_token.trim())  ||
-      (typeof val.token === "string"         && val.token.trim())         ||
-      (typeof val.oneTimeToken === "string"  && val.oneTimeToken.trim())  ||
+      (typeof val.access_token === "string" && val.access_token.trim()) ||
+      (typeof val.token === "string" && val.token.trim()) ||
+      (typeof val.oneTimeToken === "string" && val.oneTimeToken.trim()) ||
       ""
     );
   }
@@ -96,11 +97,11 @@ export default function InviteInstructions() {
     : pick(state, ["instructions_url", "instructionsUrl"], pick(regFallback, ["instructions_url", "instructionsUrl"], ""));
 
   const raw = isPromo
-  ? pick(state, ["token", "oneTimeToken"], pick(promoFallback, ["token", "oneTimeToken"], ""))
-  : pick(state, ["oneTimeToken", "token"], pick(regFallback, ["oneTimeToken", "token"], ""));
+    ? pick(state, ["token", "oneTimeToken"], pick(promoFallback, ["token", "oneTimeToken"], ""))
+    : pick(state, ["oneTimeToken", "token"], pick(regFallback, ["oneTimeToken", "token"], ""));
 
   const oneTimeToken = tokenToString(raw);
-  const redirectUrl =  pick(state, ["redirect_url", "redirectUrl", "redirection_url"], pick(promoFallback, ["redirect_url", "redirectUrl", "redirection_url"], ""))
+  const redirectUrl = pick(state, ["redirect_url", "redirectUrl", "redirection_url"], pick(promoFallback, ["redirect_url", "redirectUrl", "redirection_url"], ""))
 
   const promoToken = isPromo
     ? (state.token || promoFallback.token || null)
@@ -154,10 +155,10 @@ export default function InviteInstructions() {
   };
 
   const handleContinue = async () => {
-  const onMobile = isMobileUA();
-  const iOS = isIOS();
+    const onMobile = isMobileUA();
+    const iOS = isIOS();
 
-  if (onMobile) sessionStorage.setItem("handoffInProgress", "1");
+    if (onMobile) sessionStorage.setItem("handoffInProgress", "1");
 
     // If redirect_url is present, it wins (both promo  registration)
     if (redirectUrl) {
@@ -176,7 +177,7 @@ export default function InviteInstructions() {
       // so iOS gets the Smart Banner and Android gets the deep-link reliably.
     }
 
-  // No (or intentionally ignored) redirect_url → choose mobile/desktop paths
+    // No (or intentionally ignored) redirect_url → choose mobile/desktop paths
     if (onMobile) {
       // MOBILE (promo or reg) → app-link or modal
       const appLinkUrl = oneTimeToken
@@ -197,38 +198,38 @@ export default function InviteInstructions() {
         return;
       }
 
-    // ANDROID: move to app-link page that triggers deep-link
+      // ANDROID: move to app-link page that triggers deep-link
       sessionStorage.setItem("handoffInProgress", "1");
       sessionStorage.setItem("inviteHandoffDone", "1");
-      window.location.replace(appLinkUrl);        
+      window.location.replace(appLinkUrl);
       return;
-  }
-
-  // DESKTOP
-  // PROMO: tokens were already stored on LoginPage
-  // REG: exchange the oneTimeToken and land in the portal.
-  if (!isPromo) {
-    setBusy(true);
-    try {
-      await exchangeAndRedirectDesktop(oneTimeToken, process.env.REACT_APP_TDEI_WORKSPACE_URL || "");
-    } catch (err) {
-      sessionStorage.removeItem("handoffInProgress");
-      setBusy(false);
-      setToast({
-        show: true,
-        type: "error",
-        msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
-      });
     }
-  } else {
-    // Promo desktop, no redirect_url → go to workspace/home
-    sessionStorage.removeItem("promoSigninPayload");
-    sessionStorage.removeItem("handoffFlow");
-    sessionStorage.removeItem("handoffInProgress");
-    const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/`;
-    hardReplace(workspacesUrl);
-  }
-};
+
+    // DESKTOP
+    // PROMO: tokens were already stored on LoginPage
+    // REG: exchange the oneTimeToken and land in the portal.
+    if (!isPromo) {
+      setBusy(true);
+      try {
+        await exchangeAndRedirectDesktop(oneTimeToken, process.env.REACT_APP_TDEI_WORKSPACE_URL || "");
+      } catch (err) {
+        sessionStorage.removeItem("handoffInProgress");
+        setBusy(false);
+        setToast({
+          show: true,
+          type: "error",
+          msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
+        });
+      }
+    } else {
+      // Promo desktop, no redirect_url → go to workspace/home
+      sessionStorage.removeItem("promoSigninPayload");
+      sessionStorage.removeItem("handoffFlow");
+      sessionStorage.removeItem("handoffInProgress");
+      const workspacesUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL || `${window.location.origin}/`;
+      hardReplace(workspacesUrl);
+    }
+  };
 
   const handleModalAction = () => {
     setShowInstallModal(false);
@@ -236,21 +237,21 @@ export default function InviteInstructions() {
     setHandoffComplete(true);
   };
 
-useEffect(() => {
-  if (sessionStorage.getItem('handoffInProgress') !== '1') return;
-  const clearHandoff = () => {
-    sessionStorage.removeItem('handoffInProgress');
-  };
-  const onVisibility = () => {
-    if (!document.hidden) clearHandoff();
-  };
-  window.addEventListener('focus', clearHandoff);
-  document.addEventListener('visibilitychange', onVisibility);
-  return () => {
-    window.removeEventListener('focus', clearHandoff);
-    document.removeEventListener('visibilitychange', onVisibility);
-  };
-}, []);
+  useEffect(() => {
+    if (sessionStorage.getItem('handoffInProgress') !== '1') return;
+    const clearHandoff = () => {
+      sessionStorage.removeItem('handoffInProgress');
+    };
+    const onVisibility = () => {
+      if (!document.hidden) clearHandoff();
+    };
+    window.addEventListener('focus', clearHandoff);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('focus', clearHandoff);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
 
 
   if (!SHOW_REFERRALS) return null;

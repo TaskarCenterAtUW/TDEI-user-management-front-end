@@ -11,11 +11,11 @@ import * as yup from "yup";
 import ForgotPassModal from "../../components/ForgotPassModal/ForgotPassModal";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
- import { useSearchParams } from "react-router-dom";
- import ReferralBanner from "../../components/Referral/ReferralBanner";
- import { SHOW_REFERRALS } from "../../utils";
- import useReferralSignIn from "../../hooks/referrals/useReferralSignIn";
- import {saveAuthTokensFromPromo} from '../../utils/helper';
+import { useSearchParams } from "react-router-dom";
+import ReferralBanner from "../../components/Referral/ReferralBanner";
+import { SHOW_REFERRALS } from "../../utils";
+import useReferralSignIn from "../../hooks/referrals/useReferralSignIn";
+import { saveAuthTokensFromPromo } from '../../utils/helper';
 
 
 const LoginPage = () => {
@@ -25,7 +25,7 @@ const LoginPage = () => {
   const location = useLocation();
   const auth = useAuth();
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const initialValues = {
     username: "",
     password: "",
@@ -41,17 +41,17 @@ const LoginPage = () => {
     password: yup.string().required("Password is required"),
   });
 
-   const codeFromUrl = (searchParams.get("code") || "").trim();
-   const referralCode = SHOW_REFERRALS ? codeFromUrl : "";
+  const codeFromUrl = (searchParams.get("code") || "").trim();
+  const referralCode = SHOW_REFERRALS ? codeFromUrl : "";
 
- React.useEffect(() => {
-  if (!SHOW_REFERRALS) return;
-  if (codeFromUrl) {
-    sessionStorage.setItem("referralCode", codeFromUrl);
-  } else {
-    sessionStorage.removeItem("referralCode");
-  }
-}, [codeFromUrl]);
+  React.useEffect(() => {
+    if (!SHOW_REFERRALS) return;
+    if (codeFromUrl) {
+      sessionStorage.setItem("referralCode", codeFromUrl);
+    } else {
+      sessionStorage.removeItem("referralCode");
+    }
+  }, [codeFromUrl]);
 
 
 
@@ -60,14 +60,17 @@ const LoginPage = () => {
       setLoading(false);
       sessionStorage.setItem("promoSigninPayload", JSON.stringify(resp || {}));
       sessionStorage.setItem("handoffFlow", "promo");
-       // Only save tokens to localStorage for desktop
-      if (!/Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "")) {
+      // Only save tokens to localStorage for desktop
+      const isMobileKey = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "") ||
+        (/Macintosh/i.test(navigator.userAgent || "") && navigator.maxTouchPoints > 1);
+
+      if (!isMobileKey) {
         if (resp?.token) saveAuthTokensFromPromo(resp.token);
       }
-     navigate("/invite-instructions?flow=promo", {
+      navigate("/invite-instructions?flow=promo", {
         replace: true,
         state: {
-          isPromo: true,                                 
+          isPromo: true,
           instructions_url: resp?.instructions_url || resp?.instructions_url || "",
           token: resp?.token || "",
           redirect_url: resp?.redirect_url || "",
@@ -75,17 +78,17 @@ const LoginPage = () => {
         }
       });
     },
-   onError: (err) => {
-     setLoading(false);
-     sessionStorage.removeItem("referralCode");
-     const status = err?.response?.status || err?.status;
-     if (status === 404 || status === 410) {
-       dispatch(show({ message: "Promo code is invalid or expired.", type: "warning" }));
-     } else {
-       dispatch(show({ message: "Invalid credentials or error in sign in", type: "danger" }));
-     }
-   }
- });
+    onError: (err) => {
+      setLoading(false);
+      sessionStorage.removeItem("referralCode");
+      const status = err?.response?.status || err?.status;
+      if (status === 404 || status === 410) {
+        dispatch(show({ message: "Promo code is invalid or expired.", type: "warning" }));
+      } else {
+        dispatch(show({ message: "Invalid credentials or error in sign in", type: "danger" }));
+      }
+    }
+  });
 
   const handleSignIn = async (values) => {
     setLoading(true);
@@ -129,9 +132,9 @@ const LoginPage = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
-                 {SHOW_REFERRALS && referralCode && (
-                   <ReferralBanner code={referralCode} context="login" />
-                 )}
+                {SHOW_REFERRALS && referralCode && (
+                  <ReferralBanner code={referralCode} context="login" />
+                )}
                 <div className={style.loginTitle}>Welcome!</div>
                 <div className={style.loginSubTitle}>
                   Please login to your account.
@@ -213,11 +216,11 @@ const LoginPage = () => {
                         <Link className="tdei-primary-link" to={"/register"}>
                           Register Now
                         </Link>
-                        
+
                       </div>
                       <Link className="tdei-primary-link" to={"/ForgotPassword"}>
                         Forgot Password?
-                        </Link>
+                      </Link>
                     </Form>
                   )}
                 </Formik>
