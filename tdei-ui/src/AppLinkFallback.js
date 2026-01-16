@@ -54,6 +54,10 @@ export default function AppLinkFallback() {
     };
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const instructionText = ios
     ? <>If you have the app installed, tap <strong>“Open”</strong> in the banner at the top.</>
     : <>If you have the app installed, tap <strong>Open Android App</strong> below.</>;
@@ -62,7 +66,7 @@ export default function AppLinkFallback() {
   const hasInstallUrl = !!installUrl;
 
   return (
-    <Container className="py-5">
+    <Container>
       <Row className="justify-content-center">
         <Col md={8} lg={6}>
           <Card className="text-center">
