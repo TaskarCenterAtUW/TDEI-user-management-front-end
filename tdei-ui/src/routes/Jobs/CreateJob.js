@@ -100,6 +100,7 @@ const formConfig = {
  * It dynamically renders form fields based on the selected job type.
  */
 const CreateJobService = () => {
+    const baseBody = document.querySelector('body');
     const navigate = useNavigate();
     const { user } = useAuth();
     const isDataAccessible = useIsDatasetsAccessible();
@@ -132,10 +133,24 @@ const CreateJobService = () => {
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
+    const [spatialAssignmentMethod, setSpatialAssignmentMethod] = useState({ value: 'default', label: 'Default' });
 
-    const filteredJobTypeOptions = jobTypeOptions.filter(option => 
+    const spatialAssignmentOptions = [
+        { value: 'default', label: 'Default' },
+        { value: 'exclusive', label: 'Exclusive' }
+    ];
+
+    const spatialSampleJson = React.useMemo(() => {
+        const sample = { ...SAMPLE_SPATIAL_JOIN };
+        if (spatialAssignmentMethod.value === 'exclusive') {
+            sample.assignment_method = spatialAssignmentMethod.value;
+        }
+        return JSON.stringify(sample, null, 2);
+    }, [spatialAssignmentMethod]);
+
+    const filteredJobTypeOptions = jobTypeOptions.filter(option =>
         !(option.value === "dataset-tag-road" && (!isDataAccessible && !user?.isAdmin))
-    );    
+    );
 
     // Callback function invoked when a job creation API call is successful.
     const onSuccess = (data) => {
@@ -224,12 +239,12 @@ const CreateJobService = () => {
         setSelectedFile(selectedFile);
     };
 
-   //Closes the toast message by setting its visibility to false.
+    //Closes the toast message by setting its visibility to false.
     const handleClose = () => {
         setToast(false);
     };
 
-   //Closes the sample spatial join request modal.
+    //Closes the sample spatial join request modal.
     const handleModalClose = () => setShowModal(false);
 
     //Opens the sample spatial join request modal.
@@ -324,9 +339,9 @@ const CreateJobService = () => {
         const path = getPathFromJobType("dataset-union");
         if (label === "First Dataset Id") {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_one?.description || "";
-        } else if (label === "Second Dataset Id"){
+        } else if (label === "Second Dataset Id") {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_two?.description || "";
-        }else {
+        } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.proximity?.description || "";
         }
     };
@@ -453,7 +468,7 @@ const CreateJobService = () => {
             } catch (e) {
                 setValidateErrorMessage("Invalid JSON format in spatial request body. Please check the syntax.");
                 setShowValidateToast(true);
-                return; 
+                return;
             }
             uploadData.push(spatialRequestBody);
         } if (jobType.value === "dataset-union") {
@@ -468,7 +483,7 @@ const CreateJobService = () => {
                 uploadData.push(firstDatasetId, secondDatasetId);
             }
         }
-        setLoading(true); 
+        setLoading(true);
         mutate(uploadData);
     };
 
@@ -535,7 +550,7 @@ const CreateJobService = () => {
                 setTargetDatasetId: targetDatasetId,
                 setDatasetIdOne: firstDatasetId,
                 setDatasetIdTwo: secondDatasetId,
-                setProximity:proximity
+                setProximity: proximity
             };
 
             return (
@@ -543,8 +558,8 @@ const CreateJobService = () => {
                     <Form.Label>
                         {field.label}
                         {!(jobType?.value === "dataset-union" && field.label === "Proximity") && (
-                    <span style={{ color: 'red' }}> *</span>
-                )}
+                            <span style={{ color: 'red' }}> *</span>
+                        )}
                     </Form.Label>
                     <Form.Control
                         placeholder={`Enter ${field.label}`}
@@ -762,7 +777,7 @@ const CreateJobService = () => {
     const renderFormFields = () => {
         if (!jobType) return null;
         const fields = formConfig[jobType.value];
-        if (!fields) return null; 
+        if (!fields) return null;
 
         // Specific layout handling for certain job types
         if (["osw-convert", "dataset-tag-road", "dataset-bbox", "dataset-union"].includes(jobType.value)) {
@@ -800,7 +815,7 @@ const CreateJobService = () => {
                                     onChange={handleJobTypeSelect}
                                 />
                                 <div className="d-flex align-items-start mt-2">
-                                {/* {jobType !== null && <InfoIcon className="infoIconImg" />} */}
+                                    {/* {jobType !== null && <InfoIcon className="infoIconImg" />} */}
                                     <div id="passwordHelpBlock" className={style.description}>
                                         {getDescription(jobType == null ? "" : jobType.value)}
                                     </div>
@@ -887,13 +902,26 @@ const CreateJobService = () => {
                         <JobJsonResponseModal
                             show={showModal}
                             message=""
-                            content={JSON.stringify(SAMPLE_SPATIAL_JOIN, null, 2) ?? ""}
+                            content={spatialSampleJson ?? ""}
                             handler={() => {
                                 setShowModal(false);
                             }}
                             btnlabel="Cancel"
                             modaltype="regular"
                             title="Sample Spatial Join Request Body"
+                            controlLabel="Assignment Method"
+                            customControl={
+                                <div style={{ width: '200px' }}>
+                                    <Select
+                                        options={spatialAssignmentOptions}
+                                        value={spatialAssignmentMethod}
+                                        onChange={setSpatialAssignmentMethod}
+                                        placeholder="Assignment Method"
+                                        menuPortalTarget={baseBody}
+                                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                    />
+                                </div>
+                            }
                         />
                     )}
                 </>
