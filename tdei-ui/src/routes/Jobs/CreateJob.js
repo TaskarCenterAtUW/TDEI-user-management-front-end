@@ -137,12 +137,13 @@ const CreateJobService = () => {
 
     const spatialAssignmentOptions = [
         { value: 'default', label: 'Default' },
-        { value: 'exclusive', label: 'Exclusive' }
+        { value: 'exclusive', label: 'Exclusive' },
+        { value: 'shared', label: 'Shared' }
     ];
 
     const spatialSampleJson = React.useMemo(() => {
         const sample = { ...SAMPLE_SPATIAL_JOIN };
-        if (spatialAssignmentMethod.value === 'exclusive') {
+        if (spatialAssignmentMethod.value === 'exclusive' || spatialAssignmentMethod.value === 'shared') {
             sample.assignment_method = spatialAssignmentMethod.value;
         }
         return JSON.stringify(sample, null, 2);
