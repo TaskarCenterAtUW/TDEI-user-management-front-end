@@ -15,6 +15,7 @@ import useResetPassword from "../../hooks/useResetPassword";
 import { clear } from "../../store";
 import ApplyReferralCode from "../Referral/ApplyReferralCode";
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
+import MobileSidebar from "../Navigation/MobileSidebar";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const Header = () => {
   const authenticated = !!user?.name;
   const [showModal, setShowModal] = React.useState(false);
   const [showReferralModal, setShowReferralModal] = React.useState(false);
+  const [showSidebar, setShowSidebar] = React.useState(false);
 
   const handleLogout = () => {
     //Broadcast a 'forceLogout' event to other tabs
@@ -39,18 +41,26 @@ const Header = () => {
     setShowModal(true);
   };
   return (
-    <div className={style.container}>
+    <header className={style.container}>
       <div className={style.imgContainer}>
+        {/* Sidebar toggle button for mobile view */}
         {authenticated && (
-          <button
-            className={`${style.mobileMenuIcon} btn btn-outline-light d-md-none`}
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#mobileSidebar"
-          >
-            <img src={iconMenu} alt="Menu icon" />
-          </button>
+          <>
+            <button
+              className={`${style.mobileMenuIcon} btn btn-outline-light d-md-none`}
+              type="button"
+              onClick={() => setShowSidebar(true)}
+              aria-label="Open main menu"
+            >
+              <img src={iconMenu} alt="" aria-hidden="true" />
+            </button>
+            <MobileSidebar 
+              show={showSidebar}
+              onHide={() => setShowSidebar(false)} 
+            />
+          </>
         )}
+        {/* End - Sidebar toggle button for mobile view */}
         <img src={tempLogo} className={`${style.logoImage} ${authenticated && style.logoHidden}`} alt="TDEI logo" />
       </div>
       {authenticated ? (
@@ -64,21 +74,22 @@ const Header = () => {
           <div>
             <Dropdown align="end">
               <Dropdown.Toggle as={ProfileImage}>
-                <div>{user?.name}</div>
+                <span className="visually-hidden">Signed in as {user?.name}. Open account menu</span>
+                <div aria-hidden="true">{user?.name}</div>
               </Dropdown.Toggle>
-              <Dropdown.Menu align="end">
+              <Dropdown.Menu align="end" aria-label="User account menu">
                 <Dropdown.Item onClick={handleResetPassword}>
-                  <img src={resetPasswordIcon} className="iconImg" />
+                  <img src={resetPasswordIcon} className="iconImg" alt="" aria-hidden="true" />
                   Reset Password
                 </Dropdown.Item>
-                 <Dropdown.Divider />
+                 <Dropdown.Divider aria-hidden="true" />
                  <Dropdown.Item onClick={() => setShowReferralModal(true)}>
-                 <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '20px', color:'#8A93A3' }} />
+                 <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '18px', color:'#8A93A3' }} aria-hidden="true" />
                   Join With Referral Code
                 </Dropdown.Item>
-                <Dropdown.Divider />
+                <Dropdown.Divider aria-hidden="true" />
                 <Dropdown.Item onClick={handleLogout}>
-                  <img src={logoutIcon} className="iconImg" />
+                  <img src={logoutIcon} className="iconImg" alt="" aria-hidden="true" />
                   Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
@@ -91,7 +102,7 @@ const Header = () => {
         onHide={() => setShowModal(false)}
       />
        <ApplyReferralCode show={showReferralModal} onHide={() => setShowReferralModal(false)} />
-    </div>
+    </header>
   );
 };
 
@@ -103,7 +114,7 @@ const ProfileImage = React.forwardRef(({ children, onClick }, ref) => (
     className={style.userProfile}
   >
     {children}
-    <img src={userIcon} className={style.userIcon} alt="user-icon" />
+    <img src={userIcon} className={style.userIcon} alt="" />
   </button>
 ));
 

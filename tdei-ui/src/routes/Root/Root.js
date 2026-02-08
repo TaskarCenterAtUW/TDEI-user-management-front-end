@@ -62,9 +62,9 @@ const Root = () => {
       ) : (
         <div className="d-flex">
           <Navigation />
-          <div className={style.contentBlock}>
+          <main className={style.contentBlock} id="main-content" tabIndex={-1}>
             <Outlet roles={roles} />
-          </div>
+          </main>
         </div>
       )}
     </Container>

@@ -42,6 +42,7 @@
   padding: 15px 15px;
 }
 .offcanvasBody {
+  padding: 0px;
   .menuItem{
     border-bottom: 1px solid #eeeeee;
     padding: 20px 20px;

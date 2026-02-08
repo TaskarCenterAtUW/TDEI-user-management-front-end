@@ -7,7 +7,7 @@
   --secondary-font-family: "Montserrat", sans-serif;
   --primary-color: #873EF2;
   --primary-color-dark: #7a32e4;
-  --secondary-color: #83879b;
+  --secondary-color: #5f647a;
   --tdei-blue: #586AB5;
   --tdei-green: #479FA1;
   --purple-background-light: #fbf8ff;
@@ -281,3 +281,10 @@ input[type="radio"] {
   border-color: var(--primary-color) !important;
   box-shadow: 0 0 0 0.25rem rgba(135, 62, 242, 0.25) !important;
 }
+
+/* :focus-visible {
+  outline: 2px solid #005fcc !important;
+  outline-offset: 1px;
+  border-radius: 2px;
+  box-shadow: none !important;
+} */
