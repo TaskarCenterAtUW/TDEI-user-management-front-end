@@ -176,7 +176,7 @@ const Referral = () => {
               <ArrowBackIosNewIcon fontSize="small" />
             </RBButton>
             <div>
-              <div className="page-header-title">Referral Codes</div>
+              <h2 className="page-header-title">Referral Codes</h2>
               <div className="page-header-subtitle">
                 Manage and track your referral and invite codes of project group –{" "}
                 <span className="fw-bold">

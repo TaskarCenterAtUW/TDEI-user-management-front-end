@@ -128,7 +128,7 @@ const Members = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">Members</div>
+          <h2 className="page-header-title">Members</h2>
           <div className="page-header-subtitle">
             Here are the members currently in the{" "}
             <span className="fw-bold">

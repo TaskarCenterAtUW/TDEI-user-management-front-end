@@ -391,7 +391,7 @@ const CreateUpdateReferralCode = () => {
               <div style={{ padding: "20px" }}>
                 <div className={styles.actionBar}>
                   <div>
-                    <div className="page-header-title">{headerTitle}</div>
+                    <h2 className="page-header-title">{headerTitle}</h2>
                     <div className={`page-header-subtitle ${styles.actionBarSubtitle}`}>
                       {headerSubtitle}
                     </div>

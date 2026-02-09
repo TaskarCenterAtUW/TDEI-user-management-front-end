@@ -156,7 +156,7 @@ const ProjectGroup = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">Project Groups</div>
+          <h2 className="page-header-title">Project Groups</h2>
           <div className="page-header-subtitle">
             Here are the project groups currently in the{" "}
             <span className="fw-bold">TDEI system</span>.

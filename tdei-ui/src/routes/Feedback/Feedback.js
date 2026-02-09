@@ -126,7 +126,7 @@ const Feedback = () => {
         <div className={style.jobsContainer}>
             <div className={style.header}>
                 <div className={style.title}>
-                    <div className="page-header-title">Feedback</div>
+                    <h2 className="page-header-title">Feedback</h2>
                     <div className="page-header-subtitle">View and manage feedback for datasets</div>
                 </div>
             </div>

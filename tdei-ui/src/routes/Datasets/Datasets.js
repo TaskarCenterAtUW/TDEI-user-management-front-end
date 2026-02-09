@@ -22,7 +22,7 @@ const Datasets = () => {
       <div>
         <div className={style.datasetsHeader}>
           <div>
-              <div className="page-header-title">Datasets</div>
+              <h2 className="page-header-title">Datasets</h2>
               <div className="page-header-subtitle">
                   Here are the list of datasets available
               </div>

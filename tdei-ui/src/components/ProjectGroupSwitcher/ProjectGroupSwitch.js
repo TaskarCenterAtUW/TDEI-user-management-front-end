@@ -84,16 +84,17 @@ const ProjectGroupSwitch = () => {
 
   return (
     <div className={style.layout}>
-      <div className={style.title}>
-        <div className="page-header-title">Project Groups</div>
-      </div>
-      <div
-        className="page-header-subtitle"
-        style={{ paddingTop: "10px", paddingBottom: "20px" }}
-      >
-        {"Current project is "}
-        <span className="fw-bold">{`${selectedProjectGroup.name}`}</span>. You
-        can switch to a different project group below.
+      <div className={style.header}>
+        <div className={style.title}>
+          <h2 className="page-header-title">Project Groups</h2>
+          <div
+            className="page-header-subtitle"
+          >
+            {"Current project is "}
+            <span className="fw-bold">{`${selectedProjectGroup.name}`}</span>. You
+            can switch to a different project group below.
+          </div>
+        </div>
       </div>
       <Container className={style.scrollableContainer}>
         <>

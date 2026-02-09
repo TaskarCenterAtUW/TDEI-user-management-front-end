@@ -39,7 +39,7 @@ const Reports = () => {
     <div className={style.statsContainer}>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">Reports</div>
+          <h2 className="page-header-title">Reports</h2>
           <div className="page-header-subtitle">Download CSV reports</div>
         </div>
       </div>

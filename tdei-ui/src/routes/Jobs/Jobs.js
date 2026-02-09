@@ -209,7 +209,7 @@ const Jobs = () => {
         <div className={style.jobsContainer}>
             <div className={style.header}>
                 <div className={style.title}>
-                    <div className="page-header-title">Jobs</div>
+                    <h2 className="page-header-title">Jobs</h2>
                     <div className="page-header-subtitle">
                         Here are the jobs you have access to
                     </div>

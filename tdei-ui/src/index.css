@@ -68,8 +68,9 @@ body {
 }
 .page-header-title {
   font-family: var(--secondary-font-family);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
+  margin-bottom: 5px;
 }
 .page-header-subtitle {
   font-family: var(--secondary-font-family);
