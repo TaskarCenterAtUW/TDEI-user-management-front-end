@@ -56,7 +56,7 @@ const Services = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetServices(debounceQuery, user?.isAdmin, serviceType, showInactive,"",false);
+  } = useGetServices(debounceQuery, user?.isAdmin, serviceType, showInactive, "", false);
   const [statusModalMessage, setStatusModalMessage] = React.useState("");
   const [statusModalTitle, setStatusModalTitle] = React.useState("");
   const [statusModalAction, setStatusModalAction] = React.useState(null);
@@ -178,19 +178,23 @@ const Services = () => {
       <Container>
         <>
           <InputGroup className="mb-3">
-            <DropdownButton onSelect={handleSelect} variant="outline-secondary customBorderColor"
-              title={serviceType ? toPascalCase(serviceType) : ''}
-              id="input-group-dropdown-2"
-              align="end" className={style.dropdownButton}>
-              <Dropdown.Item eventKey="">All</Dropdown.Item>
-              <Dropdown.Item eventKey="flex">Flex</Dropdown.Item>
-              <Dropdown.Item eventKey="pathways">Pathways</Dropdown.Item>
-              <Dropdown.Item eventKey="osw">Osw</Dropdown.Item>
-            </DropdownButton>
+            <Dropdown onSelect={handleSelect} align="end" className={style.dropdownButton}>
+              <Dropdown.Toggle variant="outline-secondary customBorderColor" id="input-group-dropdown-2">
+                {serviceType ? toPascalCase(serviceType) : ''}
+              </Dropdown.Toggle>
+              <Dropdown.Menu role="listbox">
+                <Dropdown.Item as="button" role="option" aria-selected={serviceType === ""} eventKey="">All</Dropdown.Item>
+                <Dropdown.Item as="button" role="option" aria-selected={serviceType === "flex"} eventKey="flex">Flex</Dropdown.Item>
+                <Dropdown.Item as="button" role="option" aria-selected={serviceType === "pathways"} eventKey="pathways">Pathways</Dropdown.Item>
+                <Dropdown.Item as="button" role="option" aria-selected={serviceType === "osw"} eventKey="osw">Osw</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <label htmlFor="search-service-input" className="visually-hidden">Search Service</label>
             <Form.Control
+              id="search-service-input"
               value={debounceQuery}
               className={style.customFormControl}
-              aria-label="Text input with dropdown button"
+              aria-label="Search Service"
               placeholder="Search Service"
               onChange={(e) => {
                 setDebounceQuery(e.target.value);
@@ -198,17 +202,20 @@ const Services = () => {
                 debouncedHandleSearch(e);
               }}
             />
+            <label id="service-active-status-label" className="visually-hidden">Select Service Status</label>
             <Select
-            className="inactiveSelect"
+              inputId="service-active-status"
+              className="inactiveSelect"
               value={inactiveOptions.find(option => option.value === showInactive)}
               options={inactiveOptions}
               onChange={handleInactiveChange}
               defaultValue={{ label: "Show Active", value: false }}
               isSearchable={false}
+              aria-labelledby="service-active-status-label"
               components={{
                 IndicatorSeparator: () => null
               }}
-            />        
+            />
           </InputGroup>
           {data?.pages?.map((values, i) => (
             <React.Fragment key={i}>
@@ -297,20 +304,20 @@ export const ListingBlock = ({ id, name, type, icon, handleEdit, handleUpdateSta
         <div className={style.names}>
           <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="icon" />
           <div>
-            <div className={style.serviceType} tabIndex={0}>{type}</div>
-            <div className={style.serviceName} title={name} tabIndex={0}>{name}</div>
+            <div className={style.serviceType}>{type}</div>
+            <div className={style.serviceName} title={name}>{name}</div>
           </div>
         </div>
         {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>
           {isInActive === false &&
-          <Button
-            className={style.editButton}
-            onClick={() => handleEdit(id, type)}
-            variant="link"
-          >
-            <img src={iconEdit} alt="edit-icon" />
-            <div className={style.btnText}>Edit</div>
-          </Button>}
+            <Button
+              className={style.editButton}
+              onClick={() => handleEdit(id, type)}
+              variant="link"
+            >
+              <img src={iconEdit} alt="edit-icon" />
+              <div className={style.btnText}>Edit</div>
+            </Button>}
           <Button
             className={style.deleteButton}
             onClick={() => handleUpdateStatus(id, !isInActive)}
