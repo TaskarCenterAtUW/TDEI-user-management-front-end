@@ -204,14 +204,13 @@ const Services = () => {
             />
             <label id="service-active-status-label" className="visually-hidden">Select Service Status</label>
             <Select
-              inputId="service-active-status"
               className="inactiveSelect"
               value={inactiveOptions.find(option => option.value === showInactive)}
               options={inactiveOptions}
               onChange={handleInactiveChange}
               defaultValue={{ label: "Show Active", value: false }}
-              isSearchable={false}
               aria-labelledby="service-active-status-label"
+              inputId="service-active-status"
               components={{
                 IndicatorSeparator: () => null
               }}

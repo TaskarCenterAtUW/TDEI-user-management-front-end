@@ -77,7 +77,7 @@ const CreateUpdateService = () => {
             err?.response?.data ??
             err?.message ??
             'An unknown error occurred';
-    
+
         setToastMessage({
             showtoast: true,
             type: 'error',
@@ -121,7 +121,7 @@ const CreateUpdateService = () => {
                 tdei_service_id: serviceData?.tdei_service_id,
                 tdei_project_group_id: values.tdei_project_group_id,
                 polygon: parsedData,
-                service_type : values.service_type
+                service_type: values.service_type
             });
         }
     };
@@ -196,7 +196,7 @@ const CreateUpdateService = () => {
                             </div>
                             <Container className="d-flex align-items-center mt-2">
 
-                                <Form.Group className="col-7 mb-3" controlId="projectGroupId ">
+                                <Form.Group className="col-7 mb-3" controlId="projectGroupId">
                                     <Form.Label> {user.isAdmin && idData['id'] !== undefined ? "Project Group Id" : "Project Group Name"} </Form.Label>
                                     {user.isAdmin && idData['id'] === undefined ? (
                                         <Field component={ProjectGrpList} name="tdei_project_group_id" />
@@ -205,13 +205,13 @@ const CreateUpdateService = () => {
                                             type="text"
                                             placeholder="Enter Project Group ID"
                                             name="tdei_project_group_id"
-                                            value={user.isAdmin && idData['id'] !== undefined  ? values.tdei_project_group_id : selectedProjectGroup.name}
+                                            value={user.isAdmin && idData['id'] !== undefined ? values.tdei_project_group_id : selectedProjectGroup.name}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            disabled
+                                            readOnly
                                         />
                                     )}
-                                </Form.Group>        
+                                </Form.Group>
                                 <Form.Group className="col-7 mb-3" controlId="name">
                                     <Form.Label>Service Name<span style={{ color: 'red' }}> *</span></Form.Label>
                                     <Form.Control
@@ -227,7 +227,7 @@ const CreateUpdateService = () => {
                                         {errors.service_name}
                                     </Form.Control.Feedback>
                                 </Form.Group>
-                                <Form.Group className="col-7 mb-3" controlId="serviceType ">
+                                <Form.Group className="col-7 mb-3" controlId="serviceType">
                                     <Form.Label>  Service Type <span style={{ color: 'red' }}> *</span> </Form.Label>
                                     {idData['id'] === undefined ? (
                                         <Field component={ServiceTypeDropdownForm} name="service_type" />
@@ -236,19 +236,20 @@ const CreateUpdateService = () => {
                                             type="text"
                                             placeholder="Select Service Type"
                                             name="service_type"
-                                            value={idData['serviceType'] === "" ?  toPascalCase(values.service_type) : toPascalCase(idData['serviceType'])}
+                                            value={idData['serviceType'] === "" ? toPascalCase(values.service_type) : toPascalCase(idData['serviceType'])}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            disabled
+                                            readOnly
                                         />
                                     )}
                                 </Form.Group>
                                 <div className="apiKey">
-                                    <Form.Label>Service Boundaries</Form.Label>
+                                    <Form.Label htmlFor="polygon">Service Boundaries</Form.Label>
                                     <div className="tdei-hint-text">(hint: Create the bounding box using {link} )</div>
                                     <div className="jsonContent">
                                         <Form.Control
                                             as="textarea"
+                                            id="polygon"
                                             type="text"
                                             name="polygon"
                                             onChange={handleTextareaChange}
