@@ -101,7 +101,7 @@ const ProjectGroupSwitch = () => {
           <Form.Control
             value={debounceQuery}
             className={style.customFormControl}
-            aria-label="Text input with dropdown button"
+            aria-label="Search Project Group"
             placeholder="Search Project Group"
             onChange={(e) => {
               setDebounceQuery(e.target.value);
@@ -188,10 +188,10 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
           <img
             src={projectGroupIcon}
             className={style.projectGroupIcon}
-            alt="icon"
+            alt=""
           />
           <div>
-            <div className={style.projectGroupName} title={name} tabIndex={0}>
+            <div className={style.projectGroupName} title={name}>
               {name}
             </div>
           </div>
@@ -199,7 +199,7 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
         <div className={style.buttonsAlignment}>
           {canShowProjectGroupSettings() ? (
             <div>
-              <Button className={style.settingsButton} onClick={openDailog}>
+              <Button className={style.settingsButton} onClick={openDailog} aria-label="Project Group Settings">
                 <FaCog />
               </Button>
               <ProjectGroupSettings
@@ -211,9 +211,8 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
           ) : null}
           {canManageReferrals && (
               <Tooltip title="Manage Referral Codes" arrow>
-                <div className={style.buttons}>
                   <Button
-                   style={{ display: SHOW_REFERRALS ? "inline-flex" : "none" }}
+                    style={{ display: SHOW_REFERRALS ? "inline-flex" : "none" }}
                     className={style.switchButton}
                     onClick={() => navigate(`/${id}/referralCodes`)}
                     variant="link"
@@ -221,7 +220,6 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
                     <QrCode2Icon />
 
                   </Button>
-                </div>
               </Tooltip>
           )}
 
