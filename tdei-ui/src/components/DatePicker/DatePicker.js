@@ -7,7 +7,7 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { IconButton } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
 
-const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilter = false, minDate, maxDate }) => {
+const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilter = false, minDate, maxDate, disabled }) => {
   const { name } = field;
   const { setFieldValue, setFieldTouched, touched, errors } = form;
   const [internalDate, setInternalDate] = useState(null);
@@ -46,7 +46,7 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
       if (setFieldValue) setFieldValue(name, null);
       onChange(null);
     }
-  };  
+  };
 
   const handleBlur = () => {
     if (!internalDate && !isFilter) {
@@ -84,11 +84,13 @@ const DatePicker = ({ field = {}, form = {}, label, onChange, dateValue, isFilte
         value={internalDate || null}
         minDate={minDate || undefined}
         maxDate={maxDate || undefined}
+        disabled={disabled}
         slotProps={{
           textField: {
             placeholder: dateValue ? '' : label,
             error: touched?.[name] && !!errors?.[name],
             onBlur: handleBlur,
+
           }
         }}
         onChange={handleChange}

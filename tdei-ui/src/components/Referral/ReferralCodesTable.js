@@ -48,7 +48,7 @@ const statusPillStyle = (isActive, validFrom, validTo) => {
 
 const TypeChip = ({ type }) =>
   type === "campaign" ? (
-    <Chip size="small" color="primary" style={{backgroundColor:'var(--primary-color)'}} label="Campaign" />
+    <Chip size="small" color="primary" style={{ backgroundColor: 'var(--primary-color)' }} label="Campaign" />
   ) : (
     <Chip size="small" variant="outlined" label="Invite" />
   );
@@ -60,7 +60,7 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
   const [selectedCode, setSelectedCode] = useState(null);
 
   const copyToClipboard = async (text) => {
-    try { await navigator.clipboard.writeText(text); } catch {}
+    try { await navigator.clipboard.writeText(text); } catch { }
   };
 
   return (
@@ -72,7 +72,7 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
         <div className={style.sortableHeader}>Valid Period</div>
         <div className={style.sortableHeader}>Created</div>
         <div className={style.sortableHeader}>Status</div>
-        { !isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`}>Actions</div>}
+        {!isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`}>Actions</div>}
       </div>
       {codes.map((code) => {
         const statusLabel = (() => {
@@ -130,7 +130,7 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                   {isMobile ? (
                     <Dropdown.Toggle
                       id={`rc-actions-${code.id}`}
-                     className={isMobile ? style.actionsButtonMobile : style.iconToggle}
+                      className={isMobile ? style.actionsButtonMobile : style.iconToggle}
                     >
                       Manage Code
                     </Dropdown.Toggle>

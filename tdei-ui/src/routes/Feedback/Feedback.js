@@ -162,7 +162,7 @@ const Feedback = () => {
                     onClick={openFormatMenu}
                     disabled={isFeedbackDownloading || isDownloading}
                 >
-                    <DownloadIcon className="me-2" />
+                    <DownloadIcon className="me-2" aria-hidden="true" />
                     {isFeedbackDownloading ? "Downloading…" : "Download Feedback"}
                 </Button>
                 <Popover
@@ -179,7 +179,7 @@ const Feedback = () => {
                         </ListItemButton>
                         <Divider />
                         <ListItemButton onClick={() => handleChooseFormat("geojson")} disabled={isFeedbackDownloading || isDownloading}>
-                            <ListItemText primary="GeoJSON"/>
+                            <ListItemText primary="GeoJSON" />
                         </ListItemButton>
                     </List>
                 </Popover>

@@ -209,7 +209,7 @@ const AssignRoles = (props) => {
                                 <img
                                   src={checkIcon}
                                   className={style.iconSelected}
-                                  alt="success-icon"
+                                  alt=""
                                 />
                               </div>
                             </button>
