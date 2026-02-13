@@ -136,13 +136,15 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                     </Dropdown.Toggle>
                   ) : (
                     <Dropdown.Toggle
+                      variant="link"
+                      aria-label="Actions"
                       id={`rc-actions-${code.id}`}
                       className={`${style.dropdownToggle} ${style.dropdownToggleBase}`}
                     >
                       <img
                         src={menuOptionIcon}
                         className={style.moreActionIcon}
-                        alt="Menu Options"
+                        alt=""
                       />
                     </Dropdown.Toggle>
                   )}
