@@ -47,7 +47,7 @@ const AssignRoles = (props) => {
       then: yup.array().of(yup.string()).min(1, "Please select roles"),
     }),
   });
-  
+
   const onSuccess = () => {
     queryClient.invalidateQueries({ queryKey: [GET_PROJECT_GROUP_USERS] });
     props.onHide();
@@ -106,7 +106,7 @@ const AssignRoles = (props) => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">
+            <Modal.Title id="contained-modal-title-vcenter" as="h4">
               {props.isEdit ? "Assign Roles" : "Assign Role to New User"}
             </Modal.Title>
           </Modal.Header>
@@ -142,7 +142,7 @@ const AssignRoles = (props) => {
                       isInvalid={touched.user_name && !!errors.user_name}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={props.isEdit}
+                      readOnly={props.isEdit}
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.user_name}
@@ -155,7 +155,7 @@ const AssignRoles = (props) => {
                       placeholder="Enter Project Group ID"
                       value={selectedProjectGroup.tdei_project_group_id}
                       name="tdei_project_group_id"
-                      disabled
+                      readOnly
                     />
                   </Form.Group>
                   <Field name="roles">
@@ -235,7 +235,12 @@ const AssignRoles = (props) => {
                   <Button
                     type="submit"
                     className="tdei-primary-button"
-                    disabled={isLoading || !dirty}
+                    aria-disabled={isLoading || !dirty}
+                    onClick={(e) => {
+                      if (isLoading || !dirty) {
+                        e.preventDefault();
+                      }
+                    }}
                   >
                     {(isLoading && !showConfirmModal) ? "Assigning..." : "Assign"}
                   </Button>
