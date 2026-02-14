@@ -117,14 +117,13 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
         <div className={style.datasetItem}>
           <div className="d-flex align-items-center flex-wrap gap-2">
             <div className="me-2">
-              <img src={datasetRowIcon} alt="Dataset Icon" />
+              <img src={datasetRowIcon} alt="" />
             </div>
             <div className={style.infoBlock}>
               <div className="d-flex align-items-center mb-2">
                 <span
                   className={style.datasetTitle}
                   title={metadata.dataset_detail.name}
-                  tabIndex={0}
                 >
                   {metadata.dataset_detail.name}{" "}
                 </span>
@@ -169,7 +168,6 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
             <div
               className={style.serviceName}
               title={dataset.project_group.name}
-              tabIndex={0}
             >
               {dataset.project_group.name}
             </div>
@@ -177,13 +175,13 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
         )}
         <div className={style.datasetItem}>
           <div className={style.mobileOnly}>Service Name</div>
-          <div className={style.serviceName} title={service.name} tabIndex={0}>
+          <div className={style.serviceName} title={service.name}>
             {service.name}
           </div>
         </div>
         <div className={style.datasetItem}>
           <div className={style.mobileOnly}>Type</div>
-          <div className={style.typeNameTransform} tabIndex={0}>
+          <div className={style.typeNameTransform}>
             {data_type === "Osw" ? "OSW" : data_type}
           </div>
         </div>
@@ -193,7 +191,6 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
             <div
               className={style.statusContainer}
               style={{ backgroundColor: getStatusColor() }}
-              tabIndex={0}
             >
               {status === "Publish" ? "Released" : status}
             </div>
