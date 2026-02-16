@@ -2,6 +2,7 @@ import React from "react";
 import style from "./Datasets.module.css";
 import { Col, Container, Row, Badge } from "react-bootstrap";
 import datasetRowIcon from "../../assets/img/dataset-row.svg";
+import openDataViewerIcon from "../../assets/img/action-open-console.svg";
 import { workspaceUrl } from "../../services";
 import DatasetsActions from "./DatasetsActions";
 import ClipboardCopy from "../Services/ClipBoardCopy";
@@ -120,7 +121,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
               <img src={datasetRowIcon} alt="" />
             </div>
             <div className={style.infoBlock}>
-              <div className="d-flex align-items-center mb-2">
+              <div className="d-flex align-items-center flex-wrap gap-2 mb-2">
                 <span
                   className={style.datasetTitle}
                   title={metadata.dataset_detail.name}
@@ -128,28 +129,40 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                   {metadata.dataset_detail.name}{" "}
                 </span>
                 {project_group.data_viewer_allowed && data_viewer_allowed && (
-                  <Badge
-                    bg="" // This disables the default bootstrap color
-                    className="ms-2 d-inline-flex align-items-center"
-                    style={{
-                      cursor: "pointer",
-                      backgroundColor: "var(--primary-color)",
-                    }}
+                  <button 
+                    type="button"
+                    className={style.dataViewer}
+                    aria-label="Open data viewer URL"
                     onClick={() => {
                       const viewerUrl = `${process.env.REACT_APP_DATAVIEWER_URL}project-group/${project_group.tdei_project_group_id}/dataset/${tdei_dataset_id}`;
                       window.open(viewerUrl, "_blank");
                     }}
-                    title="Data viewer enabled"
                   >
-                    <img
-                      src={dataViewerIcon}
-                      alt="Data viewer enabled"
-                      style={{
-                        height: "1.2em",
-                        filter: "brightness(0) invert(1)",
-                      }}
-                    />
-                  </Badge>
+                    Data Viewer
+                    <img src={openDataViewerIcon} className={style.dvIcon} alt="" />
+                  </button>
+                  // <Badge
+                  //   bg="" // This disables the default bootstrap color
+                  //   className="ms-2 d-inline-flex align-items-center"
+                  //   style={{
+                  //     cursor: "pointer",
+                  //     backgroundColor: "var(--primary-color)",
+                  //   }}
+                  //   onClick={() => {
+                  //     const viewerUrl = `${process.env.REACT_APP_DATAVIEWER_URL}project-group/${project_group.tdei_project_group_id}/dataset/${tdei_dataset_id}`;
+                  //     window.open(viewerUrl, "_blank");
+                  //   }}
+                  //   title="Data viewer enabled"
+                  // >
+                  //   <img
+                  //     src={dataViewerIcon}
+                  //     alt="Data viewer enabled"
+                  //     style={{
+                  //       height: "1.2em",
+                  //       filter: "brightness(0) invert(1)",
+                  //     }}
+                  //   />
+                  // </Badge>
                 )}
               </div>
               <div className={style.datasetSecondaryInfoBlock}>

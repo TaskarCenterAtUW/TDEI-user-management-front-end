@@ -231,8 +231,10 @@ const Jobs = () => {
                     {showFilter && <div className={style.searchPanel}>
                         <div className="d-flex flex-wrap gap-3">
                             <Form.Control
+                                id="search-input-JobId"
                                 type="text"
                                 placeholder="Search Job Id"
+                                aria-label="Search Job Id"
                                 onChange={(e) => {
                                     setQuery(e.target.value);
                                     debouncedHandleSearch(e);
@@ -240,36 +242,45 @@ const Jobs = () => {
                             />
                             <div className={style.selectPanel}>
                                 <label htmlFor="jobTypeSelect" className={style.selectLabel}>Job Type</label>
-                                <Select id="jobTypeSelect"
+                                <Select 
+                                    inputId="jobTypeSelect"
+                                    isSearchable={false}
                                     className={style.select}
                                     options={jobTypeOptions}
                                     value={jobType}
                                     onChange={handleJobTypeSelect}
+                                    aria-label="Filter by job type"
                                 />
                             </div>
                             <div className={style.selectPanel}>
                                 <label htmlFor="jobStatusSelect" className={style.selectLabel}>Status</label>
-                                <Select id="jobStatusSelect"
+                                <Select 
+                                    inputId="jobStatusSelect"
+                                    isSearchable={false}
                                     className={style.select}
                                     options={jobStatusOptions}
                                     value={jobStatus}
                                     onChange={handleJobStatusSelect}
+                                    aria-label="Filter by job status"
                                 />
                             </div>
                             <div className={style.selectPanel}>
                                 <label htmlFor="jobShowSelect" className={style.selectLabel}>Show</label>
-                                <Select id="jobShowSelect"
+                                <Select 
+                                    inputId="jobShowSelect"
+                                    isSearchable={false}
                                     className={style.select}
                                     options={jobShowOptions}
                                     value={jobShow}
                                     onChange={handleJobShowSelect}
+                                    aria-label="Filter by submitted by me or all jobs"
                                 />
                             </div>
                         </div>
                         <div className="d-flex">
                             <div className="d-flex align-items-center">
-                                <IconButton className={style.iconBtn} onClick={handleRefresh}>
-                                    <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
+                                <IconButton className={style.iconBtn} onClick={handleRefresh} aria-label="Refresh jobs">
+                                    <img alt="" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
                                 </IconButton>
                             </div>
                         </div>

@@ -399,6 +399,25 @@
 .typeNameTransform {
   text-transform: uppercase;
 }
+.dataViewer {
+  background: none;
+  color: var(--secondary-color);
+  font-size: 12px;
+  font-weight: 700;
+  background-color: #fff;
+  border: 1px solid var(--secondary-color);
+  border-radius: 4px;
+  padding: 0px 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  &:hover {
+    background-color: #f5f5f5;
+  }
+  .dvIcon {
+    height: 10px;
+  }
+}
 
 
 @media only screen and (max-width: 992px) {

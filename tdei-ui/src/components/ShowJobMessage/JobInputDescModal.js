@@ -38,7 +38,7 @@ const JobInputDescModal = (props) => {
             centered
         >
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: "18px"}}>
+                <Modal.Title as="h4" id="contained-modal-title-vcenter">
                     Job Request Input
                 </Modal.Title>
             </Modal.Header>

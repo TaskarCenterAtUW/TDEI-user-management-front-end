@@ -11,7 +11,7 @@ const ShowJobMessageModal = (props) => {
             centered
         >
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
+                <Modal.Title as="h4" id="contained-modal-title-vcenter">
                     {"Message"}
                 </Modal.Title>
             </Modal.Header>
