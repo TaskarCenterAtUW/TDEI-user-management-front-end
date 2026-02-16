@@ -300,7 +300,7 @@ export default function EditMetadata() {
     return (
         <div className={style.layout}>
             <Container>
-                <div className={style.uploadWidgetTitle}>Update Metadata - {dataset && dataset.metadata && dataset.metadata.dataset_detail && dataset.metadata.dataset_detail.name}</div>
+                <h1 className={style.uploadWidgetTitle}>Update Metadata - {dataset && dataset.metadata && dataset.metadata.dataset_detail && dataset.metadata.dataset_detail.name}</h1>
                 <Box className={style.uploadDatasetStepsLayout}>
                     <Grid container spacing={0} columns={12}>
                         <Grid item xs={12} sm={12} md={3}>
