@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import FormControl from '@mui/material/FormControl';
 import Select from 'react-select';
+import style from "./../MetaDataForm.module.css";
 
 const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion, dataType }) => {
   const options = useMemo(() => {
@@ -46,14 +47,18 @@ const SchemaVersionDropdown = ({ field, form, onChange, schemaVersion, dataType 
     <div>
       <FormControl fullWidth>
         <Select
-        placeholder="Select Schema Version"
+          inputId='schema_version'
+          className={style.customPlaceholder}
+          placeholder="Select Schema Version"
           isSearchable={false}
           value={currentValue}
           onChange={handleChange}
           options={options}
           components={{
             IndicatorSeparator: () => null
-          }} />
+          }}
+          required
+        />
       </FormControl>
     </div>
   );

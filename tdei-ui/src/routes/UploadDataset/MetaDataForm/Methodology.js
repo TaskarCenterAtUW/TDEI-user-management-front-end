@@ -54,10 +54,11 @@ const handleFieldChange = (e) => {
                 <ErrorMessage name="node_locations_and_attributes_editing_software" component="div" />
               </Form.Group>
               <Form.Group controlId="data_collected_by_people" style={{ marginTop: '20px' }}>
-                <Form.Label>Data Collected By People Funded</Form.Label>
+                <Form.Label id='data_collected_by_people'>Data Collected By People Funded</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.data_collected_by_people}
+                  labelId={"data_collected_by_people"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('data_collected_by_people', value)
                     handleChange({ target: { name: 'data_collected_by_people', value } });
@@ -78,10 +79,11 @@ const handleFieldChange = (e) => {
                 />
               </Form.Group>
               <Form.Group controlId="data_captured_automatically" style={{ marginTop: '20px' }}>
-                <Form.Label>Data Captured Automatically</Form.Label>
+                <Form.Label id="data_captured_automatically">Data Captured Automatically</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.data_captured_automatically}
+                  labelId={"data_captured_automatically"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('data_captured_automatically', value)
                     handleChange({ target: { name: 'data_captured_automatically', value } });
@@ -169,10 +171,11 @@ const handleFieldChange = (e) => {
                 />
               </Form.Group>
               <Form.Group controlId="data_collection_preprocessing_documentation" style={{ marginTop: '20px' }}>
-                <Form.Label>Data Collection Preprocessing Documentation</Form.Label>
+                <Form.Label id="data_collection_preprocessing_documentation">Data Collection Preprocessing Documentation</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.data_collection_preprocessing_documentation}
+                  labelId={"data_collection_preprocessing_documentation"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('data_collection_preprocessing_documentation', value)
                     handleChange({ target: { name: 'data_collection_preprocessing_documentation', value } });
@@ -193,10 +196,11 @@ const handleFieldChange = (e) => {
                 />
               </Form.Group>
               <Form.Group controlId="validation_process_exists" style={{ marginTop: '20px' }}>
-                <Form.Label>Valid Process Exists</Form.Label>
+                <Form.Label id="validation_process_exists">Valid Process Exists</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.validation_process_exists}
+                  labelId={"validation_process_exists"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('validation_process_exists', value)
                     handleChange({ target: { name: 'validation_process_exists', value } });

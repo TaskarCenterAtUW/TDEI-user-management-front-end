@@ -76,8 +76,9 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
           <div className="d-flex align-items-center mb-3 flex-wrap gap-3">
             <div className={style.serviceFilterBlock}>
               <Form.Control
+                id="search-service"
                 className={style.customFormControl}
-                aria-label="Text input with dropdown button"
+                aria-label="Search Service"
                 placeholder="Search Service"
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -87,9 +88,10 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
             </div>
             {!fromCloneDataset && (
               <div className={style.serviceFilterBlock}>
-                <div>Type</div>
+                <Form.Label htmlFor="type-filter">Type</Form.Label>
                 <div className={style.selectServiceFilter}>
                   <Select
+                    inputId='type-filter'
                     isSearchable={false}
                     defaultValue={{ label: "All", value: "" }}
                     onChange={(value) => {
@@ -114,7 +116,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
                   <img
                     src={iconNoData}
                     className={style.noDataIcon}
-                    alt="no-data-icon"
+                    alt=""
                   />
                   <div className={style.noDataText}>No services found. Please try changing project group!</div>
                 </div>

@@ -41,10 +41,8 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
           border: '1px solid #ededf6'
         }}
       >
-        <div className={style.derivedDatasetTitle}>
-          Derived from dataset Id <span className={style.derivedDatasetSubtile}>(Optional)</span>
-        </div>
         <Form.Group controlId="derived_from_dataset_id" className={style.datasetIdInputBlock}>
+          <Form.Label className={style.derivedDatasetTitle}>Derived from dataset Id <span className={style.derivedDatasetSubtile}>(Optional)</span></Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter dataset Id"

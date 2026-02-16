@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FormControl from '@mui/material/FormControl';
 import Select from 'react-select';
+import style from "./../MetaDataForm.module.css";
 
 const CollectedMethodDropdownForm = ({ field, form, onChange, formDataCollectionMethod }) => {
   const collectedMethodOptions = [
@@ -31,6 +32,8 @@ const CollectedMethodDropdownForm = ({ field, form, onChange, formDataCollection
     <div>
       <FormControl fullWidth>
         <Select
+          inputId='collection_method'
+          className={style.customPlaceholder}
           isSearchable={false}
           value={currentValue}
           onChange={handleChange}
