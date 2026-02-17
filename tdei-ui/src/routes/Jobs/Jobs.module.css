@@ -280,10 +280,19 @@
 .createJobTitle {
   font-size: 18px;
   font-weight: 700;
+  margin-bottom: 0px;
 }
 
 .createJobSelectType {
   width: 50%;
+  & [class$="-placeholder"] {
+    color: var(--secondary-color);
+  }
+}
+.selectFieldCommon {
+  & [class$="-placeholder"] {
+    color: var(--secondary-color);
+  }
 }
 
 .selectIconsize {
