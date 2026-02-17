@@ -230,7 +230,10 @@ const Feedback = () => {
                                         className={style.sortableHeader}
                                         style={{ cursor: 'pointer', userSelect: 'none' }}
                                         onClick={toggleApiSortByCreatedAt}
-                                        title="Sort by submitted time (API)"
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label="Sort by submitted time"
+                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleApiSortByCreatedAt(); } }}
                                     >
                                         <span>Submitted time</span>
                                         {filters.sort_by === 'created_at' ? (

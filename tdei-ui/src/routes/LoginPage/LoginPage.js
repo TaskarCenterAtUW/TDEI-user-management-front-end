@@ -135,7 +135,7 @@ const LoginPage = () => {
                 {SHOW_REFERRALS && referralCode && (
                   <ReferralBanner code={referralCode} context="login" />
                 )}
-                <div className={style.loginTitle}>Welcome!</div>
+                <h1 className={style.loginTitle}>Welcome!</h1>
                 <div className={style.loginSubTitle}>
                   Please login to your account.
                 </div>
@@ -188,6 +188,10 @@ const LoginPage = () => {
                           <InputGroup.Text
                             onClick={() => setShowPassword(!showPassword)}
                             style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                            role="button"
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowPassword(!showPassword); } }}
                           >
                             {showPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
                           </InputGroup.Text>

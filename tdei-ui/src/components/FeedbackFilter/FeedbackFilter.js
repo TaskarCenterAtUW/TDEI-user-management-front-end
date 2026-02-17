@@ -88,7 +88,14 @@ const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
           <Form.Group>
             <div className={style.labelWithClear}>
               <Form.Label htmlFor="feedback-status-select">Status</Form.Label>
-              <span className={style.clearButton} onClick={clearStatus}>Clear</span>
+              <button
+                type="button"
+                className={style.clearButton}
+                onClick={clearStatus}
+                aria-label="Clear status filter"
+              >
+                Clear
+              </button>
             </div>
             <Select
               inputId="feedback-status-select"
@@ -104,10 +111,18 @@ const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
         </Col>
         <Col xs={12} md={4}>
           <div className={style.labelWithClear}>
-            <Form.Label>Submitted After</Form.Label>
-            <span className={style.clearButton} onClick={clearValidFrom}>Clear</span>
+            <Form.Label htmlFor="feedback-submitted-after">Submitted After</Form.Label>
+            <button
+              type="button"
+              className={style.clearButton}
+              onClick={clearValidFrom}
+              aria-label="Clear submitted after date"
+            >
+              Clear
+            </button>
           </div>
           <DatePicker
+            id="feedback-submitted-after"
             label="Submitted After"
             onChange={(dateIso) => { setValidFromIso(dateIso); refreshData?.(); }}
             dateValue={validFromIso}
@@ -117,10 +132,18 @@ const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
         </Col>
         <Col xs={12} md={4}>
           <div className={style.labelWithClear}>
-            <Form.Label>Submitted Before</Form.Label>
-            <span className={style.clearButton} onClick={clearValidTo}>Clear</span>
+            <Form.Label htmlFor="feedback-submitted-before">Submitted Before</Form.Label>
+            <button
+              type="button"
+              className={style.clearButton}
+              onClick={clearValidTo}
+              aria-label="Clear submitted before date"
+            >
+              Clear
+            </button>
           </div>
           <DatePicker
+            id="feedback-submitted-before"
             label="Submitted Before"
             onChange={(dateIso) => { setValidToIso(dateIso); refreshData?.(); }}
             dateValue={validToIso}
