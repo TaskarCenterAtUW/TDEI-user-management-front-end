@@ -14,7 +14,7 @@ import { useMediaQuery } from 'react-responsive';
 function Dropzone({ onDrop, accept, format, selectedFile }) {
   const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
-  const MAX_SIZE_MB = 1024;
+  const MAX_SIZE_MB = Number(process.env.REACT_APP_UPLOAD_LIMIT_MB) || 1024;
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
         dispatch(
           show({
             message:
-              "The total size of dataset files in zip exceeds 1 GB upload limit.",
+              `The total size of dataset files in zip exceeds ${MAX_SIZE_MB >= 1024 ? `${(MAX_SIZE_MB / 1024).toFixed(MAX_SIZE_MB % 1024 === 0 ? 0 : 1)} GB` : `${MAX_SIZE_MB} MB`} upload limit.`,
             type: "danger",
           })
         );

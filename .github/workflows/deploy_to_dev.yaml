@@ -24,6 +24,7 @@ jobs:
           echo REACT_APP_PORTAL_URL = ${{vars.REACT_APP_PORTAL_URL}} >> tdei-ui/.env
           echo REACT_APP_IOS_INSTALL_URL= ${{vars.REACT_APP_IOS_INSTALL_URL}} >> tdei-ui/.env
           echo REACT_APP_ANDROID_INSTALL_URL=${{vars.REACT_APP_ANDROID_INSTALL_URL}} >> tdei-ui/.env
+          echo REACT_APP_UPLOAD_LIMIT_MB=${{vars.REACT_APP_UPLOAD_LIMIT_MB}} >> tdei-ui/.env
       - name: Build react app
         run: |
           cd tdei-ui && npm install
