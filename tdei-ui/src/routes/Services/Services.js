@@ -179,7 +179,7 @@ const Services = () => {
         <>
           <InputGroup className="mb-3">
             <Dropdown onSelect={handleSelect} align="end" className={style.dropdownButton}>
-              <Dropdown.Toggle variant="outline-secondary customBorderColor" id="input-group-dropdown-2">
+              <Dropdown.Toggle variant="outline-secondary customBorderColor" id="input-group-dropdown-2" aria-label="Select Service Type">
                 {serviceType ? toPascalCase(serviceType) : ''}
               </Dropdown.Toggle>
               <Dropdown.Menu role="listbox">
@@ -194,7 +194,6 @@ const Services = () => {
               id="search-service-input"
               value={debounceQuery}
               className={style.customFormControl}
-              aria-label="Search Service"
               placeholder="Search Service"
               onChange={(e) => {
                 setDebounceQuery(e.target.value);
@@ -211,6 +210,8 @@ const Services = () => {
               defaultValue={{ label: "Show Active", value: false }}
               aria-labelledby="service-active-status-label"
               inputId="service-active-status"
+              isSearchable={false}
+              name="service-active-status"
               components={{
                 IndicatorSeparator: () => null
               }}
@@ -223,7 +224,7 @@ const Services = () => {
                   <img
                     src={iconNoData}
                     className={style.noDataIcon}
-                    alt="no-data-icon"
+                    alt=""
                   />
                   <div className={style.noDataText}>No service found..!</div>
                 </div>
@@ -301,7 +302,7 @@ export const ListingBlock = ({ id, name, type, icon, handleEdit, handleUpdateSta
     <div className={style.serviceDetailsContainer}>
       <div className={style.block} key={id}>
         <div className={style.names}>
-          <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="icon" />
+          <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="" />
           <div>
             <div className={style.serviceType}>{type}</div>
             <div className={style.serviceName} title={name}>{name}</div>
@@ -314,7 +315,7 @@ export const ListingBlock = ({ id, name, type, icon, handleEdit, handleUpdateSta
               onClick={() => handleEdit(id, type)}
               variant="link"
             >
-              <img src={iconEdit} alt="edit-icon" />
+              <img src={iconEdit} alt="" />
               <div className={style.btnText}>Edit</div>
             </Button>}
           <Button
@@ -322,7 +323,7 @@ export const ListingBlock = ({ id, name, type, icon, handleEdit, handleUpdateSta
             onClick={() => handleUpdateStatus(id, !isInActive)}
             variant="link"
           >
-            <img src={iconDelete} alt="delete-icon" style={{ marginRight: '5px' }} />
+            <img src={iconDelete} alt="" style={{ marginRight: '5px' }} />
             {isInActive ? "Activate" : "Deactivate"}
           </Button>
         </div>) : null}

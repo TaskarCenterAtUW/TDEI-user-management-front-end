@@ -76,7 +76,7 @@ const Members = () => {
   const { mutate: downloadUsers, isLoading: isDownloadingUsers } = useDownloadUsers();
 
   const handleDownloadUsers = () => {
-   downloadUsers(undefined, {
+    downloadUsers(undefined, {
       onSuccess: ({ filename }) => {
         setToastType("success");
         setToastMessage(`Downloaded ${filename || "tdei-active-users.csv"}.`);
@@ -162,7 +162,7 @@ const Members = () => {
               {user.isAdmin &&
                 (
                   <Button
-                     className={clsx("tdei-primary-button", style.downloadBtn)}
+                    className={clsx("tdei-primary-button", style.downloadBtn)}
                     onClick={handleDownloadUsers}
                     disabled={isDownloadingUsers}
                   >
@@ -188,7 +188,7 @@ const Members = () => {
                   <img
                     src={iconNoData}
                     className={style.noDataIcon}
-                    alt="no-member-icon"
+                    alt=""
                   />
                   <div className={style.noDataText}>No members found..!</div>
                 </div>
@@ -200,7 +200,7 @@ const Members = () => {
                 )} key={list.user_id}>
                   <div className={style.details}>
                     <div className={style.icon}>
-                      <img src={userIcon} alt="sitemap-solid" />
+                      <img src={userIcon} alt="" />
                     </div>
                     <div>
                       <div className={style.name}>

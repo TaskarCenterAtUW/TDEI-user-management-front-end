@@ -71,9 +71,10 @@ const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
         <Col xs={12} md={8} lg={9}>
           <Form.Group>
             <div className={style.labelWithClear}>
-              <Form.Label>Search Feedback By Dataset</Form.Label>
+              <Form.Label htmlFor="feedback-dataset-search">Search Feedback By Dataset</Form.Label>
             </div>
             <DatasetAutocomplete
+              id="feedback-dataset-search"
               selectedDatasetId={selectedDatasetId}
               datasetSearchText={datasetSearchText}
               setDatasetSearchText={setDatasetSearchText}
@@ -105,7 +106,17 @@ const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
                 refreshData?.();
               }}
               options={statusOptions}
+              isSearchable={false}
               components={{ IndicatorSeparator: () => null }}
+              ariaLiveMessages={{
+                onFocus: ({ focused, isDisabled }) => {
+                  return `Option ${focused.label} focused${isDisabled ? ", disabled" : ""}`;
+                },
+                onChange: ({ label, action }) => {
+                  return action === "select-option" ? `Selected ${label}` : "";
+                },
+                onSelect: ({ label }) => `Selected ${label}`,
+              }}
             />
           </Form.Group>
         </Col>

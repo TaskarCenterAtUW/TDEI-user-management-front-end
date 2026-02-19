@@ -96,8 +96,11 @@ const ForgotPassword = () => {
                           onBlur={handleBlur}
                           autoComplete="email"
                           isInvalid={touched.email && !!errors.email}
+                          aria-describedby="email-error"
+                          aria-invalid={touched.email && !!errors.email}
+                          aria-required="true"
                         />
-                        <Form.Control.Feedback type="invalid">
+                        <Form.Control.Feedback type="invalid" id="email-error">
                           {errors.email}
                         </Form.Control.Feedback>
                       </Form.Group>

@@ -63,7 +63,7 @@ const FeedbackListItem = ({ feedback }) => {
           color: 'rgb(22 101 52)',
           border: '1px solid transparent'
         };
-    case 'overdue':
+      case 'overdue':
         return {
           ...baseStyle,
           backgroundColor: 'rgb(254 226 226)',
@@ -82,16 +82,16 @@ const FeedbackListItem = ({ feedback }) => {
   const lat = feedback.location_latitude?.toFixed(8);
   const lng = feedback.location_longitude?.toFixed(8);
   return (
-    <div className={style.gridContainer} key={feedback.id}>
-        <p className={style.feedbackText}>{feedback.feedback_text}</p>
-        <p> {feedback.customer_email} <br/> <span class = {style.feedbackLocation} >{lat}, {lng}</span></p>
-        <p>{new Date(feedback.created_at).toLocaleString()}</p>
-        <p> {feedback.dataset.name} <br/> {feedback.dataset_element_id}</p>
-        <p>
-          <span style={getStatusStyle(feedback.status)}>
-            {feedback.status}
-          </span>
-        </p>
+    <div className={style.gridContainer} key={feedback.id} role="row">
+      <p className={style.feedbackText} role="cell">{feedback.feedback_text}</p>
+      <p role="cell"> {feedback.customer_email} <br /> <span className={style.feedbackLocation} >{lat}, {lng}</span></p>
+      <p role="cell">{new Date(feedback.created_at).toLocaleString()}</p>
+      <p role="cell"> {feedback.dataset.name} <br /> {feedback.dataset_element_id}</p>
+      <p role="cell">
+        <span style={getStatusStyle(feedback.status)}>
+          {feedback.status}
+        </span>
+      </p>
     </div>
   );
 };

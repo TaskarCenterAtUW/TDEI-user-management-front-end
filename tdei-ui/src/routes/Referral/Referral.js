@@ -254,6 +254,16 @@ const Referral = () => {
                     setFilters((prev) => ({ ...prev, type: opt?.value || "" }))
                   }
                   isClearable={false}
+                  isSearchable={false}
+                  ariaLiveMessages={{
+                    onFocus: ({ focused, isDisabled }) => {
+                      return `Option ${focused.label} focused${isDisabled ? ", disabled" : ""}`;
+                    },
+                    onChange: ({ label, action }) => {
+                      return action === "select-option" ? `Selected ${label}` : "";
+                    },
+                    onSelect: ({ label }) => `Selected ${label}`,
+                  }}
                 />
               </div>
             </div>

@@ -126,7 +126,7 @@ const Feedback = () => {
         <div className={style.jobsContainer}>
             <div className={style.header}>
                 <div className={style.title}>
-                    <h2 className="page-header-title">Feedback</h2>
+                    <h1 className="page-header-title">Feedback</h1>
                     <div className="page-header-subtitle">View and manage feedback for datasets</div>
                 </div>
             </div>
@@ -136,7 +136,9 @@ const Feedback = () => {
                     className={style.iconBtn}
                     onClick={refreshData}
                     sx={{ height: '40px' }}
-                    title="Refresh feedback list"  >
+                    title="Refresh feedback list"
+                    aria-label="Refresh feedback list"
+                >
                     <RefreshIcon style={{ fontSize: 20 }} />
                 </IconButton>
                 <Button
@@ -152,7 +154,7 @@ const Feedback = () => {
                 >
                     <img
                         src={filterImg}
-                        alt="Filter"
+                        alt=""
                         className="me-2"
                     />
                     Filter
@@ -208,9 +210,9 @@ const Feedback = () => {
                                 No feedback available.
                             </div>
                         ) : (
-                            <div>
-                                <div className={clsx(style.gridContainer, style.projectHeader)}>
-                                    <div className={style.sortableHeader}>
+                            <div role="table" aria-label="Feedback List">
+                                <div className={clsx(style.gridContainer, style.projectHeader)} role="row">
+                                    <div className={style.sortableHeader} role="columnheader">
                                         Feedback Details
                                         {/* {sortConfig.key === 'job_type' && sortConfig.direction === 'ascending' ? (
                                                               <ArrowDropUpIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
@@ -218,7 +220,7 @@ const Feedback = () => {
                                                               <ArrowDropDownIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
                                                           )} */}
                                     </div>
-                                    <div className={style.sortableHeader}>
+                                    <div className={style.sortableHeader} role="columnheader">
                                         Contact & Location
                                         {/* {sortConfig.key === 'job_id' && sortConfig.direction === 'ascending' ? (
                                                               <ArrowDropUpIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
@@ -228,27 +230,31 @@ const Feedback = () => {
                                     </div>
                                     <div
                                         className={style.sortableHeader}
-                                        style={{ cursor: 'pointer', userSelect: 'none' }}
-                                        onClick={toggleApiSortByCreatedAt}
-                                        role="button"
-                                        tabIndex={0}
-                                        aria-label="Sort by submitted time"
-                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleApiSortByCreatedAt(); } }}
+                                        role="columnheader"
+                                        aria-sort={filters.sort_by === 'created_at' ? (filters.sort_order === 'asc' ? 'ascending' : 'descending') : 'none'}
                                     >
-                                        <span>Submitted time</span>
-                                        {filters.sort_by === 'created_at' ? (
-                                            (filters.sort_order?.toLowerCase() === 'asc') ? (
-                                                <ArrowDropUpIcon className={style.sortIcon} />
-                                            ) : (
-                                                <ArrowDropDownIcon className={style.sortIcon} />
-                                            )
-                                        ) : null}
+                                        <button
+                                            type="button"
+                                            className={clsx(style.sortButton, "d-flex align-items-center bg-transparent border-0 p-0 text-inherit")}
+                                            onClick={toggleApiSortByCreatedAt}
+                                            aria-label="Sort by submitted time"
+                                            style={{ color: 'inherit', fontWeight: 'inherit', cursor: 'pointer' }}
+                                        >
+                                            <span className="me-1">Submitted time</span>
+                                            {filters.sort_by === 'created_at' ? (
+                                                (filters.sort_order?.toLowerCase() === 'asc') ? (
+                                                    <ArrowDropUpIcon className={style.sortIcon} />
+                                                ) : (
+                                                    <ArrowDropDownIcon className={style.sortIcon} />
+                                                )
+                                            ) : null}
+                                        </button>
                                     </div>
 
-                                    <div className={style.sortableHeader}>
+                                    <div className={style.sortableHeader} role="columnheader">
                                         Dataset and Element ID
                                     </div>
-                                    <div className={style.sortableHeader}>
+                                    <div className={style.sortableHeader} role="columnheader">
                                         Status
                                     </div>
                                 </div>

@@ -64,15 +64,15 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
   };
 
   return (
-    <div>
-      <div className={`${style.gridContainer} ${style.projectHeader}`}>
-        <div className={style.sortableHeader}>Name</div>
-        <div className={style.sortableHeader}>Type</div>
-        <div className={style.sortableHeader}>Referral Code</div>
-        <div className={style.sortableHeader}>Valid Period</div>
-        <div className={style.sortableHeader}>Created</div>
-        <div className={style.sortableHeader}>Status</div>
-        {!isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`}>Actions</div>}
+    <div role="table" aria-label="Referral Codes List">
+      <div className={`${style.gridContainer} ${style.projectHeader}`} role="rowgroup">
+        <div className={style.sortableHeader} role="columnheader">Name</div>
+        <div className={style.sortableHeader} role="columnheader">Type</div>
+        <div className={style.sortableHeader} role="columnheader">Referral Code</div>
+        <div className={style.sortableHeader} role="columnheader">Valid Period</div>
+        <div className={style.sortableHeader} role="columnheader">Created</div>
+        <div className={style.sortableHeader} role="columnheader">Status</div>
+        {!isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`} role="columnheader">Actions</div>}
       </div>
       {codes.map((code) => {
         const statusLabel = (() => {
@@ -85,8 +85,8 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
         })();
 
         return (
-          <div className={style.gridContainer} key={code.id}>
-            <p className={`${style.content} ${style.emailContentWrap}`}>
+          <div className={style.gridContainer} key={code.id} role="row">
+            <div className={`${style.content} ${style.emailContentWrap}`} role="cell">
               <span className={style.name}>{code.name}</span>
               {code.instructionsUrl && (
                 <div className="d-flex align-items-center gap-1 mt-1">
@@ -102,9 +102,9 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                   </Link>
                 </div>
               )}
-            </p>
-            <p className={style.content}><TypeChip type={code.type} /></p>
-            <p className={`${style.content} ${style.noWrap}`}>
+            </div>
+            <div className={style.content} role="cell"><TypeChip type={code.type} /></div>
+            <div className={`${style.content} ${style.noWrap}`} role="cell">
               <code className={style.shortCodePill}>{code.shortCode}</code>
               <Tooltip title="Copy referral code">
                 <IconButton
@@ -116,15 +116,15 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                   <ContentCopyIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
-            </p>
-            <p className={`${style.content} ${style.emailContentWrap} ${style.noWrap}`}>
+            </div>
+            <div className={`${style.content} ${style.emailContentWrap} ${style.noWrap}`} role="cell">
               {fmtDate(code.validFrom)} <span className={style.mutedSep}>to</span> {fmtDate(code.validTo)}
-            </p>
-            <p className={`${style.content} ${style.noWrap}`}>{fmtDate(code.createdAt)}</p>
-            <p className={`${style.content} ${style.noWrap}`}>
+            </div>
+            <div className={`${style.content} ${style.noWrap}`} role="cell">{fmtDate(code.createdAt)}</div>
+            <div className={`${style.content} ${style.noWrap}`} role="cell">
               <span style={statusPillStyle(code.isActive, code.validFrom, code.validTo)}>{statusLabel}</span>
-            </p>
-            <p className={`${style.content} ${style.actionsCol}`}>
+            </div>
+            <div className={`${style.content} ${style.actionsCol}`} role="cell">
               <div className={style.dropdownContainer}>
                 <Dropdown>
                   {isMobile ? (
@@ -184,7 +184,7 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
-            </p>
+            </div>
           </div>
         );
       })}

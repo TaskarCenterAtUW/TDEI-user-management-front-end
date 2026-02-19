@@ -186,6 +186,7 @@ const AssignRoles = (props) => {
                                   val.name
                                 ),
                               })}
+                              aria-pressed={form.values.roles?.includes(val.name)}
                               onClick={() => {
                                 const values = [...form.values.roles];
                                 const roleValue = val.name;

@@ -438,8 +438,10 @@ const CreateUpdateReferralCode = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               isInvalid={touched.name && !!errors.name}
+                              aria-describedby="name-error"
+                              aria-required="true"
                             />
-                            <Form.Control.Feedback type="invalid">
+                            <Form.Control.Feedback type="invalid" id="name-error" aria-live="polite">
                               {errors.name}
                             </Form.Control.Feedback>
                           </Form.Group>
@@ -457,11 +459,12 @@ const CreateUpdateReferralCode = () => {
                                 }
                               }}
                               onBlur={handleBlur}
+                              aria-describedby="type-desc"
                             >
                               <option value="campaign">Campaign</option>
                               <option value="invite">Invite</option>
                             </Form.Select>
-                            <div className="form-text mt-1">
+                            <div className="form-text mt-1" id="type-desc">
                               {typeDescriptions[values.type]}
                             </div>
                           </Form.Group>
@@ -482,7 +485,7 @@ const CreateUpdateReferralCode = () => {
                                   )}
                                 </Field>
                                 {touched.validFrom && errors.validFrom ? (
-                                  <div className="text-danger small mt-1">{errors.validFrom}</div>
+                                  <div className="text-danger small mt-1" aria-live="polite">{errors.validFrom}</div>
                                 ) : null}
                               </Form.Group>
                             </div>
@@ -503,7 +506,7 @@ const CreateUpdateReferralCode = () => {
                                     )}
                                   </Field>
                                   {touched.validTo && errors.validTo ? (
-                                    <div className="text-danger small mt-1">{errors.validTo}</div>
+                                    <div className="text-danger small mt-1" aria-live="polite">{errors.validTo}</div>
                                   ) : null}
                                 </Form.Group>
                               </div>
@@ -520,8 +523,9 @@ const CreateUpdateReferralCode = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               isInvalid={touched.instructionsUrl && !!errors.instructionsUrl}
+                              aria-describedby="instructions-url-error"
                             />
-                            <Form.Control.Feedback type="invalid">
+                            <Form.Control.Feedback type="invalid" id="instructions-url-error" aria-live="polite">
                               {errors.instructionsUrl}
                             </Form.Control.Feedback>
                           </Form.Group>
@@ -600,8 +604,9 @@ const CreateUpdateReferralCode = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 isInvalid={touched.redirectUrl && !!errors.redirectUrl}
+                                aria-describedby="redirect-url-error"
                               />
-                              <Form.Control.Feedback type="invalid">
+                              <Form.Control.Feedback type="invalid" id="redirect-url-error" aria-live="polite">
                                 {errors.redirectUrl}
                               </Form.Control.Feedback>
                             </Form.Group>
