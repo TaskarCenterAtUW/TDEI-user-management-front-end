@@ -283,9 +283,21 @@ input[type="radio"] {
   box-shadow: 0 0 0 0.25rem rgba(135, 62, 242, 0.25) !important;
 }
 
-/* :focus-visible {
-  outline: 2px solid #005fcc !important;
+.MuiButtonBase-root:focus-visible {
+  outline: 2px solid #2684ff !important;
   outline-offset: 1px;
   border-radius: 2px;
   box-shadow: none !important;
-} */
+}
+.btn:focus-visible {
+  outline: 2px solid #2684ff !important;
+  outline-offset: 1px;
+  border-radius: 2px;
+  box-shadow: none !important;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid #2684ff !important;
+  outline-offset: 1px;
+  border-radius: 2px;
+  box-shadow: none !important;
+}

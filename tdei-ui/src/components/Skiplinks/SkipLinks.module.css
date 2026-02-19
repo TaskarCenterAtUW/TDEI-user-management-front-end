@@ -2,8 +2,9 @@
   position: absolute;
   top: -50px;
   left: 5px;
-  background: #222;
-  color: #fff;
+  background: #ffffff;
+  color: #222222;
+  font-weight: 600;
   padding: 12px 16px;
   z-index: 1000;
   text-decoration: none;
@@ -11,5 +12,5 @@
 }
 
 .skipLink:focus {
-  top: 5px;
+  top: 6px;
 }
