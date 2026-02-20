@@ -4,7 +4,7 @@
   align-items: center;
   padding-bottom: 20px;
   gap: 12px;
-  flex-wrap: wrap;           
+  flex-wrap: wrap;
 }
 
 .header .actionsRight {
@@ -628,7 +628,10 @@
 }
 
 @media (max-width: 1200px) {
-  .projectHeader { display: none; }
+  .projectHeader {
+    display: none;
+  }
+
   .gridContainer {
     grid-template-columns: 1fr;
     grid-row-gap: 10px;
@@ -642,13 +645,68 @@
     content: none !important;
   }
 
-  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Name"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Type"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Referral Code"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Valid Period"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Created"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(6)::before { content: "Status"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(7)::before { content: "Actions"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader)> :nth-child(1)::before {
+    content: "Name";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(2)::before {
+    content: "Type";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(3)::before {
+    content: "Referral Code";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(4)::before {
+    content: "Valid Period";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(5)::before {
+    content: "Created";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(6)::before {
+    content: "Status";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(7)::before {
+    content: "Actions";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
 
   .header {
     align-items: flex-start;
@@ -690,11 +748,50 @@
 }
 
 @media (max-width: 1200px) {
-  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Name"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Type"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Referral Code"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Valid Period"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Created"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader)> :nth-child(1)::before {
+    content: "Name";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(2)::before {
+    content: "Type";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(3)::before {
+    content: "Referral Code";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(4)::before {
+    content: "Valid Period";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(5)::before {
+    content: "Created";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
 }
 
 .filterBtn {
@@ -716,11 +813,35 @@
   gap: 10px;
   margin-bottom: 12px;
 }
-.noWrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mutedSep { color: #6b7280; margin: 0 6px; }
-.shortCodePill { padding: 2px 8px; background: #f6f7fb; border-radius: 6px; color: #000; }
-.actionsColHead { white-space: nowrap; }
-.actionsCol { white-space: nowrap; display: flex; align-items: center; }
+
+.noWrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mutedSep {
+  color: #6b7280;
+  margin: 0 6px;
+}
+
+.shortCodePill {
+  padding: 2px 8px;
+  background: #f6f7fb;
+  border-radius: 6px;
+  color: #000;
+  font-family: var(--primary-font-family);
+}
+
+.actionsColHead {
+  white-space: nowrap;
+}
+
+.actionsCol {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
 
 .dropdownContainer {
   display: inline-flex;
@@ -749,12 +870,23 @@
   font-weight: 500;
   padding: 8px 12px !important;
 }
-.itemIconMUI { color: #6b7280; }
-.destructive { color: #c84349 !important; }
+
+.itemIconMUI {
+  color: #6b7280;
+}
+
+.destructive {
+  color: #c84349 !important;
+}
 
 @media (max-width: 480px) {
-  .actionsCol { justify-content: flex-start; }
-  .actionsButtonMobile { width: 100%; }
+  .actionsCol {
+    justify-content: flex-start;
+  }
+
+  .actionsButtonMobile {
+    width: 100%;
+  }
 }
 
 .dropdownToggleBase {

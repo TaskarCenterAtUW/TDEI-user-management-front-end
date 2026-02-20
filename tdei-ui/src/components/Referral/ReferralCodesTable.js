@@ -46,11 +46,25 @@ const statusPillStyle = (isActive, validFrom, validTo) => {
   return { ...base, backgroundColor: "#F5F5F5", color: "#666666", border: "1px solid #E0E0E0" };
 };
 
+const chipCommon = {
+  fontFamily: 'var(--primary-font-family)',
+  fontSize: '14px',
+  padding: '15px 5px',
+};
+
 const TypeChip = ({ type }) =>
   type === "campaign" ? (
-    <Chip size="small" color="primary" style={{ backgroundColor: 'var(--primary-color)' }} label="Campaign" />
+    <Chip
+      size="small"
+      label="Campaign"
+      style={{ ...chipCommon, backgroundColor: '#f3e7c7', color: '#222' }}
+    />
   ) : (
-    <Chip size="small" variant="outlined" label="Invite" />
+    <Chip
+      size="small"
+      label="Invite"
+      style={{ ...chipCommon, backgroundColor: '#dbeafe', border: 'none' }}
+    />
   );
 
 const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
