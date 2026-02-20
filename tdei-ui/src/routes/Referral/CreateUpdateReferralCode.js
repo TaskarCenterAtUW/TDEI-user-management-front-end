@@ -574,9 +574,9 @@ const CreateUpdateReferralCode = () => {
                                 }}
                               />
                               <label className="form-check-label" htmlFor="redirect-aviv">
-                                Aviv Scoute Route app
+                                AVIV ScoutRoute app
                                 <div className="text-muted small">
-                                  Redirect to Aviv Scoute Route Mobile app
+                                  Redirect to AVIV ScoutRoute Mobile app
                                 </div>
                               </label>
                             </div>
