@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 
-export default function ChipInput({ initialChips, onChipsChange }) {
+export default function ChipInput({ initialChips, onChipsChange, labelId }) {
     const [chips, setChips] = useState([]);
 
     useEffect(() => {
@@ -36,7 +36,11 @@ export default function ChipInput({ initialChips, onChipsChange }) {
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    placeholder="Press Enter to add"
+                    placeholder="Press Enter to Add"
+                    inputProps={{
+                        ...params.inputProps,
+                        "aria-labelledby": labelId
+                    }}
                 />
             )}
         />

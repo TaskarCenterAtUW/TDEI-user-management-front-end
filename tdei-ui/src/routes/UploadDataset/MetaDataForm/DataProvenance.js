@@ -58,10 +58,11 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                   }}
                   isInvalid={touched.full_dataset_name && errors.full_dataset_name && (formData.full_dataset_name === '')}
                   onBlur={handleBlur}
+                  required
                 />
                 <Form.Control.Feedback type="invalid">{errors.full_dataset_name}</Form.Control.Feedback>
               </Form.Group>
-              <div style={{ marginTop: '10px' }}>
+              <Form.Group controlId="other_published_locations" style={{ marginTop: '10px' }}>
                 <Form.Label>Other Published Locations</Form.Label>
                 <div className="jsonContent">
                   <Form.Control
@@ -77,9 +78,9 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                     placeholder="Enter Published Locations URL(s)"
                   />
                 </div>
-              </div>
+              </Form.Group>
 
-              <Form.Group controlId="dataset_update_frequency_months">
+              <Form.Group controlId="dataset_update_frequency_months" style={{ marginTop: '10px' }}>
                 <Form.Label>Dataset Update Frequency Months</Form.Label>
                 <Form.Control
                   type="number"
@@ -93,6 +94,7 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                 />
                 <ErrorMessage name="dataset_update_frequency_months" component="div" />
               </Form.Group>
+
               <Form.Group className="col-" controlId="location_inaccuracy_factors" style={{ marginTop: '10px' }}>
                 <Form.Label>Location Inaccuracy Factors</Form.Label>
                 <Form.Control
@@ -110,17 +112,18 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
             </div>
             <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="schema_validation_run">
-                <Form.Label>Schema Validation Run</Form.Label>
+                <Form.Label id='schema_validation_run'>Schema Validation Run</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.schema_validation_run}
+                  labelId={"schema_validation_run"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('schema_validation_run', value)
                     handleChange({ target: { name: 'schema_validation_run', value } });
                   }}
                 />
               </Form.Group>
-              <div style={{ marginTop: '20px' }}>
+              <Form.Group controlId="schema_validation_run_description" style={{ marginTop: '20px' }}>
                 <Form.Label>Schema Validation Run Description</Form.Label>
                 <div className="jsonContent">
                   <Form.Control
@@ -136,12 +139,13 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                     placeholder="Enter Schema Validation Run Description"
                   />
                 </div>
-              </div>
+              </Form.Group>
               <Form.Group controlId="allow_crowd_contributions" style={{ marginTop: "20px" }}>
-                <Form.Label>Allow Crowd Contribution</Form.Label>
+                <Form.Label id='allow_crowd_contributions'>Allow Crowd Contribution</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.allow_crowd_contributions}
+                  labelId={"allow_crowd_contributions"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('allow_crowd_contributions', value)
                     handleChange({ target: { name: 'allow_crowd_contributions', value } });

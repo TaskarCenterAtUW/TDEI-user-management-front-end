@@ -176,7 +176,7 @@ const Referral = () => {
               <ArrowBackIosNewIcon fontSize="small" />
             </RBButton>
             <div>
-              <div className="page-header-title">Referral Codes</div>
+              <h2 className="page-header-title">Referral Codes</h2>
               <div className="page-header-subtitle">
                 Manage and track your referral and invite codes of project group –{" "}
                 <span className="fw-bold">
@@ -254,6 +254,16 @@ const Referral = () => {
                     setFilters((prev) => ({ ...prev, type: opt?.value || "" }))
                   }
                   isClearable={false}
+                  isSearchable={false}
+                  ariaLiveMessages={{
+                    onFocus: ({ focused, isDisabled }) => {
+                      return `Option ${focused.label} focused${isDisabled ? ", disabled" : ""}`;
+                    },
+                    onChange: ({ label, action }) => {
+                      return action === "select-option" ? `Selected ${label}` : "";
+                    },
+                    onSelect: ({ label }) => `Selected ${label}`,
+                  }}
                 />
               </div>
             </div>

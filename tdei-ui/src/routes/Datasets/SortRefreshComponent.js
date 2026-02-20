@@ -48,12 +48,13 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, toggleFilters }
             <Button
                 variant="outlined"
                 size="small"
-                startIcon={<img src={filterImg} alt="Filter" style={{ width: 20, height: 15 }} />}
+                startIcon={<img src={filterImg} alt="" style={{ width: 20, height: 15 }} />}
                 onClick={handleFilterClick}
                 className={style.sortFilterBtn}
                 style={{
-                    background: selectedButton === 'Filter' ? '#F8F8F8' : 'white'
+                    background: selectedButton === 'Filter' ? '#F8F8F8' : '#FFFFFF'
                 }}
+                aria-label='Filter datasets'
             >
                 Filter
             </Button>
@@ -64,8 +65,9 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, toggleFilters }
                 onClick={handleSortMenuOpen}
                 className={style.sortFilterBtn}
                 style={{
-                    background: selectedButton === 'Sort' ? '#F8F8F8' : 'white'
+                    background: selectedButton === 'Sort' ? '#F8F8F8' : 'FFFFFF'
                 }}
+                aria-label='Sort datasets'
             >
                 Sort by
             </Button>
@@ -82,7 +84,7 @@ const SortRefreshComponent = ({ handleRefresh, handleSortChange, toggleFilters }
                     </MenuItem>
                 ))}
             </Menu>
-            <IconButton className={style.iconBtn} onClick={handleRefresh}>
+            <IconButton className={style.iconBtn} onClick={handleRefresh} aria-label='Refresh datasets'>
                 <RefreshIcon style={{ fontSize: 20 }} />
             </IconButton>
         </Row>

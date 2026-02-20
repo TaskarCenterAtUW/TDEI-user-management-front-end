@@ -28,10 +28,13 @@
     align-items: center;
     justify-content: center;
 }
-  .selectDropdown {
-    margin-left: 10px;
-    width: 220px;
-  }
-  .metaDataContainer {
-    padding: 40px 10px;
-  }
+.selectDropdown {
+  margin-left: 10px;
+  width: 220px;
+}
+.metaDataContainer {
+  padding: 40px 10px;
+}
+.customPlaceholder [class$="-placeholder"] {
+  color: var(--secondary-color);
+}

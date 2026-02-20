@@ -10,6 +10,7 @@ import Header from "./Header";
 import style from "./App.module.css";
 import Notification from "./Notification/Notification";
 import NotificationModal from "./NotificationModal/NotificationModal";
+import SkipLinks from "./Skiplinks/SkipLinks";
 
 const App = () => {
   const queryClient = new QueryClient({
@@ -28,6 +29,7 @@ const App = () => {
         <BrowserRouter>
           <AuthProvider>
             <>
+              <SkipLinks />
               <Header />
               <Notification />
               <NotificationModal />

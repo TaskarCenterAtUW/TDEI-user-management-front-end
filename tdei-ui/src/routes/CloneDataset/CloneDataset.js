@@ -86,7 +86,7 @@ const CloneDataset = () => {
         <div className={style.layout}>
             <Container>
                 <div className={style.uploadWidgetTitle}>
-                    <div className={style.cloneDatasetTitle}>Clone Dataset</div>
+                    <h1 className={style.cloneDatasetTitle}>Clone Dataset</h1>
                     <div className={style.content}>
                         <img src={cloneFileImage} className={style.icon} alt="" />
                         <span>Data file cloning from <span className={style.description}>{dataset && dataset.metadata.dataset_detail.name}</span></span>

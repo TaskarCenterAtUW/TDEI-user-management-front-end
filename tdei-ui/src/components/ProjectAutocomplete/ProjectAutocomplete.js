@@ -99,6 +99,7 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
       <InputGroup>
         <Form.Control
           type="text"
+          id="projectGroup-search"
           placeholder="Search Project Group"
           onChange={handleInputChange}
           value={selectedProjectGroup && selectedProjectGroupId ? selectedProjectGroup.project_group_name : projectSearchText}

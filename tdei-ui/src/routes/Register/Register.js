@@ -42,11 +42,11 @@ const Register = () => {
     : "";
 
 
- React.useEffect(() => {
-   if (SHOW_REFERRALS && rawInvite) {
-     sessionStorage.setItem("referralCode", rawInvite);
-   }
- }, [rawInvite]);
+  React.useEffect(() => {
+    if (SHOW_REFERRALS && rawInvite) {
+      sessionStorage.setItem("referralCode", rawInvite);
+    }
+  }, [rawInvite]);
 
   useEffect(() => {
     if (SHOW_REFERRALS) sessionStorage.removeItem("inviteHandoffDone");
@@ -108,7 +108,7 @@ const Register = () => {
 
       const instructionsUrl = data?.instructionsUrl || data?.instructions_url || "";
       const oneTimeToken = data?.token || "";
-      const redirectUrl    = data?.redirect_url || data?.redirectUrl || "";
+      const redirectUrl = data?.redirect_url || data?.redirectUrl || "";
 
       setToastMessage("Registration successful!");
       setToastType("success");
@@ -128,7 +128,7 @@ const Register = () => {
             redirect_url: redirectUrl || ""
           })
         );
-        sessionStorage.setItem("handoffFlow", "reg"); 
+        sessionStorage.setItem("handoffFlow", "reg");
         // go to the instructions page
         navigate("/invite-instructions?flow=reg", {
           replace: true,
@@ -170,10 +170,10 @@ const Register = () => {
           <Card>
             <Card.Body>
               <>
-                <img src={tempLogo} className={style.loginLogo} alt="logo" />
-                 {SHOW_REFERRALS && inviteCode && (
-                 <ReferralBanner code={inviteCode} context="register" />
-               )}
+                <img src={tempLogo} className={style.loginLogo} alt="TDEI logo" />
+                {SHOW_REFERRALS && inviteCode && (
+                  <ReferralBanner code={inviteCode} context="register" />
+                )}
                 <Formik
                   initialValues={initialValues}
                   onSubmit={handleSubmit}
@@ -272,7 +272,10 @@ const Register = () => {
                           <InputGroup.Text
                             onClick={() => setShowPassword(!showPassword)}
                             style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                            role="button"
                             aria-label={showPassword ? "Hide password" : "Show password"}
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowPassword(!showPassword); } }}
                           >
                             {showPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
                           </InputGroup.Text>
@@ -297,7 +300,10 @@ const Register = () => {
                           <InputGroup.Text
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                            role="button"
                             aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowConfirmPassword(!showConfirmPassword); } }}
                           >
                             {showConfirmPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
                           </InputGroup.Text>

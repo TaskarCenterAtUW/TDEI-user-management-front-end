@@ -131,11 +131,11 @@ const LoginPage = () => {
           <Card>
             <Card.Body>
               <>
-                <img src={tempLogo} className={style.loginLogo} alt="logo" />
+                <img src={tempLogo} className={style.loginLogo} alt="TDEI logo" />
                 {SHOW_REFERRALS && referralCode && (
                   <ReferralBanner code={referralCode} context="login" />
                 )}
-                <div className={style.loginTitle}>Welcome!</div>
+                <h1 className={style.loginTitle}>Welcome!</h1>
                 <div className={style.loginSubTitle}>
                   Please login to your account.
                 </div>
@@ -164,8 +164,10 @@ const LoginPage = () => {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           autoComplete="username"
+                          aria-describedby="email-error"
+                          aria-invalid={touched.username && !!errors.username}
                         />
-                        <Form.Control.Feedback type="invalid">
+                        <Form.Control.Feedback type="invalid" id="email-error">
                           {errors.username}
                         </Form.Control.Feedback>
                       </Form.Group>
@@ -184,14 +186,18 @@ const LoginPage = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             autoComplete="current-password"
+                            aria-describedby="password-error"
+                            aria-invalid={touched.password && !!errors.password}
                           />
-                          <InputGroup.Text
+                          <Button
+                            variant="outline-secondary"
                             onClick={() => setShowPassword(!showPassword)}
-                            style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                            style={{ borderLeft: "1px solid #ccc", background: "#fff", borderColor: "#ced4da" }}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
                           >
                             {showPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
-                          </InputGroup.Text>
-                          <Form.Control.Feedback type="invalid">
+                          </Button>
+                          <Form.Control.Feedback type="invalid" id="password-error">
                             {errors.password}
                           </Form.Control.Feedback>
                         </InputGroup>

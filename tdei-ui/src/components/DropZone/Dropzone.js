@@ -127,6 +127,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
       <IconButton
         onClick={removeFile(file)}
         sx={{ marginLeft: "auto", marginRight: "10px" }}
+        aria-label="Remove file"
       >
         <CancelIcon sx={{ color: "#D55962", fontSize: "20px" }} />
       </IconButton>
@@ -136,7 +137,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
   return (
     <div>
       <div {...getRootProps({ className: `${style.dropzone}` })}>
-        <input {...getInputProps()} />
+        <input {...getInputProps()}  aria-label="data-file" />
         <div>
           {isDragActive ? (
             <div className={style.dropFilesTitle}>
@@ -144,7 +145,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
             </div>
           ) : (
             <div>
-              <img src={uploadIcon} style={{ height: 20, marginBottom: "10px" }} />
+              <img src={uploadIcon} style={{ height: 20, marginBottom: "10px" }} alt="" />
               <div className={style.title}>
                 {isMobile ? 'Click here to upload files.' : 'Drop files here or click to upload.'}
               </div>

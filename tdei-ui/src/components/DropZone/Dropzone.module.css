@@ -46,8 +46,7 @@
     display: flex;
     align-items: center;
     border-radius: 5px;
-    font: normal normal medium 18px/30px Lato;
-    color: #16284880;
+    color: var(--secondary-color);
   }
   .fileTitle {
     font: normal normal medium 18px/30px Lato;
