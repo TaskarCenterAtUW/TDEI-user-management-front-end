@@ -65,129 +65,133 @@ const ReferralCodesTable = ({ codes = [], onEdit, onDelete }) => {
 
   return (
     <div role="table" aria-label="Referral Codes List">
-      <div className={`${style.gridContainer} ${style.projectHeader}`} role="rowgroup">
-        <div className={style.sortableHeader} role="columnheader">Name</div>
-        <div className={style.sortableHeader} role="columnheader">Type</div>
-        <div className={style.sortableHeader} role="columnheader">Referral Code</div>
-        <div className={style.sortableHeader} role="columnheader">Valid Period</div>
-        <div className={style.sortableHeader} role="columnheader">Created</div>
-        <div className={style.sortableHeader} role="columnheader">Status</div>
-        {!isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`} role="columnheader">Actions</div>}
+      <div role="rowgroup">
+        <div className={`${style.gridContainer} ${style.projectHeader}`} role="row">
+          <div className={style.sortableHeader} role="columnheader">Name</div>
+          <div className={style.sortableHeader} role="columnheader">Type</div>
+          <div className={style.sortableHeader} role="columnheader">Referral Code</div>
+          <div className={style.sortableHeader} role="columnheader">Valid Period</div>
+          <div className={style.sortableHeader} role="columnheader">Created</div>
+          <div className={style.sortableHeader} role="columnheader">Status</div>
+          {!isMobile && <div className={`${style.sortableHeader} ${style.actionsColHead}`} role="columnheader">Actions</div>}
+        </div>
       </div>
-      {codes.map((code) => {
-        const statusLabel = (() => {
-          const now = new Date();
-          const start = code.validFrom ? new Date(code.validFrom) : null;
-          const end = code.validTo ? new Date(code.validTo) : null;
-          if (end && now > end) return "expired";
-          if (start && now < start) return "scheduled";
-          return code.isActive ? "active" : "inactive";
-        })();
+      <div role="rowgroup">
+        {codes.map((code) => {
+          const statusLabel = (() => {
+            const now = new Date();
+            const start = code.validFrom ? new Date(code.validFrom) : null;
+            const end = code.validTo ? new Date(code.validTo) : null;
+            if (end && now > end) return "expired";
+            if (start && now < start) return "scheduled";
+            return code.isActive ? "active" : "inactive";
+          })();
 
-        return (
-          <div className={style.gridContainer} key={code.id} role="row">
-            <div className={`${style.content} ${style.emailContentWrap}`} role="cell">
-              <span className={style.name}>{code.name}</span>
-              {code.instructionsUrl && (
-                <div className="d-flex align-items-center gap-1 mt-1">
-                  <OpenInNewIcon fontSize="inherit" color="disabled" />
-                  <Link
-                    href={code.instructionsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    underline="hover"
-                    variant="caption"
+          return (
+            <div className={style.gridContainer} key={code.id} role="row">
+              <div className={`${style.content} ${style.emailContentWrap}`} role="cell">
+                <span className={style.name}>{code.name}</span>
+                {code.instructionsUrl && (
+                  <div className="d-flex align-items-center gap-1 mt-1">
+                    <OpenInNewIcon fontSize="inherit" color="disabled" />
+                    <Link
+                      href={code.instructionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      underline="hover"
+                      variant="caption"
+                    >
+                      Instructions
+                    </Link>
+                  </div>
+                )}
+              </div>
+              <div className={style.content} role="cell"><TypeChip type={code.type} /></div>
+              <div className={`${style.content} ${style.noWrap}`} role="cell">
+                <code className={style.shortCodePill}>{code.shortCode}</code>
+                <Tooltip title="Copy referral code">
+                  <IconButton
+                    size="small"
+                    onClick={() => copyToClipboard(code.shortCode)}
+                    aria-label="Copy referral code"
+                    className={style.itemIcon}
                   >
-                    Instructions
-                  </Link>
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+              <div className={`${style.content} ${style.emailContentWrap} ${style.noWrap}`} role="cell">
+                {fmtDate(code.validFrom)} <span className={style.mutedSep}>to</span> {fmtDate(code.validTo)}
+              </div>
+              <div className={`${style.content} ${style.noWrap}`} role="cell">{fmtDate(code.createdAt)}</div>
+              <div className={`${style.content} ${style.noWrap}`} role="cell">
+                <span style={statusPillStyle(code.isActive, code.validFrom, code.validTo)}>{statusLabel}</span>
+              </div>
+              <div className={`${style.content} ${style.actionsCol}`} role="cell">
+                <div className={style.dropdownContainer}>
+                  <Dropdown>
+                    {isMobile ? (
+                      <Dropdown.Toggle
+                        id={`rc-actions-${code.id}`}
+                        className={isMobile ? style.actionsButtonMobile : style.iconToggle}
+                      >
+                        Manage Code
+                      </Dropdown.Toggle>
+                    ) : (
+                      <Dropdown.Toggle
+                        variant="link"
+                        aria-label="Actions"
+                        id={`rc-actions-${code.id}`}
+                        className={`${style.dropdownToggle} ${style.dropdownToggleBase}`}
+                      >
+                        <img
+                          src={menuOptionIcon}
+                          className={style.moreActionIcon}
+                          alt=""
+                        />
+                      </Dropdown.Toggle>
+                    )}
+
+                    <Dropdown.Menu className={style.dropdownCard} align="end">
+                      <Dropdown.Item
+                        className={style.itemRow}
+                        onClick={() => copyToClipboard(code.shareLink)}
+                      >
+                        <ContentCopyIcon fontSize="small" className={style.itemIconMUI} />
+                        Copy Link
+                      </Dropdown.Item>
+
+                      <Dropdown.Item
+                        className={style.itemRow}
+                        onClick={() => { setSelectedCode(code); setQrOpen(true); }}
+                      >
+                        <QrCode2Icon fontSize="small" className={style.itemIconMUI} />
+                        View QR
+                      </Dropdown.Item>
+
+                      <Dropdown.Item
+                        className={style.itemRow}
+                        onClick={() => onEdit?.(code)}
+                      >
+                        <EditIcon fontSize="small" className={style.itemIconMUI} />
+                        Edit
+                      </Dropdown.Item>
+
+                      <Dropdown.Item
+                        className={`${style.itemRow} ${style.destructive}`}
+                        onClick={() => onDelete?.(code.id)}
+                      >
+                        <DeleteIcon fontSize="small" className={style.itemIconMUI} />
+                        Delete
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </div>
-              )}
-            </div>
-            <div className={style.content} role="cell"><TypeChip type={code.type} /></div>
-            <div className={`${style.content} ${style.noWrap}`} role="cell">
-              <code className={style.shortCodePill}>{code.shortCode}</code>
-              <Tooltip title="Copy referral code">
-                <IconButton
-                  size="small"
-                  onClick={() => copyToClipboard(code.shortCode)}
-                  aria-label="Copy referral code"
-                  className={style.itemIcon}
-                >
-                  <ContentCopyIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-            </div>
-            <div className={`${style.content} ${style.emailContentWrap} ${style.noWrap}`} role="cell">
-              {fmtDate(code.validFrom)} <span className={style.mutedSep}>to</span> {fmtDate(code.validTo)}
-            </div>
-            <div className={`${style.content} ${style.noWrap}`} role="cell">{fmtDate(code.createdAt)}</div>
-            <div className={`${style.content} ${style.noWrap}`} role="cell">
-              <span style={statusPillStyle(code.isActive, code.validFrom, code.validTo)}>{statusLabel}</span>
-            </div>
-            <div className={`${style.content} ${style.actionsCol}`} role="cell">
-              <div className={style.dropdownContainer}>
-                <Dropdown>
-                  {isMobile ? (
-                    <Dropdown.Toggle
-                      id={`rc-actions-${code.id}`}
-                      className={isMobile ? style.actionsButtonMobile : style.iconToggle}
-                    >
-                      Manage Code
-                    </Dropdown.Toggle>
-                  ) : (
-                    <Dropdown.Toggle
-                      variant="link"
-                      aria-label="Actions"
-                      id={`rc-actions-${code.id}`}
-                      className={`${style.dropdownToggle} ${style.dropdownToggleBase}`}
-                    >
-                      <img
-                        src={menuOptionIcon}
-                        className={style.moreActionIcon}
-                        alt=""
-                      />
-                    </Dropdown.Toggle>
-                  )}
-
-                  <Dropdown.Menu className={style.dropdownCard} align="end">
-                    <Dropdown.Item
-                      className={style.itemRow}
-                      onClick={() => copyToClipboard(code.shareLink)}
-                    >
-                      <ContentCopyIcon fontSize="small" className={style.itemIconMUI} />
-                      Copy Link
-                    </Dropdown.Item>
-
-                    <Dropdown.Item
-                      className={style.itemRow}
-                      onClick={() => { setSelectedCode(code); setQrOpen(true); }}
-                    >
-                      <QrCode2Icon fontSize="small" className={style.itemIconMUI} />
-                      View QR
-                    </Dropdown.Item>
-
-                    <Dropdown.Item
-                      className={style.itemRow}
-                      onClick={() => onEdit?.(code)}
-                    >
-                      <EditIcon fontSize="small" className={style.itemIconMUI} />
-                      Edit
-                    </Dropdown.Item>
-
-                    <Dropdown.Item
-                      className={`${style.itemRow} ${style.destructive}`}
-                      onClick={() => onDelete?.(code.id)}
-                    >
-                      <DeleteIcon fontSize="small" className={style.itemIconMUI} />
-                      Delete
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
       {/* QR Modal */}
       {selectedCode && (

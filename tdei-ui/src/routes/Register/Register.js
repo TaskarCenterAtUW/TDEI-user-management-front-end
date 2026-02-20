@@ -170,7 +170,7 @@ const Register = () => {
           <Card>
             <Card.Body>
               <>
-                <img src={tempLogo} className={style.loginLogo} alt="" />
+                <img src={tempLogo} className={style.loginLogo} alt="TDEI logo" />
                 {SHOW_REFERRALS && inviteCode && (
                   <ReferralBanner code={inviteCode} context="register" />
                 )}

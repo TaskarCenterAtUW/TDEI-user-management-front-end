@@ -131,7 +131,7 @@ const LoginPage = () => {
           <Card>
             <Card.Body>
               <>
-                <img src={tempLogo} className={style.loginLogo} alt="" />
+                <img src={tempLogo} className={style.loginLogo} alt="TDEI logo" />
                 {SHOW_REFERRALS && referralCode && (
                   <ReferralBanner code={referralCode} context="login" />
                 )}
