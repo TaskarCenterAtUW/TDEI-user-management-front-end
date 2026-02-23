@@ -150,20 +150,26 @@ const JobListItem = ({ jobItem }) => {
 
   return (
     <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
-      <div className={style.content} tabIndex={0}>
+      <div className={style.content}>
         <div className={style.mobileOnly}>Job Type</div>
         {displayJobType}
       </div>
-      <div className={style.content} tabIndex={1}>
+      <div className={style.content}>
         <div className={style.mobileOnly}>Job Id</div>
-        Job Id: <span className={style.downloadLink}
-          onClick={toggleInputDescModal}
-          variant="link">{jobItem.job_id}</span>
+          Job Id: 
+          <button 
+            type="button" 
+            className={style.downloadLink}
+            onClick={toggleInputDescModal}
+            variant="link"
+          >
+            {jobItem.job_id}
+          </button>
       </div>
-      <div className={style.content} tabIndex={2}>
+      <div className={style.content}>
         <div className={style.mobileOnly}>Submitted By</div>
         <div className={style.submittedByBlock}>
-          <img src={UserIcon} alt="User icon" className={style.userIcon} /> 
+          <img src={UserIcon} alt="" className={style.userIcon} /> 
             <span
               className={
                 (jobItem.requested_by?.length || 0) > 30
@@ -175,24 +181,25 @@ const JobListItem = ({ jobItem }) => {
             </span>
         </div>
       </div>
-      <div className={style.content} tabIndex={3}>
+      <div className={style.content}>
         <div className={style.mobileOnly}>Message</div>
         {jobItem.message && (
           <>
-            <div className={style.errorMessageContent} tabIndex={0}>
+            <div className={style.errorMessageContent}>
               {jobItem.message.length > 70
                 ? `${jobItem.message.slice(0, 70)}...`
                 : `${jobItem.message}`}
             </div>
             <div>
               {jobItem.message.length > 35 && (
-                <div
+                <button
+                  type="button"
                   className={style.showMoreButton}
                   onClick={toggleShowMore}
                   variant="link"
                 >
                   {showMore ? "Show less" : "Show more"}
-                </div>
+                </button>
               )}
             </div>
           </>
@@ -200,7 +207,6 @@ const JobListItem = ({ jobItem }) => {
         {!jobItem.message && (
           <div
             className={style.content}
-            tabIndex={0}
           >
             {jobItem.status.toLowerCase() === "in-progress"
               ? "Job is in progress"
@@ -217,35 +223,35 @@ const JobListItem = ({ jobItem }) => {
         ) &&
           jobItem.status.toLowerCase() === "completed" &&
           (jobItem.download_url || jobItem.job_type === "Quality-Metric" || (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
-            <div
+            <button
+              type="button"
               id={jobItem.job_id}
               className={style.showMoreButton}
               onClick={(e) => handleClick(e)}
               variant="link"
             >
               Download Result
-            </div>
+            </button>
           )}
         {
           jobItem.status.toLowerCase() === 'in-progress' && (
-            <div
+            <button
+              type="button"
               id={jobItem.job_id}
               className={style.showMoreButton}
               onClick={toggleModal}
               variant="link"
             >
               Check Status
-            </div>
+            </button>
           )
         }
       </div>
-      <div className={style.content} tabIndex={4}>
+      <div className={style.content}>
         <div className={style.mobileOnly}>Created On</div>
-        <div className={style.updatedInfo}>
-          {updatedTime(jobItem.created_at)}
-        </div>
+        {updatedTime(jobItem.created_at)}
       </div>
-      <div className={style.statusFlexBox} tabIndex={4}>
+      <div className={style.statusFlexBox}>
         <div className={style.mobileOnly}>Status</div>
         <div className="">
           <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase())}}>

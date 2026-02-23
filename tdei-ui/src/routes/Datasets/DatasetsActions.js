@@ -139,13 +139,13 @@ const DatasetsActions = ({
               <img
                 src={menuOptionIcon}
                 className={style.moreActionIcon}
-                alt="Menu Options"
+                alt="Manage Dataset Options"
               />
             </Dropdown.Toggle>
           )}
-          <Dropdown.Menu className={style.dropdownCard}>
+          <Dropdown.Menu className={style.dropdownCard} role="listbox">
             {actions.map(({ key, label, icon }) => (
-              <Dropdown.Item key={key} eventKey={key} className={style.itemRow}>
+              <Dropdown.Item key={key} eventKey={key} className={style.itemRow} role="option">
                 {typeof icon === "string" ? (
                   <img src={icon} className={style.itemIcon} alt="" />
                 ) : (

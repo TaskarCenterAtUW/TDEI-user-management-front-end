@@ -391,7 +391,7 @@ const CreateUpdateReferralCode = () => {
               <div style={{ padding: "20px" }}>
                 <div className={styles.actionBar}>
                   <div>
-                    <div className="page-header-title">{headerTitle}</div>
+                    <h2 className="page-header-title">{headerTitle}</h2>
                     <div className={`page-header-subtitle ${styles.actionBarSubtitle}`}>
                       {headerSubtitle}
                     </div>
@@ -438,8 +438,10 @@ const CreateUpdateReferralCode = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               isInvalid={touched.name && !!errors.name}
+                              aria-describedby="name-error"
+                              aria-required="true"
                             />
-                            <Form.Control.Feedback type="invalid">
+                            <Form.Control.Feedback type="invalid" id="name-error" aria-live="polite">
                               {errors.name}
                             </Form.Control.Feedback>
                           </Form.Group>
@@ -457,51 +459,56 @@ const CreateUpdateReferralCode = () => {
                                 }
                               }}
                               onBlur={handleBlur}
+                              aria-describedby="type-desc"
                             >
                               <option value="campaign">Campaign</option>
                               <option value="invite">Invite</option>
                             </Form.Select>
-                            <div className="form-text mt-1">
+                            <div className="form-text mt-1" id="type-desc">
                               {typeDescriptions[values.type]}
                             </div>
                           </Form.Group>
                           <div className="row">
                             <div className="col-12 col-md-6">
-                              <Form.Label>Valid From  <span style={{ color: "red" }}>*</span></Form.Label>
-                              <Field name="validFrom">
-                                {({ field, form }) => (
-                                  <DatePicker
-                                    field={field}
-                                    form={form}
-                                    label="Valid From"
-                                    dateValue={values.validFrom}
-                                    maxDate={values.validTo ? dayjs(values.validTo) : undefined}
-                                    onChange={(iso) => form.setFieldValue("validFrom", iso)}
-                                  />
-                                )}
-                              </Field>
-                              {touched.validFrom && errors.validFrom ? (
-                                <div className="text-danger small mt-1">{errors.validFrom}</div>
-                              ) : null}
-                            </div>
-                            {values.type !== "campaign" && (
-                              <div className="col-12 col-md-6 mt-3 mt-md-0">
-                                <Form.Label>Valid To  <span style={{ color: "red" }}>*</span></Form.Label>
-                                <Field name="validTo">
+                              <Form.Group controlId="validFrom">
+                                <Form.Label>Valid From  <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Field name="validFrom">
                                   {({ field, form }) => (
                                     <DatePicker
                                       field={field}
                                       form={form}
-                                      label="Valid To"
-                                      dateValue={values.validTo}
-                                      minDate={values.validFrom ? dayjs(values.validFrom) : undefined}
-                                      onChange={(iso) => form.setFieldValue("validTo", iso)}
+                                      label="Valid From"
+                                      dateValue={values.validFrom}
+                                      maxDate={values.validTo ? dayjs(values.validTo) : undefined}
+                                      onChange={(iso) => form.setFieldValue("validFrom", iso)}
                                     />
                                   )}
                                 </Field>
-                                {touched.validTo && errors.validTo ? (
-                                  <div className="text-danger small mt-1">{errors.validTo}</div>
+                                {touched.validFrom && errors.validFrom ? (
+                                  <div className="text-danger small mt-1" aria-live="polite">{errors.validFrom}</div>
                                 ) : null}
+                              </Form.Group>
+                            </div>
+                            {values.type !== "campaign" && (
+                              <div className="col-12 col-md-6 mt-3 mt-md-0">
+                                <Form.Group controlId="validTo">
+                                  <Form.Label>Valid To  <span style={{ color: "red" }}>*</span></Form.Label>
+                                  <Field name="validTo">
+                                    {({ field, form }) => (
+                                      <DatePicker
+                                        field={field}
+                                        form={form}
+                                        label="Valid To"
+                                        dateValue={values.validTo}
+                                        minDate={values.validFrom ? dayjs(values.validFrom) : undefined}
+                                        onChange={(iso) => form.setFieldValue("validTo", iso)}
+                                      />
+                                    )}
+                                  </Field>
+                                  {touched.validTo && errors.validTo ? (
+                                    <div className="text-danger small mt-1" aria-live="polite">{errors.validTo}</div>
+                                  ) : null}
+                                </Form.Group>
                               </div>
                             )}
                           </div>
@@ -516,8 +523,9 @@ const CreateUpdateReferralCode = () => {
                               onChange={handleChange}
                               onBlur={handleBlur}
                               isInvalid={touched.instructionsUrl && !!errors.instructionsUrl}
+                              aria-describedby="instructions-url-error"
                             />
-                            <Form.Control.Feedback type="invalid">
+                            <Form.Control.Feedback type="invalid" id="instructions-url-error" aria-live="polite">
                               {errors.instructionsUrl}
                             </Form.Control.Feedback>
                           </Form.Group>
@@ -532,10 +540,11 @@ const CreateUpdateReferralCode = () => {
                                   id="redirect-workspace"
                                   value="workspace"
                                   checked={values.redirectUrlOption === "workspace"}
-                                  onChange={() => {
-                                    setFieldValue("redirectUrlOption", "workspace");
+                                  onChange={(e) => {
+                                    setFieldValue("redirectUrlOption", e.target.value);
                                     setFieldValue("redirectUrl", "", false);
                                   }}
+                                  onBlur={handleBlur}
                                 />
                                 <label className="form-check-label" htmlFor="redirect-workspace">
                                   Workspaces
@@ -553,7 +562,8 @@ const CreateUpdateReferralCode = () => {
                                 id="redirect-custom"
                                 value="custom"
                                 checked={values.redirectUrlOption === "custom"}
-                                onChange={() => setFieldValue("redirectUrlOption", "custom")}
+                                onChange={(e) => setFieldValue("redirectUrlOption", e.target.value)}
+                                onBlur={handleBlur}
                               />
                               <label className="form-check-label" htmlFor="redirect-custom">
                                 Custom URL
@@ -568,13 +578,14 @@ const CreateUpdateReferralCode = () => {
                                 id="redirect-aviv"
                                 value="aviv"
                                 checked={values.redirectUrlOption === "aviv"}
-                                onChange={() => {
-                                  setFieldValue("redirectUrlOption", "aviv");
+                                onChange={(e) => {
+                                  setFieldValue("redirectUrlOption", e.target.value);
                                   setFieldValue("redirectUrl", "", false);
                                 }}
+                                onBlur={handleBlur}
                               />
                               <label className="form-check-label" htmlFor="redirect-aviv">
-                                Aviv Scoute Route app
+                                Aviv ScoutRoute app
                                 <div className="text-muted small">
                                   Redirect to Aviv Scoute Route Mobile app
                                 </div>
@@ -593,8 +604,9 @@ const CreateUpdateReferralCode = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 isInvalid={touched.redirectUrl && !!errors.redirectUrl}
+                                aria-describedby="redirect-url-error"
                               />
-                              <Form.Control.Feedback type="invalid">
+                              <Form.Control.Feedback type="invalid" id="redirect-url-error" aria-live="polite">
                                 {errors.redirectUrl}
                               </Form.Control.Feedback>
                             </Form.Group>
@@ -602,7 +614,7 @@ const CreateUpdateReferralCode = () => {
 
                           {editing && (
                             <div className="mt-4 p-3 bg-light rounded">
-                              <label className="form-label d-block mb-1">Referral Code</label>
+                              <div className="form-label d-block mb-1">Referral Code</div>
                               <div className="d-flex align-items-center" style={{ minHeight: "24px" }}>
                                 <code>{values.shortCode}</code>
                               </div>

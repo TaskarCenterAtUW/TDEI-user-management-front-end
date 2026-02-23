@@ -50,7 +50,7 @@ const JobMsgDescModal = (props) => {
             centered
         >
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: "18px", fontWeight: "bold" }}>
+                <Modal.Title as="h4" id="contained-modal-title-vcenter">
                     Job Progress Status
                 </Modal.Title>
             </Modal.Header>
@@ -71,8 +71,8 @@ const JobMsgDescModal = (props) => {
                                         <div className={style.jobStatusHeaderLabel}>{props.message.jobStatusTitle}:</div>
                                         <div className={style.jobStatusHeaderValue}>ID: {props.message.job_id}</div>
                                     </div>
-                                    <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }}>
-                                        <img alt="refresh" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
+                                    <IconButton className={style.iconBtn} onClick={handleRefresh} style={{ marginLeft: "10px" }} aria-label="Refresh status">
+                                        <img alt="" src={refreshBtn} style={{ height: "15px", width: "15px" }} />
                                     </IconButton>
                                 </div>
                                 <div className={style.jobStatusContainerContent}>

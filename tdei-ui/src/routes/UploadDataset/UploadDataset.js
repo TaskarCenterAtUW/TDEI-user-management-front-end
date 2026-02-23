@@ -89,7 +89,7 @@ const UploadDataset = () => {
   return (
     <div className={style.layout}>
       <Container>
-        <div className={style.uploadWidgetTitle}>Upload Dataset</div>
+        <h1 className={style.uploadWidgetTitle}>Upload Dataset</h1>
         <VerticalStepper 
         stepsData={stepsData} 
         onStepsComplete={onStepsComplete} 

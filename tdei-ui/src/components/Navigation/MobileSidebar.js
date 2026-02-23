@@ -1,12 +1,13 @@
 import React from "react";
 import style from "./Navigation.module.css";
+import Offcanvas from 'react-bootstrap/Offcanvas';
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ADMIN_SIDE_NAV, POC_SIDE_NAV } from "../../utils";
 import tdeiLogo from "./../../assets/img/tdei_logo.svg";
 import useIsPoc from "../../hooks/useIsPoc";
 
-function Navigation() {
+function MobileSidebar({ show, onHide}) {
   const { user } = useAuth();
   const isPocUser = useIsPoc();
   const BASE_NAV = user?.isAdmin ? ADMIN_SIDE_NAV : POC_SIDE_NAV;
@@ -14,11 +15,22 @@ function Navigation() {
   const NAVBAR = BASE_NAV.filter(item =>
     isPocUser ? true : item.to !== "/feedback"
   );
- 
+
   return (
     <>
-      <nav id="sidebar" className={`${style.bsNavBlock} col-md-3 col-lg-2 d-none d-md-block sidebar`} aria-label="Primary">
-        <div className="position-sticky pt-3">
+      {/* Offcanvas Sidebar for mobile */}
+      <Offcanvas 
+        show={show}
+        onHide={onHide}
+        placement="start"
+        id="mobileSidebar"
+      >
+        <Offcanvas.Header closeButton closeVariant="white" className={style.offcanvasHeader}>
+          <Offcanvas.Title>
+            <img src={tdeiLogo} className={style.logoSidebar} alt="TDEI logo" />
+          </Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body className={style.offcanvasBody}>
           <ul className="nav flex-column">
             {NAVBAR.map(({ to, linkName, icon }) => (
               <li key={to}>
@@ -29,6 +41,7 @@ function Navigation() {
                       .join(" ")
                   }
                   to={to}
+                  onClick={onHide}
                 >
                   <img src={icon} className={style.menuIcon} alt="" aria-hidden="true" />
                   <span>{linkName}</span>
@@ -36,10 +49,10 @@ function Navigation() {
               </li>
             ))}
           </ul>
-        </div>
-      </nav>
+        </Offcanvas.Body>
+      </Offcanvas>
     </>
   );
 }
 
-export default Navigation;
+export default MobileSidebar;

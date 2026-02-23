@@ -114,7 +114,7 @@ const ProjectGroupSettings = (props) => {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Modal.Header closeButton>
-                  <Modal.Title>Project Group Settings</Modal.Title>
+                  <Modal.Title as="h4">Project Group Settings</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Form.Text className={style.description}>
@@ -123,7 +123,7 @@ const ProjectGroupSettings = (props) => {
                   </Form.Text>
                   <Form.Group className="mb-3" controlId="enableDataViewer">
                     <Form.Group className="d-flex  align-items-center mt-3">
-                      <Form.Label className="mb-0">
+                      <Form.Label className="mb-0" htmlFor="custom-switch">
                         Enable Data Viewer
                       </Form.Label>
                       <Form.Check
@@ -154,6 +154,7 @@ const ProjectGroupSettings = (props) => {
                           <Button
                             variant="outline-secondary"
                             onClick={copyViewerUrl}
+                            aria-label="Copy viewer URL to clipboard"
                           >
                             {copySuccess ? copySuccess : <FaCopy />}
                           </Button>
@@ -162,6 +163,7 @@ const ProjectGroupSettings = (props) => {
                             onClick={() =>
                               window.open(generateViewerUrl(), "_blank")
                             }
+                            aria-label="Open viewer URL in new tab"
                           >
                             <FaGlobe />
                           </Button>
@@ -185,6 +187,7 @@ const ProjectGroupSettings = (props) => {
                               type="number"
                               name="turnaroundTime"
                               value={values.turnaroundTime}
+                              aria-label="Turnaround time"
                               min="1"
                               style={{ maxWidth: "120px" }}
                               onChange={handleChange}
@@ -199,6 +202,7 @@ const ProjectGroupSettings = (props) => {
                             <Form.Select
                               name="turnaroundUnit"
                               value={values.turnaroundUnit}
+                              aria-label="Turnaround time unit"
                               onChange={handleChange}
                               onBlur={handleBlur}
                               style={{ maxWidth: "120px" }}

@@ -154,12 +154,14 @@ const ResetPassword = (props) => {
                         onBlur={handleBlur}
                         autoComplete="current-password"
                       />
-                      <InputGroup.Text
+                      <Button
+                        variant="outline-secondary"
                         onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                        className={style.passwordVisibilityToggleBtn}
+                        aria-label={showCurrentPassword ? "Hide current password" : "Show current password"}
                       >
-                        {showCurrentPassword ? <VisibilityOff sx={{color : 'grey'}} /> : <Visibility sx={{color : 'grey'}}/>}
-                      </InputGroup.Text>
+                        {showCurrentPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
+                      </Button>
                       <Form.Control.Feedback type="invalid">
                         {errors.current_password}
                       </Form.Control.Feedback>
@@ -178,12 +180,14 @@ const ResetPassword = (props) => {
                         onBlur={handleBlur}
                         autoComplete="new-password"
                       />
-                      <InputGroup.Text
+                      <Button
+                        variant="outline-secondary"
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                        className={style.passwordVisibilityToggleBtn}
+                        aria-label={showNewPassword ? "Hide new password" : "Show new password"}
                       >
-                        {showNewPassword ? <VisibilityOff sx={{color : 'grey'}}/> : <Visibility sx={{color : 'grey'}} />}
-                      </InputGroup.Text>
+                        {showNewPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
+                      </Button>
                       <Form.Control.Feedback type="invalid">
                         {errors.new_password}
                       </Form.Control.Feedback>
@@ -202,20 +206,22 @@ const ResetPassword = (props) => {
                         onBlur={handleBlur}
                         autoComplete="new-password"
                       />
-                      <InputGroup.Text
+                      <Button
+                        variant="outline-secondary"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        style={{ cursor: "pointer", borderLeft: "1px solid #ccc", background: "#fff" }}
+                        className={style.passwordVisibilityToggleBtn}
+                        aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                       >
-                        {showConfirmPassword ? <VisibilityOff sx={{color : 'grey'}} /> : <Visibility  sx={{color : 'grey'}}/>}
-                      </InputGroup.Text>
+                        {showConfirmPassword ? <VisibilityOff sx={{ color: 'grey' }} /> : <Visibility sx={{ color: 'grey' }} />}
+                      </Button>
                       <Form.Control.Feedback type="invalid">
                         {errors.confirm_password}
                       </Form.Control.Feedback>
                     </InputGroup>
                   </Form.Group>
-                  <Form.Text className={style.disclaimer}>
+                  <div className={style.disclaimer}>
                     Upon successfully resetting your password, you will be logged out and will need to log in again with your new password.
-                  </Form.Text>
+                  </div>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button

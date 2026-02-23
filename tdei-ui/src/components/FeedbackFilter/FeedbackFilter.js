@@ -18,11 +18,11 @@ const FeedbackFilter = ({ refreshData, onFiltersChange, isAdmin = false }) => {
   const [sortOrder, setSortOrder] = useState("desc");
 
   const statusOptions = [
-  { value: "",           label: "All Status" },
-  { value: "open",       label: "Open" },
-  { value: "resolved",   label: "Resolved" }
-];
-const handleSortChange = (field, order) => {
+    { value: "", label: "All Status" },
+    { value: "open", label: "Open" },
+    { value: "resolved", label: "Resolved" }
+  ];
+  const handleSortChange = (field, order) => {
     setSortField(field);
     setSortOrder(order);
   };
@@ -33,14 +33,14 @@ const handleSortChange = (field, order) => {
     }
     onFiltersChange?.({
       datasetId: selectedDatasetId,
-      from_date: validFromIso,  
-      to_date: validToIso,      
-      status,                   
+      from_date: validFromIso,
+      to_date: validToIso,
+      status,
       searchText: "",
       sort_by: sortField,
       sort_order: sortOrder,
     });
-  }, [selectedDatasetId, validFromIso, validToIso, status, onFiltersChange,sortField, sortOrder]);
+  }, [selectedDatasetId, validFromIso, validToIso, status, onFiltersChange, sortField, sortOrder]);
 
   const clearValidFrom = () => {
     setValidFromIso(null);
@@ -50,7 +50,7 @@ const handleSortChange = (field, order) => {
     setValidToIso(null);
     refreshData?.();
   };
-    const clearStatus = () => {
+  const clearStatus = () => {
     setStatus("");
     refreshData?.();
   };
@@ -59,21 +59,22 @@ const handleSortChange = (field, order) => {
     setSelectedDatasetId(id);
   };
 
-useEffect(() => {
-  if (validFromIso && validToIso && dayjs(validToIso).isBefore(dayjs(validFromIso))) {
-    setValidToIso(null); 
-  }
-}, [validFromIso, validToIso]);
+  useEffect(() => {
+    if (validFromIso && validToIso && dayjs(validToIso).isBefore(dayjs(validFromIso))) {
+      setValidToIso(null);
+    }
+  }, [validFromIso, validToIso]);
 
   return (
     <div className={style.filterContainer}>
-     <Row className="g-3 mb-2 align-items-end">
+      <Row className="g-3 mb-2 align-items-end">
         <Col xs={12} md={8} lg={9}>
           <Form.Group>
             <div className={style.labelWithClear}>
-              <Form.Label>Search Feedback By Dataset</Form.Label>
+              <Form.Label htmlFor="feedback-dataset-search">Search Feedback By Dataset</Form.Label>
             </div>
             <DatasetAutocomplete
+              id="feedback-dataset-search"
               selectedDatasetId={selectedDatasetId}
               datasetSearchText={datasetSearchText}
               setDatasetSearchText={setDatasetSearchText}
@@ -87,27 +88,52 @@ useEffect(() => {
         <Col xs={12} md={4}>
           <Form.Group>
             <div className={style.labelWithClear}>
-              <Form.Label>Status</Form.Label>
-              <span className={style.clearButton} onClick={clearStatus}>Clear</span>
+              <Form.Label htmlFor="feedback-status-select">Status</Form.Label>
+              <button
+                type="button"
+                className={style.clearButton}
+                onClick={clearStatus}
+                aria-label="Clear status filter"
+              >
+                Clear
+              </button>
             </div>
             <Select
-              isSearchable={false}
+              inputId="feedback-status-select"
               value={statusOptions.find((o) => o.value === status)}
               onChange={(opt) => {
                 setStatus(opt?.value ?? "");
                 refreshData?.();
               }}
               options={statusOptions}
+              isSearchable={false}
               components={{ IndicatorSeparator: () => null }}
+              ariaLiveMessages={{
+                onFocus: ({ focused, isDisabled }) => {
+                  return `Option ${focused.label} focused${isDisabled ? ", disabled" : ""}`;
+                },
+                onChange: ({ label, action }) => {
+                  return action === "select-option" ? `Selected ${label}` : "";
+                },
+                onSelect: ({ label }) => `Selected ${label}`,
+              }}
             />
           </Form.Group>
         </Col>
         <Col xs={12} md={4}>
           <div className={style.labelWithClear}>
-            <Form.Label>Submitted After</Form.Label>
-            <span className={style.clearButton} onClick={clearValidFrom}>Clear</span>
+            <Form.Label htmlFor="feedback-submitted-after">Submitted After</Form.Label>
+            <button
+              type="button"
+              className={style.clearButton}
+              onClick={clearValidFrom}
+              aria-label="Clear submitted after date"
+            >
+              Clear
+            </button>
           </div>
           <DatePicker
+            id="feedback-submitted-after"
             label="Submitted After"
             onChange={(dateIso) => { setValidFromIso(dateIso); refreshData?.(); }}
             dateValue={validFromIso}
@@ -117,10 +143,18 @@ useEffect(() => {
         </Col>
         <Col xs={12} md={4}>
           <div className={style.labelWithClear}>
-            <Form.Label>Submitted Before</Form.Label>
-            <span className={style.clearButton} onClick={clearValidTo}>Clear</span>
+            <Form.Label htmlFor="feedback-submitted-before">Submitted Before</Form.Label>
+            <button
+              type="button"
+              className={style.clearButton}
+              onClick={clearValidTo}
+              aria-label="Clear submitted before date"
+            >
+              Clear
+            </button>
           </div>
           <DatePicker
+            id="feedback-submitted-before"
             label="Submitted Before"
             onChange={(dateIso) => { setValidToIso(dateIso); refreshData?.(); }}
             dateValue={validToIso}

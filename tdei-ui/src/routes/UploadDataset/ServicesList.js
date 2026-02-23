@@ -6,7 +6,8 @@ import { toPascalCase } from "../../utils";
 
 function ServicesList({ id, name, isSelected, serviceType, handleSelectedService }) {
     return (
-        <div
+        <button
+            type='button'
             key={id}
             className={`${styles.item} ${isSelected ? styles.selected : ''}`}
             onClick={() => handleSelectedService(id)}
@@ -18,7 +19,7 @@ function ServicesList({ id, name, isSelected, serviceType, handleSelectedService
                 <span className={styles.serviceType}>{toPascalCase(serviceType)}</span>
             </div>
 
-        </div>
+        </button>
     );
 }
 

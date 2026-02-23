@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Form, Spinner, InputGroup } from "react-bootstrap";
 import { debounce } from "lodash";
-import styles from '../ProjectAutocomplete/ProjectAutocomplete.module.css'; 
+import styles from '../ProjectAutocomplete/ProjectAutocomplete.module.css';
 import useGetDatasetsAutocomplete from "../../hooks/datasets/useGetDatasetsAutocomplete";
 import IconButton from "@mui/material/IconButton";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -13,6 +13,7 @@ const DatasetAutocomplete = ({
   onSelectDataset,
   placeholder = "Search Dataset",
   minChars = 3,
+  id,
 }) => {
   const [localText, setLocalText] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
@@ -37,22 +38,22 @@ const DatasetAutocomplete = ({
     [minChars]
   );
 
-    const handleInputChange = (e) => {
-        const value = e.target.value;
-        setDatasetSearchText(value);
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setDatasetSearchText(value);
 
-        if (selectedDataset) setSelectedDataset(null);
-        if (typeof onSelectDataset === "function") onSelectDataset(null);
+    if (selectedDataset) setSelectedDataset(null);
+    if (typeof onSelectDataset === "function") onSelectDataset(null);
 
-        if (value.trim() === "") {
-            setShowDropdown(false);
-            setDebouncedValue("");
-            return;
-        }
+    if (value.trim() === "") {
+      setShowDropdown(false);
+      setDebouncedValue("");
+      return;
+    }
 
-        debouncedSearch(value);
-        setShowDropdown(true);
-    };
+    debouncedSearch(value);
+    setShowDropdown(true);
+  };
 
 
   const { loading, datasetList, hasMore } = useGetDatasetsAutocomplete(debouncedValue, pageNo);
@@ -86,12 +87,12 @@ const DatasetAutocomplete = ({
   const labelFor = (ds) =>
     ds?.metadata?.data_provenance?.full_dataset_name || ds?.tdei_dataset_id || "Unnamed Dataset";
 
- const handleSelect = (ds) => {
-  setSelectedDataset(ds);
-  setDatasetSearchText(labelFor(ds)); 
-  setShowDropdown(false);
-  onSelectDataset(ds.tdei_dataset_id || null);
-};
+  const handleSelect = (ds) => {
+    setSelectedDataset(ds);
+    setDatasetSearchText(labelFor(ds));
+    setShowDropdown(false);
+    onSelectDataset(ds.tdei_dataset_id || null);
+  };
 
 
   const handleClickOutside = useCallback(
@@ -120,12 +121,13 @@ const DatasetAutocomplete = ({
     };
   }, [handleClickOutside, debouncedSearch]);
 
-const inputValue = datasetSearchText;
+  const inputValue = datasetSearchText;
 
   return (
     <div className={styles.autocompleteContainer} ref={autocompleteRef}>
       <InputGroup>
         <Form.Control
+          id={id}
           type="text"
           placeholder={placeholder}
           onChange={handleInputChange}
