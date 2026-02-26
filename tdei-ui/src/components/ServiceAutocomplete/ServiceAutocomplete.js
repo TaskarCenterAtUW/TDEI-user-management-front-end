@@ -102,6 +102,7 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
       <InputGroup>
         <Form.Control
           type="text"
+          id="service-search"
           placeholder="Search Service"
           onChange={handleInputChange}
           value={selectedService ? selectedService.service_name : serviceSearchText}

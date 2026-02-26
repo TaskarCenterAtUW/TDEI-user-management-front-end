@@ -71,6 +71,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
                   value={formData.name}
                   isInvalid={touched.name && errors.name && (formData.name === '')}
                   onBlur={handleBlur}
+                  required
                 />
                 <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
               </Form.Group>
@@ -103,6 +104,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
                     handleFieldChange(e);
                     handleChange(e);
                   }}
+                  required
                 />
                 <Form.Control.Feedback type="invalid">{errors.version}</Form.Control.Feedback>
               </Form.Group>
@@ -131,6 +133,7 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
                     handleFieldChange(e);
                     handleChange(e);
                   }}
+                  required
                 />
                 <Form.Control.Feedback type="invalid">{errors.collected_by}</Form.Control.Feedback>
               </Form.Group>
@@ -229,11 +232,12 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
             </div>
           </div>
           <div className="row">
-          <div id="dataset_area" className="section-style">
-            <Form.Label>Dataset Area</Form.Label>
+          <div className="section-style">
+            <Form.Label htmlFor="dataset_area">Dataset Area</Form.Label>
             <div className="tdei-hint-text">(hint: Create the bounding box using {link} )</div>
             <div className="jsonContent">
               <Form.Control
+                id="dataset_area"
                 as="textarea"
                 type="text"
                 name="dataset_area"
@@ -246,13 +250,14 @@ const DatasetDetails = ({dataType,isDatasetPublished = false, formData, updateFo
               />
             </div>
           </div>
-          <div id="custom_metadata" className="section-style">
-            <Form.Label>Custom Metadata</Form.Label>
+          <div className="section-style">
+            <Form.Label htmlFor="custom_metadata">Custom Metadata</Form.Label>
               <div className="tdei-hint-text">
                 Enter metadata as a valid JSON string. e.g., {'{"key": "value"}'}
               </div>
             <div className="jsonContent">
               <Form.Control
+                id="custom_metadata"
                 as="textarea"
                 type="text"
                 name="custom_metadata"

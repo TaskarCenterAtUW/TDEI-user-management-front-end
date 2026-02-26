@@ -582,8 +582,11 @@ const CreateJobService = () => {
         // Renders a select dropdown field with appropriate options and state management.
         const renderSelectField = () => (
             <div key={index} className={style.formItem}>
-                <p className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></p>
+                <label htmlFor={`${field.stateSetter}-selectInput`} className={style.formLabelP}>{field.label}<span style={{ color: 'red' }}> *</span></label>
                 <Select
+                    inputId={`${field.stateSetter}-selectInput`}
+                    isSearchable={false}
+                    className={style.selectFieldCommon}
                     value={
                         field.stateSetter === "setSourceFormat"
                             ? sourceFormat
@@ -803,13 +806,15 @@ const CreateJobService = () => {
         <div className={style.createJobLayout}>
             <div className={` ${jobType ? style.createJobContainer : style.createJobContainerWithJobType}`}>
                 <>
-                    <div className={style.createJobTitle}>Create New Job</div>
+                    <h1 className={style.createJobTitle}>Create New Job</h1>
                     <div className={style.divider}></div>
                     <div className={`${jobType ? style.rectangleBox : style.fixedRectangleBox}`}>
                         <form className={style.form}>
                             <div className={style.formItems}>
-                                <p className={style.formLabelP}>Job Type<span style={{ color: 'red' }}> *</span></p>
+                                <label htmlFor="selectJobType" className={style.formLabelP}>Job Type<span style={{ color: 'red' }}> *</span></label>
                                 <Select
+                                    inputId="selectJobType"
+                                    isSearchable={false}
                                     className={style.createJobSelectType}
                                     options={filteredJobTypeOptions}
                                     placeholder="Select a Job type"
@@ -825,7 +830,7 @@ const CreateJobService = () => {
                             <div className={style.dottedLine}></div>
                             {jobType == null && (
                                 <div className={style.noJobItems}>
-                                    <img src={notSelectedIcon} className={style.selectIconsize} />
+                                    <img src={notSelectedIcon} className={style.selectIconsize} alt="" />
                                     <div className={style.selectItemText}>Please select the job type and the respective attributes will appear here.</div>
                                 </div>
                             )}

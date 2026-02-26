@@ -94,6 +94,8 @@
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: bold;
+  border: none;
+  background: none;
 }
 
 .clearButton:hover {
@@ -110,7 +112,7 @@
   .filterContainer {
     padding: 16px;
   }
-  
+
   .clearButton {
     width: 100%;
     margin-top: 10px;
@@ -154,6 +156,7 @@
   font-size: 14px !important;
   color: #333 !important;
 }
+
 .labelWithClear {
   display: flex;
   align-items: center;
