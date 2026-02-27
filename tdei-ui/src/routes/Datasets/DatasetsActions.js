@@ -52,22 +52,23 @@ const DatasetsActions = ({
     },
     // "Release" is available for non-released datasets if the user can manage the dataset and the status isn't "Publish"
     !isReleasedDataset &&
-      canPublish &&
-      status !== "Publish" && {
-        key: "release",
-        label: "Release",
-        icon: releaseIcon,
-        condition: true,
-      },
+    canPublish &&
+    status !== "Publish" && {
+      key: "release",
+      label: "Release",
+      icon: releaseIcon,
+      condition: true,
+    },
     // "Deactivate" is available for non-released datasets if the user can manage the dataset
     !isReleasedDataset &&
-      canManageUser && {
-        key: "deactivate",
-        label: "Deactivate",
-        icon: deactivateIcon,
-        condition: true,
-      },
-    // "Edit Metadata" is available if the user has dataset modification permissions
+    canManageUser && {
+      key: "deactivate",
+      label: "Deactivate",
+      icon: deactivateIcon,
+      condition: true,
+    },
+    // "Edit Metadata" is available if the user has dataset modification permissions and it's not released
+    !isReleasedDataset &&
     canModifyDataset && {
       key: "editMetadata",
       label: "Edit Metadata",
@@ -83,14 +84,14 @@ const DatasetsActions = ({
     },
     // "Add Inclination" is available for non-released OSW datasets if the user is OSW generator and the status isn't "Publish"
     !isReleasedDataset &&
-      canAddIncline &&
-      status !== "Publish" &&
-      data_type === "osw" && {
-        key: "inclination",
-        label: "Add Inclination",
-        icon: <NorthEastIcon className={style.inclinationIcon} />,
-        condition: true,
-      },
+    canAddIncline &&
+    status !== "Publish" &&
+    data_type === "osw" && {
+      key: "inclination",
+      label: "Add Inclination",
+      icon: <NorthEastIcon className={style.inclinationIcon} />,
+      condition: true,
+    },
     // "Clone Dataset" is available if the user has permission to clone
     canClone && {
       key: "cloneDataset",
@@ -106,16 +107,16 @@ const DatasetsActions = ({
       condition: true,
     },
     !isReleasedDataset &&
-      dataViewerProps.canPerformDataViewerAction && {
-        key: "dataviewer",
-        label: dataViewerProps.data_viewer_allowed
-          ? "Disable Data Viewer"
-          : "Enable Data Viewer",
-        icon: dataViewerProps.data_viewer_allowed
-          ? dataViewerIconDisabled
-          : dataViewerIcon,
-        condition: true,
-      },
+    dataViewerProps.canPerformDataViewerAction && {
+      key: "dataviewer",
+      label: dataViewerProps.data_viewer_allowed
+        ? "Disable Data Viewer"
+        : "Enable Data Viewer",
+      icon: dataViewerProps.data_viewer_allowed
+        ? dataViewerIconDisabled
+        : dataViewerIcon,
+      condition: true,
+    },
   ].filter(Boolean);
 
   return (
@@ -130,7 +131,7 @@ const DatasetsActions = ({
             >
               Manage Dataset
             </Dropdown.Toggle>
-            ) : (
+          ) : (
             <Dropdown.Toggle
               id="dropdown-basic"
               variant="btn btn-link"
