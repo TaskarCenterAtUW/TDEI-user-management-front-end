@@ -585,9 +585,9 @@ const CreateUpdateReferralCode = () => {
                                 onBlur={handleBlur}
                               />
                               <label className="form-check-label" htmlFor="redirect-aviv">
-                                Aviv ScoutRoute app
+                                AVIV ScoutRoute App
                                 <div className="text-muted small">
-                                  Redirect to Aviv Scoute Route Mobile app
+                                  Redirect to AVIV ScoutRoute Mobile App
                                 </div>
                               </label>
                             </div>
