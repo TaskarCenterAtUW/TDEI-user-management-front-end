@@ -62,8 +62,9 @@ const ProjectGroupSelection = ({ selectedData, onSelectedProjectGroupChange}) =>
           <div className="d-flex align-items-center mb-3">
             <div className="d-flex align-items-center me-4">
               <Form.Control
+                id='search_project_group'
                 className={style.customFormControl}
-                aria-label="Text input with dropdown button"
+                aria-label="Search Project Group"
                 placeholder="Search Project Group"
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -80,9 +81,9 @@ const ProjectGroupSelection = ({ selectedData, onSelectedProjectGroupChange}) =>
                   <img
                     src={iconNoData}
                     className={style.noDataIcon}
-                    alt="no-data-icon"
+                    alt=""
                   />
-                  <div className={style.noDataText}>No services found. Please try changing project group!</div>
+                  <div className={style.noDataText}>No project groups found.</div>
                 </div>
               ) : null}
               {values?.data?.map((list) => (

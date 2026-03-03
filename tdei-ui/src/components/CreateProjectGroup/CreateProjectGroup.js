@@ -73,7 +73,7 @@ const CreateProjectGroup = (props) => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
+          <Modal.Title as="h4" id="contained-modal-title-vcenter">
             {isEdit ? "Edit Project Group" : "Create New Project Group"}
           </Modal.Title>
         </Modal.Header>

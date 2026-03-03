@@ -4,20 +4,23 @@
   align-items: center;
   padding-bottom: 20px;
   gap: 12px;
-  flex-wrap: wrap;           
+  flex-wrap: wrap;
 }
+
 .header .actionsRight {
   display: flex;
   justify-content: flex-end;
-  align-items: center;       
+  align-items: center;
   gap: 10px;
-  margin-bottom: 0;          
-  flex-wrap: wrap;           
+  margin-bottom: 0;
+  flex-wrap: wrap;
 }
+
 .header .titleBlock {
-  min-width: 240px;          
-  flex: 1;                   
+  min-width: 240px;
+  flex: 1;
 }
+
 .searchPanel {
   display: flex;
   justify-content: space-between;
@@ -56,35 +59,37 @@
   padding: 10px 10px !important;
   display: grid;
   grid-template-columns:
-    minmax(180px, 2fr)
-    minmax(100px, 1fr)
-    minmax(120px, 1fr)
-    minmax(180px, 1.4fr)
-    minmax(120px, 1fr)
-    minmax(88px, .8fr)
-    64px;
+    minmax(180px, 2fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(180px, 1.4fr) minmax(120px, 1fr) minmax(88px, .8fr) 64px;
   grid-column-gap: 12px;
 }
+
 .gridContainer {
   display: grid;
   grid-template-columns:
-    minmax(180px, 2fr)   /* Name */
-    minmax(100px, .8fr)   /* Type */
-    minmax(120px, 1.2fr)   /* Short Code */
-    minmax(180px, 1.4fr) /* Valid Period */
-    minmax(120px, 1fr)   /* Created */
-    minmax(88px, .8fr)   /* Status (compact) */
-    64px;                /* Actions (icon button) */
-  grid-column-gap: 12px;           
+    minmax(180px, 2fr)
+    /* Name */
+    minmax(100px, .8fr)
+    /* Type */
+    minmax(120px, 1.2fr)
+    /* Short Code */
+    minmax(180px, 1.4fr)
+    /* Valid Period */
+    minmax(120px, 1fr)
+    /* Created */
+    minmax(88px, .8fr)
+    /* Status (compact) */
+    64px;
+  /* Actions (icon button) */
+  grid-column-gap: 12px;
   grid-row-gap: 6px;
-  align-items: center;             
+  align-items: center;
   border-bottom: 1px solid #dddddd;
   padding: 0 10px 15px 10px;
   margin-bottom: 15px;
   font-size: 16px;
 }
 
-.gridContainer > .content {
+.gridContainer>.content {
   min-width: 0;
   white-space: normal;
   word-break: break-word;
@@ -346,8 +351,9 @@
   margin-bottom: 20px;
   padding-left: 10px;
 }
+
 .jobDetailLabel {
-  font:normal normal bold 14px/16px Lato;
+  font: normal normal bold 14px/16px Lato;
   flex-shrink: 0;
   white-space: nowrap;
   margin-bottom: 5px;
@@ -395,8 +401,8 @@
 
 .jobStatusContainerContent {
   padding: 15px;
-  max-height: 400px; 
-  overflow-y: auto; 
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .statusContainer {
@@ -433,8 +439,9 @@
 .bboxFormGroup {
   display: flex;
   padding-bottom: 20px;
+
   &:nth-last-child(1) {
-      padding-bottom: 0px;
+    padding-bottom: 0px;
   }
 }
 
@@ -532,18 +539,22 @@
   width: 60px;
   padding-top: 6px;
 }
+
 .qualityMetricDropdown {
   margin-left: 8px;
   width: 250px;
 }
+
 .itemIcon {
   margin-left: 10px;
 }
+
 .createJobLayout {
   height: 100%;
   padding: 20px;
   background-color: #f8f8f8;
 }
+
 .requestInputContainer {
   margin-top: 20px;
 }
@@ -564,9 +575,11 @@
   background-color: #f8f9fa;
   font-weight: bold;
 }
+
 .requestInputTable td {
   font-size: 14px;
 }
+
 .statusContainer {
   padding: 10px;
   width: 120px;
@@ -577,14 +590,16 @@
   align-items: center;
   justify-content: center;
   display: flex;
-  background-color: var(--background-color, #F2F8FB) !important; 
+  background-color: var(--background-color, #F2F8FB) !important;
   border: 1px solid var(--border-color, #F2F8FB) !important;
 }
+
 .sortableHeader {
   cursor: pointer;
   display: flex;
   align-items: center;
 }
+
 .emailContentWrap {
   white-space: normal;
   overflow-wrap: break-word;
@@ -595,23 +610,28 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .noDataText {
   font-size: 14px;
   color: var(--secondary-color);
   margin-left: 5px;
 }
 
-.feedbackText{
-    color:rgb(107, 114, 128);
+.feedbackText {
+  color: rgb(107, 114, 128);
 }
+
 .feedbackLocation {
-    color:rgb(107, 114, 128);
-    font-size: 12px;
-    margin-top: 5px;
+  color: rgb(107, 114, 128);
+  font-size: 12px;
+  margin-top: 5px;
 }
 
 @media (max-width: 1200px) {
-  .projectHeader { display: none; }
+  .projectHeader {
+    display: none;
+  }
+
   .gridContainer {
     grid-template-columns: 1fr;
     grid-row-gap: 10px;
@@ -620,20 +640,82 @@
     border-top: 5px solid var(--tdei-blue);
     border-radius: 4px;
   }
-  .gridContainer:not(.projectHeader) > :nth-child(7)::before {
-    content: none !important; 
+
+  .gridContainer:not(.projectHeader)> :nth-child(7)::before {
+    content: none !important;
   }
 
-  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Name"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Type"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Referral Code"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Valid Period"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Created"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(6)::before { content: "Status"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(7)::before { content: "Actions"; display:block; font-weight:600; color:#83879B; font-size:14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader)> :nth-child(1)::before {
+    content: "Name";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
 
-  .header { align-items: flex-start; }         
-  .header .actionsRight { width: 100%; justify-content: flex-start; }
+  .gridContainer:not(.projectHeader)> :nth-child(2)::before {
+    content: "Type";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(3)::before {
+    content: "Referral Code";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(4)::before {
+    content: "Valid Period";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(5)::before {
+    content: "Created";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(6)::before {
+    content: "Status";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(7)::before {
+    content: "Actions";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .header {
+    align-items: flex-start;
+  }
+
+  .header .actionsRight {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 992px) {
@@ -651,10 +733,12 @@
     border-radius: 4px;
     grid-template-columns: 1fr;
     grid-row-gap: 10px;
+
     p {
       border-bottom: 1px dashed #cecece;
       padding-bottom: 10px;
       margin-bottom: 0px;
+
       &:nth-last-child(1) {
         border-bottom: none;
         padding-bottom: 0px;
@@ -662,17 +746,58 @@
     }
   }
 }
+
 @media (max-width: 1200px) {
-  .gridContainer:not(.projectHeader) > :nth-child(1)::before { content: "Name"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(2)::before { content: "Type"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(3)::before { content: "Referral Code"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(4)::before { content: "Valid Period"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
-  .gridContainer:not(.projectHeader) > :nth-child(5)::before { content: "Created"; display:block; font-weight:600; color:#83879B; font-size: 14px; margin-bottom:2px; }
+  .gridContainer:not(.projectHeader)> :nth-child(1)::before {
+    content: "Name";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(2)::before {
+    content: "Type";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(3)::before {
+    content: "Referral Code";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(4)::before {
+    content: "Valid Period";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .gridContainer:not(.projectHeader)> :nth-child(5)::before {
+    content: "Created";
+    display: block;
+    font-weight: 600;
+    color: #83879B;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
 }
+
 .filterBtn {
   border: 1px solid #CED4DA !important;
   border-radius: 8px !important;
-  opacity: 1 !important; 
+  opacity: 1 !important;
   width: auto;
   height: 40px;
   padding: 5px 15px;
@@ -680,20 +805,48 @@
   display: flex;
   align-items: center;
 }
+
 .actionsRight {
   display: flex;
   justify-content: flex-end;
   align-items: end;
   gap: 10px;
-  margin-bottom: 12px;  
+  margin-bottom: 12px;
 }
-.noWrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mutedSep { color: #6b7280; margin: 0 6px; }
-.shortCodePill { padding: 2px 8px; background: #f6f7fb; border-radius: 6px; color: #000; }
-.actionsColHead { white-space: nowrap; }
-.actionsCol { white-space: nowrap; display: flex; align-items: center; }
 
-.dropdownContainer { display: inline-flex; align-items: center; }
+.noWrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mutedSep {
+  color: #6b7280;
+  margin: 0 6px;
+}
+
+.shortCodePill {
+  padding: 2px 8px;
+  background: #f6f7fb;
+  border-radius: 6px;
+  color: #000;
+  font-family: var(--primary-font-family);
+}
+
+.actionsColHead {
+  white-space: nowrap;
+}
+
+.actionsCol {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.dropdownContainer {
+  display: inline-flex;
+  align-items: center;
+}
 
 .dropdownToggle {
   padding: 0 !important;
@@ -702,9 +855,10 @@
   box-shadow: none !important;
   line-height: 1;
 }
+
 .dropdownCard {
   border: 1px solid #E5E7EB;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 6px 0;
 }
@@ -716,13 +870,25 @@
   font-weight: 500;
   padding: 8px 12px !important;
 }
-.itemIconMUI { color: #6b7280; }
-.destructive { color: #c84349 !important; }
+
+.itemIconMUI {
+  color: #6b7280;
+}
+
+.destructive {
+  color: #c84349 !important;
+}
 
 @media (max-width: 480px) {
-  .actionsCol { justify-content: flex-start; }
-  .actionsButtonMobile { width: 100%; }
+  .actionsCol {
+    justify-content: flex-start;
+  }
+
+  .actionsButtonMobile {
+    width: 100%;
+  }
 }
+
 .dropdownToggleBase {
   border: 1px solid var(--primary-color);
   background: transparent;
@@ -762,45 +928,52 @@
 }
 
 @media (max-width: 600px) {
-  .actionsCol { 
-    white-space: normal !important; 
+  .actionsCol {
+    white-space: normal !important;
     width: 100%;
   }
+
   .actionsCol .dropdownContainer,
   .actionsCol .dropdown,
-  .actionsCol .dropdown > .dropdown-toggle,
-  .actionsCol .dropdownToggleBase,         
+  .actionsCol .dropdown>.dropdown-toggle,
+  .actionsCol .dropdownToggleBase,
   .actionsCol .actionsButtonMobile {
     width: 100% !important;
     display: block !important;
     text-align: center;
   }
+
   .actionsCol .dropdown-menu {
     width: 100% !important;
     min-width: 100% !important;
     left: 0 !important;
     right: 0 !important;
-    transform: none !important; 
+    transform: none !important;
   }
 }
+
 @media (max-width: 600px) {
   .actionsCol {
     white-space: normal !important;
     width: 100%;
   }
+
   .actionsCol .dropdownContainer,
   .actionsCol .dropdown {
     width: 100% !important;
   }
+
   .actionsCol .dropdown {
     position: static !important;
   }
+
   .actionsCol .actionsButtonMobile,
-  .actionsCol .dropdown > .dropdown-toggle {
+  .actionsCol .dropdown>.dropdown-toggle {
     width: 100% !important;
     display: block !important;
     text-align: center;
   }
+
   .actionsCol .dropdown-menu {
     width: 100% !important;
     min-width: 100% !important;
@@ -816,6 +989,7 @@
   display: block;
   color: #000;
 }
+
 .moreActionIcon:hover {
   color: none !important;
   cursor: pointer;
@@ -841,13 +1015,16 @@
   box-shadow: none !important;
   outline: none !important;
 }
-.iconToggle::after { display: none !important; } 
+
+.iconToggle::after {
+  display: none !important;
+}
 
 .iconToggle .moreActionIcon,
 .iconToggle:hover .moreActionIcon,
 .iconToggle:focus .moreActionIcon,
 .dropdown-toggle.show.iconToggle .moreActionIcon {
-  color: #000 !important;     
+  color: #000 !important;
   filter: none !important;
   opacity: 1 !important;
 }
@@ -863,13 +1040,17 @@
   border: none !important;
   box-shadow: none !important;
 }
+
 .moreActionIcon {
   width: 20px;
   height: 20px;
   display: block;
-  color: #000;                
+  color: #000;
 }
-.moreActionIcon:hover { color: #000 !important; }
+
+.moreActionIcon:hover {
+  color: #000 !important;
+}
 
 .dropdown-toggle::after,
 .dropdownToggle::after,
@@ -884,26 +1065,30 @@
     white-space: normal !important;
     width: 100%;
   }
+
   .actionsCol .dropdownContainer,
   .actionsCol .dropdown {
     width: 100% !important;
-    position: static !important; 
+    position: static !important;
   }
+
   .actionsCol .actionsButtonMobile,
-  .actionsCol .dropdown > .dropdown-toggle {
+  .actionsCol .dropdown>.dropdown-toggle {
     width: 100% !important;
     display: block !important;
     text-align: center;
   }
+
   .actionsCol .dropdown-menu {
     width: 100% !important;
     min-width: 100% !important;
     box-sizing: border-box !important;
     left: 0 !important;
     right: 0 !important;
-    transform: none !important;         
+    transform: none !important;
     margin-top: 6px !important;
   }
+
   .actionsCol .dropdownCard {
     width: 100% !important;
     min-width: 100% !important;
@@ -920,8 +1105,9 @@
   padding: 6px 12px;
   line-height: 1;
   box-shadow: none !important;
-  width: 100%;                
+  width: 100%;
 }
+
 .actionsButtonMobile:hover,
 .actionsButtonMobile:focus,
 .actionsButtonMobile:active,
@@ -932,9 +1118,20 @@
   border-color: var(--primary-color) !important;
   box-shadow: none !important;
 }
+
 .inviteContainer {
   background-image: url(./../../../public/assets/img/bg_login.png);
   background-repeat: no-repeat;
   background-size: cover;
   min-height: calc(100vh - 60px);
+}
+
+.dropdownToggle:focus-visible {
+  outline: 2px solid var(--primary-color) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(135, 62, 242, 0.25) !important;
+  opacity: 1 !important;
+  z-index: 5;
+  position: relative;
+  background: transparent !important;
 }

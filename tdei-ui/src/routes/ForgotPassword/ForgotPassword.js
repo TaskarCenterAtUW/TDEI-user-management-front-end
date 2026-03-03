@@ -12,7 +12,7 @@ import tempLogo from "./../../assets/img/tdei_logo.svg";
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const initialValues = {
     email: "",
@@ -30,11 +30,11 @@ const ForgotPassword = () => {
     try {
       // Make the API call
       await axios.post(
-        `${process.env.REACT_APP_OSM_URL}/recover-password`, 
-        email, 
+        `${process.env.REACT_APP_OSM_URL}/recover-password`,
+        email,
         {
           headers: {
-            "Content-Type": "text/plain", 
+            "Content-Type": "text/plain",
           },
         }
       );
@@ -42,16 +42,16 @@ const ForgotPassword = () => {
       dispatch(show({ message: "Password recovery email sent successfully", type: "success" }));
       setLoading(false);
 
-       // On success navigate to the VerifyComponent and pass state
-       navigate("/passwordReset", {
+      // On success navigate to the VerifyComponent and pass state
+      navigate("/passwordReset", {
         state: {
-          heading: "Reset Password Request",      
-          actionText: "password reset",   
-          checkLink: "/check-username",    
-          email                            
+          heading: "Reset Password Request",
+          actionText: "password reset",
+          checkLink: "/check-username",
+          email
         },
       });
-      
+
     } catch (err) {
       setLoading(false);
       if (err.status === 400 || err.response.status === 400) {
@@ -59,17 +59,17 @@ const ForgotPassword = () => {
       }
     }
   };
-  
+
 
   return (
-    <div className={style.registerContainer}> 
+    <div className={style.registerContainer}>
       <Row className="justify-content-center align-items-center">
-        <div className={style.registerCard}> 
+        <div className={style.registerCard}>
           <Card>
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="logo" />
-                <div className={style.loginTitle}>Forgot Password</div>
+                <h1 className={style.loginTitle}>Forgot Password</h1>
                 <Formik
                   initialValues={initialValues}
                   onSubmit={handleForgotPassword}
@@ -96,8 +96,11 @@ const ForgotPassword = () => {
                           onBlur={handleBlur}
                           autoComplete="email"
                           isInvalid={touched.email && !!errors.email}
+                          aria-describedby="email-error"
+                          aria-invalid={touched.email && !!errors.email}
+                          aria-required="true"
                         />
-                        <Form.Control.Feedback type="invalid">
+                        <Form.Control.Feedback type="invalid" id="email-error">
                           {errors.email}
                         </Form.Control.Feedback>
                       </Form.Group>

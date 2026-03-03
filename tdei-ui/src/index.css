@@ -7,7 +7,7 @@
   --secondary-font-family: "Montserrat", sans-serif;
   --primary-color: #873EF2;
   --primary-color-dark: #7a32e4;
-  --secondary-color: #83879b;
+  --secondary-color: #5f647a;
   --tdei-blue: #586AB5;
   --tdei-green: #479FA1;
   --purple-background-light: #fbf8ff;
@@ -68,8 +68,9 @@ body {
 }
 .page-header-title {
   font-family: var(--secondary-font-family);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
+  margin-bottom: 5px;
 }
 .page-header-subtitle {
   font-family: var(--secondary-font-family);
@@ -280,4 +281,23 @@ input[type="radio"] {
 .form-check .form-check-input.form-check-input[type="radio"]:focus {
   border-color: var(--primary-color) !important;
   box-shadow: 0 0 0 0.25rem rgba(135, 62, 242, 0.25) !important;
+}
+
+.MuiButtonBase-root:focus-visible {
+  outline: 2px solid #2684ff !important;
+  outline-offset: 1px;
+  border-radius: 2px;
+  box-shadow: none !important;
+}
+.btn:focus-visible {
+  outline: 2px solid #2684ff !important;
+  outline-offset: 1px;
+  border-radius: 2px;
+  box-shadow: none !important;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid #2684ff !important;
+  outline-offset: 1px;
+  border-radius: 2px;
+  box-shadow: none !important;
 }

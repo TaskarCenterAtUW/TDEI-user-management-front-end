@@ -94,7 +94,7 @@ const ManagePoc = (props) => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
+          <Modal.Title as="h4" id="contained-modal-title-vcenter">
             Manage POC
           </Modal.Title>
         </Modal.Header>
@@ -130,7 +130,7 @@ const ManagePoc = (props) => {
                       <img
                         src={userIcon}
                         className={style.pocUserIcon}
-                        alt="user-icon"
+                        alt=""
                       />
                       <div className={style.userName}>{getUserName(user)}</div>
                     </div>
@@ -142,8 +142,9 @@ const ManagePoc = (props) => {
                         props.onHide();
                       }}
                       variant="link"
+                      aria-label={`Remove ${getUserName(user)} from POC list`}
                     >
-                      <img src={trashIcon} alt="trash-icon" />
+                      <img src={trashIcon} alt="" />
                     </Button>
                   </div>
                 ))}
@@ -155,10 +156,11 @@ const ManagePoc = (props) => {
                 <div className={style.name}>Add New POC</div>
                 <Button
                   className={style.addNew}
+                  aria-label="Close Add New POC form"
                   onClick={() => setToggle((prev) => !prev)}
                   variant="link"
                 >
-                  <img src={closeIcon} alt="close-icon" />
+                  <img src={closeIcon} alt="" />
                 </Button>
               </div>
               {isError ? (

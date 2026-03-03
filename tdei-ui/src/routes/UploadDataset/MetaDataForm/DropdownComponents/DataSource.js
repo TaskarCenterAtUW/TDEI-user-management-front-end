@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FormControl from '@mui/material/FormControl';
 import Select from 'react-select';
+import style from "./../MetaDataForm.module.css";
 
 const DataSourceDropdownForm = ({ field, form, onChange, formDataDataSource }) => {
   const options = [
@@ -29,13 +30,17 @@ const DataSourceDropdownForm = ({ field, form, onChange, formDataDataSource }) =
     <div>
       <FormControl fullWidth>
         <Select
+          inputId='data_source'
+          className={style.customPlaceholder}
           isSearchable={false}
           value={currentValue}
           onChange={handleChange}
           options={options}
           components={{
             IndicatorSeparator: () => null
-          }} />
+          }} 
+          required
+        />
       </FormControl>
     </div>
   );
