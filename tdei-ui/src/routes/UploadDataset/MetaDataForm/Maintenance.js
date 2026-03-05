@@ -40,10 +40,11 @@ const Maintenance = ({ formData, updateFormData }) => {
           <div className="row">
             <div className="col-sm-12 col-md-6 column-style">
               <Form.Group controlId="official_maintainer">
-                <Form.Label>Official Maintainer</Form.Label>
+                <Form.Label id='official_maintainer_label'>Official Maintainer</Form.Label>
                 <ChipInput 
                   initialChips={formData.official_maintainer || []}
                   onChipsChange={handleChipsChange}
+                  labelId="official_maintainer_label"
                 />
                 <ErrorMessage name="official_maintainer" component="div" />
               </Form.Group>
@@ -98,10 +99,11 @@ const Maintenance = ({ formData, updateFormData }) => {
                 />
               </Form.Group>
               <Form.Group controlId="maintenance_funded" style={{ marginTop: '15px' }}>
-                <Form.Label>Maintenance Funded</Form.Label>
+                <Form.Label id='maintenance_funded'>Maintenance Funded</Form.Label>
                 <RowRadioButtonsGroup
                   radioList={radioList}
                   selectedValue={formData.maintenance_funded}
+                  labelId={"maintenance_funded"}
                   onRadioSelected={(value) => {
                     handleRadioSelect('maintenance_funded', value)
                     handleChange({ target: { name: 'maintenance_funded', value } });

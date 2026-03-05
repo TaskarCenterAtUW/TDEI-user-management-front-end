@@ -25,7 +25,7 @@ const CustomModal = (props) => {
           className={style.modalHeaderIcon}
         />
       );
-      titleColor = "#59C3C8";
+      titleColor = "#479fa1";
       contentColor = "";
       break;
     case "error":

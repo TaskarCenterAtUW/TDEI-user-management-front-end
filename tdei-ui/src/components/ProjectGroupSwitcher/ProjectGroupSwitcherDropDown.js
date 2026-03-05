@@ -77,20 +77,21 @@ const ProjectGroupSwitcherDropDown = () => {
       <Dropdown className={style.customDropdown} align="end">
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
           <div className={style.selectedProjectGroupName}>
+            <span className="visually-hidden">Current project group.</span>
             {selectedProjectGroup?.name || "Select Project Group"}
           </div>
         </Dropdown.Toggle>
-        <Dropdown.Menu className={style.dropdownMenu}>
-          <div className={style.currentProjectGroupContainer}>
-            <span className={style.currentProjectGroupLabel}>Current Project Group:</span>
+        <Dropdown.Menu className={style.dropdownMenu} aria-label="Project group selection menu">
+          <div className={style.currentProjectGroupContainer} aria-hidden="true">
+            <Dropdown.Header className={style.currentProjectGroupLabel} aria-level={3}>Current Project Group:</Dropdown.Header>
             <span className={style.currentProjectGroupName}>
-              <img src={iconProjectGroup} alt="" className={style.prjGrpIcon} />
+              <img src={iconProjectGroup} className={style.prjGrpIcon} alt="" aria-hidden="true" />
               {selectedProjectGroup?.name || "None Selected"}
             </span>
           </div>
           {/* <Dropdown.Divider /> */}
           <div className={style.switchProjectContainer}>
-            <Dropdown.Header className={style.dropdownHeader}>{"Switch Project Group:"}</Dropdown.Header>
+            <Dropdown.Header className={style.dropdownHeader} aria-level={3}>{"Switch Project Group:"}</Dropdown.Header>
             {limitedProjectGroups.map((projectGroup) => (
               <Dropdown.Item
                 key={projectGroup.tdei_project_group_id}
@@ -106,6 +107,7 @@ const ProjectGroupSwitcherDropDown = () => {
                     : style.projectGroupNames
                 }
               >
+                <span className="visually-hidden">Switch to project group.</span>
                 {projectGroup.project_group_name}
               </Dropdown.Item>
             ))}
@@ -140,8 +142,8 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     className={style.customElement}
   >
     {children}
-    <img src={iconArrowDown} data-arrow="downArrow" />
-    <img src={iconArrowUp} data-arrow="upArrow" />
+    <img src={iconArrowDown} data-arrow="downArrow" alt="" aria-hidden="true" />
+    <img src={iconArrowUp} data-arrow="upArrow" alt="" aria-hidden="true" />
   </button>
 ));
 

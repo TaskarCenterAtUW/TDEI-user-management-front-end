@@ -19,11 +19,11 @@ const calcRange = (range) => {
     return toYMD(dt);
   };
   switch (range) {
-    case "LAST_7":  return { from_date: back(7),  to_date: to };
+    case "LAST_7": return { from_date: back(7), to_date: to };
     case "LAST_30": return { from_date: back(30), to_date: to };
     case "LAST_90": return { from_date: back(90), to_date: to };
-    case "ALL":     return { from_date: null,     to_date: null };
-    default:        return { from_date: null,     to_date: null };
+    case "ALL": return { from_date: null, to_date: null };
+    default: return { from_date: null, to_date: null };
   }
 };
 
@@ -66,7 +66,7 @@ export const StatsReportPanel = () => {
   const handleDownload = () => {
     if (!validate()) return;
     setDownloading(true);
-    const apiParams = buildApiParams(payload); 
+    const apiParams = buildApiParams(payload);
     downloadStats({ ...apiParams, __rangeLabel: range }, {
       onSuccess: ({ filename }) => {
         setToastType("success");
@@ -91,11 +91,11 @@ export const StatsReportPanel = () => {
       <div className={style.quickRow}>
         <div className={style.quickLeft}>
           <span className={style.label}>Quick range</span>
-          <button className={clsx(style.chip, range === "LAST_7" && style.chipActive)}  onClick={() => onQuickRange("LAST_7")}>Last 7 days</button>
+          <button className={clsx(style.chip, range === "LAST_7" && style.chipActive)} onClick={() => onQuickRange("LAST_7")}>Last 7 days</button>
           <button className={clsx(style.chip, range === "LAST_30" && style.chipActive)} onClick={() => onQuickRange("LAST_30")}>Last 30 days</button>
           <button className={clsx(style.chip, range === "LAST_90" && style.chipActive)} onClick={() => onQuickRange("LAST_90")}>Last 90 days</button>
-          <button className={clsx(style.chip, range === "ALL" && style.chipActive)}     onClick={() => onQuickRange("ALL")} title="Omit dates to fetch all rows">ALL</button>
-          <button className={clsx(style.chip, range === "CUSTOM" && style.chipActive)}  onClick={() => onQuickRange("CUSTOM")}>Custom</button>
+          <button className={clsx(style.chip, range === "ALL" && style.chipActive)} onClick={() => onQuickRange("ALL")} title="Omit dates to fetch all rows">ALL</button>
+          <button className={clsx(style.chip, range === "CUSTOM" && style.chipActive)} onClick={() => onQuickRange("CUSTOM")}>Custom</button>
         </div>
       </div>
 
@@ -109,6 +109,7 @@ export const StatsReportPanel = () => {
             dateValue={fromDate}
             onChange={(iso) => setFromDate(iso)}
             maxDate={toDate ? dayjs(toDate) : undefined}
+            disabled={range !== "CUSTOM"}
           />
         </div>
         <div className={style.dateField}>
@@ -119,6 +120,7 @@ export const StatsReportPanel = () => {
             dateValue={toDate}
             onChange={(iso) => setToDate(iso)}
             minDate={fromDate ? dayjs(fromDate) : undefined}
+            disabled={range !== "CUSTOM"}
           />
         </div>
         <Button variant="outline-secondary" onClick={clearCustom} disabled={range !== "CUSTOM"} className={style.clearBtn}>
@@ -134,11 +136,11 @@ export const StatsReportPanel = () => {
           disabled={downloading}
           title="Download CSV"
         >
-           {downloading ? (
+          {downloading ? (
             <Spinner size="sm" />
           ) : (
             <>
-              <DownloadIcon className="me-2" />  {downloading ? "Downloading…" : "Download CSV"}
+              <DownloadIcon className="me-2" aria-hidden="true" />  {downloading ? "Downloading…" : "Download CSV"}
             </>
           )}
         </Button>

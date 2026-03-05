@@ -77,6 +77,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .serviceType {
   font-size: 14px;
   font-weight: 400;
@@ -88,14 +89,16 @@
   border-radius: 4px;
   color: #333;
 }
+
 .serviceTypeIcon {
   height: 55px;
   margin-right: 15px;
 }
+
 .verticalSeparator {
-    height: 20px;
-    border-right: 1px solid #CCCCCC;
-    margin: 0px 25px;
+  height: 20px;
+  border-right: 1px solid #CCCCCC;
+  margin: 0px 25px;
 }
 
 .imgBlock img {
@@ -107,7 +110,7 @@
   display: flex;
 }
 
-.buttons > div {
+.buttons>div {
   background: #f5f5f5;
   border-radius: 5px;
   padding: 10px 20px;
@@ -115,6 +118,7 @@
   display: flex;
   align-items: center;
 }
+
 .editButton {
   display: flex;
   color: #42526e;
@@ -126,15 +130,17 @@
   background: #f5f5f5;
   padding: 8px 15px;
 }
+
 .editButton:hover,
 .editButton:active,
 .editButton:focus-visible {
   color: #42526e !important;
   background: #e5e5e5 !important;
 }
+
 .deleteButton {
   display: flex;
-  color: #c65d03;
+  color: #a04a00;
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -142,23 +148,28 @@
   background: #f5f5f5;
   padding: 8px 15px;
 }
+
 .deleteButton:hover,
 .deleteButton:active,
 .deleteButton:focus-visible {
-  color: #c65d03 !important;
+  color: #a04a00 !important;
   background: #e5e5e5 !important;
 }
+
 .btnText {
   margin-left: 5px;
 }
+
 .noDataIcon {
   width: 20px;
 }
+
 .noDataText {
   font-size: 14px;
   color: var(--secondary-color);
   margin-left: 5px;
 }
+
 /* input {
   color: var(--secondary-color) !important;
 } */
@@ -168,34 +179,41 @@
   background-color: #ffffff;
 
   :global .customBorderColor {
-      border-color: #dee2e6;
+    border-color: #dee2e6;
   }
 }
+
 .dropdownButton {
   color: #2f3661 !important;
   border-color: #2f3661;
 }
+
 .customFormControl {
-  width: 240px; 
+  width: 240px;
 }
+
 .serviceFilterBlock {
   display: flex;
   align-items: center;
 }
+
 .stepComponentTitle {
   font-size: 16px;
   font-weight: 700;
 }
+
 .selectServiceFilter {
   margin-left: 10px;
   width: 220px;
 }
+
 .highlightedText {
   font-weight: bold;
   font-size: 1em;
   /* font-style: italic; */
   color: var(--primary-color);
 }
+
 @media only screen and (max-width: 768px) {
   .block {
     flex-direction: column;
@@ -203,24 +221,31 @@
     gap: 15px;
     padding: 15px 15px;
   }
+
   .serviceDetailsContainer {
     border-top: 5px solid var(--tdei-blue);
     border-left: 1px solid #ddd;
   }
+
   .buttons {
     width: 100%;
     border-top: 1px dashed #cecece;
     padding-top: 15px;
   }
 }
+
 @media only screen and (max-width: 600px) {
   .serviceFilterBlock {
-      width: 100%;
+    width: 100%;
   }
-  .customFormControl, .selectServiceFilter {
-    width: 100%; 
+
+  .customFormControl,
+  .selectServiceFilter {
+    width: 100%;
   }
-  .editButton, .deleteButton {
+
+  .editButton,
+  .deleteButton {
     width: 50%;
     justify-content: center;
   }

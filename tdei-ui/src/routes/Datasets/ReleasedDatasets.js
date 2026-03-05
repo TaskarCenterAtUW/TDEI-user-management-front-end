@@ -246,13 +246,15 @@ const ReleasedDatasets = () => {
           <Col md={12} lg={6}>
             <Form.Group className={style.primaryFilterContainer}>
               <div className={style.primaryFilterBlock_Released}>
-                <Form.Label>Type</Form.Label>
+                <Form.Label htmlFor="type-filter">Type</Form.Label>
                 <Select
+                  inputId='type-filter'
                   isSearchable={false}
                   defaultValue={{ label: "All", value: "" }}
                   onChange={handleSelectedDataType}
                   options={options}
                   components={{ IndicatorSeparator: () => null }}
+                  aria-label='Filter by Type'
                 />
               </div>
             </Form.Group>
@@ -274,18 +276,21 @@ const ReleasedDatasets = () => {
               <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
-                    <Form.Label>Dataset</Form.Label>
-                    <span
+                    <Form.Label htmlFor="dataset-search">Dataset</Form.Label>
+                    <button
+                      type="button"
                       className={style.clearButton}
                       onClick={() => {
                         setQuery("");
                         debouncedHandleSearch({ target: { value: "" } });
                       }}
+                      aria-label="Clear dataset search"
                     >
                       Clear
-                    </span>
+                    </button>
                   </div>
                   <Form.Control
+                    id='dataset-search'
                     value={query}
                     aria-label="Search Dataset"
                     placeholder="Search Dataset"
@@ -299,13 +304,15 @@ const ReleasedDatasets = () => {
               <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
-                    <Form.Label>Project Group</Form.Label>
-                    <span
+                    <Form.Label htmlFor="projectGroup-search">Project Group</Form.Label>
+                    <button
+                      type="button"
                       className={style.clearButton}
                       onClick={handleClearProjectGroup}
+                      aria-label="Clear project group search"
                     >
                       Clear
-                    </span>
+                    </button>
                   </div>
                   <ProjectAutocomplete
                     selectedProjectGroupId={selectedProjectGroupId}
@@ -318,10 +325,10 @@ const ReleasedDatasets = () => {
               <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
-                    <Form.Label>Service</Form.Label>
-                    <span className={style.clearButton} onClick={handleClearService}>
+                    <Form.Label htmlFor="service-search">Service</Form.Label>
+                    <button type='button' className={style.clearButton} onClick={handleClearService} aria-label="Clear service search">
                       Clear
-                    </span>
+                    </button>
                   </div>
                   <ServiceAutocomplete
                     serviceSearchText={serviceSearchText}
@@ -336,18 +343,21 @@ const ReleasedDatasets = () => {
               <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
                   <div className={style.labelWithClear}>
-                    <Form.Label>Dataset ID</Form.Label>
-                    <span
+                    <Form.Label htmlFor="dataset-id-search">Dataset ID</Form.Label>
+                    <button
+                      type="button"
                       className={style.clearButton}
                       onClick={() => {
                         setDatasetIdQuery("");
                         handleDatasetIdSearch({ target: { value: "" } });
                       }}
+                      aria-label="Clear dataset ID search"
                     >
                       Clear
-                    </span>
+                    </button>
                   </div>
                   <Form.Control
+                    id='dataset-id-search'
                     aria-label="Search Dataset ID"
                     placeholder="Search Dataset ID"
                     value={datasetIdQuery}
@@ -360,18 +370,21 @@ const ReleasedDatasets = () => {
               </Col>
               <Col md={4} className={style.datasetFilterBlock}>
                 <div className={style.labelWithClear}>
-                  <Form.Label>Valid From</Form.Label>
-                  <span
+                  <Form.Label htmlFor="valid-from">Valid From</Form.Label>
+                  <button
+                    type='button'
                     className={style.clearButton}
                     onClick={() => {
                       setValidFrom(null);
                       refreshData();
                     }}
+                    aria-label="Clear valid from date filter"
                   >
                     Clear
-                  </span>
+                  </button>
                 </div>
                 <DatePicker
+                  id="valid-from"
                   label="Valid From"
                   onChange={(date) => handleChangeDatePicker(date, setValidFrom)}
                   dateValue={validFrom}
@@ -380,18 +393,21 @@ const ReleasedDatasets = () => {
               </Col>
               <Col md={4} className={style.datasetFilterBlock}>
                 <div className={style.labelWithClear}>
-                  <Form.Label>Valid To</Form.Label>
-                  <span
+                  <Form.Label htmlFor="valid-to">Valid To</Form.Label>
+                  <button
+                    type='button'
                     className={style.clearButton}
                     onClick={() => {
                       setValidTo(null);
                       refreshData();
                     }}
+                    aria-label="Clear valid to date filter"
                   >
                     Clear
-                  </span>
+                  </button>
                 </div>
                 <DatePicker
+                  id="valid-to"
                   label="Valid To"
                   onChange={(date) => handleChangeDatePicker(date, setValidTo)}
                   dateValue={validTo}

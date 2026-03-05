@@ -156,7 +156,7 @@ const ProjectGroup = () => {
     <Layout>
       <div className={style.header}>
         <div className={style.title}>
-          <div className="page-header-title">Project Groups</div>
+          <h2 className="page-header-title">Project Groups</h2>
           <div className="page-header-subtitle">
             Here are the project groups currently in the{" "}
             <span className="fw-bold">TDEI system</span>.
@@ -174,6 +174,7 @@ const ProjectGroup = () => {
             <Form.Control
               type="text"
               placeholder="Search Project Group"
+              aria-label="Search Project Group"
               value={debounceQuery}
               onChange={(e) => {
                 const value = e.target.value;
@@ -183,6 +184,7 @@ const ProjectGroup = () => {
             />
             <Select
               className={style.inactiveSelect}
+              aria-label="Filter by status"
               value={inactiveOptions.find(
                 (option) => option.value === showInactive
               )}
@@ -214,26 +216,25 @@ const ProjectGroup = () => {
                       <img
                         src={projectgroupIcon}
                         className={style.projectGroupIcon}
-                        alt="sitemap-solid"
+                        alt=""
                       />
                       <div>
                         <div
                           className={style.name}
                           title={list.project_group_name}
-                          tabIndex={0}
                         >
                           {list.project_group_name}
                         </div>
-                        <div className={style.address} tabIndex={0}>
+                        <div className={style.address}>
                           {list.address}
                         </div>
                       </div>
                     </div>
-                    <div className={style.content} tabIndex={0}>
+                    <div className={style.content}>
                       <div className={style.mobileOnly}>URL</div>
                       {list.url || `--`}
                     </div>
-                    <div className={style.content} tabIndex={0}>
+                    <div className={style.content}>
                       <div className={style.mobileOnly}>Contact Number</div>
                       {list.phone || `--`}
                     </div>
@@ -349,8 +350,9 @@ export const ActionItem = React.forwardRef(({ children, onClick }, ref) => (
     onClick={onClick}
     ref={ref}
     className={`btn btn-link ${style.actionButton}`}
+    aria-label="Manage Project Group Actions"
   >
-    <img src={menuVertical} className={style.menuVertical} alt="menu-verical" />
+    <img src={menuVertical} className={style.menuVertical} alt="" />
     {children}
   </button>
 ));
@@ -361,8 +363,8 @@ const DisplayList = ({ list, handlePoc }) => {
     <>
       {poc.length ? (
         <div className={style.pocList}>
-          <img src={userIcon} className={style.pocUserIcon} alt="user-icon" />
-          <div tabIndex={0}>
+          <img src={userIcon} className={style.pocUserIcon} alt="" />
+          <div>
             {getUserName(poc[0])}
           </div>
           {poc.length > 1 ? (
@@ -391,7 +393,7 @@ const DisplayList = ({ list, handlePoc }) => {
                 </Popover>
               }
             >
-              <div className={style.overlayList} tabIndex={0}>{`,+${
+              <div className={style.overlayList}>{`,+${
                 poc.length - 1
               }`}</div>
             </OverlayTrigger>

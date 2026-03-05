@@ -223,6 +223,7 @@ const UserHeader = ({ roles }) => {
               <div className={style.roleText}>Dataviewer URL</div>
               <InputGroup className={style.dvUrlGroup}>
                 <Form.Control
+                  id="dvUrlInput"
                   type="text"
                   value={viewerUrl}
                   readOnly
@@ -233,6 +234,7 @@ const UserHeader = ({ roles }) => {
                       window.open(viewerUrl, "_blank", "noopener,noreferrer");
                     }
                   }}
+                  aria-label="Dataviewer URL"
                 />
                 <Button
                   variant="outline-light"
