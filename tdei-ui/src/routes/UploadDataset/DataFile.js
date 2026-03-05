@@ -8,7 +8,7 @@ import style from './UploadDataset.module.css';
 import { Form } from "react-bootstrap";
 
 // Functional component DataFile
-const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
+const DataFile = ({ selectedData = {}, onSelectedFileChange, dataType }) => {
   const [derivedDatasetId, setDerivedDatasetId] = useState('');
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
         </Form.Group>
         <Box display="flex" alignItems="center">
           <Tooltip title="ID of the dataset that is already in TDEI from which this dataset is derived from" arrow>
-            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888',fontSize:"14px" }} />
+            <InfoIcon fontSize="small" sx={{ marginRight: '4px', color: '#888', fontSize: "14px" }} />
           </Tooltip>
           <div className={style.derivedDatasetHint}>
             ID of the dataset that is already in TDEI from which this dataset is derived from
@@ -67,7 +67,7 @@ const DataFile = ({ selectedData = {}, onSelectedFileChange }) => {
       }}>
         Attach data file<span style={{ color: 'red' }}> *</span>
       </Typography>
-      <Dropzone onDrop={onDrop} accept={{ 'application/zip': ['.zip'] }} format={".zip"} selectedFile={selectedData.file} />
+      <Dropzone onDrop={onDrop} accept={{ 'application/zip': ['.zip'] }} format={".zip"} selectedFile={selectedData.file} dataType={dataType} />
     </div>
   );
 };

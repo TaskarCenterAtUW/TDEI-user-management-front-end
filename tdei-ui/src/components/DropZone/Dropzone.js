@@ -9,12 +9,17 @@ import { show } from "../../store/notification.slice";
 import { useDispatch } from "react-redux";
 import JSZip from "jszip";
 import { useMediaQuery } from 'react-responsive';
+import useSystemCapabilities from "../../hooks/useSystemCapabilities";
 
 // Functional component Dropzone
-function Dropzone({ onDrop, accept, format, selectedFile }) {
+function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
   const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
-  const MAX_SIZE_MB = Number(process.env.REACT_APP_UPLOAD_LIMIT_MB) || 1024;
+  const { data: capabilities } = useSystemCapabilities();
+  const FALLBACK_SIZE_MB = 1024;
+  const MAX_SIZE_MB = (dataType && capabilities?.dataset_upload_limits?.[dataType]?.limit_bytes)
+    ? capabilities.dataset_upload_limits[dataType].limit_bytes / (1024 * 1024)
+    : FALLBACK_SIZE_MB;
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
@@ -137,7 +142,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
   return (
     <div>
       <div {...getRootProps({ className: `${style.dropzone}` })}>
-        <input {...getInputProps()}  aria-label="data-file" />
+        <input {...getInputProps()} aria-label="data-file" />
         <div>
           {isDragActive ? (
             <div className={style.dropFilesTitle}>
@@ -150,6 +155,11 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
                 {isMobile ? 'Click here to upload files.' : 'Drop files here or click to upload.'}
               </div>
               <div className={style.subtile}>Allowed format {format}</div>
+              <div className={style.subtile}>
+                Max size: {MAX_SIZE_MB >= 1024
+                  ? `${(MAX_SIZE_MB / 1024).toFixed(MAX_SIZE_MB % 1024 === 0 ? 0 : 1)} GB`
+                  : `${MAX_SIZE_MB} MB`}
+              </div>
             </div>
           )}
         </div>
