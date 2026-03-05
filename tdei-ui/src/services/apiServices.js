@@ -99,6 +99,11 @@ export async function getRoles() {
   return res.data;
 }
 
+export async function getSystemCapabilities() {
+  const res = await axios.get(`${osmUrl}/system/capabilities`);
+  return res.data;
+}
+
 export async function getApiKey({ queryKey }) {
   const [, userId] = queryKey;
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);

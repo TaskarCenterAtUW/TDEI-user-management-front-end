@@ -9,12 +9,15 @@ import { show } from "../../store/notification.slice";
 import { useDispatch } from "react-redux";
 import JSZip from "jszip";
 import { useMediaQuery } from 'react-responsive';
+import useSystemCapabilities from "../../hooks/useSystemCapabilities";
 
 // Functional component Dropzone
-function Dropzone({ onDrop, accept, format, selectedFile }) {
+function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
   const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
-  const MAX_SIZE_MB = 1024;
+  const { data: capabilities } = useSystemCapabilities();
+  const MAX_SIZE_BYTES = capabilities?.dataset_upload_limits?.[dataType]?.limit_bytes ?? null;
+  const limitDisplay = capabilities?.dataset_upload_limits?.[dataType]?.limit_display ?? null;
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
@@ -28,12 +31,11 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept,
     onDrop: async (acceptedFiles) => {
-      const totalSizeInMB = await calculateTotalUncompressedSize(acceptedFiles);
-      if (totalSizeInMB > MAX_SIZE_MB) {
+      const totalSizeInBytes = await calculateTotalUncompressedSize(acceptedFiles);
+      if (MAX_SIZE_BYTES && totalSizeInBytes > MAX_SIZE_BYTES) {
         dispatch(
           show({
-            message:
-              "The total size of dataset files in zip exceeds 1 GB upload limit.",
+            message: `The total size of dataset files in zip exceeds ${limitDisplay} upload limit.`,
             type: "danger",
           })
         );
@@ -94,7 +96,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
     return totalSize;
   };
 
-  // Calculate total uncompressed size for the dropped files.
+  // Calculate total uncompressed size for the dropped files (in bytes).
   const calculateTotalUncompressedSize = async (files) => {
     let totalSize = 0;
     for (const file of files) {
@@ -104,7 +106,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
         totalSize += file.size;
       }
     }
-    return totalSize / (1024 * 1024);
+    return totalSize;
   };
 
   const files = myFiles.map((file) => (
@@ -137,7 +139,7 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
   return (
     <div>
       <div {...getRootProps({ className: `${style.dropzone}` })}>
-        <input {...getInputProps()}  aria-label="data-file" />
+        <input {...getInputProps()} aria-label="data-file" />
         <div>
           {isDragActive ? (
             <div className={style.dropFilesTitle}>
@@ -150,6 +152,9 @@ function Dropzone({ onDrop, accept, format, selectedFile }) {
                 {isMobile ? 'Click here to upload files.' : 'Drop files here or click to upload.'}
               </div>
               <div className={style.subtile}>Allowed format {format}</div>
+              {limitDisplay && (
+                <div className={style.subtile}>Max size: {limitDisplay}</div>
+              )}
             </div>
           )}
         </div>
