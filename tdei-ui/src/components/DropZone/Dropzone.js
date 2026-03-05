@@ -16,10 +16,8 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
   const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
   const { data: capabilities } = useSystemCapabilities();
-  const FALLBACK_SIZE_MB = 1024;
-  const MAX_SIZE_MB = (dataType && capabilities?.dataset_upload_limits?.[dataType]?.limit_bytes)
-    ? capabilities.dataset_upload_limits[dataType].limit_bytes / (1024 * 1024)
-    : FALLBACK_SIZE_MB;
+  const MAX_SIZE_BYTES = capabilities?.dataset_upload_limits?.[dataType]?.limit_bytes ?? null;
+  const limitDisplay = capabilities?.dataset_upload_limits?.[dataType]?.limit_display ?? null;
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
@@ -33,12 +31,11 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept,
     onDrop: async (acceptedFiles) => {
-      const totalSizeInMB = await calculateTotalUncompressedSize(acceptedFiles);
-      if (totalSizeInMB > MAX_SIZE_MB) {
+      const totalSizeInBytes = await calculateTotalUncompressedSize(acceptedFiles);
+      if (MAX_SIZE_BYTES && totalSizeInBytes > MAX_SIZE_BYTES) {
         dispatch(
           show({
-            message:
-              `The total size of dataset files in zip exceeds ${MAX_SIZE_MB >= 1024 ? `${(MAX_SIZE_MB / 1024).toFixed(MAX_SIZE_MB % 1024 === 0 ? 0 : 1)} GB` : `${MAX_SIZE_MB} MB`} upload limit.`,
+            message: `The total size of dataset files in zip exceeds ${limitDisplay} upload limit.`,
             type: "danger",
           })
         );
@@ -99,7 +96,7 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
     return totalSize;
   };
 
-  // Calculate total uncompressed size for the dropped files.
+  // Calculate total uncompressed size for the dropped files (in bytes).
   const calculateTotalUncompressedSize = async (files) => {
     let totalSize = 0;
     for (const file of files) {
@@ -109,7 +106,7 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
         totalSize += file.size;
       }
     }
-    return totalSize / (1024 * 1024);
+    return totalSize;
   };
 
   const files = myFiles.map((file) => (
@@ -155,11 +152,9 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
                 {isMobile ? 'Click here to upload files.' : 'Drop files here or click to upload.'}
               </div>
               <div className={style.subtile}>Allowed format {format}</div>
-              <div className={style.subtile}>
-                Max size: {MAX_SIZE_MB >= 1024
-                  ? `${(MAX_SIZE_MB / 1024).toFixed(MAX_SIZE_MB % 1024 === 0 ? 0 : 1)} GB`
-                  : `${MAX_SIZE_MB} MB`}
-              </div>
+              {limitDisplay && (
+                <div className={style.subtile}>Max size: {limitDisplay}</div>
+              )}
             </div>
           )}
         </div>

@@ -613,6 +613,14 @@ const CreateJobService = () => {
                 </div>
             </div>
         );
+        // Maps job type to TDEI dataset type for upload limit lookup
+        const getDataTypeFromJobType = () => {
+            if (jobType.value.startsWith("osw") || ["confidence", "quality-metric"].includes(jobType.value)) return "osw";
+            if (jobType.value.startsWith("flex")) return "flex";
+            if (jobType.value.startsWith("pathways")) return "pathways";
+            return null;
+        };
+
         // Renders a Dropzone component for file uploads with appropriate accepted file types and state management.
         const renderDropzoneField = () => (
             <div key={index} className={style.formItems}>
@@ -625,6 +633,7 @@ const CreateJobService = () => {
                     accept={getAcceptedFileTypes()}
                     format={getFileFormat()}
                     selectedFile={selectedFile}
+                    dataType={getDataTypeFromJobType()}
                 />
                 <div className="d-flex align-items-start mt-2">
                     <Form.Text id="passwordHelpBlock" className={style.description}>
