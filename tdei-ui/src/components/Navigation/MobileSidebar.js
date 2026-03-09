@@ -4,7 +4,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ADMIN_SIDE_NAV, POC_SIDE_NAV } from "../../utils";
-import tdeiLogo from "./../../assets/img/tdei_logo.svg";
+import tdeiLogo from "./../../assets/img/tdei-logo.png";
 import useIsPoc from "../../hooks/useIsPoc";
 
 function MobileSidebar({ show, onHide}) {
