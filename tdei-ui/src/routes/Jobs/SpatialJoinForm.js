@@ -1,6 +1,8 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 import { SPATIAL_JOIN } from "../../utils";
 import style from './Jobs.module.css';
 
@@ -81,32 +83,106 @@ const SpatialJoinForm = ({
         newAggregates[index].value = value;
         setSpatialAggregate(newAggregates);
     };
+    // Helper to format filters for the JSON payload
+    const formatFilters = (filters) => {
+        return filters
+            .filter(f => f.key.trim() !== "" && f.value.trim() !== "")
+            .map(f => `${f.key}='${f.value}'`)
+            .join(" AND ");
+    };
+
+    // Helper to parse SQL string filters ("key='value' AND key2='value2'") back to UI array state
+    const parseFilters = (filterString) => {
+        if (!filterString) return [{ key: "", value: "" }];
+        const conditions = filterString.split(" AND ");
+        const parsed = conditions.map(cond => {
+            const parts = cond.split("=");
+            if (parts.length === 2) {
+                return { key: parts[0].trim(), value: parts[1].replace(/^'|'$/g, "").trim() };
+            }
+            return { key: "", value: "" };
+        });
+        return parsed.length > 0 ? parsed : [{ key: "", value: "" }];
+    };
 
     const handleModeSwitch = (isJson) => {
+        if (isJson) {
+            // Form -> JSON
+            const formattedAggregates = spatialAggregate
+                .map(a => a.value.trim())
+                .filter(a => a !== "");
+
+            const payload = {
+                target_dataset_id: spatialTargetDatasetId,
+                target_dimension: spatialTargetDimension?.value || "",
+                source_dataset_id: spatialSourceDatasetId,
+                source_dimension: spatialSourceDimension?.value || "",
+                join_condition: spatialJoinCondition,
+                join_filter_target: formatFilters(spatialTargetFilters),
+                join_filter_source: formatFilters(spatialSourceFilters),
+                aggregate: formattedAggregates,
+                assignment_method: spatialAssignmentMethod?.value || 'default'
+            };
+            setSpatialRequestBody(JSON.stringify(payload, null, 2));
+        } else {
+            // JSON -> Form
+            try {
+                const parsed = JSON.parse(spatialRequestBody);
+
+                if (parsed.target_dataset_id !== undefined) setSpatialTargetDatasetId(parsed.target_dataset_id);
+                if (parsed.source_dataset_id !== undefined) setSpatialSourceDatasetId(parsed.source_dataset_id);
+
+                if (parsed.target_dimension) {
+                    const match = targetDimensionOptions.find(o => o.value === parsed.target_dimension);
+                    if (match) setSpatialTargetDimension(match);
+                }
+                if (parsed.source_dimension) {
+                    const match = sourceDimensionOptions.find(o => o.value === parsed.source_dimension);
+                    if (match) setSpatialSourceDimension(match);
+                }
+
+                if (parsed.join_condition !== undefined) setSpatialJoinCondition(parsed.join_condition);
+
+                if (parsed.join_filter_target !== undefined) setSpatialTargetFilters(parseFilters(parsed.join_filter_target));
+                if (parsed.join_filter_source !== undefined) setSpatialSourceFilters(parseFilters(parsed.join_filter_source));
+
+                if (Array.isArray(parsed.aggregate) && parsed.aggregate.length > 0) {
+                    setSpatialAggregate(parsed.aggregate.map(val => ({ value: val })));
+                } else {
+                    setSpatialAggregate([{ value: "" }]);
+                }
+
+                if (parsed.assignment_method) {
+                    const match = spatialAssignmentOptions.find(o => o.value === parsed.assignment_method);
+                    if (match) setSpatialAssignmentMethod(match);
+                } else {
+                    setSpatialAssignmentMethod({ value: 'default', label: 'Default' });
+                }
+
+            } catch (e) {
+                // If the user formulated invalid JSON, we can't reliably sync it back to the form state.
+                // It's safest to just ignore and let them correct it or wipe it.
+                console.warn("Invalid JSON in request body to parse back to form state", e);
+            }
+        }
         setIsSpatialJsonMode(isJson);
     };
 
 
     return (
         <div className={style.spatialFormContainer}>
-            <div className={style.modeToggleContainer}>
-                <div className={style.segmentedControl}>
-                    <div className={`${style.slider} ${isSpatialJsonMode ? style.sliderRight : ""}`}></div>
-                    <button
-                        type="button"
-                        className={!isSpatialJsonMode ? style.activeBtn : ""}
-                        onClick={() => handleModeSwitch(false)}
-                    >
-                        Form
-                    </button>
-                    <button
-                        type="button"
-                        className={isSpatialJsonMode ? style.activeBtn : ""}
-                        onClick={() => handleModeSwitch(true)}
-                    >
-                        Json
-                    </button>
-                </div>
+            <Tabs
+                activeKey={isSpatialJsonMode ? 'json' : 'form'}
+                onSelect={(k) => handleModeSwitch(k === 'json')}
+                className="mb-1"
+            >
+                <Tab eventKey="form" title={<span style={{ fontWeight: 600 }}>Form</span>}>
+                </Tab>
+                <Tab eventKey="json" title={<span style={{ fontWeight: 600 }}>Json</span>}>
+                </Tab>
+            </Tabs>
+            <div className={`mb-3 ${style.fieldHint}`} style={{ marginTop: '0', textAlign: 'left' }}>
+                Either use the Form fields below or type directly in Json format. Inputs will automatically sync between the two views.
             </div>
 
             <div className="d-flex justify-content-between align-items-center mb-3">
