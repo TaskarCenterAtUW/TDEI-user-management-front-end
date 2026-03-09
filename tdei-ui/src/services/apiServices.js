@@ -884,6 +884,13 @@ export async function createInclinationJob(tdei_dataset_id) {
   return res.data;
 }
 
+export async function createQualityReportJob(tdei_dataset_id) {
+  const res = await axios.post(
+    `${osmUrl}/osw/quality-report/${tdei_dataset_id}`
+  );
+  return res.data;
+}
+
 export async function updateServiceStatus(data) {
   const { tdei_service_id, status, tdei_project_group_id } = data;
   const res = await axios.put(
