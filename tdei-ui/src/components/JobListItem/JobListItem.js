@@ -6,6 +6,7 @@ import { toPascalCase } from "../../utils";
 import useDownloadJob from "../../hooks/jobs/useDownloadJob";
 import ResponseToast from "../ToastMessage/ResponseToast";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
+import ShowReportModal from "../ShowJobMessage/ShowReportModal";
 import { DateTime, Interval } from "luxon";
 import UserIcon from './../../assets/img/user.svg';
 import { updatedTime } from "../../utils";
@@ -19,6 +20,12 @@ const JobListItem = ({ jobItem }) => {
   const [open, setOpen] = useState(false);
   const [eventKey, setEventKey] = useState("");
   const [showInputDescModal, setInputDescModal] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+
+  const toggleReportModal = () => {
+    setShowReportModal(!showReportModal);
+  };
 
   const JOB_TYPE_LABELS = {
     "Dataset-BBox": "Filter Dataset By BBox",
@@ -71,7 +78,19 @@ const JobListItem = ({ jobItem }) => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } else {
+    }
+    else if (jobItem.job_type === "Quality-Report") {
+      const qualityReport = jobItem.response_props;
+      console.log("qualityReport", qualityReport);
+      // TODO: Show a model with the following
+      // Dataset ID
+      // Job status
+      // PDF link
+      // HTML link
+      setShowReportModal(true);
+
+    }
+    else {
       downloadJob(id);
     }
   };
@@ -156,29 +175,29 @@ const JobListItem = ({ jobItem }) => {
       </div>
       <div className={style.content}>
         <div className={style.mobileOnly}>Job Id</div>
-          Job Id: 
-          <button 
-            type="button" 
-            className={style.downloadLink}
-            onClick={toggleInputDescModal}
-            variant="link"
-          >
-            {jobItem.job_id}
-          </button>
+        Job Id:
+        <button
+          type="button"
+          className={style.downloadLink}
+          onClick={toggleInputDescModal}
+          variant="link"
+        >
+          {jobItem.job_id}
+        </button>
       </div>
       <div className={style.content}>
         <div className={style.mobileOnly}>Submitted By</div>
         <div className={style.submittedByBlock}>
-          <img src={UserIcon} alt="" className={style.userIcon} /> 
-            <span
-              className={
-                (jobItem.requested_by?.length || 0) > 30
-                  ? style.emailContentWrap
-                  : style.emailContentNoWrap
-              }
-            >
-              {jobItem.requested_by}
-            </span>
+          <img src={UserIcon} alt="" className={style.userIcon} />
+          <span
+            className={
+              (jobItem.requested_by?.length || 0) > 30
+                ? style.emailContentWrap
+                : style.emailContentNoWrap
+            }
+          >
+            {jobItem.requested_by}
+          </span>
         </div>
       </div>
       <div className={style.content}>
@@ -233,6 +252,17 @@ const JobListItem = ({ jobItem }) => {
               Download Result
             </button>
           )}
+        {jobItem.job_type === "Quality-Report" && (
+          <button
+            type="button"
+            id={jobItem.job_id}
+            className={style.showMoreButton}
+            onClick={(e) => handleClick(e)}
+            variant="link"
+          >
+            Show Result
+          </button>
+        )}
         {
           jobItem.status.toLowerCase() === 'in-progress' && (
             <button
@@ -254,7 +284,7 @@ const JobListItem = ({ jobItem }) => {
       <div className={style.statusFlexBox}>
         <div className={style.mobileOnly}>Status</div>
         <div className="">
-          <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase())}}>
+          <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase()) }}>
             {toPascalCase(jobItem.status)}
           </div>
           <div className={style.updatedInfo}>
@@ -262,7 +292,7 @@ const JobListItem = ({ jobItem }) => {
           </div>
         </div>
       </div>
-      
+
       <ShowJobMessageModal
         show={showMore}
         onHide={toggleShowMore}
@@ -273,6 +303,17 @@ const JobListItem = ({ jobItem }) => {
           type: jobItem.job_type,
           job_id: jobItem.job_id,
           message: jobItem.message,
+        }}
+      />
+      <ShowReportModal
+        show={showReportModal}
+        onHide={toggleReportModal}
+        message={{
+          type: jobItem.job_type,
+          job_id: jobItem.job_id,
+          progress: jobItem.progress,
+          jobStatusTitle: getJobStatusTitle(),
+          response_props: jobItem.response_props,
         }}
       />
       <JobMsgDescModal
