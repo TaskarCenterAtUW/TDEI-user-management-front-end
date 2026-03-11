@@ -292,7 +292,7 @@ const MyDatasets = () => {
   // Modal configuration based on eventKey
   const modalConfig = {
     release: {
-      message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content:
         "Release job will take around 4 to 6 hours. You can find the status in the jobs page.",
       handler: () =>
@@ -304,14 +304,14 @@ const MyDatasets = () => {
       modaltype: "release",
     },
     deactivate: {
-      message: `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content: "Deactivation will remove the dataset from the system.",
       handler: handleDeactivate,
       btnlabel: "Deactivate",
       modaltype: "deactivate",
     },
     inclination: {
-      message: `Are you sure you want to add an inclination job for dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to add an inclination job for dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content:
         "Adding incline may take around 10-15 mins of time depending on the size of the dataset. You can find the status in the jobs page.",
       handler: handleCreateInclinationJob,
@@ -328,7 +328,7 @@ const MyDatasets = () => {
     },
     dataviewer: {
       message: `Are you sure you want to ${selectedDataset?.data_viewer_allowed ? "disable" : "enable"
-        } the dataviewer status for dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name
+        } the dataviewer status for dataset ${selectedDataset?.metadata?.dataset_detail?.name
         }?`,
       content: "",
       handler: handleDataviewerChange,
@@ -336,11 +336,11 @@ const MyDatasets = () => {
       modaltype: "dataviewer",
     },
     qualityReport: {
-      message: `Are you sure you want to add a quality report job for dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to add a quality report job for dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content:
         "Adding quality report may take around 10-15 mins of time depending on the size of the dataset. You can find the status in the jobs page.",
       handler: handleCreateQualityReportJob,
-      btnlabel: "Add Quality Report",
+      btnlabel: "Generate Quality Report",
       modaltype: "qualityReport",
     }
   };

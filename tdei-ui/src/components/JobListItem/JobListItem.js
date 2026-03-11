@@ -252,7 +252,7 @@ const JobListItem = ({ jobItem }) => {
               Download Result
             </button>
           )}
-        {jobItem.job_type === "Quality-Report" && (
+        {jobItem.job_type === "Quality-Report" && jobItem.status.toLowerCase() === 'completed' && (
           <button
             type="button"
             id={jobItem.job_id}
