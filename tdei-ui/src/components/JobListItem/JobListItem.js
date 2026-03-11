@@ -101,17 +101,17 @@ const JobListItem = ({ jobItem }) => {
   };
 
   const getJobStatusTitle = () => {
-    let dataType = jobItem.data_type;
+    let dataType = jobItem.data_type || "";
     if (dataType === "osw") {
       dataType = dataType.toUpperCase();
     } else {
       dataType = toPascalCase(dataType);
     }
-    let jobType = jobItem.job_type.replace(/-/g, " ");
-    if (jobItem.request_input.dataset_name) {
+    let jobType = jobItem.job_type ? jobItem.job_type.replace(/-/g, " ") : "";
+    if (jobItem.request_input?.dataset_name) {
       return jobItem.request_input.dataset_name;
     } else {
-      return `${dataType} ${jobType}`;
+      return `${dataType} ${jobType}`.trim();
     }
   };
 
@@ -297,9 +297,9 @@ const JobListItem = ({ jobItem }) => {
         show={showMore}
         onHide={toggleShowMore}
         message={{
-          fileName: jobItem.request_input.dataset_name
+          fileName: jobItem.request_input?.dataset_name
             ? jobItem.request_input.dataset_name
-            : jobItem.request_input.file_upload_name,
+            : jobItem.request_input?.file_upload_name,
           type: jobItem.job_type,
           job_id: jobItem.job_id,
           message: jobItem.message,
