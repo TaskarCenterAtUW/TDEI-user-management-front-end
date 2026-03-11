@@ -34,6 +34,7 @@ const jobTypeOptions = [
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
     { value: 'spatial-join', label: 'Spatial Join' },
     { value: 'dataset-union', label: 'Dataset Union' },
+    { value: 'quality-report', label: 'Quality Report' }
 ];
 
 // Options for the Format dropdown (e.g., OSW, OSM)
@@ -94,6 +95,9 @@ const formConfig = {
         { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" },
         { label: "Proximity", type: "text", stateSetter: "setProximity" }
     ],
+    "quality-report": [
+        { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
+    ]
 };
 
 /**
@@ -306,6 +310,7 @@ const CreateJobService = () => {
             "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}",
             "spatial-join": "/api/v1/osw/spatial-join",
             "dataset-union": "/api/v1/osw/union",
+            "quality-report": "/api/v1/osw/quality-report/{tdei_dataset_id}",
         };
 
         return jobTypePathMap[jobType] || "";
@@ -379,6 +384,15 @@ const CreateJobService = () => {
         } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.proximity?.description || "";
         }
+    };
+
+    // Retrieves descriptions for quality report generation related fields based on the label.
+    const getQualityReportDescription = (label) => {
+        const path = getPathFromJobType("quality-report");
+        if (label === "Tdei Dataset Id") {
+            return apiSpec.paths[path]?.post?.parameters?.find(param => param.name === "tdei_dataset_id")?.description || "";
+        }
+        return "";
     };
 
     /**
@@ -491,6 +505,9 @@ const CreateJobService = () => {
             case "dataset-union":
                 urlPath = "osw/union";
                 break;
+            case "quality-report":
+                urlPath = `osw/quality-report/${tdeiDatasetId}`;
+                break;
             default:
                 break;
         }
@@ -580,6 +597,8 @@ const CreateJobService = () => {
                     return getQualityMetricTagDescription(label);
                 case "dataset-union":
                     return getUnionDescription(label);
+                case "quality-report":
+                    return getQualityReportDescription(label);
                 default:
                     return "";
             }
