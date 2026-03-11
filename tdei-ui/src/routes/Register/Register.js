@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams, createSearchParams } from "react-ro
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import { PHONE_REGEX } from "../../utils";

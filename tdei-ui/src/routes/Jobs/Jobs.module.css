@@ -25,7 +25,8 @@
 }
 
 .selectPanel>*:not(:last-child) {
-  margin-right: 10px; /* Adjust as needed */
+  margin-right: 10px;
+  /* Adjust as needed */
 }
 
 /* The last item should not have a margin to avoid extra space at the end */
@@ -57,10 +58,11 @@
   margin-bottom: 15px;
   font-size: 14px;
 }
-.gridContainer > .content {
+
+.gridContainer>.content {
   min-width: 0;
   white-space: normal;
-  word-break: break-word;    
+  word-break: break-word;
   overflow-wrap: anywhere;
 }
 
@@ -285,10 +287,12 @@
 
 .createJobSelectType {
   width: 50%;
+
   & [class$="-placeholder"] {
     color: var(--secondary-color);
   }
 }
+
 .selectFieldCommon {
   & [class$="-placeholder"] {
     color: var(--secondary-color);
@@ -345,8 +349,9 @@
   margin-bottom: 20px;
   padding-left: 0px;
 }
+
 .jobDetailLabel {
-  font:normal normal bold 14px/16px Lato;
+  font: normal normal bold 14px/16px Lato;
   flex-shrink: 0;
   white-space: nowrap;
   margin-bottom: 5px;
@@ -394,8 +399,8 @@
 
 .jobStatusContainerContent {
   padding: 15px;
-  max-height: 400px; 
-  overflow-y: auto; 
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .statusContainer {
@@ -432,8 +437,9 @@
 .bboxFormGroup {
   display: flex;
   padding-bottom: 20px;
+
   &:nth-last-child(1) {
-      padding-bottom: 0px;
+    padding-bottom: 0px;
   }
 }
 
@@ -531,18 +537,22 @@
   width: 60px;
   padding-top: 6px;
 }
+
 .qualityMetricDropdown {
   margin-left: 8px;
   width: 250px;
 }
+
 .itemIcon {
   margin-left: 10px;
 }
+
 .createJobLayout {
   height: 100%;
   padding: 20px;
   background-color: #f8f8f8;
 }
+
 .requestInputContainer {
   margin-top: 20px;
 }
@@ -563,9 +573,11 @@
   background-color: #f8f9fa;
   font-weight: bold;
 }
+
 .requestInputTable td {
   font-size: 14px;
 }
+
 .statusContainer {
   padding: 10px;
   width: 120px;
@@ -576,14 +588,16 @@
   align-items: center;
   justify-content: center;
   display: flex;
-  background-color: var(--background-color, #F2F8FB) !important; 
+  background-color: var(--background-color, #F2F8FB) !important;
   border: 1px solid var(--border-color, #F2F8FB) !important;
 }
+
 .sortableHeader {
   cursor: pointer;
   display: flex;
   align-items: center;
 }
+
 .emailContentWrap {
   white-space: normal;
   overflow-wrap: break-word;
@@ -594,32 +608,39 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .submittedByBlock {
   display: flex;
   align-items: flex-start;
   gap: 5px;
 }
+
 .userIcon {
   width: 22px;
   height: 22px;
   margin-top: 3px;
 }
+
 .noDataText {
   font-size: 14px;
   color: var(--secondary-color);
   margin-left: 5px;
 }
+
 .mobileOnly {
   display: none;
 }
+
 .statusFlexBox {
   display: flex;
   flex-direction: column;
 }
+
 .toggleFilterBlock {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 15px;
+
   .filterBtn {
     border: 1px solid #CED4DA !important;
     border-radius: 8px !important;
@@ -629,10 +650,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
+
     &:hover {
       background-color: #F8F8F8;
     }
   }
+
   .filterIcon {
     width: 14px;
   }
@@ -646,9 +669,11 @@
     border-radius: 5px;
     padding: 15px 10px 0px 15px;
   }
+
   .formRow {
     flex-direction: column;
   }
+
   .formItem {
     margin-right: 0px
   }
@@ -661,13 +686,16 @@
     padding: 10px 5px 10px 10px;
     border-top: 5px solid var(--tdei-blue);
   }
-  .gridContainer > .content {
+
+  .gridContainer>.content {
     border-bottom: 1px dashed #cecece;
     padding-bottom: 10px;
   }
+
   .projectHeader {
     display: none;
   }
+
   .mobileOnly {
     display: block;
     font-size: 14px;
@@ -675,6 +703,7 @@
     font-weight: 700;
     margin-bottom: 4px;
   }
+
   .searchPanel {
     border: 1px solid #ddd;
     padding: 15px;
@@ -683,33 +712,179 @@
     flex-direction: column;
     align-items: baseline;
   }
+
   .searchPanel input {
     width: 100%;
   }
+
   .selectPanel {
     width: 100%;
     flex-direction: column;
     align-items: baseline;
   }
+
   .selectPanel .select {
     width: 100%;
   }
+
   .form {
     width: 100%;
   }
+
   .createJobSelectType {
     width: 100%;
   }
+
   .bboxForm {
     width: 100%;
   }
+
   .statusFlexBox {
     display: flex;
     flex-direction: row;
     gap: 10px;
   }
+
   /* .toggleFilterBlock {
     display: flex;
   } */
 }
 
+.modeToggleContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.segmentedControl {
+  display: flex;
+  background-color: #ededf5;
+  padding: 4px;
+  border-radius: 10px;
+  width: 300px;
+  position: relative;
+}
+
+.segmentedControl button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6e707e;
+  cursor: pointer;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.segmentedControl .activeBtn {
+  color: white;
+}
+
+.segmentedControl .slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background-color: var(--tdei-blue);
+  border-radius: 8px;
+  transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.segmentedControl .sliderRight {
+  transform: translateX(100%);
+}
+
+.spatialSection {
+  background: #ffffff;
+  border: 1px solid #e3e6f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.spatialSectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #f8f9fc;
+  padding-bottom: 8px;
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: #858796;
+  margin-top: 4px;
+  display: block;
+}
+
+.guideLink {
+  font-size: 13px;
+  color: var(--tdei-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.guideLink:hover {
+  color: #2e59d9;
+}
+
+.modeToggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.modeBtn {
+  padding: 5px 15px;
+  border-radius: 5px;
+  border: 1px solid var(--tdei-blue);
+  background-color: transparent;
+  color: var(--tdei-blue);
+  cursor: pointer;
+}
+
+.modeBtnActive {
+  background-color: var(--tdei-blue);
+  color: white;
+}
+
+.filterRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filterInput {
+  flex: 1;
+}
+
+.addBtn {
+  margin-top: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px dashed var(--tdei-blue);
+  background-color: transparent;
+  color: var(--tdei-blue);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.removeBtn {
+  background-color: transparent;
+  border: none;
+  color: #d9534f;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 5px;
+}

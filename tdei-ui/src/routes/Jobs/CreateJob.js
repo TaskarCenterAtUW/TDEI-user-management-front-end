@@ -19,6 +19,7 @@ import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonR
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import { useAuth } from "../../hooks/useAuth";
+import SpatialJoinForm from "./SpatialJoinForm";
 
 // Options for the Job Type dropdown
 const jobTypeOptions = [
@@ -134,6 +135,15 @@ const CreateJobService = () => {
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
     const [spatialAssignmentMethod, setSpatialAssignmentMethod] = useState({ value: 'default', label: 'Default' });
+    const [isSpatialJsonMode, setIsSpatialJsonMode] = useState(false);
+    const [spatialTargetDatasetId, setSpatialTargetDatasetId] = useState("");
+    const [spatialSourceDatasetId, setSpatialSourceDatasetId] = useState("");
+    const [spatialTargetDimension, setSpatialTargetDimension] = useState(null);
+    const [spatialSourceDimension, setSpatialSourceDimension] = useState(null);
+    const [spatialJoinCondition, setSpatialJoinCondition] = useState("");
+    const [spatialTargetFilters, setSpatialTargetFilters] = useState([{ key: "", value: "" }]);
+    const [spatialSourceFilters, setSpatialSourceFilters] = useState([{ key: "", value: "" }]);
+    const [spatialAggregate, setSpatialAggregate] = useState([{ value: "" }]);
 
     const spatialAssignmentOptions = [
         { value: 'default', label: 'Default' },
@@ -141,11 +151,25 @@ const CreateJobService = () => {
         { value: 'shared', label: 'Shared' }
     ];
 
+    const targetDimensionOptions = [
+        { value: 'edge', label: 'Edge' },
+        { value: 'node', label: 'Node' },
+        { value: 'zone', label: 'Zone' }
+    ];
+
+    const sourceDimensionOptions = [
+        { value: 'edge', label: 'Edge' },
+        { value: 'node', label: 'Node' },
+        { value: 'zone', label: 'Zone' },
+        { value: 'point', label: 'Point' },
+        { value: 'line', label: 'Line' },
+        { value: 'polygon', label: 'Polygon' },
+        { value: 'extension', label: 'Extension' }
+    ];
+
     const spatialSampleJson = React.useMemo(() => {
         const sample = { ...SAMPLE_SPATIAL_JOIN };
-        if (spatialAssignmentMethod.value === 'exclusive' || spatialAssignmentMethod.value === 'shared') {
-            sample.assignment_method = spatialAssignmentMethod.value;
-        }
+        sample.assignment_method = spatialAssignmentMethod?.value || 'default';
         return JSON.stringify(sample, null, 2);
     }, [spatialAssignmentMethod]);
 
@@ -215,6 +239,16 @@ const CreateJobService = () => {
             north: ""
         });
         setFileType(null);
+        setIsSpatialJsonMode(false);
+        setSpatialTargetDatasetId("");
+        setSpatialSourceDatasetId("");
+        setSpatialTargetDimension(null);
+        setSpatialSourceDimension(null);
+        setSpatialJoinCondition("");
+        setSpatialTargetFilters([{ key: "", value: "" }]);
+        setSpatialSourceFilters([{ key: "", value: "" }]);
+        setSpatialAggregate([{ value: "" }]);
+        setSpatialAssignmentMethod({ value: 'default', label: 'Default' });
     }
 
     /**
@@ -400,10 +434,20 @@ const CreateJobService = () => {
             setShowValidateToast(true);
             return;
         }
-        if (jobType.value === "spatial-join" && (!spatialRequestBody || spatialRequestBody.trim() === "" || spatialRequestBody === JSON.stringify(SPATIAL_JOIN, null, 2))) {
-            setValidateErrorMessage("A valid request body is required for the spatial join calculation job.");
-            setShowValidateToast(true);
-            return;
+        if (jobType.value === "spatial-join") {
+            if (isSpatialJsonMode) {
+                if (!spatialRequestBody || spatialRequestBody.trim() === "" || spatialRequestBody === JSON.stringify(SPATIAL_JOIN, null, 2)) {
+                    setValidateErrorMessage("A valid request body is required for the spatial join calculation job.");
+                    setShowValidateToast(true);
+                    return;
+                }
+            } else {
+                if (!spatialTargetDatasetId || !spatialSourceDatasetId || !spatialTargetDimension || !spatialSourceDimension || !spatialJoinCondition) {
+                    setValidateErrorMessage("All fields marked with * are required for Spatial Join.");
+                    setShowValidateToast(true);
+                    return;
+                }
+            }
         }
         if (jobType.value === "dataset-union" && (!firstDatasetId || !secondDatasetId)) {
             setValidateErrorMessage("First and Second Dataset Ids are required for Job Union");
@@ -464,15 +508,40 @@ const CreateJobService = () => {
         } else if (jobType.value === "dataset-tag-road") {
             uploadData.push(sourceDatasetId, targetDatasetId);
         } else if (jobType.value === "spatial-join") {
-            try {
-                JSON.parse(spatialRequestBody);
-            } catch (e) {
-                setValidateErrorMessage("Invalid JSON format in spatial request body. Please check the syntax.");
-                setShowValidateToast(true);
-                return;
+            let finalRequestBody = spatialRequestBody;
+            if (!isSpatialJsonMode) {
+                const formatFilters = (filters) => {
+                    return filters
+                        .filter(f => f.key.trim() !== "" && f.value.trim() !== "")
+                        .map(f => `${f.key}='${f.value}'`)
+                        .join(" AND ");
+                };
+                const formattedAggregates = spatialAggregate
+                    .map(a => a.value.trim())
+                    .filter(a => a !== "");
+                const payload = {
+                    target_dataset_id: spatialTargetDatasetId,
+                    target_dimension: spatialTargetDimension?.value,
+                    source_dataset_id: spatialSourceDatasetId,
+                    source_dimension: spatialSourceDimension?.value,
+                    join_condition: spatialJoinCondition,
+                    join_filter_target: formatFilters(spatialTargetFilters),
+                    join_filter_source: formatFilters(spatialSourceFilters),
+                    aggregate: formattedAggregates,
+                    assignment_method: spatialAssignmentMethod?.value || 'default',
+                };
+                finalRequestBody = JSON.stringify(payload);
+            } else {
+                try {
+                    JSON.parse(spatialRequestBody);
+                } catch (e) {
+                    setValidateErrorMessage("Invalid JSON format in spatial request body. Please check the syntax.");
+                    setShowValidateToast(true);
+                    return;
+                }
             }
-            uploadData.push(spatialRequestBody);
-        } if (jobType.value === "dataset-union") {
+            uploadData.push(finalRequestBody);
+        } else if (jobType.value === "dataset-union") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
                 if (!isNaN(proximityFloat)) {
@@ -491,7 +560,7 @@ const CreateJobService = () => {
     /**
      * Renders a form field based on its type and configuration.
      * Supports various field types such as select, text, dropzone, textarea, and bounding box.
-  */
+    */
     const renderField = (field, index) => {
         // Determine if the current job type is a special one requiring additional styling
         const isSpecialJobType = ["confidence", "quality-metric", "quality-metric-tag"].includes(jobType?.value);
@@ -783,33 +852,47 @@ const CreateJobService = () => {
         }
     };
 
-    /**
-     * Renders all the form fields based on the selected job type and its configuration.
-     * Handles specific layout arrangements for certain job types.
-     */
     const renderFormFields = () => {
         if (!jobType) return null;
         const fields = formConfig[jobType.value];
         if (!fields) return null;
 
-        // Specific layout handling for certain job types
-        if (["osw-convert", "dataset-tag-road", "dataset-bbox", "dataset-union"].includes(jobType.value)) {
+        if (jobType.value === "spatial-join") {
             return (
-                <div>
-                    <div className={style.formRow}>
-                        {/* Render select and text fields in a row */}
-                        {fields.filter(field => field.type === "select" || field.type === "text").map(renderField)}
-                    </div>
-                    {/* Render dropzone and bounding box fields below */}
-                    {fields.filter(field => field.type === "dropzone" || field.type === "bbox").map(renderField)}
-                </div>
+                <SpatialJoinForm
+                    isSpatialJsonMode={isSpatialJsonMode}
+                    setIsSpatialJsonMode={setIsSpatialJsonMode}
+                    spatialTargetDatasetId={spatialTargetDatasetId}
+                    setSpatialTargetDatasetId={setSpatialTargetDatasetId}
+                    spatialSourceDatasetId={spatialSourceDatasetId}
+                    setSpatialSourceDatasetId={setSpatialSourceDatasetId}
+                    spatialAssignmentMethod={spatialAssignmentMethod}
+                    setSpatialAssignmentMethod={setSpatialAssignmentMethod}
+                    spatialAssignmentOptions={spatialAssignmentOptions}
+                    spatialTargetDimension={spatialTargetDimension}
+                    setSpatialTargetDimension={setSpatialTargetDimension}
+                    spatialSourceDimension={spatialSourceDimension}
+                    setSpatialSourceDimension={setSpatialSourceDimension}
+                    targetDimensionOptions={targetDimensionOptions}
+                    sourceDimensionOptions={sourceDimensionOptions}
+                    spatialJoinCondition={spatialJoinCondition}
+                    setSpatialJoinCondition={setSpatialJoinCondition}
+                    spatialTargetFilters={spatialTargetFilters}
+                    setSpatialTargetFilters={setSpatialTargetFilters}
+                    spatialSourceFilters={spatialSourceFilters}
+                    setSpatialSourceFilters={setSpatialSourceFilters}
+                    spatialAggregate={spatialAggregate}
+                    setSpatialAggregate={setSpatialAggregate}
+                    spatialRequestBody={spatialRequestBody}
+                    setSpatialRequestBody={setSpatialRequestBody}
+                    handleShow={handleShow}
+                />
             );
         }
 
         // Default rendering for other job types
         return fields.map(renderField);
     };
-
 
     return (
         <div className={style.createJobLayout}>

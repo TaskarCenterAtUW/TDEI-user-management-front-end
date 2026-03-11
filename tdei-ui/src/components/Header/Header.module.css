@@ -8,9 +8,11 @@
   justify-content: space-between;
 }
 .logoImage {
-  width: 70px;
+  height: 44px;
+  width: 56px;
+  object-fit: fill;
   background-color: #fff;
-  padding: 5px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
 }
 .mobileMenuIcon {
