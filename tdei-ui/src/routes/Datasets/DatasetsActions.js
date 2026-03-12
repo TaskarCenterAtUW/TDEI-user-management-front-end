@@ -117,6 +117,12 @@ const DatasetsActions = ({
         : dataViewerIcon,
       condition: true,
     },
+    { // TODO: Add conditions here.
+      key: "qualityReport",
+      label: "Generate Quality Report",
+      icon: <NorthEastIcon className={style.inclinationIcon} />,
+      condition: true,
+    },
   ].filter(Boolean);
 
   return (

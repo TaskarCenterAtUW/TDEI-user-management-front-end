@@ -99,6 +99,11 @@ export async function getRoles() {
   return res.data;
 }
 
+export async function getSystemCapabilities() {
+  const res = await axios.get(`${osmUrl}/system/capabilities`);
+  return res.data;
+}
+
 export async function getApiKey({ queryKey }) {
   const [, userId] = queryKey;
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
@@ -875,6 +880,13 @@ export async function postResetPassword(data) {
 export async function createInclinationJob(tdei_dataset_id) {
   const res = await axios.post(
     `${osmUrl}/osw/dataset-inclination/${tdei_dataset_id}`
+  );
+  return res.data;
+}
+
+export async function createQualityReportJob(tdei_dataset_id) {
+  const res = await axios.post(
+    `${osmUrl}/osw/quality-report/${tdei_dataset_id}`
   );
   return res.data;
 }

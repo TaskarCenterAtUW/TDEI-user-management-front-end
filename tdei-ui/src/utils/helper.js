@@ -10,6 +10,7 @@ export const getUserName = (user, isCurrentUser) => {
 };
 
 export const toPascalCase = (str) => {
+  if (!str) return "";
   return str.replace(/(\w)(\w*)/g,
     function (_, firstChar, rest) {
       return firstChar.toUpperCase() + rest.toLowerCase();

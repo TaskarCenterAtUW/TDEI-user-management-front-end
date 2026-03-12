@@ -24,6 +24,7 @@ import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 import ProjectAutocomplete from "../../components/ProjectAutocomplete/ProjectAutocomplete";
 import ServiceAutocomplete from "../../components/ServiceAutocomplete/ServiceAutocomplete";
 import DownloadModal from "../../components/DownloadModal/DownloadModal";
+import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
@@ -192,6 +193,8 @@ const MyDatasets = () => {
     useToggleDataviewer({ onSuccess, onError });
   const { mutate: createInclinationJob, isLoading: isCreatingJob } =
     useCreateInclinationJob({ onSuccess, onError });
+  const { mutate: createQualityReportJob, isLoading: isCreatingQualityReportJob } =
+    useCreateQualityReportJob({ onSuccess, onError });
 
   const handlePublishDataset = (dataset) => {
     // Check if valid_from and valid_to dates are present
@@ -220,6 +223,14 @@ const MyDatasets = () => {
       });
     }
   };
+
+  const handleCreateQualityReportJob = () => {
+    console.log("Quality Report");
+    if (selectedDataset) {
+      // console.log("Quality report to be added for dataset: ", selectedDataset.tdei_dataset_id);
+      createQualityReportJob(selectedDataset.tdei_dataset_id);
+    }
+  }
 
   const handleCreateInclinationJob = () => {
     createInclinationJob(selectedDataset.tdei_dataset_id);
@@ -281,7 +292,7 @@ const MyDatasets = () => {
   // Modal configuration based on eventKey
   const modalConfig = {
     release: {
-      message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content:
         "Release job will take around 4 to 6 hours. You can find the status in the jobs page.",
       handler: () =>
@@ -293,14 +304,14 @@ const MyDatasets = () => {
       modaltype: "release",
     },
     deactivate: {
-      message: `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to deactivate dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content: "Deactivation will remove the dataset from the system.",
       handler: handleDeactivate,
       btnlabel: "Deactivate",
       modaltype: "deactivate",
     },
     inclination: {
-      message: `Are you sure you want to add an inclination job for dataset ${selectedDataset?.metadata?.data_provenance?.full_dataset_name}?`,
+      message: `Are you sure you want to add an inclination job for dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content:
         "Adding incline may take around 10-15 mins of time depending on the size of the dataset. You can find the status in the jobs page.",
       handler: handleCreateInclinationJob,
@@ -316,16 +327,22 @@ const MyDatasets = () => {
       modaltype: "error",
     },
     dataviewer: {
-      message: `Are you sure you want to ${
-        selectedDataset?.data_viewer_allowed ? "disable" : "enable"
-      } the dataviewer status for dataset ${
-        selectedDataset?.metadata?.data_provenance?.full_dataset_name
-      }?`,
+      message: `Are you sure you want to ${selectedDataset?.data_viewer_allowed ? "disable" : "enable"
+        } the dataviewer status for dataset ${selectedDataset?.metadata?.dataset_detail?.name
+        }?`,
       content: "",
       handler: handleDataviewerChange,
       btnlabel: selectedDataset?.data_viewer_allowed ? "Disable" : "Enable",
       modaltype: "dataviewer",
     },
+    qualityReport: {
+      message: `Are you sure you want to add a quality report job for dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
+      content:
+        "Adding quality report may take around 10-15 mins of time depending on the size of the dataset. You can find the status in the jobs page.",
+      handler: handleCreateQualityReportJob,
+      btnlabel: "Generate Quality Report",
+      modaltype: "qualityReport",
+    }
   };
 
   const currentModalConfig = modalConfig[eventKey];
@@ -360,6 +377,10 @@ const MyDatasets = () => {
         return operationResult === "success"
           ? "Success! Dataviewer status has been updated."
           : customErrorMessage ?? "Error! Failed to updated dataviewer status.";
+      case "qualityReport":
+        return operationResult === "success"
+          ? "Success! Quality report job has been initiated."
+          : customErrorMessage ?? "Error! Failed to initiate quality report job.";
       default:
         return "";
     }

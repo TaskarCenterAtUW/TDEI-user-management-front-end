@@ -3,7 +3,7 @@ import { Row, Form, Button, Card, InputGroup } from "react-bootstrap";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import { Formik } from "formik";

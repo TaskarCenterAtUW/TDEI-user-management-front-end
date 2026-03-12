@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import Dropzone from '../../components/DropZone/Dropzone';
 
 // Functional component Changeset
-const Changeset = ({ selectedData, onSelectedFileChange }) => {
+const Changeset = ({ selectedData, onSelectedFileChange, dataType }) => {
   // Function to handle file drop
   const onDrop = (files) => {
     const selectedFile = files[0];
@@ -16,13 +16,13 @@ const Changeset = ({ selectedData, onSelectedFileChange }) => {
         color: '#162848',
         marginBottom: "15px"
       }}>
-       Attach changeset file
+        Attach changeset file
       </Typography>
       <Dropzone onDrop={onDrop} accept={{
-          "application/zip": [".zip"],
-          "application/octet-stream": [".osc"]
-        }}
-        format={".zip, .osc"} selectedFile={selectedData} />
+        "application/zip": [".zip"],
+        "application/octet-stream": [".osc"]
+      }}
+        format={".zip, .osc"} selectedFile={selectedData} dataType={dataType} />
     </div>
   );
 };

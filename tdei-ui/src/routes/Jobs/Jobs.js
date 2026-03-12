@@ -53,6 +53,7 @@ const Jobs = () => {
         { value: 'Dataset-Validate', label: 'Dataset Validate' },
         { value: 'Edit-Metadata', label: 'Edit Metadata' },
         { value: 'Quality-Metric', label: 'Quality Metric' },
+        { value: 'Quality-Report', label: 'Quality Report' }
     ];
 
     // Options for status
@@ -75,7 +76,7 @@ const Jobs = () => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
     const sortData = (key) => {
         const direction = sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
-    
+
         const sorted = [...sortedData].sort((a, b) => {
             let aValue, bValue;
             if (key === 'job_type') {
@@ -95,17 +96,17 @@ const Jobs = () => {
                 bValue = b.requested_by;
             }
             if (typeof aValue === 'string' && typeof bValue === 'string') {
-                return direction === 'ascending' 
+                return direction === 'ascending'
                     ? aValue.localeCompare(bValue)
                     : bValue.localeCompare(aValue);
             } else {
                 return direction === 'ascending' ? (aValue - bValue) : (bValue - aValue);
             }
         });
-    
+
         setSortedData(sorted);
         setSortConfig({ key, direction });
-    };    
+    };
     const {
         data = [],
         isError,
@@ -115,7 +116,7 @@ const Jobs = () => {
         isFetchingNextPage,
         isLoading,
         refreshData
-    } = useGetJobs(user.isAdmin, debounceQuery, jobType.value, jobStatus.value,jobShow.value);
+    } = useGetJobs(user.isAdmin, debounceQuery, jobType.value, jobStatus.value, jobShow.value);
 
     useEffect(() => {
         if (data && data.pages && data.pages.length > 0) {
@@ -133,10 +134,10 @@ const Jobs = () => {
 
     useEffect(() => {
         if (isError && (error?.response?.status === 404 || error?.response?.status === 400) || error?.response?.status === 500) {
-          setSortedData([]);
-          setJobError(error.response.data)
+            setSortedData([]);
+            setJobError(error.response.data)
         }
-      }, [isError, error]);
+    }, [isError, error]);
 
     const handleJobTypeSelect = (value) => {
         setJobType(value);
@@ -242,7 +243,7 @@ const Jobs = () => {
                             />
                             <div className={style.selectPanel}>
                                 <label htmlFor="jobTypeSelect" className={style.selectLabel}>Job Type</label>
-                                <Select 
+                                <Select
                                     inputId="jobTypeSelect"
                                     isSearchable={false}
                                     className={style.select}
@@ -254,7 +255,7 @@ const Jobs = () => {
                             </div>
                             <div className={style.selectPanel}>
                                 <label htmlFor="jobStatusSelect" className={style.selectLabel}>Status</label>
-                                <Select 
+                                <Select
                                     inputId="jobStatusSelect"
                                     isSearchable={false}
                                     className={style.select}
@@ -266,7 +267,7 @@ const Jobs = () => {
                             </div>
                             <div className={style.selectPanel}>
                                 <label htmlFor="jobShowSelect" className={style.selectLabel}>Show</label>
-                                <Select 
+                                <Select
                                     inputId="jobShowSelect"
                                     isSearchable={false}
                                     className={style.select}
@@ -336,7 +337,7 @@ const Jobs = () => {
                         sortedData.map((list, index) => (
                             <JobListItem jobItem={list} key={list.job_id} />
                         ))
-                    ): <div></div>}
+                    ) : <div></div>}
                     {isError && (error?.response?.status === 404 || error?.response?.status === 400) && (
                         <div className="d-flex align-items-center mt-2">
                             <img
@@ -346,7 +347,7 @@ const Jobs = () => {
                             />
                             <div className={style.noDataText}>{jobError}</div>
                         </div>
-                    )}  
+                    )}
                     {isError && error?.response?.status === 500 && (
                         <div className="d-flex align-items-center mt-2">
                             <img

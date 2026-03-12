@@ -35,7 +35,7 @@ const defaultMetadata = {
     "region": "",
     "county": "",
     "key_limitations": "",
-    "release_notes":"",
+    "release_notes": "",
     "challenges": ""
   },
   "maintenance": {
@@ -82,11 +82,11 @@ const Metadata = ({ selectedData, onSelectedFileChange, dataType, isDatasetPubli
             dataset_detail: {
               ...defaultMetadata.dataset_detail,
               ...parsedData.dataset_detail,
-              custom_metadata: parsedData.dataset_detail?.custom_metadata 
-                ? JSON.stringify(parsedData.dataset_detail.custom_metadata, null, 2) 
+              custom_metadata: parsedData.dataset_detail?.custom_metadata
+                ? JSON.stringify(parsedData.dataset_detail.custom_metadata, null, 2)
                 : "",
-              dataset_area: parsedData.dataset_detail?.dataset_area 
-                ? JSON.stringify(parsedData.dataset_detail.dataset_area, null, 2) 
+              dataset_area: parsedData.dataset_detail?.dataset_area
+                ? JSON.stringify(parsedData.dataset_detail.dataset_area, null, 2)
                 : ""
             }
           };
@@ -120,11 +120,11 @@ const Metadata = ({ selectedData, onSelectedFileChange, dataType, isDatasetPubli
       }}>
         Attach metadata file<span style={{ color: 'red' }}> *</span>
       </Typography>
-      <Dropzone onDrop={onDrop} accept={{ 'application/json': ['.json'] }} format={".json"} selectedFile={selectedData && selectedData.file instanceof File ? selectedData.file : null} />
+      <Dropzone onDrop={onDrop} accept={{ 'application/json': ['.json'] }} format={".json"} selectedFile={selectedData && selectedData.file instanceof File ? selectedData.file : null} dataType={dataType} />
       <div className={style.dottedLine}>
         <span className={style.dottedText}>OR</span>
       </div>
-      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData  } onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished} dataType={dataType}/>
+      <MetaDataForm selectedData={selectedData && selectedData.file instanceof File ? selectedData.formData : selectedData && selectedData.file === null ? selectedData.formData : selectedData} onUpdateFormData={handleUpdateFormData} isDatasetPublished={isDatasetPublished} dataType={dataType} />
     </div>
   );
 };
