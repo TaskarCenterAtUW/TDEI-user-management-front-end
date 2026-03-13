@@ -107,7 +107,7 @@ const DatasetsActions = ({
       icon: downloadDatasetImg,
       condition: true,
     },
-    isReleasedDataset && {
+    (isReleasedDataset || status === "Publish") && {
       key: "shareDataset",
       label: "Share Link",
       icon: copyIcon,
