@@ -25,6 +25,7 @@ import ProjectAutocomplete from "../../components/ProjectAutocomplete/ProjectAut
 import ServiceAutocomplete from "../../components/ServiceAutocomplete/ServiceAutocomplete";
 import DownloadModal from "../../components/DownloadModal/DownloadModal";
 import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
+import { buildShareDatasetPath } from "../../utils";
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
@@ -257,6 +258,42 @@ const MyDatasets = () => {
     }
     setSelectedDataset(null);
   };
+
+  const copyShareLink = async (dataset) => {
+    const sharePath = buildShareDatasetPath(
+      dataset?.data_type,
+      dataset?.tdei_dataset_id
+    );
+    const shareUrl = `${window.location.origin}${sharePath}`;
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const tempInput = document.createElement("textarea");
+        tempInput.value = shareUrl;
+        tempInput.setAttribute("readonly", "");
+        tempInput.style.position = "absolute";
+        tempInput.style.left = "-9999px";
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+
+      setEventKey("shareDataset");
+      setOperationResult("success");
+      setCustomErrorMessage("");
+      handleToast();
+    } catch (error) {
+      console.error("Error copying share link:", error);
+      setEventKey("shareDataset");
+      setOperationResult("error");
+      setCustomErrorMessage("Unable to copy the share link. Please try again.");
+      handleToast();
+    }
+  };
+
   const onAction = (eventKey, dataset) => {
     setSelectedDataset(dataset);
     setEventKey(eventKey);
@@ -270,6 +307,8 @@ const MyDatasets = () => {
       } else {
         handleDownloadDataset(dataset);
       }
+    } else if (eventKey === "shareDataset") {
+      copyShareLink(dataset);
     } else if (eventKey === "release") {
       handlePublishDataset(dataset);
     } else {
@@ -372,6 +411,10 @@ const MyDatasets = () => {
       case "downLoadDataset":
         return operationResult === "success"
           ? "Success! Download has been initiated."
+          : customErrorMessage;
+      case "shareDataset":
+        return operationResult === "success"
+          ? "Success! Share link has been copied."
           : customErrorMessage;
       case "dataviewer":
         return operationResult === "success"

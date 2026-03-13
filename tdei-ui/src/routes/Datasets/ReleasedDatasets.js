@@ -8,7 +8,7 @@ import { Button, Form, Spinner, Col, Row } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
-import { toPascalCase, formatDate } from '../../utils';
+import { buildShareDatasetPath, toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import useGetReleasedDatasets from '../../hooks/service/useGetReleaseDatasets';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
@@ -158,6 +158,38 @@ const ReleasedDatasets = () => {
 
   const handleRefresh = () => refreshData();
 
+  const copyShareLink = async (dataset) => {
+    const sharePath = buildShareDatasetPath(dataset?.data_type, dataset?.tdei_dataset_id);
+    const shareUrl = `${window.location.origin}${sharePath}`;
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const tempInput = document.createElement("textarea");
+        tempInput.value = shareUrl;
+        tempInput.setAttribute("readonly", "");
+        tempInput.style.position = "absolute";
+        tempInput.style.left = "-9999px";
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+
+      setEventKey("shareDataset");
+      setOperationResult("success");
+      setCustomErrorMessage("");
+      handleToast();
+    } catch (error) {
+      console.error("Error copying share link:", error);
+      setEventKey("shareDataset");
+      setOperationResult("error");
+      setCustomErrorMessage("Unable to copy the share link. Please try again.");
+      handleToast();
+    }
+  };
+
   const onAction = (eventKey, dataset) => {
     setSelectedDataset(dataset);
     setEventKey(eventKey);
@@ -165,6 +197,8 @@ const ReleasedDatasets = () => {
       setShowDownloadModal(true);
     } else if (eventKey === 'downLoadDataset') {
       handleDownloadDataset(dataset);
+    } else if (eventKey === 'shareDataset') {
+      copyShareLink(dataset);
     } else if (eventKey === 'cloneDataset') {
       navigate('/CloneDataset', { state: { dataset } });
     }
@@ -201,6 +235,10 @@ const ReleasedDatasets = () => {
       case 'downLoadDataset':
         return operationResult === "success"
           ? "Success! Download has been initiated."
+          : customErrorMessage;
+      case 'shareDataset':
+        return operationResult === "success"
+          ? "Share link copied to clipboard."
           : customErrorMessage;
       default:
         return "";

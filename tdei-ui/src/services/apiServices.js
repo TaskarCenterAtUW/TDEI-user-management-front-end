@@ -657,6 +657,36 @@ export async function getReleasedDatasets(searchText, searchDatasetId, pageParam
   };
 }
 
+export async function getReleasedDatasetById(tdei_dataset_id, data_type) {
+  const params = {
+    status: "Publish",
+    page_no: 1,
+    page_size: 10,
+    tdei_dataset_id,
+  };
+
+  if (data_type) {
+    params.data_type = data_type;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params,
+    method: "GET",
+  });
+
+  const datasets = Array.isArray(res.data) ? res.data : [];
+  const matchedDataset = datasets.find(
+    (dataset) => dataset?.tdei_dataset_id === tdei_dataset_id
+  );
+
+  if (!matchedDataset) {
+    throw new Error("Dataset not found or is not released.");
+  }
+
+  return matchedDataset;
+}
+
 export async function postPublishDataset(data) {
   var file_end_point = "";
   var service_type = data.service_type.toLowerCase();
