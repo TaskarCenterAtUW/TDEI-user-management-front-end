@@ -8,6 +8,7 @@ import openConsoleIcon from "../../assets/img/action-open-console.svg";
 import cloneImg from "../../assets/img/clone-img.svg";
 import editImage from "../../assets/img/edit-img.svg";
 import downloadDatasetImg from "../../assets/img/download-img.svg";
+import copyIcon from "../../assets/img/icon-copy-id.svg";
 import dataViewerIcon from "../../assets/img/icon-data-viewer.svg";
 import dataViewerIconDisabled from "../../assets/img/icon-data-viewer-off.svg";
 import NorthEastIcon from "@mui/icons-material/NorthEast";
@@ -104,6 +105,12 @@ const DatasetsActions = ({
       key: "downLoadDataset",
       label: "Download",
       icon: downloadDatasetImg,
+      condition: true,
+    },
+    isReleasedDataset && {
+      key: "shareDataset",
+      label: "Share Link",
+      icon: copyIcon,
       condition: true,
     },
     !isReleasedDataset &&

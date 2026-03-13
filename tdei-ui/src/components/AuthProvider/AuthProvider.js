@@ -8,6 +8,7 @@ import ResponseToast from "../ToastMessage/ResponseToast";
 import { clear } from "../../store";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
+import { isShareDatasetRoute } from "../../utils";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -18,6 +19,28 @@ const AuthProvider = ({ children }) => {
   const [isReLoginOpen, setIsReLoginOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState({ showtoast: false, message: '', type: '' });
   const origin = location.pathname || "/";
+
+  const isAnonymousPath = React.useCallback((pathname = "") => {
+    const normalizedPath = String(pathname || "")
+      .toLowerCase()
+      .replace(/\/+$/, "");
+
+    const anonymousPaths = new Set([
+      "/login",
+      "/register",
+      "/forgotpassword",
+      "/passwordreset",
+      "/emailverify",
+      "/invite-instructions",
+      "/app-link",
+    ]);
+
+    return anonymousPaths.has(normalizedPath)
+      || normalizedPath.startsWith("/app-link/")
+      || normalizedPath.startsWith("/login/share-dataset/")
+      || normalizedPath.startsWith("/register/share-dataset/")
+      || isShareDatasetRoute(normalizedPath);
+  }, []);
 
   const decodeToken = (accessToken) => {
     if (accessToken === "undefined" || !accessToken) return;
@@ -61,21 +84,12 @@ const AuthProvider = ({ children }) => {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
-    const p = (location?.pathname || "/").toLowerCase();
-    const anon = new Set([
-      "/login",
-      "/register",
-      "/forgotpassword",
-      "/passwordreset",
-      "/emailverify",
-      "/invite-instructions",
-      "/app-link/",
-    ]);
+    const p = location?.pathname || "/";
 
     // No access token
     if (!accessToken) {
       // If we had a session and we're on a protected page -> real expiry
-      if (refreshToken && !anon.has(p)) {
+      if (refreshToken && !isAnonymousPath(p)) {
         if (handoffInProgress) return; 
         setToastMessage({
           showtoast: true,
@@ -109,7 +123,7 @@ const AuthProvider = ({ children }) => {
       setIsReLoginOpen(true);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch, isAnonymousPath, location?.pathname]);
 
   // Guard on navigation: only act on protected routes; suppress during relogin modal
   React.useEffect(() => {
@@ -117,18 +131,8 @@ const AuthProvider = ({ children }) => {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
-    const p = (location?.pathname || "/").toLowerCase();
-    const anon = new Set([
-      "/login",
-      "/register",
-      "/forgotpassword",
-      "/passwordreset",
-      "/emailverify",
-      "/invite-instructions",
-       "/app-link/",
-    ]);
-
-    const onProtected = !anon.has(p);
+    const p = location?.pathname || "/";
+    const onProtected = !isAnonymousPath(p);
 
     if (!accessToken && onProtected) {
       if (handoffInProgress) return;
@@ -148,7 +152,7 @@ const AuthProvider = ({ children }) => {
         navigate("/login", { replace: true });
       }
     }
-  }, [location, isReLoginOpen, navigate]);
+  }, [isAnonymousPath, isReLoginOpen, location, navigate]);
 
 
 
@@ -160,8 +164,7 @@ const AuthProvider = ({ children }) => {
     const accessToken = localStorage.getItem("accessToken");
     // const relogin = localStorage.getItem("relogin");
     // Anonymous paths
-    const excludePaths = ["/login", "/register", "/ForgotPassword", "/passwordReset", "/emailVerify", "/invite-instructions","/app-link/"];
-    if (!accessToken && location && !excludePaths.includes(location.pathname) && location.pathname !== '/') {
+    if (!accessToken && location && !isAnonymousPath(location.pathname) && location.pathname !== '/') {
       setToastMessage({
         showtoast: true,
         message: "Session expired. You have been logged out.",
@@ -169,7 +172,7 @@ const AuthProvider = ({ children }) => {
       });
       // window.location.href = "/";
     }
-  }, [location]);
+  }, [isAnonymousPath, location]);
 
   /**
    * This function is triggered when the "tokenRefreshed" event is dispatched.
@@ -227,7 +230,7 @@ const AuthProvider = ({ children }) => {
         successCallback?.(response);
 
         // Prefer the originally requested protected route
-        const from = location.state?.from?.pathname || "/";
+        const from = location.state?.from || "/";
         navigate(from, { replace: true });
       } else {
         signout();
