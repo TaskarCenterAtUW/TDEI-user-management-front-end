@@ -20,9 +20,12 @@ const DatasetAutocomplete = ({
   const [pageNo, setPageNo] = useState(1);
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [announcement, setAnnouncement] = useState("");
 
   const observer = useRef();
   const autocompleteRef = useRef();
+  const listRef = useRef();
 
   // Debounce user input
   const debouncedSearch = useMemo(
@@ -53,7 +56,38 @@ const DatasetAutocomplete = ({
 
     debouncedSearch(value);
     setShowDropdown(true);
+    setHighlightedIndex(-1);
   };
+
+  const handleKeyDown = (e) => {
+    if (!showDropdown || deduplicatedDatasets.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < deduplicatedDatasets.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < deduplicatedDatasets.length) {
+        handleSelect(deduplicatedDatasets[highlightedIndex]);
+      }
+    } else if (e.key === "Escape" || e.key === "Tab") {
+      if (e.key === "Tab") e.preventDefault();
+      setShowDropdown(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
+  // Scroll highlighted item into view AFTER render
+  useEffect(() => {
+    if (highlightedIndex >= 0 && listRef.current) {
+      const item = listRef.current.children[highlightedIndex];
+      if (item) item.scrollIntoView({ block: "nearest" });
+    }
+  }, [highlightedIndex]);
 
 
   const { loading, datasetList, hasMore } = useGetDatasetsAutocomplete(debouncedValue, pageNo);
@@ -67,6 +101,21 @@ const DatasetAutocomplete = ({
       return true;
     });
   }, [datasetList]);
+
+  // Announce result count to screen readers when dropdown opens
+  useEffect(() => {
+    if (showDropdown && !loading && deduplicatedDatasets.length > 0) {
+      setAnnouncement(
+        `${deduplicatedDatasets.length} result${
+          deduplicatedDatasets.length === 1 ? "" : "s"
+        } available. Use arrow keys to navigate.`
+      );
+    } else if (showDropdown && !loading && deduplicatedDatasets.length === 0) {
+      setAnnouncement("No datasets found.");
+    } else {
+      setAnnouncement("");
+    }
+  }, [showDropdown, loading, deduplicatedDatasets.length]);
 
   const lastDataset = useCallback(
     (node) => {
@@ -91,6 +140,7 @@ const DatasetAutocomplete = ({
     setSelectedDataset(ds);
     setDatasetSearchText(labelFor(ds));
     setShowDropdown(false);
+    setHighlightedIndex(-1);
     onSelectDataset(ds.tdei_dataset_id || null);
   };
 
@@ -122,9 +172,25 @@ const DatasetAutocomplete = ({
   }, [handleClickOutside, debouncedSearch]);
 
   const inputValue = datasetSearchText;
+  const listboxId = id ? `${id}-listbox` : "dataset-listbox";
+  const activeDescendant =
+    highlightedIndex >= 0 && deduplicatedDatasets[highlightedIndex]
+      ? `${listboxId}-option-${deduplicatedDatasets[highlightedIndex].tdei_dataset_id}`
+      : undefined;
+  const isExpanded = showDropdown && deduplicatedDatasets.length > 0;
 
   return (
     <div className={styles.autocompleteContainer} ref={autocompleteRef}>
+      {/* Live region — screen readers announce results count */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}
+      >
+        {announcement}
+      </div>
+
       <InputGroup>
         <Form.Control
           id={id}
@@ -133,55 +199,57 @@ const DatasetAutocomplete = ({
           onChange={handleInputChange}
           value={inputValue}
           onFocus={() => setShowDropdown(true)}
+          onKeyDown={handleKeyDown}
           autoComplete="off"
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={isExpanded}
+          aria-controls={listboxId}
+          aria-autocomplete="list"
+          aria-activedescendant={activeDescendant}
+          aria-label={placeholder}
         />
         {inputValue && (
           <InputGroup.Text>
-            <IconButton size="small" onClick={clearAll}>
+            <IconButton size="small" onClick={clearAll} aria-label="Clear selection">
               <ClearIcon fontSize="small" />
             </IconButton>
           </InputGroup.Text>
         )}
         {loading && (
           <InputGroup.Text>
-            <Spinner animation="border" size="sm" />
+            <Spinner animation="border" size="sm" aria-label="Loading results" />
           </InputGroup.Text>
         )}
       </InputGroup>
 
       {showDropdown && deduplicatedDatasets.length > 0 && (
-        <div className={styles.dropdownList}>
+        <div
+          role="listbox"
+          id={listboxId}
+          aria-label="Datasets"
+          className={styles.dropdownList}
+          ref={listRef}
+          tabIndex="-1"
+        >
           {deduplicatedDatasets.map((ds, idx) => {
-            const content = (
-              <>
-                <div className={styles.primaryText}>{labelFor(ds)}</div>
-              </>
-            );
-
+            const optionId = `${listboxId}-option-${ds.tdei_dataset_id}`;
+            const isHighlighted = highlightedIndex === idx;
             const isActive = selectedDataset?.tdei_dataset_id === ds.tdei_dataset_id;
-
-            if (deduplicatedDatasets.length === idx + 1) {
-              return (
-                <div
-                  key={ds.tdei_dataset_id}
-                  id={ds.tdei_dataset_id}
-                  className={`${styles.dropdownItem} ${isActive ? styles.active : ""}`}
-                  onClick={() => handleSelect(ds)}
-                  ref={lastDataset}
-                >
-                  {content}
-                </div>
-              );
-            }
 
             return (
               <div
                 key={ds.tdei_dataset_id}
-                id={ds.tdei_dataset_id}
-                className={`${styles.dropdownItem} ${isActive ? styles.active : ""}`}
+                id={optionId}
+                role="option"
+                aria-selected={isActive}
+                className={`${styles.dropdownItem} ${
+                  isHighlighted ? styles.highlighted : isActive ? styles.active : ""
+                }`}
                 onClick={() => handleSelect(ds)}
+                ref={deduplicatedDatasets.length === idx + 1 ? lastDataset : null}
               >
-                {content}
+                <div className={styles.primaryText}>{labelFor(ds)}</div>
               </div>
             );
           })}
