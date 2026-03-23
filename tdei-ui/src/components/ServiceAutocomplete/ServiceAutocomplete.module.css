@@ -14,16 +14,29 @@
   border-top: none;
   background-color: #fff;
   z-index: 1000;
+  /* prevent the scrollable container from receiving Tab focus */
+  outline: none;
 }
 
 .dropdownItem {
   padding: 8px 12px;
   cursor: pointer;
+  user-select: none;
 }
 
-.dropdownItem:hover,
+.dropdownItem:hover {
+  background-color: #f8f9fa;
+}
+
 .active {
   background-color: #f8f9fa;
+}
+
+/* keyboard-navigated item — matches react-select focused option style */
+.highlighted,
+.highlighted:hover {
+  background-color: #deebff;
+  outline: none;
 }
 
 .noResults {

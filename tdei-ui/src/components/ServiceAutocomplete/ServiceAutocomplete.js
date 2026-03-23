@@ -12,9 +12,12 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
   const { loading, error, serviceList, hasMore, setPageNumber } = useGetAllServices(debouncedValue, isAdmin, service_type);
   const [selectedService, setSelectedService] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [announcement, setAnnouncement] = useState("");
   
   const observer = useRef();
   const autocompleteRef = useRef();
+  const listRef = useRef();
 
   const debouncedSearch = useMemo(
     () =>
@@ -46,7 +49,38 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
     }
     debouncedSearch(value);
     setShowDropdown(true);
+    setHighlightedIndex(-1);
   };
+
+  const handleKeyDown = (e) => {
+    if (!showDropdown || deduplicatedServiceItems.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < deduplicatedServiceItems.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < deduplicatedServiceItems.length) {
+        handleSelect(deduplicatedServiceItems[highlightedIndex]);
+      }
+    } else if (e.key === "Escape" || e.key === "Tab") {
+      if (e.key === "Tab") e.preventDefault();
+      setShowDropdown(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
+  // Scroll highlighted item into view AFTER render
+  useEffect(() => {
+    if (highlightedIndex >= 0 && listRef.current) {
+      const item = listRef.current.children[highlightedIndex];
+      if (item) item.scrollIntoView({ block: "nearest" });
+    }
+  }, [highlightedIndex]);
 
   const deduplicatedServiceItems = useMemo(() => {
     const seen = new Set();
@@ -56,6 +90,21 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
       return true;
     });
   }, [serviceList]);
+
+  // Announce result count to screen readers when dropdown opens
+  useEffect(() => {
+    if (showDropdown && !loading && deduplicatedServiceItems.length > 0) {
+      setAnnouncement(
+        `${deduplicatedServiceItems.length} result${
+          deduplicatedServiceItems.length === 1 ? "" : "s"
+        } available. Use arrow keys to navigate.`
+      );
+    } else if (showDropdown && !loading && deduplicatedServiceItems.length === 0) {
+      setAnnouncement("No services found.");
+    } else {
+      setAnnouncement("");
+    }
+  }, [showDropdown, loading, deduplicatedServiceItems.length]);
 
   const lastServiceElementRef = useCallback((node) => {
     if (loading) return;
@@ -73,6 +122,7 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
     setSelectedService(service);
     setServiceSearchText(service.service_name);
     setShowDropdown(false);
+    setHighlightedIndex(-1);
     onSelectService(service.tdei_service_id);
   };
 
@@ -97,8 +147,25 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
     };
   }, [handleClickOutside, debouncedSearch]);
 
+  const listboxId = "service-listbox";
+  const activeDescendant =
+    highlightedIndex >= 0 && deduplicatedServiceItems[highlightedIndex]
+      ? `svc-option-${deduplicatedServiceItems[highlightedIndex].tdei_service_id}`
+      : undefined;
+  const isExpanded = showDropdown && deduplicatedServiceItems.length > 0;
+
   return (
     <div className={styles.autocompleteContainer} ref={autocompleteRef}>
+      {/* Live region — screen readers announce results count */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}
+      >
+        {announcement}
+      </div>
+
       <InputGroup>
         <Form.Control
           type="text"
@@ -107,32 +174,59 @@ const ServiceAutocomplete = ({ serviceSearchText, setServiceSearchText, onSelect
           onChange={handleInputChange}
           value={selectedService ? selectedService.service_name : serviceSearchText}
           onFocus={() => setShowDropdown(true)}
+          onKeyDown={handleKeyDown}
           autoComplete="off"
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={isExpanded}
+          aria-controls={listboxId}
+          aria-autocomplete="list"
+          aria-activedescendant={activeDescendant}
+          aria-label="Search Service"
         />
         {loading && (
           <InputGroup.Text>
-            <Spinner animation="border" size="sm" />
+            <Spinner animation="border" size="sm" aria-label="Loading results" />
           </InputGroup.Text>
         )}
       </InputGroup>
+
       {showDropdown && deduplicatedServiceItems.length > 0 && (
-        <div className={styles.dropdownList}>
-          {deduplicatedServiceItems.map((service, index) => (
-            <div
-              key={service.tdei_service_id}
-              className={`${styles.dropdownItem} ${
-                selectedService?.tdei_service_id === service.tdei_service_id ? styles.active : ""
-              }`}
-              onClick={() => handleSelect(service)}
-              ref={deduplicatedServiceItems.length === index + 1 ? lastServiceElementRef : null}
-            >
-              {service.service_name}
-            </div>
-          ))}
+        <div
+          role="listbox"
+          id={listboxId}
+          aria-label="Services"
+          className={styles.dropdownList}
+          ref={listRef}
+          tabIndex="-1"
+        >
+          {deduplicatedServiceItems.map((service, index) => {
+            const optionId = `svc-option-${service.tdei_service_id}`;
+            const isSelected = selectedService?.tdei_service_id === service.tdei_service_id;
+            return (
+              <div
+                key={service.tdei_service_id}
+                id={optionId}
+                role="option"
+                aria-selected={isSelected}
+                className={`${styles.dropdownItem} ${
+                  highlightedIndex === index
+                    ? styles.highlighted
+                    : isSelected
+                    ? styles.active
+                    : ""
+                }`}
+                onClick={() => handleSelect(service)}
+                ref={deduplicatedServiceItems.length === index + 1 ? lastServiceElementRef : null}
+              >
+                {service.service_name}
+              </div>
+            );
+          })}
         </div>
       )}
       {showDropdown && deduplicatedServiceItems.length === 0 && !loading && (
-        <div className={styles.noResults}>No services found.</div>
+        <div className={styles.noResults} role="status">No services found.</div>
       )}
     </div>
   );
