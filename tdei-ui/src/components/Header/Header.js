@@ -1,6 +1,6 @@
 import React from "react";
 import style from "./Header.module.css";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 import { useAuth } from "../../hooks/useAuth";
 import { Dropdown } from "react-bootstrap";
 import userIcon from "./../../assets/img/user.png";
@@ -36,7 +36,7 @@ const Header = () => {
     localStorage.removeItem("refreshToken");
     window.location.reload();
   };
-  
+
   const handleResetPassword = () => {
     setShowModal(true);
   };
@@ -54,9 +54,9 @@ const Header = () => {
             >
               <img src={iconMenu} alt="" aria-hidden="true" />
             </button>
-            <MobileSidebar 
+            <MobileSidebar
               show={showSidebar}
-              onHide={() => setShowSidebar(false)} 
+              onHide={() => setShowSidebar(false)}
             />
           </>
         )}
@@ -82,9 +82,9 @@ const Header = () => {
                   <img src={resetPasswordIcon} className="iconImg" alt="" aria-hidden="true" />
                   Reset Password
                 </Dropdown.Item>
-                 <Dropdown.Divider aria-hidden="true" />
-                 <Dropdown.Item onClick={() => setShowReferralModal(true)}>
-                 <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '18px', color:'#8A93A3' }} aria-hidden="true" />
+                <Dropdown.Divider aria-hidden="true" />
+                <Dropdown.Item onClick={() => setShowReferralModal(true)}>
+                  <ConfirmationNumberOutlinedIcon className="iconImg" style={{ fontSize: '18px', color: '#8A93A3' }} aria-hidden="true" />
                   Join With Referral Code
                 </Dropdown.Item>
                 <Dropdown.Divider aria-hidden="true" />
@@ -101,7 +101,7 @@ const Header = () => {
         show={showModal}
         onHide={() => setShowModal(false)}
       />
-       <ApplyReferralCode show={showReferralModal} onHide={() => setShowReferralModal(false)} />
+      <ApplyReferralCode show={showReferralModal} onHide={() => setShowReferralModal(false)} />
     </header>
   );
 };

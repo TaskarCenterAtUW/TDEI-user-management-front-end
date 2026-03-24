@@ -6,6 +6,10 @@ const DownloadModal = ({
     show,
     handleClose,
     handleDownload,
+    title = "OSW Dataset Download",
+    introText = "",
+    datasetName = "",
+    datasetId = "",
     formatOptions,
     fileVersionOptions,
     selectedFormat,
@@ -22,9 +26,24 @@ const DownloadModal = ({
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton={!isLoading}> 
-                <Modal.Title>OSW Dataset Download</Modal.Title>
+                <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {(introText || datasetName || datasetId) && (
+                    <div className="mb-3">
+                        {introText ? <p className="mb-3">{introText}</p> : null}
+                        {datasetName ? (
+                            <div className="mb-2">
+                                <strong>Name:</strong> {datasetName}
+                            </div>
+                        ) : null}
+                        {datasetId ? (
+                            <div className="mb-0">
+                                <strong>Dataset ID:</strong> {datasetId}
+                            </div>
+                        ) : null}
+                    </div>
+                )}
                 <Form.Group>
                     <Form.Label>Select Format</Form.Label>
                     <Select

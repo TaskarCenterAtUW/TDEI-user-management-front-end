@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Form, Button, Card, InputGroup } from "react-bootstrap";
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useMatch, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import { Formik } from "formik";
@@ -13,9 +13,10 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useSearchParams } from "react-router-dom";
 import ReferralBanner from "../../components/Referral/ReferralBanner";
-import { SHOW_REFERRALS } from "../../utils";
+import { buildShareDatasetAuthPath, buildShareDatasetPath, DEFAULT_SHARE_REFERRAL_CODE, SHOW_REFERRALS } from "../../utils";
 import useReferralSignIn from "../../hooks/referrals/useReferralSignIn";
 import { saveAuthTokensFromPromo } from '../../utils/helper';
+import bannerStyles from "../../components/Referral/ReferralBanner.module.css";
 
 
 const LoginPage = () => {
@@ -23,6 +24,7 @@ const LoginPage = () => {
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
+  const shareDatasetMatch = useMatch("/login/share-dataset/:data_type/:tdei_dataset_id");
   const auth = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,7 +44,23 @@ const LoginPage = () => {
   });
 
   const codeFromUrl = (searchParams.get("code") || "").trim();
-  const referralCode = SHOW_REFERRALS ? codeFromUrl : "";
+  const isShareDatasetFlow = !!shareDatasetMatch;
+  const shareDatasetPath = isShareDatasetFlow
+    ? buildShareDatasetPath(
+      shareDatasetMatch.params.data_type,
+      shareDatasetMatch.params.tdei_dataset_id
+    )
+    : "";
+  const referralCode = SHOW_REFERRALS
+    ? (isShareDatasetFlow ? DEFAULT_SHARE_REFERRAL_CODE : codeFromUrl)
+    : "";
+  const registerPath = isShareDatasetFlow
+    ? buildShareDatasetAuthPath(
+      "/register",
+      shareDatasetMatch.params.data_type,
+      shareDatasetMatch.params.tdei_dataset_id
+    )
+    : "/register";
 
   React.useEffect(() => {
     if (!SHOW_REFERRALS) return;
@@ -70,6 +88,8 @@ const LoginPage = () => {
       navigate("/invite-instructions?flow=promo", {
         replace: true,
         state: {
+          ...location.state,
+          ...(isShareDatasetFlow ? { from: shareDatasetPath } : {}),
           isPromo: true,
           instructions_url: resp?.instructions_url || resp?.instructions_url || "",
           token: resp?.token || "",
@@ -120,7 +140,7 @@ const LoginPage = () => {
   };
 
   if (auth.user) {
-    return <Navigate to={location.state?.from?.pathname || "/"} replace />;
+    return <Navigate to={isShareDatasetFlow ? shareDatasetPath : (location.state?.from || "/")} replace />;
   }
 
 
@@ -132,7 +152,17 @@ const LoginPage = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="TDEI logo" />
-                {SHOW_REFERRALS && referralCode && (
+                {isShareDatasetFlow && (
+                  <div className={`${bannerStyles.referralBanner} mb-3`}>
+                    <div className={bannerStyles.referralInfo}>
+                      <div className={bannerStyles.referralTitle}>Shared Dataset</div>
+                      <div className={bannerStyles.referralSubtle}>
+                        You&apos;re signing in to access a shared dataset.
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {SHOW_REFERRALS && referralCode && !isShareDatasetFlow && (
                   <ReferralBanner code={referralCode} context="login" />
                 )}
                 <h1 className={style.loginTitle}>Welcome!</h1>
@@ -219,7 +249,11 @@ const LoginPage = () => {
                       </Button>
                       <div className="mt-5 mb-2">
                         New to TDEI?{" "}
-                        <Link className="tdei-primary-link" to={"/register"}>
+                        <Link
+                          className="tdei-primary-link"
+                          to={isShareDatasetFlow ? registerPath : (SHOW_REFERRALS && referralCode ? `/register?code=${encodeURIComponent(referralCode)}` : "/register")}
+                          state={location.state}
+                        >
                           Register Now
                         </Link>
 

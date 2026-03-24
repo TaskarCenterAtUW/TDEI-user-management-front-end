@@ -7,7 +7,7 @@ import { show } from "../../store/notification.slice";
 import { Formik } from "formik";
 import * as yup from "yup";
 import style from "./style.module.css";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);

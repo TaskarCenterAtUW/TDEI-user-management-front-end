@@ -133,13 +133,12 @@ const CustomModal = (props) => {
           onClick={props.handler}
           disabled={props.isLoading}
           variant="outline-secondary"
-          className={`tdei-${
-            ["release", "deactivate", "dataviewer", "inclination"].includes(
-              props.modaltype
-            )
-              ? "primary"
-              : "rounded"
-          }-button ${props.modaltype === "error" ? "maroon-bg" : ""}`}
+          className={`tdei-${["release", "deactivate", "dataviewer", "inclination", "qualityReport"].includes(
+            props.modaltype
+          )
+            ? "primary"
+            : "rounded"
+            }-button ${props.modaltype === "error" ? "maroon-bg" : ""}`}
         >
           {props.btnlabel}
         </Button>

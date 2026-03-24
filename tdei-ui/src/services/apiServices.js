@@ -99,6 +99,11 @@ export async function getRoles() {
   return res.data;
 }
 
+export async function getSystemCapabilities() {
+  const res = await axios.get(`${osmUrl}/system/capabilities`);
+  return res.data;
+}
+
 export async function getApiKey({ queryKey }) {
   const [, userId] = queryKey;
   const res = await axios.get(`${url}/user-profile?user_name=${userId}`);
@@ -652,6 +657,36 @@ export async function getReleasedDatasets(searchText, searchDatasetId, pageParam
   };
 }
 
+export async function getReleasedDatasetById(tdei_dataset_id, data_type) {
+  const params = {
+    status: "Publish",
+    page_no: 1,
+    page_size: 10,
+    tdei_dataset_id,
+  };
+
+  if (data_type) {
+    params.data_type = data_type;
+  }
+
+  const res = await axios({
+    url: `${osmUrl}/datasets`,
+    params,
+    method: "GET",
+  });
+
+  const datasets = Array.isArray(res.data) ? res.data : [];
+  const matchedDataset = datasets.find(
+    (dataset) => dataset?.tdei_dataset_id === tdei_dataset_id
+  );
+
+  if (!matchedDataset) {
+    throw new Error("Dataset not found or is not released.");
+  }
+
+  return matchedDataset;
+}
+
 export async function postPublishDataset(data) {
   var file_end_point = "";
   var service_type = data.service_type.toLowerCase();
@@ -875,6 +910,13 @@ export async function postResetPassword(data) {
 export async function createInclinationJob(tdei_dataset_id) {
   const res = await axios.post(
     `${osmUrl}/osw/dataset-inclination/${tdei_dataset_id}`
+  );
+  return res.data;
+}
+
+export async function createQualityReportJob(tdei_dataset_id) {
+  const res = await axios.post(
+    `${osmUrl}/osw/quality-report/${tdei_dataset_id}`
   );
   return res.data;
 }

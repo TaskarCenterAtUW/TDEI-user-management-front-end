@@ -5,7 +5,7 @@ import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import style from "./Referral.module.css";
 import axios from "axios";
 import ErrorIcon from "@mui/icons-material/Error";
-import { SHOW_REFERRALS } from "../../utils";
+import { SHOW_REFERRALS, isShareDatasetRoute } from "../../utils";
 import { saveAuthTokensFromPromo } from '../../utils/helper';
 
 const isMobileUA = () =>
@@ -76,6 +76,9 @@ export default function InviteInstructions() {
   // Determine flow
   const flow = resolveFlow(location);
   const isPromo = flow === "promo";
+  const shareDatasetDestination = isShareDatasetRoute(location.state?.from || "")
+    ? location.state.from
+    : "";
 
   // Load fallbacks
   const regFallback = useMemo(() => {
@@ -157,8 +160,34 @@ export default function InviteInstructions() {
   const handleContinue = async () => {
     const onMobile = isMobileUA();
     const iOS = isIOS();
+    const desktopShareDestination = !onMobile && shareDatasetDestination
+      ? shareDatasetDestination
+      : "";
 
     if (onMobile) sessionStorage.setItem("handoffInProgress", "1");
+
+    if (desktopShareDestination) {
+      if (!isPromo) {
+        setBusy(true);
+        try {
+          await exchangeAndRedirectDesktop(oneTimeToken, desktopShareDestination);
+        } catch (err) {
+          sessionStorage.removeItem("handoffInProgress");
+          setBusy(false);
+          setToast({
+            show: true,
+            type: "error",
+            msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
+          });
+        }
+      } else {
+        sessionStorage.removeItem("promoSigninPayload");
+        sessionStorage.removeItem("handoffFlow");
+        sessionStorage.removeItem("handoffInProgress");
+        hardReplace(desktopShareDestination);
+      }
+      return;
+    }
 
     // If redirect_url is present, it wins (both promo  registration)
     if (redirectUrl) {

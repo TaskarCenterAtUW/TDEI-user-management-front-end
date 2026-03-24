@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Row, Form, Button, Card, Col, InputGroup, Alert, Spinner } from "react-bootstrap";
-import { Link, useNavigate, useSearchParams, createSearchParams } from "react-router-dom";
+import { Row, Form, Button, Card, Col, InputGroup, Spinner } from "react-bootstrap";
+import { Link, useLocation, useMatch, useNavigate, useSearchParams, createSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import style from "./style.module.css";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 import { useDispatch } from "react-redux";
 import { show } from "../../store/notification.slice";
 import { PHONE_REGEX } from "../../utils";
@@ -14,8 +14,9 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 import CustomModal from "../../components/SuccessModal/CustomModal";
-import { SHOW_REFERRALS } from "../../utils";
+import { buildShareDatasetAuthPath, buildShareDatasetPath, DEFAULT_SHARE_REFERRAL_CODE, SHOW_REFERRALS } from "../../utils";
 import ReferralBanner from "../../components/Referral/ReferralBanner";
+import bannerStyles from "../../components/Referral/ReferralBanner.module.css";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -29,16 +30,27 @@ const Register = () => {
   const auth = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const shareDatasetMatch = useMatch("/register/share-dataset/:data_type/:tdei_dataset_id");
   const [searchParams] = useSearchParams();
+  const isShareDatasetFlow = !!shareDatasetMatch;
+  const shareDatasetPath = isShareDatasetFlow
+    ? buildShareDatasetPath(
+      shareDatasetMatch.params.data_type,
+      shareDatasetMatch.params.tdei_dataset_id
+    )
+    : "";
 
   const rawInvite = SHOW_REFERRALS
-    ? (
+    ? (isShareDatasetFlow
+      ? DEFAULT_SHARE_REFERRAL_CODE
+      : (
       (searchParams.get("code")
         || searchParams.get("referral_code")
         || searchParams.get("refferal_code")
         || ""
       ).trim()
-    )
+    ))
     : "";
 
 
@@ -54,15 +66,22 @@ const Register = () => {
 
   useEffect(() => {
     // If there's a raw invite code in the URL but not in the "code" param, redirect to add it.
-    if (SHOW_REFERRALS && rawInvite && !searchParams.get("code")) {
+    if (SHOW_REFERRALS && rawInvite && !searchParams.get("code") && !isShareDatasetFlow) {
       navigate({
         pathname: "/register",
         search: `?${createSearchParams({ code: rawInvite })}`,
-      }, { replace: true });
+      }, { replace: true, state: location.state });
     }
-  }, [rawInvite, searchParams, navigate]);
+  }, [isShareDatasetFlow, location.state, rawInvite, searchParams, navigate]);
 
   const inviteCode = SHOW_REFERRALS ? rawInvite : "";
+  const loginPath = isShareDatasetFlow
+    ? buildShareDatasetAuthPath(
+      "/login",
+      shareDatasetMatch.params.data_type,
+      shareDatasetMatch.params.tdei_dataset_id
+    )
+    : "/login";
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -133,6 +152,8 @@ const Register = () => {
         navigate("/invite-instructions?flow=reg", {
           replace: true,
           state: {
+            ...location.state,
+            ...(isShareDatasetFlow ? { from: shareDatasetPath } : {}),
             instructions_url: data.instructions_url,
             oneTimeToken: data.token,
             email: data.email,
@@ -171,7 +192,17 @@ const Register = () => {
             <Card.Body>
               <>
                 <img src={tempLogo} className={style.loginLogo} alt="TDEI logo" />
-                {SHOW_REFERRALS && inviteCode && (
+                {isShareDatasetFlow && (
+                  <div className={`${bannerStyles.referralBanner} mb-3`}>
+                    <div className={bannerStyles.referralInfo}>
+                      <div className={bannerStyles.referralTitle}>Shared Dataset</div>
+                      <div className={bannerStyles.referralSubtle}>
+                        You&apos;re creating an account to access a shared dataset.
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {SHOW_REFERRALS && inviteCode && !isShareDatasetFlow && (
                   <ReferralBanner code={inviteCode} context="register" />
                 )}
                 <Formik
@@ -347,7 +378,11 @@ const Register = () => {
                         Already have an account?{" "}
                         <Link
                           className="tdei-primary-link"
-                          to={SHOW_REFERRALS && inviteCode ? `/login?code=${encodeURIComponent(inviteCode)}` : "/login"} >Sign in</Link>
+                          to={isShareDatasetFlow ? loginPath : (SHOW_REFERRALS && inviteCode ? `/login?code=${encodeURIComponent(inviteCode)}` : "/login")}
+                          state={location.state}
+                        >
+                          Sign in
+                        </Link>
                       </div>
                     </Form>
                   )}

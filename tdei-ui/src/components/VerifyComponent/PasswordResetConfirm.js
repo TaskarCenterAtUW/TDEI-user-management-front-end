@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import style from "./style.module.css";
 import ResponseToast from "../ToastMessage/ResponseToast";
-import tempLogo from "./../../assets/img/tdei_logo.svg";
+import tempLogo from "./../../assets/img/tdei-logo.png";
 
 const PasswordResetConfirm = () => {
     const location = useLocation();
@@ -43,7 +43,7 @@ const PasswordResetConfirm = () => {
                 <div className={style.registerCard}>
                     <Card>
                         <Card.Body>
-                        <br />
+                            <br />
                             <h2 className="formTitle">Password Recovery Request</h2>
                             <br />
                             <p>
