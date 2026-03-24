@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { set } from "../../store";
 import { Outlet } from "react-router-dom";
 import ShareDatasetModalHost from "../../components/ShareDataset/ShareDatasetModalHost";
+import { SHOW_SHARE_DATASET_FLOW } from "../../utils";
 
 const Root = () => {
   const { data: projectGroupData, isLoading: isProjectGroupLoading, isError } = useGetProjectGroupRoles();
@@ -65,7 +66,7 @@ const Root = () => {
           <Navigation />
           <main className={style.contentBlock} id="main-content" tabIndex={-1}>
             <Outlet roles={roles} />
-            <ShareDatasetModalHost />
+            {SHOW_SHARE_DATASET_FLOW && <ShareDatasetModalHost />}
           </main>
         </div>
       )}

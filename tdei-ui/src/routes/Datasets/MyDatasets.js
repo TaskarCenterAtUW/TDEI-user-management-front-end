@@ -25,7 +25,7 @@ import ProjectAutocomplete from "../../components/ProjectAutocomplete/ProjectAut
 import ServiceAutocomplete from "../../components/ServiceAutocomplete/ServiceAutocomplete";
 import DownloadModal from "../../components/DownloadModal/DownloadModal";
 import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
-import { buildShareDatasetPath } from "../../utils";
+import { buildShareDatasetPath, SHOW_SHARE_DATASET_FLOW } from "../../utils";
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
@@ -260,6 +260,14 @@ const MyDatasets = () => {
   };
 
   const copyShareLink = async (dataset) => {
+    if (!SHOW_SHARE_DATASET_FLOW) {
+      setEventKey("shareDataset");
+      setOperationResult("error");
+      setCustomErrorMessage("Share links are disabled in this branch.");
+      handleToast();
+      return;
+    }
+
     const sharePath = buildShareDatasetPath(
       dataset?.data_type,
       dataset?.tdei_dataset_id
