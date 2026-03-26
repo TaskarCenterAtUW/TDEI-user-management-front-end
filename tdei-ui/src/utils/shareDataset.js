@@ -1,6 +1,6 @@
 const SHARE_DATASET_ROUTE_PREFIX = "/share-dataset";
 
-export const SHOW_SHARE_DATASET_FLOW = false;
+export const SHOW_SHARE_DATASET_FLOW = true;
 
 export const DEFAULT_SHARE_REFERRAL_CODE =
   process.env.REACT_APP_DEFAULT_SHARE_REFERRAL_CODE || "";
