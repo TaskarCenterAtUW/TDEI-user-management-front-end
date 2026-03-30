@@ -304,8 +304,14 @@ export const ListingBlock = ({ id, name, type, icon, handleEdit, handleUpdateSta
         <div className={style.names}>
           <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="" />
           <div>
-            <div className={style.serviceType}>{type}</div>
-            <div className={style.serviceName} title={name}>{name}</div>
+            <div className={style.serviceType}>
+              <span className="visually-hidden">Service Type: </span>
+              {type}
+            </div>
+            <div className={style.serviceName} title={name}>
+              <span className="visually-hidden">Service Name: </span>
+              {name}
+            </div>
           </div>
         </div>
         {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>

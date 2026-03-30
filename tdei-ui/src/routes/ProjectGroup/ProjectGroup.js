@@ -197,7 +197,7 @@ const ProjectGroup = () => {
               }}
             />
           </div>
-          <div className={clsx(style.gridContainer, style.projectHeader)}>
+          <div className={clsx(style.gridContainer, style.projectHeader)} aria-hidden="true">
             <div>Name & Address</div>
             <div>URL</div>
             <div>Contact Number</div>
@@ -223,23 +223,27 @@ const ProjectGroup = () => {
                           className={style.name}
                           title={list.project_group_name}
                         >
+                          <span className="visually-hidden">Project Group Name: </span>
                           {list.project_group_name}
                         </div>
                         <div className={style.address}>
+                          <span className="visually-hidden">Address: </span>
                           {list.address}
                         </div>
                       </div>
                     </div>
                     <div className={style.content}>
-                      <div className={style.mobileOnly}>URL</div>
+                      <div className={style.mobileOnly} aria-hidden="true">URL</div>
+                      <span className="visually-hidden">URL: </span>
                       {list.url || `--`}
                     </div>
                     <div className={style.content}>
-                      <div className={style.mobileOnly}>Contact Number</div>
+                      <div className={style.mobileOnly} aria-hidden="true">Contact Number</div>
+                      <span className="visually-hidden">Contact Number: </span>
                       {list.phone || `--`}
                     </div>
                     <div className={style.content}>
-                      <div className={style.mobileOnly}>POC</div>
+                      <div className={style.mobileOnly} aria-hidden="true">POC</div>
                       <DisplayList list={list} handlePoc={handlePoc} />
                     </div>
                     <div className={style.actionItem}>
@@ -365,6 +369,7 @@ const DisplayList = ({ list, handlePoc }) => {
         <div className={style.pocList}>
           <img src={userIcon} className={style.pocUserIcon} alt="" />
           <div>
+            <span className="visually-hidden">POC: </span>
             {getUserName(poc[0])}
           </div>
           {poc.length > 1 ? (

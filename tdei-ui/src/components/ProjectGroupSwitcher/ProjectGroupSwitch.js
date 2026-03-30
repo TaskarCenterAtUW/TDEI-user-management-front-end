@@ -192,6 +192,7 @@ export const ListingBlock = ({ project, handleUpdateProject, isCurrent }) => {
           />
           <div>
             <div className={style.projectGroupName} title={name}>
+              <span className="visually-hidden">Project Group Name: </span>
               {name}
             </div>
           </div>
