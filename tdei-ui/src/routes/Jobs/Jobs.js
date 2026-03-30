@@ -290,42 +290,62 @@ const Jobs = () => {
                         <div className={style.sortableHeader}>
                             Job Type
                             {sortConfig.key === 'job_type' && sortConfig.direction === 'ascending' ? (
-                                <ArrowDropUpIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('job_type')} aria-label="Sort by job type">
+                                    <ArrowDropUpIcon className={style.sortIcon} />
+                                </button>
                             ) : (
-                                <ArrowDropDownIcon onClick={() => sortData('job_type')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('job_type')} aria-label="Sort by job type">
+                                    <ArrowDropDownIcon className={style.sortIcon} />
+                                </button>
                             )}
                         </div>
                         <div className={style.sortableHeader}>
                             Job Id
                             {sortConfig.key === 'job_id' && sortConfig.direction === 'ascending' ? (
-                                <ArrowDropUpIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('job_id')} aria-label="Sort by job id">
+                                    <ArrowDropUpIcon className={style.sortIcon} />
+                                </button>
                             ) : (
-                                <ArrowDropDownIcon onClick={() => sortData('job_id')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('job_id')} aria-label="Sort by job id">
+                                    <ArrowDropDownIcon className={style.sortIcon} />
+                                </button>
                             )}
                         </div>
                         <div className={style.sortableHeader}>
                             Submitted By
                             {sortConfig.key === 'requested_by' && sortConfig.direction === 'ascending' ? (
-                                <ArrowDropUpIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('requested_by')} aria-label="Sort by submitted by">
+                                    <ArrowDropUpIcon className={style.sortIcon} />
+                                </button>
                             ) : (
-                                <ArrowDropDownIcon onClick={() => sortData('requested_by')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('requested_by')} aria-label="Sort by submitted by">
+                                    <ArrowDropDownIcon className={style.sortIcon} />
+                                </button>
                             )}
                         </div>
                         <div>Message</div>
                         <div className={style.sortableHeader}>
                             Created On
                             {sortConfig.key === 'created_at' && sortConfig.direction === 'ascending' ? (
-                                <ArrowDropUpIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('created_at')} aria-label="Sort by created on">
+                                    <ArrowDropUpIcon className={style.sortIcon} />
+                                </button>
                             ) : (
-                                <ArrowDropDownIcon onClick={() => sortData('created_at')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('created_at')} aria-label="Sort by created on">
+                                    <ArrowDropDownIcon className={style.sortIcon} />
+                                </button>
                             )}
                         </div>
                         <div className={style.sortableHeader}>
                             Status
                             {sortConfig.key === 'status' && sortConfig.direction === 'ascending' ? (
-                                <ArrowDropUpIcon onClick={() => sortData('status')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('status')} aria-label="Sort by status">
+                                    <ArrowDropUpIcon className={style.sortIcon} />
+                                </button>
                             ) : (
-                                <ArrowDropDownIcon onClick={() => sortData('status')} className={style.sortIcon} />
+                                <button type="button" className={style.sortButton} onClick={() => sortData('status')} aria-label="Sort by status">
+                                    <ArrowDropDownIcon className={style.sortIcon} />
+                                </button>
                             )}
                         </div>
                     </div>

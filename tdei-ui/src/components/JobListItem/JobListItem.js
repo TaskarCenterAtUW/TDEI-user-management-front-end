@@ -170,11 +170,12 @@ const JobListItem = ({ jobItem }) => {
   return (
     <div className={style.gridContainer} key={jobItem.tdei_project_group_id}>
       <div className={style.content}>
-        <div className={style.mobileOnly}>Job Type</div>
+        <div className={style.mobileOnly} aria-hidden="true">Job Type</div>
+        <span className="visually-hidden">Job Type: </span>
         {displayJobType}
       </div>
       <div className={style.content}>
-        <div className={style.mobileOnly}>Job Id</div>
+        <div className={style.mobileOnly} aria-hidden="true">Job Id</div>
         Job Id:
         <button
           type="button"
@@ -186,7 +187,7 @@ const JobListItem = ({ jobItem }) => {
         </button>
       </div>
       <div className={style.content}>
-        <div className={style.mobileOnly}>Submitted By</div>
+        <div className={style.mobileOnly} aria-hidden="true">Submitted By</div>
         <div className={style.submittedByBlock}>
           <img src={UserIcon} alt="" className={style.userIcon} />
           <span
@@ -196,15 +197,17 @@ const JobListItem = ({ jobItem }) => {
                 : style.emailContentNoWrap
             }
           >
+            <span className="visually-hidden">Submitted By: </span>
             {jobItem.requested_by}
           </span>
         </div>
       </div>
       <div className={style.content}>
-        <div className={style.mobileOnly}>Message</div>
+        <div className={style.mobileOnly} aria-hidden="true">Message</div>
         {jobItem.message && (
           <>
             <div className={style.errorMessageContent}>
+              <span className="visually-hidden">Message: </span>
               {jobItem.message.length > 70
                 ? `${jobItem.message.slice(0, 70)}...`
                 : `${jobItem.message}`}
@@ -278,13 +281,15 @@ const JobListItem = ({ jobItem }) => {
         }
       </div>
       <div className={style.content}>
-        <div className={style.mobileOnly}>Created On</div>
+        <div className={style.mobileOnly} aria-hidden="true">Created On</div>
+        <span className="visually-hidden">Created On: </span>
         {updatedTime(jobItem.created_at)}
       </div>
       <div className={style.statusFlexBox}>
-        <div className={style.mobileOnly}>Status</div>
+        <div className={style.mobileOnly} aria-hidden="true">Status</div>
         <div className="">
           <div className={style.statusContainer} style={{ "--background-color": getBackgroundColor(jobItem.status.toLowerCase()), "--border-color": getBorderColor(jobItem.status.toLowerCase()) }}>
+            <span className="visually-hidden">Status: </span>
             {toPascalCase(jobItem.status)}
           </div>
           <div className={style.updatedInfo}>

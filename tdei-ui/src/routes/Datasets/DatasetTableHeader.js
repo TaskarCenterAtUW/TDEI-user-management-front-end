@@ -4,7 +4,7 @@ import style from "./Datasets.module.css"
 
 const DatasetTableHeader = ({ isReleasedDataList }) => {
     return (
-        <Container className={style.datasetsTableHeaderRow} fluid>
+        <Container className={style.datasetsTableHeaderRow} fluid aria-hidden="true">
             <div className={style.datasetCardHeader}>
                 <div className={style.datasetHeaderItem}>
                     Dataset Name
