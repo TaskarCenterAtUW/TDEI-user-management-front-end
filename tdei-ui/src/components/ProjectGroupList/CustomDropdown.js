@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { toPascalCase } from "../../utils";
+import { formatTypeLabel } from "../../utils";
 import style from "./Dropdown.module.css";
 
 const Icon = () => {
@@ -89,7 +89,7 @@ const CustomDropdown = ({
           className={style.dropdownInput}
         >
           <div className={style.dropdownSelectedValue}>
-            {getDisplay() == "osw" ? "OSW" : toPascalCase(getDisplay())}
+            {formatTypeLabel(getDisplay())}
           </div>
           <div className={style.dropdownTools}>
             <div className={style.dropdownTool}>
@@ -113,7 +113,7 @@ const CustomDropdown = ({
                   })}
                   tabIndex="0"
                 >
-                  {optionDisplayMap[option] || (option == "osw" ? "OSW" : toPascalCase(option))}
+                  {optionDisplayMap[option] || formatTypeLabel(option)}
                 </a>
               ))}
             </div>

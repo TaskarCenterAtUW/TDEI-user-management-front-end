@@ -6,7 +6,7 @@ import openDataViewerIcon from "../../assets/img/action-open-console.svg";
 import { workspaceUrl } from "../../services";
 import DatasetsActions from "./DatasetsActions";
 import ClipboardCopy from "../Services/ClipBoardCopy";
-import { updatedTime } from "../../utils";
+import { formatTypeLabel, updatedTime } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { show } from "../../store/notificationModal.slice";
 import useIsPoc from "../../hooks/useIsPoc";
@@ -202,7 +202,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
           <div className={style.mobileOnly} aria-hidden="true">Type</div>
           <div className={style.typeNameTransform}>
             <span className="visually-hidden">Type: </span>
-            {data_type === "Osw" ? "OSW" : data_type}
+            {formatTypeLabel(data_type)}
           </div>
         </div>
         {isReleasedList ? null : (
