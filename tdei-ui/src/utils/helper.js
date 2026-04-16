@@ -17,6 +17,16 @@ export const toPascalCase = (str) => {
     });
 };
 
+export const formatTypeLabel = (value) => {
+  if (!value) return "";
+
+  const normalizedValue = String(value).toLowerCase();
+  if (normalizedValue === "osw") {
+    return "OSW";
+  }
+  return toPascalCase(String(value));
+};
+
 export const formatDate = (value) => {
   let date = new Date(value);
   const day = date.toLocaleString('default', { day: '2-digit' });

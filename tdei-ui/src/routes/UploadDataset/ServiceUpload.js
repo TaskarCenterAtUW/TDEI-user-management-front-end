@@ -54,7 +54,7 @@ const ServiceUpload = ({ selectedData, onSelectedServiceChange, dataset, fromClo
   const options = [
     { value: 'flex', label: 'Flex' },
     { value: 'pathways', label: 'Pathways' },
-    { value: 'osw', label: 'Osw' },
+    { value: 'osw', label: 'OSW' },
   ];
 
   return (
