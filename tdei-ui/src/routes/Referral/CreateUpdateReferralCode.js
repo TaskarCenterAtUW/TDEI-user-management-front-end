@@ -126,12 +126,12 @@ const CreateUpdateReferralCode = () => {
   const headerSubtitle = editing
     ? (
       <>
-        You’re editing a referral code in project group — <span className="fw-bold">{groupName}</span>.
+        You’re editing a referral code in project group <span className="fw-bold">{groupName}</span>.
       </>
     )
     : (
       <>
-        You’re creating a referral code in project group — <span className="fw-bold">{groupName}</span>.
+        You’re creating a referral code in project group <span className="fw-bold">{groupName}</span>.
       </>
     );
 
