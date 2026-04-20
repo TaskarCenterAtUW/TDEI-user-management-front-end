@@ -18,7 +18,7 @@ import { GEOJSON } from '../../utils'
 import { GET_SERVICES } from "../../utils";
 import { getService } from "../../services";
 import ServiceTypeDropdownForm from "./ServiceTypeDropdownForm";
-import { toPascalCase } from "../../utils";
+import { formatTypeLabel } from "../../utils";
 import ResponseToast from "../../components/ToastMessage/ResponseToast";
 
 const CreateUpdateService = () => {
@@ -236,7 +236,7 @@ const CreateUpdateService = () => {
                                             type="text"
                                             placeholder="Select Service Type"
                                             name="service_type"
-                                            value={idData['serviceType'] === "" ? toPascalCase(values.service_type) : toPascalCase(idData['serviceType'])}
+                                            value={formatTypeLabel(idData['serviceType'] === "" ? values.service_type : idData['serviceType'])}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             readOnly

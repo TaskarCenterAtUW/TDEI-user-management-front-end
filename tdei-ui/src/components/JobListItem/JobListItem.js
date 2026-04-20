@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import style from "../../routes/Jobs/Jobs.module.css";
 import ShowJobMessageModal from "../ShowJobMessage/ShowJobMessageModal";
 import JobMsgDescModal from "../ShowJobMessage/JobMsgDescModal";
-import { toPascalCase } from "../../utils";
+import { formatTypeLabel, toPascalCase } from "../../utils";
 import useDownloadJob from "../../hooks/jobs/useDownloadJob";
 import ResponseToast from "../ToastMessage/ResponseToast";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
@@ -102,11 +102,7 @@ const JobListItem = ({ jobItem }) => {
 
   const getJobStatusTitle = () => {
     let dataType = jobItem.data_type || "";
-    if (dataType === "osw") {
-      dataType = dataType.toUpperCase();
-    } else {
-      dataType = toPascalCase(dataType);
-    }
+    dataType = formatTypeLabel(dataType);
     let jobType = jobItem.job_type ? jobItem.job_type.replace(/-/g, " ") : "";
     if (jobItem.request_input?.dataset_name) {
       return jobItem.request_input.dataset_name;

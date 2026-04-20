@@ -178,7 +178,7 @@ const Referral = () => {
             <div>
               <h2 className="page-header-title">Referral Codes</h2>
               <div className="page-header-subtitle">
-                Manage and track your referral and invite codes of project group –{" "}
+                Manage and track your referral and invite codes for project group{" "}
                 <span className="fw-bold">
                   {pgLoading ? "…" : (projectGroup?.project_group_name || "—")}
                 </span>.

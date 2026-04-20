@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import FormControl from '@mui/material/FormControl';
 import Select from 'react-select';
+import { formatTypeLabel } from "../../../../utils/helper";
 
 const DataTypeDropdownForm = ({ field, form, onChange, formDataDatasetType }) => {
 
   const options = [
-    { value: 'flex', label: 'flex' },
-    { value: 'pathways', label: 'pathways' },
-    { value: 'osw', label: 'osw' },
+    { value: 'flex', label: formatTypeLabel('flex') },
+    { value: 'pathways', label: formatTypeLabel('pathways') },
+    { value: 'osw', label: formatTypeLabel('osw') },
   ];
   
   const [currentValue, setCurrentValue] = useState(null);
