@@ -94,17 +94,17 @@ const UserHeader = ({ roles }) => {
     <div className={style.userHeader}>
       {authorizedUser ? (
         <>
-          <div className={style.userName}>{`Welcome back, ${user.name} !`}</div>
+          <div className={style.userName}>{`Welcome back, ${user.name}!`}</div>
 
           {!user.isAdmin && selectedProjectGroup?.name && (
             <div className={style.roleText}>
-              <b>Project Group : </b>
+              <b>Project Group: </b>
               {selectedProjectGroup.name}
             </div>
           )}
 
           <div className={style.roleText}>
-            <b>Roles : </b>
+            <b>Roles: </b>
             {role}
           </div>
 
