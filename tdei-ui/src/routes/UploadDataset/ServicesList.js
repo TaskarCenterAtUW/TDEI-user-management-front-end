@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from "./UploadDataset.module.css";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { toPascalCase } from "../../utils";
+import { formatTypeLabel } from "../../utils";
 
 function ServicesList({ id, name, isSelected, serviceType, handleSelectedService }) {
     return (
@@ -16,7 +16,7 @@ function ServicesList({ id, name, isSelected, serviceType, handleSelectedService
             <span style={{ marginLeft: "10px" }}>{name}</span>
             <div className={styles.serviceTypeContainer}>
                 <span className={styles.divider}>|</span>
-                <span className={styles.serviceType}>{toPascalCase(serviceType)}</span>
+                <span className={styles.serviceType}>{formatTypeLabel(serviceType)}</span>
             </div>
 
         </button>

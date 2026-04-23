@@ -13,9 +13,12 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
   const { loading, projectGroupList, hasMore } = useGetProjectGroup(debouncedValue, pageNo);
   const [selectedProjectGroup, setSelectedProjectGroup] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [announcement, setAnnouncement] = useState("");
 
   const observer = useRef();
   const autocompleteRef = useRef();
+  const listRef = useRef();
 
   const debouncedSearch = useMemo(
     () =>
@@ -43,7 +46,38 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
     }
     debouncedSearch(value);
     setShowDropdown(true);
+    setHighlightedIndex(-1);
   }
+
+  const handleKeyDown = (e) => {
+    if (!showDropdown || deduplicatedProjectGroups.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < deduplicatedProjectGroups.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < deduplicatedProjectGroups.length) {
+        handleSelect(deduplicatedProjectGroups[highlightedIndex]);
+      }
+    } else if (e.key === "Escape" || e.key === "Tab") {
+      if (e.key === "Tab") e.preventDefault();
+      setShowDropdown(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
+  // Scroll highlighted item into view AFTER render
+  useEffect(() => {
+    if (highlightedIndex >= 0 && listRef.current) {
+      const item = listRef.current.children[highlightedIndex];
+      if (item) item.scrollIntoView({ block: "nearest" });
+    }
+  }, [highlightedIndex]);
 
   const deduplicatedProjectGroups = useMemo(() => {
     const seen = new Set();
@@ -55,6 +89,21 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
       return true;
     });
   }, [projectGroupList]);
+
+  // Announce result count to screen readers when dropdown opens
+  useEffect(() => {
+    if (showDropdown && !loading && deduplicatedProjectGroups.length > 0) {
+      setAnnouncement(
+        `${deduplicatedProjectGroups.length} result${
+          deduplicatedProjectGroups.length === 1 ? "" : "s"
+        } available. Use arrow keys to navigate.`
+      );
+    } else if (showDropdown && !loading && deduplicatedProjectGroups.length === 0) {
+      setAnnouncement("No project groups found.");
+    } else {
+      setAnnouncement("");
+    }
+  }, [showDropdown, loading, deduplicatedProjectGroups.length]);
 
   const lastProjectGroup = useCallback(
     (node) => {
@@ -72,8 +121,9 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
 
   const handleSelect = (projectGroup) => {
     setSelectedProjectGroup(projectGroup);
-    setProjectSearchText(projectGroup.project_group_name)
+    setProjectSearchText(projectGroup.project_group_name);
     setShowDropdown(false);
+    setHighlightedIndex(-1);
     onSelectProjectGroup(projectGroup.tdei_project_group_id);
   };
 
@@ -94,8 +144,25 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
     };
   }, [handleClickOutside, debouncedSearch]);
 
+  const listboxId = "project-group-listbox";
+  const activeDescendant =
+    highlightedIndex >= 0 && deduplicatedProjectGroups[highlightedIndex]
+      ? `pg-option-${deduplicatedProjectGroups[highlightedIndex].tdei_project_group_id}`
+      : undefined;
+  const isExpanded = showDropdown && deduplicatedProjectGroups.length > 0;
+
   return (
     <div className={styles.autocompleteContainer} ref={autocompleteRef}>
+      {/* Live region — screen readers announce results count */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}
+      >
+        {announcement}
+      </div>
+
       <InputGroup>
         <Form.Control
           type="text"
@@ -104,45 +171,54 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
           onChange={handleInputChange}
           value={selectedProjectGroup && selectedProjectGroupId ? selectedProjectGroup.project_group_name : projectSearchText}
           onFocus={() => setShowDropdown(true)}
+          onKeyDown={handleKeyDown}
           autoComplete="off"
-        />  
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={isExpanded}
+          aria-controls={listboxId}
+          aria-autocomplete="list"
+          aria-activedescendant={activeDescendant}
+          aria-label="Search Project Group"
+        />
         {loading && (
           <InputGroup.Text>
-            <Spinner animation="border" size="sm" />
+            <Spinner animation="border" size="sm" aria-label="Loading results" />
           </InputGroup.Text>
         )}
       </InputGroup>
+
       {showDropdown && deduplicatedProjectGroups.length > 0 && (
-        <div className={styles.dropdownList}>
+        <div
+          role="listbox"
+          id={listboxId}
+          aria-label="Project Groups"
+          className={styles.dropdownList}
+          ref={listRef}
+          tabIndex="-1"
+        >
           {deduplicatedProjectGroups.map((group, index) => {
-            if (deduplicatedProjectGroups.length === index + 1) {
-              return (
-                <div
-                  key={group.tdei_project_group_id}
-                  id={group.tdei_project_group_id}
-                  className={`${styles.dropdownItem} ${
-                    selectedProjectGroup?.tdei_project_group_id === group.tdei_project_group_id ? styles.active : ""
-                  }`}
-                  onClick={() => handleSelect(group)}
-                  ref={lastProjectGroup}
-                >
-                  {group.project_group_name}
-                </div>
-              );
-            } else {
-              return (
-                <div
-                  key={group.tdei_project_group_id}
-                  id={group.tdei_project_group_id}
-                  className={`${styles.dropdownItem} ${
-                    selectedProjectGroup?.tdei_project_group_id === group.tdei_project_group_id ? styles.active : ""
-                  }`}
-                  onClick={() => handleSelect(group)}
-                >
-                  {group.project_group_name}
-                </div>
-              );
-            }
+            const optionId = `pg-option-${group.tdei_project_group_id}`;
+            const isSelected = selectedProjectGroup?.tdei_project_group_id === group.tdei_project_group_id;
+            return (
+              <div
+                key={group.tdei_project_group_id}
+                id={optionId}
+                role="option"
+                aria-selected={isSelected}
+                className={`${styles.dropdownItem} ${
+                  highlightedIndex === index
+                    ? styles.highlighted
+                    : isSelected
+                    ? styles.active
+                    : ""
+                }`}
+                onClick={() => handleSelect(group)}
+                ref={deduplicatedProjectGroups.length === index + 1 ? lastProjectGroup : null}
+              >
+                {group.project_group_name}
+              </div>
+            );
           })}
           {loading && (
             <div className="d-flex justify-content-center my-2">
@@ -152,7 +228,7 @@ const ProjectAutocomplete = ({ selectedProjectGroupId, projectSearchText, setPro
         </div>
       )}
       {showDropdown && deduplicatedProjectGroups.length === 0 && !loading && (
-        <div className={styles.noResults}>No project groups found.</div>
+        <div className={styles.noResults} role="status">No project groups found.</div>
       )}
     </div>
   );

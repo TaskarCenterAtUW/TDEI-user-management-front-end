@@ -6,7 +6,7 @@ import openDataViewerIcon from "../../assets/img/action-open-console.svg";
 import { workspaceUrl } from "../../services";
 import DatasetsActions from "./DatasetsActions";
 import ClipboardCopy from "../Services/ClipBoardCopy";
-import { updatedTime } from "../../utils";
+import { formatTypeLabel, updatedTime } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { show } from "../../store/notificationModal.slice";
 import useIsPoc from "../../hooks/useIsPoc";
@@ -126,6 +126,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                   className={style.datasetTitle}
                   title={metadata.dataset_detail.name}
                 >
+                  <span className="visually-hidden">Dataset Name: </span>
                   {metadata.dataset_detail.name}{" "}
                 </span>
                 {project_group.data_viewer_allowed && data_viewer_allowed && (
@@ -170,41 +171,48 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
                   <b>Uploaded at : </b> {updatedTime(uploaded_timestamp)}
                 </span>
                 <span className={style.verticalSeparator}></span>
-                <span className={style.version}>{dataset_detail.version}</span>
+                <span className={style.version}>
+                  <span className="visually-hidden">Version: </span>
+                  {dataset_detail.version}
+                </span>
               </div>
             </div>
           </div>
         </div>
         {!isReleasedList ? null : (
           <div className={style.datasetItem}>
-            <div className={style.mobileOnly}>Project Group</div>
+            <div className={style.mobileOnly} aria-hidden="true">Project Group</div>
             <div
               className={style.serviceName}
               title={dataset.project_group.name}
             >
+              <span className="visually-hidden">Project Group: </span>
               {dataset.project_group.name}
             </div>
           </div>
         )}
         <div className={style.datasetItem}>
-          <div className={style.mobileOnly}>Service Name</div>
+          <div className={style.mobileOnly} aria-hidden="true">Service Name</div>
           <div className={style.serviceName} title={service.name}>
+            <span className="visually-hidden">Service Name: </span>
             {service.name}
           </div>
         </div>
         <div className={style.datasetItem}>
-          <div className={style.mobileOnly}>Type</div>
+          <div className={style.mobileOnly} aria-hidden="true">Type</div>
           <div className={style.typeNameTransform}>
-            {data_type === "Osw" ? "OSW" : data_type}
+            <span className="visually-hidden">Type: </span>
+            {formatTypeLabel(data_type)}
           </div>
         </div>
         {isReleasedList ? null : (
           <div className={`${style.datasetItem} ${style.itemCenterAlign}`}>
-            <div className={style.mobileOnly}>Status</div>
+            <div className={style.mobileOnly} aria-hidden="true">Status</div>
             <div
               className={style.statusContainer}
               style={{ backgroundColor: getStatusColor() }}
             >
+              <span className="visually-hidden">Status: </span>
               {status === "Publish" ? "Released" : status}
             </div>
           </div>

@@ -6,11 +6,11 @@ import { useAuth } from "../useAuth";
 function useGetProjectGroupRoles(queryText) {
   const { user } = useAuth();
   return useInfiniteQuery(
-    [GET_PROJECT_GROUP_ROLES, user?.userId,queryText],
-    ({ pageParam = 1 }) => getProjectGroupRoles(user?.userId, pageParam,queryText),
+    [GET_PROJECT_GROUP_ROLES, user?.userId, queryText],
+    ({ pageParam = 1 }) => getProjectGroupRoles(user?.userId, pageParam, queryText),
     {
       getNextPageParam: (lastPage) =>
-        lastPage.data.length === 10 ? lastPage.pageParam + 1 : undefined,
+        lastPage.data.length < 10 ? undefined : lastPage.pageParam + 1,
     }
   );
 }

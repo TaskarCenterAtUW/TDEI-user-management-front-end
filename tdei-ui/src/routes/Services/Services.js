@@ -30,7 +30,7 @@ import useIsPoc from "../../hooks/useIsPoc";
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Dropdown } from 'react-bootstrap';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { toPascalCase } from "../../utils";
+import { formatTypeLabel } from "../../utils";
 import Select from 'react-select';
 import useEditServiceStatus from "../../hooks/service/useEditServiceStatus";
 import CustomModal from "../../components/SuccessModal/CustomModal";
@@ -180,13 +180,13 @@ const Services = () => {
           <InputGroup className="mb-3">
             <Dropdown onSelect={handleSelect} align="end" className={style.dropdownButton}>
               <Dropdown.Toggle variant="outline-secondary customBorderColor" id="input-group-dropdown-2" aria-label="Select Service Type">
-                {serviceType ? toPascalCase(serviceType) : ''}
+                {serviceType ? formatTypeLabel(serviceType) : ''}
               </Dropdown.Toggle>
               <Dropdown.Menu role="listbox">
                 <Dropdown.Item as="button" role="option" aria-selected={serviceType === ""} eventKey="">All</Dropdown.Item>
                 <Dropdown.Item as="button" role="option" aria-selected={serviceType === "flex"} eventKey="flex">Flex</Dropdown.Item>
                 <Dropdown.Item as="button" role="option" aria-selected={serviceType === "pathways"} eventKey="pathways">Pathways</Dropdown.Item>
-                <Dropdown.Item as="button" role="option" aria-selected={serviceType === "osw"} eventKey="osw">Osw</Dropdown.Item>
+                <Dropdown.Item as="button" role="option" aria-selected={serviceType === "osw"} eventKey="osw">OSW</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <label htmlFor="search-service-input" className="visually-hidden">Search Service</label>
@@ -304,8 +304,14 @@ export const ListingBlock = ({ id, name, type, icon, handleEdit, handleUpdateSta
         <div className={style.names}>
           <img src={serviceTypeIcon} className={style.serviceTypeIcon} alt="" />
           <div>
-            <div className={style.serviceType}>{type}</div>
-            <div className={style.serviceName} title={name}>{name}</div>
+            <div className={style.serviceType}>
+              <span className="visually-hidden">Service Type: </span>
+              {formatTypeLabel(type)}
+            </div>
+            <div className={style.serviceName} title={name}>
+              <span className="visually-hidden">Service Name: </span>
+              {name}
+            </div>
           </div>
         </div>
         {isUserPoc || user?.isAdmin ? (<div className={style.buttons}>

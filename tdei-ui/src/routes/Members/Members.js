@@ -175,7 +175,7 @@ const Members = () => {
             style.gridContainer,
             isAdmin ? style.adminGrid : style.userGrid,
             style.userHeader
-          )}>
+          )} aria-hidden="true">
             <div>Name & Email Id</div>
             <div>Contact Number</div>
             {!user.isAdmin && <div>Roles</div>}
@@ -204,18 +204,25 @@ const Members = () => {
                     </div>
                     <div>
                       <div className={style.name}>
+                        <span className="visually-hidden">Name: </span>
                         {getUserName(list, list.user_id === user?.userId)}
                       </div>
-                      <div className={style.address}>{list.username}</div>
+                      <div className={style.address}>
+                        <span className="visually-hidden">Email: </span>
+                        {list.username}
+                      </div>
                     </div>
                   </div>
                   <div className={style.content}>
-                    <div className={style.mobileOnly}>Contact Number</div>
-                    <div>{formatPhoneNumber(list.phone) || '--'}</div>
+                    <div className={style.mobileOnly} aria-hidden="true">Contact Number</div>
+                    <div>
+                      <span className="visually-hidden">Contact Number: </span>
+                      {formatPhoneNumber(list.phone) || '--'}
+                    </div>
                   </div>
                   {!user.isAdmin && (
                     <div className={style.roles}>
-                      <div className={style.mobileOnly}>Roles</div>
+                      <div className={style.mobileOnly} aria-hidden="true">Roles</div>
                       <DisplayRolesList list={list} />
                     </div>
                   )}
@@ -318,11 +325,13 @@ const DisplayRolesList = ({ list }) => {
       {showMore
         ? list.roles.map((role) => (
           <div className={style.roleBlock} key={role}>
+            <span className="visually-hidden">Role: </span>
             {role}
           </div>
         ))
         : list.roles.slice(0, 2).map((role) => (
           <div className={style.roleBlock} key={role}>
+             <span className="visually-hidden">Role: </span>
             {role}
           </div>
         ))}
