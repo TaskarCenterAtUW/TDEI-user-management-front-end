@@ -441,35 +441,63 @@ const MyDatasets = () => {
     <div>
       <Form noValidate>
         <Row className="my-3 gx-0">
-          <Col md={12} lg={6}>
+          <Col md={12} lg={8}>
             <Form.Group className={style.primaryFilterContainer}>
               <div className={style.primaryFilterBlock}>
-                <Form.Label htmlFor="type-filter">Type</Form.Label>
-                <Select
-                  inputId="type-filter"
-                  isSearchable={false}
-                  defaultValue={{ label: "All", value: "" }}
-                  onChange={handleSelectedDataType}
-                  options={options}
-                  components={{ IndicatorSeparator: () => null }}
-                  aria-label="Filter by Type"
+                <div className={style.labelWithClear}>
+                  <Form.Label htmlFor="dataset-search">Dataset</Form.Label>
+                  <button
+                    type="button"
+                    className={style.clearButton}
+                    onClick={() => {
+                      setQuery("");
+                      debouncedHandleSearch({ target: { value: "" } });
+                    }}
+                    aria-label="Clear dataset search"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <Form.Control
+                  id="dataset-search"
+                  value={query}
+                  aria-label="Search Dataset"
+                  placeholder="Search Dataset"
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    debouncedHandleSearch(e);
+                  }}
                 />
               </div>
               <div className={style.primaryFilterBlock}>
-                <Form.Label htmlFor="status-filter">Status</Form.Label>
-                <Select
-                  inputId="status-filter"
-                  isSearchable={false}
-                  defaultValue={{ label: "All", value: "All" }}
-                  onChange={handleSelectedStatus}
-                  options={statusOptions}
-                  components={{ IndicatorSeparator: () => null }}
-                  aria-label="Filter by Status"
+                <div className={style.labelWithClear}>
+                  <Form.Label htmlFor="dataset-id-search-primary">Dataset ID</Form.Label>
+                  <button
+                    type="button"
+                    className={style.clearButton}
+                    onClick={() => {
+                      setDatasetIdQuery("");
+                      handleDatasetIdSearch({ target: { value: "" } });
+                    }}
+                    aria-label="Clear dataset ID search"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <Form.Control
+                  id="dataset-id-search-primary"
+                  aria-label="Search Dataset ID"
+                  placeholder="Search Dataset ID"
+                  value={datasetIdQuery}
+                  onChange={(e) => {
+                    setDatasetIdQuery(e.target.value);
+                    debouncedHandleDatasetIdSearch(e);
+                  }}
                 />
               </div>
             </Form.Group>
           </Col>
-          <Col md={12} lg={6}>
+          <Col md={12} lg={4}>
             <SortRefreshComponent
               handleRefresh={handleRefresh}
               handleSortChange={handleSortChange}
@@ -484,33 +512,33 @@ const MyDatasets = () => {
             <Row className="mb-3">
               <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
-                  <div className={style.labelWithClear}>
-                    <Form.Label htmlFor="dataset-search">Dataset</Form.Label>
-                    <button
-                      type="button"
-                      className={style.clearButton}
-                      onClick={() => {
-                        setQuery("");
-                        debouncedHandleSearch({ target: { value: "" } });
-                      }}
-                      aria-label="Clear dataset search"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <Form.Control
-                    id="dataset-search"
-                    value={query}
-                    aria-label="Search Dataset"
-                    placeholder="Search Dataset"
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      debouncedHandleSearch(e);
-                    }}
+                  <Form.Label htmlFor="type-filter">Type</Form.Label>
+                  <Select
+                    inputId="type-filter"
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "" }}
+                    onChange={handleSelectedDataType}
+                    options={options}
+                    components={{ IndicatorSeparator: () => null }}
+                    aria-label="Filter by Type"
                   />
                 </Form.Group>
               </Col>
-              {isAdmin ? (
+              <Col md={4} className={style.datasetFilterBlock}>
+                <Form.Group>
+                  <Form.Label htmlFor="status-filter">Status</Form.Label>
+                  <Select
+                    inputId="status-filter"
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "All" }}
+                    onChange={handleSelectedStatus}
+                    options={statusOptions}
+                    components={{ IndicatorSeparator: () => null }}
+                    aria-label="Filter by Status"
+                  />
+                </Form.Group>
+              </Col>
+              {isAdmin && (
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
@@ -534,85 +562,51 @@ const MyDatasets = () => {
                     />
                   </Form.Group>
                 </Col>
-              ) : (
+              )}
+              {!isAdmin && (
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
-                      <Form.Label htmlFor="datasetId-search">Dataset ID</Form.Label>
+                      <Form.Label htmlFor="service-search">Service</Form.Label>
                       <button
                         type="button"
                         className={style.clearButton}
-                        onClick={() => {
-                          setDatasetIdQuery("");
-                          handleDatasetIdSearch({ target: { value: "" } });
-                        }}
-                        aria-label="Clear dataset ID search"
+                        onClick={handleClearService}
+                        aria-label="Clear service search"
                       >
                         Clear
                       </button>
                     </div>
-                    <Form.Control
-                      id="datasetId-search"
-                      aria-label="Search Dataset ID"
-                      placeholder="Search Dataset ID"
-                      value={datasetIdQuery}
-                      onChange={(e) => {
-                        setDatasetIdQuery(e.target.value);
-                        debouncedHandleDatasetIdSearch(e);
-                      }}
+                    <ServiceAutocomplete
+                      serviceSearchText={serviceSearchText}
+                      setServiceSearchText={setServiceSearchText}
+                      onSelectService={handleServiceSelect}
+                      isAdmin={user && user.isAdmin}
                     />
                   </Form.Group>
                 </Col>
               )}
-              <Col md={4} className={style.datasetFilterBlock}>
-                <Form.Group>
-                  <div className={style.labelWithClear}>
-                    <Form.Label htmlFor="service-search">Service</Form.Label>
-                    <button
-                      type="button"
-                      className={style.clearButton}
-                      onClick={handleClearService}
-                      aria-label="Clear service search"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <ServiceAutocomplete
-                    serviceSearchText={serviceSearchText}
-                    setServiceSearchText={setServiceSearchText}
-                    onSelectService={handleServiceSelect}
-                    isAdmin={user && user.isAdmin}
-                  />
-                </Form.Group>
-              </Col>
             </Row>
             <Row className="">
               {isAdmin && (
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
-                      <Form.Label htmlFor="dataset-id-search">Dataset ID</Form.Label>
+                      <Form.Label htmlFor="service-search">Service</Form.Label>
                       <button
                         type="button"
                         className={style.clearButton}
-                        onClick={() => {
-                          setDatasetIdQuery("");
-                          handleDatasetIdSearch({ target: { value: "" } });
-                        }}
-                        aria-label="Clear dataset ID search"
+                        onClick={handleClearService}
+                        aria-label="Clear service search"
                       >
                         Clear
                       </button>
                     </div>
-                    <Form.Control
-                      id="dataset-id-search"
-                      aria-label="Search Dataset ID"
-                      placeholder="Search Dataset ID"
-                      value={datasetIdQuery}
-                      onChange={(e) => {
-                        setDatasetIdQuery(e.target.value);
-                        debouncedHandleDatasetIdSearch(e);
-                      }}
+                    <ServiceAutocomplete
+                      serviceSearchText={serviceSearchText}
+                      setServiceSearchText={setServiceSearchText}
+                      onSelectService={handleServiceSelect}
+                      isAdmin={user && user.isAdmin}
                     />
                   </Form.Group>
                 </Col>

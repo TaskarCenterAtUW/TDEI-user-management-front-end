@@ -281,23 +281,63 @@ const ReleasedDatasets = () => {
     <div>
       <Form noValidate>
         <Row className="my-3 gx-0">
-          <Col md={12} lg={6}>
+          <Col md={12} lg={8}>
             <Form.Group className={style.primaryFilterContainer}>
               <div className={style.primaryFilterBlock_Released}>
-                <Form.Label htmlFor="type-filter">Type</Form.Label>
-                <Select
-                  inputId='type-filter'
-                  isSearchable={false}
-                  defaultValue={{ label: "All", value: "" }}
-                  onChange={handleSelectedDataType}
-                  options={options}
-                  components={{ IndicatorSeparator: () => null }}
-                  aria-label='Filter by Type'
+                <div className={style.labelWithClear}>
+                  <Form.Label htmlFor="dataset-search">Dataset</Form.Label>
+                  <button
+                    type="button"
+                    className={style.clearButton}
+                    onClick={() => {
+                      setQuery("");
+                      debouncedHandleSearch({ target: { value: "" } });
+                    }}
+                    aria-label="Clear dataset search"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <Form.Control
+                  id='dataset-search'
+                  value={query}
+                  aria-label="Search Dataset"
+                  placeholder="Search Dataset"
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    debouncedHandleSearch(e);
+                  }}
+                />
+              </div>
+              <div className={style.primaryFilterBlock_Released}>
+                <div className={style.labelWithClear}>
+                  <Form.Label htmlFor="dataset-id-search-primary">Dataset ID</Form.Label>
+                  <button
+                    type="button"
+                    className={style.clearButton}
+                    onClick={() => {
+                      setDatasetIdQuery("");
+                      handleDatasetIdSearch({ target: { value: "" } });
+                    }}
+                    aria-label="Clear dataset ID search"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <Form.Control
+                  id='dataset-id-search-primary'
+                  aria-label="Search Dataset ID"
+                  placeholder="Search Dataset ID"
+                  value={datasetIdQuery}
+                  onChange={(e) => {
+                    setDatasetIdQuery(e.target.value);
+                    debouncedHandleDatasetIdSearch(e);
+                  }}
                 />
               </div>
             </Form.Group>
           </Col>
-          <Col md={12} lg={6}>
+          <Col md={12} lg={4}>
             <SortRefreshComponent
               handleRefresh={handleRefresh}
               handleSortChange={handleSortChange}
@@ -313,29 +353,15 @@ const ReleasedDatasets = () => {
             <Row className="mb-3">
               <Col md={4} className={style.datasetFilterBlock}>
                 <Form.Group>
-                  <div className={style.labelWithClear}>
-                    <Form.Label htmlFor="dataset-search">Dataset</Form.Label>
-                    <button
-                      type="button"
-                      className={style.clearButton}
-                      onClick={() => {
-                        setQuery("");
-                        debouncedHandleSearch({ target: { value: "" } });
-                      }}
-                      aria-label="Clear dataset search"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <Form.Control
-                    id='dataset-search'
-                    value={query}
-                    aria-label="Search Dataset"
-                    placeholder="Search Dataset"
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      debouncedHandleSearch(e);
-                    }}
+                  <Form.Label htmlFor="type-filter">Type</Form.Label>
+                  <Select
+                    inputId='type-filter'
+                    isSearchable={false}
+                    defaultValue={{ label: "All", value: "" }}
+                    onChange={handleSelectedDataType}
+                    options={options}
+                    components={{ IndicatorSeparator: () => null }}
+                    aria-label='Filter by Type'
                   />
                 </Form.Group>
               </Col>
@@ -378,34 +404,6 @@ const ReleasedDatasets = () => {
               </Col>
             </Row>
             <Row className="">
-              <Col md={4} className={style.datasetFilterBlock}>
-                <Form.Group>
-                  <div className={style.labelWithClear}>
-                    <Form.Label htmlFor="dataset-id-search">Dataset ID</Form.Label>
-                    <button
-                      type="button"
-                      className={style.clearButton}
-                      onClick={() => {
-                        setDatasetIdQuery("");
-                        handleDatasetIdSearch({ target: { value: "" } });
-                      }}
-                      aria-label="Clear dataset ID search"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <Form.Control
-                    id='dataset-id-search'
-                    aria-label="Search Dataset ID"
-                    placeholder="Search Dataset ID"
-                    value={datasetIdQuery}
-                    onChange={(e) => {
-                      setDatasetIdQuery(e.target.value);
-                      debouncedHandleDatasetIdSearch(e);
-                    }}
-                  />
-                </Form.Group>
-              </Col>
               <Col md={4} className={style.datasetFilterBlock}>
                 <div className={style.labelWithClear}>
                   <Form.Label htmlFor="valid-from">Valid From</Form.Label>
