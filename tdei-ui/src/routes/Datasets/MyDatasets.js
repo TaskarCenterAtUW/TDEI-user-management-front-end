@@ -563,29 +563,54 @@ const MyDatasets = () => {
                   </Form.Group>
                 </Col>
               )}
-              <Col md={4} className={style.datasetFilterBlock}>
-                <Form.Group>
-                  <div className={style.labelWithClear}>
-                    <Form.Label htmlFor="service-search">Service</Form.Label>
-                    <button
-                      type="button"
-                      className={style.clearButton}
-                      onClick={handleClearService}
-                      aria-label="Clear service search"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <ServiceAutocomplete
-                    serviceSearchText={serviceSearchText}
-                    setServiceSearchText={setServiceSearchText}
-                    onSelectService={handleServiceSelect}
-                    isAdmin={user && user.isAdmin}
-                  />
-                </Form.Group>
-              </Col>
+              {!isAdmin && (
+                <Col md={4} className={style.datasetFilterBlock}>
+                  <Form.Group>
+                    <div className={style.labelWithClear}>
+                      <Form.Label htmlFor="service-search">Service</Form.Label>
+                      <button
+                        type="button"
+                        className={style.clearButton}
+                        onClick={handleClearService}
+                        aria-label="Clear service search"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <ServiceAutocomplete
+                      serviceSearchText={serviceSearchText}
+                      setServiceSearchText={setServiceSearchText}
+                      onSelectService={handleServiceSelect}
+                      isAdmin={user && user.isAdmin}
+                    />
+                  </Form.Group>
+                </Col>
+              )}
             </Row>
             <Row className="">
+              {isAdmin && (
+                <Col md={4} className={style.datasetFilterBlock}>
+                  <Form.Group>
+                    <div className={style.labelWithClear}>
+                      <Form.Label htmlFor="service-search">Service</Form.Label>
+                      <button
+                        type="button"
+                        className={style.clearButton}
+                        onClick={handleClearService}
+                        aria-label="Clear service search"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <ServiceAutocomplete
+                      serviceSearchText={serviceSearchText}
+                      setServiceSearchText={setServiceSearchText}
+                      onSelectService={handleServiceSelect}
+                      isAdmin={user && user.isAdmin}
+                    />
+                  </Form.Group>
+                </Col>
+              )}
               <Col md={4} className={style.datasetFilterBlock}>
                 <div className={style.labelWithClear}>
                   <Form.Label htmlFor="valid-from">Valid From</Form.Label>
