@@ -385,10 +385,12 @@
   align-items: center;
   gap: 15px;
   .primaryFilterBlock {
-    width: 240px;
+    flex: 1 1 0;
+    min-width: 0;
   }
   .primaryFilterBlock_Released {
-    width: 240px;
+    flex: 1 1 0;
+    min-width: 0;
   }
 }
 .secondaryFilterContainer {
@@ -465,11 +467,15 @@
     }
   }
   .primaryFilterContainer {
+    flex-direction: column;
+    align-items: stretch;
     .primaryFilterBlock {
       width: 100%;
+      flex: none;
     }
     .primaryFilterBlock_Released {
-      width: 50%;
+      width: 100%;
+      flex: none;
     }
   }
   .secondaryFilterContainer {
@@ -515,4 +521,3 @@
     }
   }
 }
-
