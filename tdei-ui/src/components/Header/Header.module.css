@@ -18,7 +18,7 @@
 .mobileMenuIcon {
   padding: 5px 8px;
   &:hover {
-    background-color: #742cde;
+    background-color: var(--primary-color-dark);
   }
 }
 .userIcon {
