@@ -2,8 +2,10 @@
 
 :root {
     --primary-font-family: "Open Sans", sans-serif;
-    --primary-color: #4b2e83;
-    --primary-color-dark: #32006e;
+    --brand-primary: #32006e;
+    --brand-accent: #4b2e83;
+    --primary-color: var(--brand-primary);
+    --primary-color-dark: var(--brand-primary);
     --secondary-color: #83879b;
     --purple-background-light: #f4f0fb;
     --white: #ffffff;
