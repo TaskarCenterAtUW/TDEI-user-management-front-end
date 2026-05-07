@@ -28,6 +28,8 @@ const DatasetsActions = ({
   data_type,
   dataViewerProps,
 }) => {
+  const [show, setShow] = React.useState(false);
+  const menuRef = React.useRef(null);
   const { user } = useAuth();
   const isPocUser = useIsPoc();
   const isMember = useIsMember();
@@ -42,6 +44,62 @@ const DatasetsActions = ({
   const canPublish = isPocUser || user?.isAdmin || isDataTypeGenerator;
 
   const isMobile = useMediaQuery({ maxWidth: 992 });
+
+  const focusMenuItem = React.useCallback((position = "first") => {
+    const menuItems = menuRef.current?.querySelectorAll(
+      '[role="menuitem"]:not(.disabled):not(:disabled)'
+    );
+
+    if (!menuItems?.length) return;
+
+    const itemToFocus =
+      position === "last" ? menuItems[menuItems.length - 1] : menuItems[0];
+
+    itemToFocus?.focus();
+  }, []);
+
+  React.useEffect(() => {
+    if (!show) return;
+
+    const frameId = window.requestAnimationFrame(() => {
+      menuRef.current?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [show]);
+
+  const handleToggle = React.useCallback((nextShow) => {
+    setShow(nextShow);
+  }, []);
+
+  const handleSelect = React.useCallback(
+    (eventKey, event) => {
+      onAction(eventKey, event);
+      setShow(false);
+    },
+    [onAction]
+  );
+
+  const handleMenuKeyDown = React.useCallback(
+    (event) => {
+      if (event.target !== menuRef.current) return;
+
+      if (
+        event.key === "Enter" ||
+        event.key === " " ||
+        event.key === "ArrowDown"
+      ) {
+        event.preventDefault();
+        focusMenuItem("first");
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        focusMenuItem("last");
+      }
+    },
+    [focusMenuItem]
+  );
 
   //Role based available actions
   const actions = [
@@ -136,12 +194,19 @@ const DatasetsActions = ({
   return (
     actions.length > 0 && (
       <div className={style.dropdownContainer}>
-        <Dropdown onSelect={onAction} className={style.fullWidth}>
+        <Dropdown
+          show={show}
+          onToggle={handleToggle}
+          onSelect={handleSelect}
+          className={style.fullWidth}
+        >
           {isMobile ? (
             <Dropdown.Toggle
               id="dropdown-basic"
               variant="btn btn-link"
               className={style.datasetActionsButton}
+              aria-label="Manage dataset actions"
+              aria-haspopup="menu"
             >
               Manage Dataset
             </Dropdown.Toggle>
@@ -150,6 +215,8 @@ const DatasetsActions = ({
               id="dropdown-basic"
               variant="btn btn-link"
               className={style.dropdownToggle}
+              aria-label="Manage dataset actions"
+              aria-haspopup="menu"
             >
               <img
                 src={menuOptionIcon}
@@ -158,9 +225,21 @@ const DatasetsActions = ({
               />
             </Dropdown.Toggle>
           )}
-          <Dropdown.Menu className={style.dropdownCard} role="listbox">
+          <Dropdown.Menu
+            ref={menuRef}
+            className={style.dropdownCard}
+            role="menu"
+            aria-label="Manage dataset actions"
+            tabIndex={-1}
+            onKeyDown={handleMenuKeyDown}
+          >
             {actions.map(({ key, label, icon }) => (
-              <Dropdown.Item key={key} eventKey={key} className={style.itemRow} role="option">
+              <Dropdown.Item
+                key={key}
+                eventKey={key}
+                className={style.itemRow}
+                role="menuitem"
+              >
                 {typeof icon === "string" ? (
                   <img src={icon} className={style.itemIcon} alt="" />
                 ) : (
