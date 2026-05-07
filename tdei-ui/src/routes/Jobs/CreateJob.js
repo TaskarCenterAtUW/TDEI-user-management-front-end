@@ -24,6 +24,7 @@ import SpatialJoinForm from "./SpatialJoinForm";
 // Options for the Job Type dropdown
 const jobTypeOptions = [
     { value: 'osw-validate', label: 'OSW - Validate' },
+    { value: 'osw-sanitize', label: 'OSW - Sanitize' },
     { value: 'flex-validate', label: 'Flex - Validate' },
     { value: 'pathways-validate', label: 'Pathways - Validate' },
     { value: 'osw-convert', label: 'OSW - Convert' },
@@ -48,6 +49,9 @@ const formConfig = {
     "osw-convert": [
         { label: "Source Format", type: "select", options: formatOptions, stateSetter: "setSourceFormat" },
         { label: "Target Format", type: "select", options: formatOptions, stateSetter: "setTargetFormat" },
+        { label: "Attach data file", type: "dropzone" }
+    ],
+    "osw-sanitize": [
         { label: "Attach data file", type: "dropzone" }
     ],
     "flex-validate": [
@@ -300,6 +304,7 @@ const CreateJobService = () => {
     const getPathFromJobType = (jobType) => {
         const jobTypePathMap = {
             "osw-validate": "/api/v1/osw/validate",
+            "osw-sanitize": "/api/v1/osw/sanitize",
             "flex-validate": "/api/v1/gtfs-flex/validate",
             "pathways-validate": "/api/v1/gtfs-pathways/validate",
             "osw-convert": "/api/v1/osw/convert",
@@ -406,7 +411,7 @@ const CreateJobService = () => {
             setShowValidateToast(true);
             return;
         }
-        if (!selectedFile && ["osw-validate", "flex-validate", "pathways-validate", "osw-convert"].includes(jobType.value)) {
+        if (!selectedFile && ["osw-validate", "osw-sanitize", "flex-validate", "pathways-validate", "osw-convert"].includes(jobType.value)) {
             setValidateErrorMessage("File is required");
             setShowValidateToast(true);
             return;
@@ -474,6 +479,9 @@ const CreateJobService = () => {
         switch (jobType?.value) {
             case "osw-validate":
                 urlPath = "osw/validate";
+                break;
+            case "osw-sanitize":
+                urlPath = "osw/sanitize";
                 break;
             case "flex-validate":
                 urlPath = "gtfs-flex/validate";

@@ -1395,6 +1395,73 @@
                 ]
             }
         },
+        "/api/v1/osw/sanitize": {
+            "post": {
+                "tags": [
+                    "OSW"
+                ],
+                "summary": "Sanitizes the osw dataset.",
+                "description": "Allows a user to sanitize an OSW dataset by correcting invalid or unsupported values. The response includes a `job_id` for tracking the request. To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
+                "operationId": "sanitizeOswFile",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "dataset"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "dataset": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "OSW file which is expected to be a zip file, internally has {nodes, edges, zones}.geojson. If the extensions are present, then the zip file will have {lines, polygons, points}.geojson files"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "The sanitize request has been accepted for processing. It returns a `job_id`, a unique identifier for the sanitize request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
+                        "content": {
+                            "application/text": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Location": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "description": "Location api to find the status of request processing"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dataset input file not found."
+                    },
+                    "401": {
+                        "description": "Unauthenticated request. Check your access token."
+                    },
+                    "403": {
+                        "description": "User unauthorized to sanitize the dataset."
+                    },
+                    "500": {
+                        "description": "An Internal server error occured"
+                    }
+                },
+                "security": [
+                    {
+                        "AuthorizationToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/osw/convert": {
             "post": {
                 "tags": [
