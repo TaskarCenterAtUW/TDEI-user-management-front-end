@@ -29,6 +29,7 @@ const JobListItem = ({ jobItem }) => {
 
   const JOB_TYPE_LABELS = {
     "Dataset-BBox": "Filter Dataset By BBox",
+    "Dataset-Sanitization": "Dataset Sanitization",
   };
 
   const handleToast = () => {
@@ -234,13 +235,18 @@ const JobListItem = ({ jobItem }) => {
         {(jobItem.job_type === "Dataset-Reformat" ||
           jobItem.job_type === "Dataset-BBox" ||
           jobItem.job_type === "Dataset-Road-Tag" ||
+          jobItem.job_type === "Dataset-Sanitization" ||
           jobItem.job_type === "Dataset-Spatial-Join" ||
           jobItem.job_type === "Dataset-Union" ||
           jobItem.job_type === "Quality-Metric" ||
           jobItem.job_type === "Confidence-Calculate"
         ) &&
           jobItem.status.toLowerCase() === "completed" &&
-          (jobItem.download_url || jobItem.job_type === "Quality-Metric" || (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
+          (jobItem.download_url ||
+            jobItem.job_type === "Dataset-Sanitization" ||
+            jobItem.job_type === "Sanitization" ||
+            jobItem.job_type === "Quality-Metric" ||
+            (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
             <button
               type="button"
               id={jobItem.job_id}
