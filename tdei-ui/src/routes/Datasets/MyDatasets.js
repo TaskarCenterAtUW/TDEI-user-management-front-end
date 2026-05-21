@@ -26,6 +26,9 @@ import ServiceAutocomplete from "../../components/ServiceAutocomplete/ServiceAut
 import DownloadModal from "../../components/DownloadModal/DownloadModal";
 import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
 import { buildShareDatasetPath } from "../../utils";
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from "../../selectors";
+import ProjectGroupRolesPicker from "../../components/ProjectGroupRolesPicker/ProjectGroupRolesPicker";
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
@@ -47,7 +50,11 @@ const MyDatasets = () => {
   const [eventKey, setEventKey] = useState("");
   const [operationResult, setOperationResult] = useState("");
   const isAdmin = user && user.isAdmin;
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
+  // Filter override for non-admin users: null means use the Redux selected project group
+  const [nonAdminProjectGroupId, setNonAdminProjectGroupId] = useState(null);
+  // The project group ID to pass to useGetDatasets for non-admins (null = use Redux default)
   const [sortField, setSortField] = useState("uploaded_timestamp");
   const [sortOrder, setSortOrder] = useState("DESC");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -70,12 +77,13 @@ const MyDatasets = () => {
     validFrom,
     validTo,
     tdeiServiceId,
-    selectedProjectGroupId,
+    isAdmin ? selectedProjectGroupId : nonAdminProjectGroupId,
     sortField,
     sortOrder
   );
   const [projectSearchText, setProjectSearchText] = useState("");
   const [serviceSearchText, setServiceSearchText] = useState("");
+  const [projectGroupSearchText, setProjectGroupSearchText] = useState("");
   const navigate = useNavigate();
   const [customErrorMessage, setCustomErrorMessage] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -93,6 +101,18 @@ const MyDatasets = () => {
     setServiceSearchText("");
     refreshData();
   };
+  const handleClearFilterProjectGroup = () => {
+    setNonAdminProjectGroupId(null);
+    setProjectGroupSearchText("");
+    refreshData();
+  };
+  const handleProjectGroupSelect = useCallback(
+    (projectGroupId) => {
+      setNonAdminProjectGroupId(projectGroupId || null);
+      refreshData();
+    },
+    [refreshData]
+  );
 
   useEffect(() => {
     if (data && data.pages && data.pages.length > 0) {
@@ -567,6 +587,32 @@ const MyDatasets = () => {
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
+                      <Form.Label>Project Group</Form.Label>
+                      <button
+                        type="button"
+                        className={style.clearButton}
+                        onClick={handleClearFilterProjectGroup}
+                        aria-label="Clear project group filter"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <ProjectGroupRolesPicker
+                      searchText={projectGroupSearchText}
+                      setSearchText={setProjectGroupSearchText}
+                      onSelectProjectGroup={handleProjectGroupSelect}
+                      defaultProjectGroupId={selectedProjectGroup?.tdei_project_group_id}
+                      defaultProjectGroupName={selectedProjectGroup?.name}
+                    />
+                  </Form.Group>
+                </Col>
+              )}
+            </Row>
+            <Row className="">
+              {isAdmin && (
+                <Col md={4} className={style.datasetFilterBlock}>
+                  <Form.Group>
+                    <div className={style.labelWithClear}>
                       <Form.Label htmlFor="service-search">Service</Form.Label>
                       <button
                         type="button"
@@ -586,9 +632,7 @@ const MyDatasets = () => {
                   </Form.Group>
                 </Col>
               )}
-            </Row>
-            <Row className="">
-              {isAdmin && (
+              {!isAdmin && (
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
