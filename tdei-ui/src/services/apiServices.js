@@ -600,9 +600,8 @@ export async function getDatasets(
   //Project ID if the user is admin
   if (isAdmin && selectedProjectGroupId) {
     params.tdei_project_group_id = selectedProjectGroupId;
-  } else if (!isAdmin) {
-    // Use the filter override if set, otherwise fall back to the Redux selected project group
-    params.tdei_project_group_id = selectedProjectGroupId || tdei_project_group_id;
+  } else if (!isAdmin && selectedProjectGroupId) {
+    params.tdei_project_group_id = selectedProjectGroupId;
   }
 
   const res = await axios({

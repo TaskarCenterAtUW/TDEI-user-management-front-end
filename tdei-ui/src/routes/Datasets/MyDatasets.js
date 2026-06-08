@@ -601,8 +601,6 @@ const MyDatasets = () => {
                       searchText={projectGroupSearchText}
                       setSearchText={setProjectGroupSearchText}
                       onSelectProjectGroup={handleProjectGroupSelect}
-                      defaultProjectGroupId={selectedProjectGroup?.tdei_project_group_id}
-                      defaultProjectGroupName={selectedProjectGroup?.name}
                     />
                   </Form.Group>
                 </Col>
