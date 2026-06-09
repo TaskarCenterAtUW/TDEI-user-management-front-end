@@ -1,7 +1,7 @@
 import React from "react";
 import { matchPath, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { buildShareDatasetPath, SHOW_SHARE_DATASET_FLOW } from "../../utils";
+import { buildShareDatasetPath } from "../../utils";
 
 const RequireGuest = () => {
   const { user } = useAuth();
@@ -9,7 +9,7 @@ const RequireGuest = () => {
 
   // If already logged in, don't allow guest pages
   if (user) {
-    if (SHOW_SHARE_DATASET_FLOW) {
+  
       const loginShareMatch = matchPath(
         "/login/share-dataset/:data_type/:tdei_dataset_id",
         location.pathname
@@ -31,7 +31,6 @@ const RequireGuest = () => {
           />
         );
       }
-    }
 
     const to = (location.state && location.state.from) || "/";
     return <Navigate to={to} replace />;

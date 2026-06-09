@@ -30,7 +30,7 @@ import CreateUpdateReferralCode from "./Referral/CreateUpdateReferralCode";
 import RequireGuest from "../components/RequireGuest/RequireGuest";
 import InviteInstructions from "./Referral/InviteInstructions";
 import AppLinkFallback from "../AppLinkFallback";
-import { SHOW_REFERRALS, SHOW_SHARE_DATASET_FLOW } from "../utils";
+import { SHOW_REFERRALS } from "../utils/helper";
 
 const Router = () => {
   const { user } = useAuth();
@@ -40,13 +40,9 @@ const Router = () => {
       <>
         <Route element={<RequireGuest />}>
           <Route path="/login" element={<LoginPage />} />
-          {SHOW_SHARE_DATASET_FLOW && (
-            <Route path="/login/share-dataset/:data_type/:tdei_dataset_id" element={<LoginPage />} />
-          )}
+          <Route path="/login/share-dataset/:data_type/:tdei_dataset_id" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
-          {SHOW_SHARE_DATASET_FLOW && (
-            <Route path="/register/share-dataset/:data_type/:tdei_dataset_id" element={<Register />} />
-          )}
+          <Route path="/register/share-dataset/:data_type/:tdei_dataset_id" element={<Register />} />
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/passwordReset" element={<PasswordResetConfirm />} />
           <Route path="/emailVerify" element={<EmailVerification />} />
@@ -60,9 +56,7 @@ const Router = () => {
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
             <Route path="/" element={<Dashboard />} />
-            {SHOW_SHARE_DATASET_FLOW && (
-              <Route path="/share-dataset/:data_type/:tdei_dataset_id" element={<Dashboard />} />
-            )}
+            <Route path="/share-dataset/:data_type/:tdei_dataset_id" element={<Dashboard />} />
             {user?.isAdmin && (
               <Route path="/projectGroup" element={<ProjectGroup />} />
             )}

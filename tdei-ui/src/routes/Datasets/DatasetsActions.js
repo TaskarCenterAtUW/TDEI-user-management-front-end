@@ -19,7 +19,6 @@ import useIsMember from "../../hooks/roles/useIsMember";
 import { useAuth } from "../../hooks/useAuth";
 import useIsDataTypeGenerator from "../../hooks/useIsDataTypeGenerator";
 import { useMediaQuery } from 'react-responsive';
-import { SHOW_SHARE_DATASET_FLOW } from "../../utils";
 
 const DatasetsActions = ({
   status,
@@ -108,7 +107,7 @@ const DatasetsActions = ({
       icon: downloadDatasetImg,
       condition: true,
     },
-    SHOW_SHARE_DATASET_FLOW && (isReleasedDataset || status === "Publish") && {
+    (isReleasedDataset || status === "Publish") && {
       key: "shareDataset",
       label: "Share Link",
       icon: copyIcon,
