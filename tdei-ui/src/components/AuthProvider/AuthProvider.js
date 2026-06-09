@@ -8,7 +8,7 @@ import ResponseToast from "../ToastMessage/ResponseToast";
 import { clear } from "../../store";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
-import { isShareDatasetRoute, SHOW_SHARE_DATASET_FLOW } from "../../utils";
+import { isShareDatasetRoute } from "../../utils";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -37,9 +37,9 @@ const AuthProvider = ({ children }) => {
 
     return anonymousPaths.has(normalizedPath)
       || normalizedPath.startsWith("/app-link/")
-      || (SHOW_SHARE_DATASET_FLOW && normalizedPath.startsWith("/login/share-dataset/"))
-      || (SHOW_SHARE_DATASET_FLOW && normalizedPath.startsWith("/register/share-dataset/"))
-      || (SHOW_SHARE_DATASET_FLOW && isShareDatasetRoute(normalizedPath));
+      || normalizedPath.startsWith("/login/share-dataset/")
+      || normalizedPath.startsWith("/register/share-dataset/")
+      || isShareDatasetRoute(normalizedPath);
   }, []);
 
   const decodeToken = (accessToken) => {
