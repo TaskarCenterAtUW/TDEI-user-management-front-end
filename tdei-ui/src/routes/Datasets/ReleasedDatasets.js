@@ -8,7 +8,7 @@ import { Button, Form, Spinner, Col, Row } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import Select from 'react-select';
 import iconNoData from "./../../assets/img/icon-noData.svg";
-import { buildShareDatasetPath, toPascalCase, formatDate } from '../../utils';
+import { buildShareDatasetPath, SHOW_SHARE_DATASET_FLOW, toPascalCase, formatDate } from '../../utils';
 import SortRefreshComponent from './SortRefreshComponent';
 import useGetReleasedDatasets from '../../hooks/service/useGetReleaseDatasets';
 import useDownloadDataset from '../../hooks/datasets/useDownloadDataset';
@@ -159,6 +159,14 @@ const ReleasedDatasets = () => {
   const handleRefresh = () => refreshData();
 
   const copyShareLink = async (dataset) => {
+    if (!SHOW_SHARE_DATASET_FLOW) {
+      setEventKey("shareDataset");
+      setOperationResult("error");
+      setCustomErrorMessage("Share links are disabled in this branch.");
+      handleToast();
+      return;
+    }
+
     const sharePath = buildShareDatasetPath(dataset?.data_type, dataset?.tdei_dataset_id);
     const shareUrl = `${window.location.origin}${sharePath}`;
 

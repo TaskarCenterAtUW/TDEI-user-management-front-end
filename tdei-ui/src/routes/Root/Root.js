@@ -9,6 +9,7 @@ import { set } from "../../store";
 import { Outlet } from "react-router-dom";
 import ShareDatasetModalHost from "../../components/ShareDataset/ShareDatasetModalHost";
 import LoggedInReferralJoinModal from "../../components/Referral/LoggedInReferralJoinModal";
+import { SHOW_SHARE_DATASET_FLOW } from "../../utils";
 
 const Root = () => {
   const { data: projectGroupData, isLoading: isProjectGroupLoading, isError } = useGetProjectGroupRoles();
@@ -68,6 +69,7 @@ const Root = () => {
             <Outlet roles={roles} />
             <ShareDatasetModalHost />
             <LoggedInReferralJoinModal />
+            {SHOW_SHARE_DATASET_FLOW && <ShareDatasetModalHost />}
           </main>
         </div>
       )}
