@@ -559,7 +559,7 @@ export async function getDatasets(
   validTo,
   tdei_service_id,
   selectedProjectGroupId,
-  tdei_project_group_id,
+  includeMyGroups,
   sortField = 'uploaded_timestamp',
   sortOrder = 'DESC'
 ) {
@@ -597,11 +597,15 @@ export async function getDatasets(
     params.tdei_service_id = tdei_service_id;
   }
 
-  //Project ID if the user is admin
+  if (!isAdmin && typeof includeMyGroups === "boolean") {
+    params.include_my_groups = includeMyGroups;
+  }
+
+  // Project ID if the user selected a local project group filter
   if (isAdmin && selectedProjectGroupId) {
     params.tdei_project_group_id = selectedProjectGroupId;
-  } else if (!isAdmin) {
-    params.tdei_project_group_id = tdei_project_group_id;
+  } else if (!isAdmin && selectedProjectGroupId) {
+    params.tdei_project_group_id = selectedProjectGroupId;
   }
 
   const res = await axios({
