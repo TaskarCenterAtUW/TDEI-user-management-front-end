@@ -3,7 +3,7 @@ import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
 import { useQueryClient } from "react-query";
 import useGetDatasets from "../../hooks/service/useGetDatasets";
-import { GET_DATASETS, PUBLISH_DATASETS } from "../../utils";
+import { GET_DATASETS } from "../../utils";
 import { debounce } from "lodash";
 import style from "./Datasets.module.css";
 import Select from "react-select";
@@ -26,8 +26,6 @@ import ServiceAutocomplete from "../../components/ServiceAutocomplete/ServiceAut
 import DownloadModal from "../../components/DownloadModal/DownloadModal";
 import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
 import { buildShareDatasetPath } from "../../utils";
-import { useSelector } from "react-redux";
-import { getSelectedProjectGroup } from "../../selectors";
 import ProjectGroupRolesPicker from "../../components/ProjectGroupRolesPicker/ProjectGroupRolesPicker";
 
 const MyDatasets = () => {
@@ -50,11 +48,9 @@ const MyDatasets = () => {
   const [eventKey, setEventKey] = useState("");
   const [operationResult, setOperationResult] = useState("");
   const isAdmin = user && user.isAdmin;
-  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
-  // Filter override for non-admin users: null means use the Redux selected project group
   const [nonAdminProjectGroupId, setNonAdminProjectGroupId] = useState(null);
-  // The project group ID to pass to useGetDatasets for non-admins (null = use Redux default)
+  const [includeMyGroups, setIncludeMyGroups] = useState(true);
   const [sortField, setSortField] = useState("uploaded_timestamp");
   const [sortOrder, setSortOrder] = useState("DESC");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -78,6 +74,7 @@ const MyDatasets = () => {
     validTo,
     tdeiServiceId,
     isAdmin ? selectedProjectGroupId : nonAdminProjectGroupId,
+    isAdmin ? undefined : includeMyGroups,
     sortField,
     sortOrder
   );
@@ -136,6 +133,11 @@ const MyDatasets = () => {
     setStatus(list.value);
   };
 
+  const handleIncludeMyGroupsChange = (option) => {
+    setIncludeMyGroups(option?.value ?? true);
+    refreshData();
+  };
+
   const handleSearch = (e) => {
     setDebounceQuery(e.target.value);
   };
@@ -174,6 +176,11 @@ const MyDatasets = () => {
     { value: "All", label: "All" },
     { value: "Publish", label: "Released" },
     { value: "Pre-Release", label: "Pre-Release" },
+  ];
+
+  const includeMyGroupsOptions = [
+    { value: false, label: "All" },
+    { value: true, label: "My Project Groups" }
   ];
 
   const onSuccess = () => {
@@ -461,7 +468,7 @@ const MyDatasets = () => {
     <div>
       <Form noValidate>
         <Row className="my-3 gx-0">
-          <Col md={12} lg={8}>
+          <Col md={12} xxl={isAdmin ? 8 : 9}>
             <Form.Group className={style.primaryFilterContainer}>
               <div className={style.primaryFilterBlock}>
                 <div className={style.labelWithClear}>
@@ -515,9 +522,25 @@ const MyDatasets = () => {
                   }}
                 />
               </div>
+              {!isAdmin && (
+                <div className={style.primaryFilterBlockScope}>
+                  <Form.Label htmlFor="include-my-groups-filter">Dataset Scope</Form.Label>
+                  <Select
+                    className={style.datasetScopeSelect}
+                    classNamePrefix="datasetScopeSelect"
+                    inputId="include-my-groups-filter"
+                    isSearchable={false}
+                    value={includeMyGroupsOptions.find((option) => option.value === includeMyGroups)}
+                    onChange={handleIncludeMyGroupsChange}
+                    options={includeMyGroupsOptions}
+                    components={{ IndicatorSeparator: () => null }}
+                    aria-label="Filter by dataset scope"
+                  />
+                </div>
+              )}
             </Form.Group>
           </Col>
-          <Col md={12} lg={4}>
+          <Col md={12} xxl={isAdmin ? 4 : 3}>
             <SortRefreshComponent
               handleRefresh={handleRefresh}
               handleSortChange={handleSortChange}

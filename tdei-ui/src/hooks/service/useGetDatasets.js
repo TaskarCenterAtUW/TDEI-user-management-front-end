@@ -1,18 +1,15 @@
 import { useInfiniteQuery } from "react-query";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { getSelectedProjectGroup } from "../../selectors";
 import { GET_DATASETS } from "../../utils";
 import { getDatasets } from "../../services";
 
-function useGetDatasets(isAdmin, searchText = "", searchDatasetId = "",status = "All", dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId,sortField, sortOrder) {
-  const { tdei_project_group_id } = useSelector(getSelectedProjectGroup);
+function useGetDatasets(isAdmin, searchText = "", searchDatasetId = "",status = "All", dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, includeMyGroups, sortField, sortOrder) {
   const [refreshKey, setRefreshKey] = useState(0); // for refreshing data
   
   const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    [GET_DATASETS, searchText,searchDatasetId, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, tdei_project_group_id, sortField, sortOrder,refreshKey],
+    [GET_DATASETS, isAdmin, searchText,searchDatasetId, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, includeMyGroups, sortField, sortOrder,refreshKey],
     ({ pageParam }) =>
-      getDatasets(searchText,searchDatasetId, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, tdei_project_group_id,sortField,sortOrder),
+      getDatasets(searchText,searchDatasetId, pageParam, isAdmin, status, dataType, validFrom, validTo, tdeiServiceId, selectedProjectGroupId, includeMyGroups, sortField,sortOrder),
     {
       getNextPageParam: (lastPage) => {
         return lastPage.data.length > 0 && lastPage.data.length === 10
