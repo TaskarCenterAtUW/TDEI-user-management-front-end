@@ -27,10 +27,17 @@ import DownloadModal from "../../components/DownloadModal/DownloadModal";
 import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
 import { buildShareDatasetPath } from "../../utils";
 import ProjectGroupRolesPicker from "../../components/ProjectGroupRolesPicker/ProjectGroupRolesPicker";
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from "../../selectors";
+
+const CURRENT_PROJECT_GROUP_SCOPE = "currentProjectGroup";
+const ALL_DATASETS_SCOPE = "all";
+const MY_PROJECT_GROUPS_SCOPE = "myProjectGroups";
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
@@ -50,12 +57,27 @@ const MyDatasets = () => {
   const isAdmin = user && user.isAdmin;
   const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
   const [nonAdminProjectGroupId, setNonAdminProjectGroupId] = useState(null);
-  const [includeMyGroups, setIncludeMyGroups] = useState(true);
+  const [datasetScope, setDatasetScope] = useState(CURRENT_PROJECT_GROUP_SCOPE);
   const [sortField, setSortField] = useState("uploaded_timestamp");
   const [sortOrder, setSortOrder] = useState("DESC");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState(null);
   const [selectedFileVersion, setSelectedFileVersion] = useState(null);
+  const currentProjectGroupId =
+    selectedProjectGroup?.tdei_project_group_id ?? null;
+  const currentProjectGroupName = selectedProjectGroup?.name ?? "";
+  const isCurrentProjectGroupScope =
+    datasetScope === CURRENT_PROJECT_GROUP_SCOPE;
+  const effectiveNonAdminProjectGroupId = isCurrentProjectGroupScope
+    ? currentProjectGroupId
+    : nonAdminProjectGroupId;
+  const includeMyGroups = isAdmin
+    ? undefined
+    : datasetScope === MY_PROJECT_GROUPS_SCOPE
+    ? true
+    : datasetScope === ALL_DATASETS_SCOPE
+    ? false
+    : undefined;
   const {
     data = [],
     isError,
@@ -73,7 +95,7 @@ const MyDatasets = () => {
     validFrom,
     validTo,
     tdeiServiceId,
-    isAdmin ? selectedProjectGroupId : nonAdminProjectGroupId,
+    isAdmin ? selectedProjectGroupId : effectiveNonAdminProjectGroupId,
     isAdmin ? undefined : includeMyGroups,
     sortField,
     sortOrder
@@ -99,8 +121,13 @@ const MyDatasets = () => {
     refreshData();
   };
   const handleClearFilterProjectGroup = () => {
-    setNonAdminProjectGroupId(null);
-    setProjectGroupSearchText("");
+    if (isCurrentProjectGroupScope) {
+      setNonAdminProjectGroupId(currentProjectGroupId);
+      setProjectGroupSearchText(currentProjectGroupName);
+    } else {
+      setNonAdminProjectGroupId(null);
+      setProjectGroupSearchText("");
+    }
     refreshData();
   };
   const handleProjectGroupSelect = useCallback(
@@ -110,6 +137,18 @@ const MyDatasets = () => {
     },
     [refreshData]
   );
+
+  useEffect(() => {
+    if (!isAdmin && isCurrentProjectGroupScope) {
+      setNonAdminProjectGroupId(currentProjectGroupId);
+      setProjectGroupSearchText(currentProjectGroupName);
+    }
+  }, [
+    isAdmin,
+    isCurrentProjectGroupScope,
+    currentProjectGroupId,
+    currentProjectGroupName,
+  ]);
 
   useEffect(() => {
     if (data && data.pages && data.pages.length > 0) {
@@ -133,8 +172,18 @@ const MyDatasets = () => {
     setStatus(list.value);
   };
 
-  const handleIncludeMyGroupsChange = (option) => {
-    setIncludeMyGroups(option?.value ?? true);
+  const handleDatasetScopeChange = (option) => {
+    const nextScope = option?.value ?? CURRENT_PROJECT_GROUP_SCOPE;
+    setDatasetScope(nextScope);
+
+    if (nextScope === CURRENT_PROJECT_GROUP_SCOPE) {
+      setNonAdminProjectGroupId(currentProjectGroupId);
+      setProjectGroupSearchText(currentProjectGroupName);
+    } else {
+      setNonAdminProjectGroupId(null);
+      setProjectGroupSearchText("");
+    }
+
     refreshData();
   };
 
@@ -178,9 +227,13 @@ const MyDatasets = () => {
     { value: "Pre-Release", label: "Pre-Release" },
   ];
 
-  const includeMyGroupsOptions = [
-    { value: false, label: "All" },
-    { value: true, label: "My Project Groups" }
+  const datasetScopeOptions = [
+    { value: ALL_DATASETS_SCOPE, label: "All" },
+    {
+      value: CURRENT_PROJECT_GROUP_SCOPE,
+      label: "Current Project Group",
+    },
+    { value: MY_PROJECT_GROUPS_SCOPE, label: "My Project Groups" },
   ];
 
   const onSuccess = () => {
@@ -221,8 +274,10 @@ const MyDatasets = () => {
     useToggleDataviewer({ onSuccess, onError });
   const { mutate: createInclinationJob, isLoading: isCreatingJob } =
     useCreateInclinationJob({ onSuccess, onError });
-  const { mutate: createQualityReportJob, isLoading: isCreatingQualityReportJob } =
-    useCreateQualityReportJob({ onSuccess, onError });
+  const {
+    mutate: createQualityReportJob,
+    isLoading: isCreatingQualityReportJob,
+  } = useCreateQualityReportJob({ onSuccess, onError });
 
   const handlePublishDataset = (dataset) => {
     // Check if valid_from and valid_to dates are present
@@ -258,7 +313,7 @@ const MyDatasets = () => {
       // console.log("Quality report to be added for dataset: ", selectedDataset.tdei_dataset_id);
       createQualityReportJob(selectedDataset.tdei_dataset_id);
     }
-  }
+  };
 
   const handleCreateInclinationJob = () => {
     createInclinationJob(selectedDataset.tdei_dataset_id);
@@ -393,9 +448,11 @@ const MyDatasets = () => {
       modaltype: "error",
     },
     dataviewer: {
-      message: `Are you sure you want to ${selectedDataset?.data_viewer_allowed ? "disable" : "enable"
-        } the dataviewer status for dataset ${selectedDataset?.metadata?.dataset_detail?.name
-        }?`,
+      message: `Are you sure you want to ${
+        selectedDataset?.data_viewer_allowed ? "disable" : "enable"
+      } the dataviewer status for dataset ${
+        selectedDataset?.metadata?.dataset_detail?.name
+      }?`,
       content: "",
       handler: handleDataviewerChange,
       btnlabel: selectedDataset?.data_viewer_allowed ? "Disable" : "Enable",
@@ -408,7 +465,7 @@ const MyDatasets = () => {
       handler: handleCreateQualityReportJob,
       btnlabel: "Generate Quality Report",
       modaltype: "qualityReport",
-    }
+    },
   };
 
   const currentModalConfig = modalConfig[eventKey];
@@ -450,7 +507,8 @@ const MyDatasets = () => {
       case "qualityReport":
         return operationResult === "success"
           ? "Success! Quality report job has been initiated."
-          : customErrorMessage ?? "Error! Failed to initiate quality report job.";
+          : customErrorMessage ??
+              "Error! Failed to initiate quality report job.";
       default:
         return "";
     }
@@ -498,7 +556,9 @@ const MyDatasets = () => {
               </div>
               <div className={style.primaryFilterBlock}>
                 <div className={style.labelWithClear}>
-                  <Form.Label htmlFor="dataset-id-search-primary">Dataset ID</Form.Label>
+                  <Form.Label htmlFor="dataset-id-search-primary">
+                    Dataset ID
+                  </Form.Label>
                   <button
                     type="button"
                     className={style.clearButton}
@@ -524,15 +584,19 @@ const MyDatasets = () => {
               </div>
               {!isAdmin && (
                 <div className={style.primaryFilterBlockScope}>
-                  <Form.Label htmlFor="include-my-groups-filter">Dataset Scope</Form.Label>
+                  <Form.Label htmlFor="include-my-groups-filter">
+                    Dataset Scope
+                  </Form.Label>
                   <Select
                     className={style.datasetScopeSelect}
                     classNamePrefix="datasetScopeSelect"
                     inputId="include-my-groups-filter"
                     isSearchable={false}
-                    value={includeMyGroupsOptions.find((option) => option.value === includeMyGroups)}
-                    onChange={handleIncludeMyGroupsChange}
-                    options={includeMyGroupsOptions}
+                    value={datasetScopeOptions.find(
+                      (option) => option.value === datasetScope
+                    )}
+                    onChange={handleDatasetScopeChange}
+                    options={datasetScopeOptions}
                     components={{ IndicatorSeparator: () => null }}
                     aria-label="Filter by dataset scope"
                   />
@@ -585,7 +649,9 @@ const MyDatasets = () => {
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
-                      <Form.Label htmlFor="projectGroup-search">Project Group</Form.Label>
+                      <Form.Label htmlFor="projectGroup-search">
+                        Project Group
+                      </Form.Label>
                       <button
                         type="button"
                         className={style.clearButton}
@@ -615,6 +681,7 @@ const MyDatasets = () => {
                         type="button"
                         className={style.clearButton}
                         onClick={handleClearFilterProjectGroup}
+                        disabled={isCurrentProjectGroupScope}
                         aria-label="Clear project group filter"
                       >
                         Clear
@@ -624,6 +691,17 @@ const MyDatasets = () => {
                       searchText={projectGroupSearchText}
                       setSearchText={setProjectGroupSearchText}
                       onSelectProjectGroup={handleProjectGroupSelect}
+                      defaultProjectGroupId={
+                        isCurrentProjectGroupScope
+                          ? currentProjectGroupId
+                          : undefined
+                      }
+                      defaultProjectGroupName={
+                        isCurrentProjectGroupScope
+                          ? currentProjectGroupName
+                          : undefined
+                      }
+                      disabled={isCurrentProjectGroupScope}
                     />
                   </Form.Group>
                 </Col>

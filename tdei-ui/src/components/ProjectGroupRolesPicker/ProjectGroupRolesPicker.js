@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { Form, Spinner, InputGroup } from "react-bootstrap";
 import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import styles from "./ProjectGroupRolesPicker.module.css";
@@ -10,13 +16,13 @@ const ProjectGroupRolesPicker = ({
   onSelectProjectGroup,
   defaultProjectGroupId,
   defaultProjectGroupName,
+  disabled = false,
 }) => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [announcement, setAnnouncement] = useState("");
-  const [initialized, setInitialized] = useState(false);
 
   const autocompleteRef = useRef();
   const listRef = useRef();
@@ -33,15 +39,25 @@ const ProjectGroupRolesPicker = ({
   }, [data]);
 
   useEffect(() => {
-    if (!initialized && defaultProjectGroupId && defaultProjectGroupName) {
+    if (
+      defaultProjectGroupId &&
+      defaultProjectGroupName &&
+      (disabled || searchText === "")
+    ) {
       setSelectedGroup({
         tdei_project_group_id: defaultProjectGroupId,
         project_group_name: defaultProjectGroupName,
       });
       setSearchText(defaultProjectGroupName);
-      setInitialized(true);
+      setShowDropdown(false);
     }
-  }, [defaultProjectGroupId, defaultProjectGroupName, initialized, setSearchText]);
+  }, [
+    defaultProjectGroupId,
+    defaultProjectGroupName,
+    disabled,
+    searchText,
+    setSearchText,
+  ]);
 
   useEffect(() => {
     if (searchText === "") {
@@ -56,7 +72,12 @@ const ProjectGroupRolesPicker = ({
       }
       setShowDropdown(false);
     }
-  }, [searchText, defaultProjectGroupId, defaultProjectGroupName, setSearchText]);
+  }, [
+    searchText,
+    defaultProjectGroupId,
+    defaultProjectGroupName,
+    setSearchText,
+  ]);
 
   const debouncedSearch = useMemo(
     () => debounce((value) => setDebouncedQuery(value), 150),
@@ -64,6 +85,8 @@ const ProjectGroupRolesPicker = ({
   );
 
   const handleInputChange = (e) => {
+    if (disabled) return;
+
     const value = e.target.value;
     setSearchText(value);
     if (value.trim() === "") {
@@ -117,7 +140,9 @@ const ProjectGroupRolesPicker = ({
   useEffect(() => {
     if (showDropdown && !isLoading && projectGroups.length > 0) {
       setAnnouncement(
-        `${projectGroups.length} result${projectGroups.length === 1 ? "" : "s"} available. Use arrow keys to navigate.`
+        `${projectGroups.length} result${
+          projectGroups.length === 1 ? "" : "s"
+        } available. Use arrow keys to navigate.`
       );
     } else if (showDropdown && !isLoading && projectGroups.length === 0) {
       setAnnouncement("No project groups found.");
@@ -127,7 +152,10 @@ const ProjectGroupRolesPicker = ({
   }, [showDropdown, isLoading, projectGroups.length]);
 
   const handleClickOutside = useCallback((e) => {
-    if (autocompleteRef.current && !autocompleteRef.current.contains(e.target)) {
+    if (
+      autocompleteRef.current &&
+      !autocompleteRef.current.contains(e.target)
+    ) {
       setShowDropdown(false);
     }
   }, []);
@@ -171,7 +199,9 @@ const ProjectGroupRolesPicker = ({
           placeholder="Search Project Group"
           onChange={handleInputChange}
           value={selectedGroup ? selectedGroup.project_group_name : searchText}
+          disabled={disabled}
           onFocus={() => {
+            if (disabled) return;
             setDebouncedQuery("");
             setShowDropdown(true);
           }}
@@ -187,7 +217,11 @@ const ProjectGroupRolesPicker = ({
         />
         {isLoading && (
           <InputGroup.Text>
-            <Spinner animation="border" size="sm" aria-label="Loading results" />
+            <Spinner
+              animation="border"
+              size="sm"
+              aria-label="Loading results"
+            />
           </InputGroup.Text>
         )}
       </InputGroup>
@@ -204,7 +238,8 @@ const ProjectGroupRolesPicker = ({
           {projectGroups.map((group, index) => {
             const optionId = `pg-option-${group.tdei_project_group_id}`;
             const isSelected =
-              selectedGroup?.tdei_project_group_id === group.tdei_project_group_id;
+              selectedGroup?.tdei_project_group_id ===
+              group.tdei_project_group_id;
             return (
               <div
                 key={group.tdei_project_group_id}
