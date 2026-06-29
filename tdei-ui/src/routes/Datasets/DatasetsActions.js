@@ -1,5 +1,4 @@
 import React from "react";
-import { Dropdown } from "react-bootstrap";
 import style from "./Datasets.module.css";
 import menuOptionIcon from "../../assets/img/menu-options.svg";
 import releaseIcon from "../../assets/img/action-release.svg";
@@ -19,6 +18,8 @@ import useIsMember from "../../hooks/roles/useIsMember";
 import { useAuth } from "../../hooks/useAuth";
 import useIsDataTypeGenerator from "../../hooks/useIsDataTypeGenerator";
 import { useMediaQuery } from 'react-responsive';
+import AccessibleActionMenu from "../../components/AccessibleActionMenu/AccessibleActionMenu";
+import menuStyle from "../../components/AccessibleActionMenu/AccessibleActionMenu.module.css";
 
 const DatasetsActions = ({
   status,
@@ -26,6 +27,7 @@ const DatasetsActions = ({
   isReleasedDataset,
   data_type,
   dataViewerProps,
+  datasetId,
 }) => {
   const { user } = useAuth();
   const isPocUser = useIsPoc();
@@ -135,41 +137,27 @@ const DatasetsActions = ({
   return (
     actions.length > 0 && (
       <div className={style.dropdownContainer}>
-        <Dropdown onSelect={onAction} className={style.fullWidth}>
-          {isMobile ? (
-            <Dropdown.Toggle
-              id="dropdown-basic"
-              variant="btn btn-link"
-              className={style.datasetActionsButton}
-            >
-              Manage Dataset
-            </Dropdown.Toggle>
-          ) : (
-            <Dropdown.Toggle
-              id="dropdown-basic"
-              variant="btn btn-link"
-              className={style.dropdownToggle}
-            >
+        <AccessibleActionMenu
+          triggerId={`dataset-actions-menu-${datasetId || "default"}`}
+          trigger={
+            isMobile ? (
+              "Manage Dataset"
+            ) : (
               <img
                 src={menuOptionIcon}
                 className={style.moreActionIcon}
                 alt="Manage Dataset Options"
               />
-            </Dropdown.Toggle>
-          )}
-          <Dropdown.Menu className={style.dropdownCard} role="listbox">
-            {actions.map(({ key, label, icon }) => (
-              <Dropdown.Item key={key} eventKey={key} className={style.itemRow} role="option">
-                {typeof icon === "string" ? (
-                  <img src={icon} className={style.itemIcon} alt="" />
-                ) : (
-                  icon
-                )}
-                {label}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
+            )
+          }
+          triggerClassName={
+            isMobile
+              ? `${style.datasetActionsButton} ${menuStyle.actionButtonTrigger}`
+              : style.dropdownToggle
+          }
+          items={actions}
+          onSelect={onAction}
+        />
       </div>
     )
   );
