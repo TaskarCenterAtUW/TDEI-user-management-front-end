@@ -1,0 +1,84 @@
+.menuContainer {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.triggerButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.triggerButton:hover {
+  background-color: #eeeeee;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 1000;
+  min-width: 200px;
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+  background-color: var(--white);
+  box-shadow: 0px 3px 6px #00000015;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 15px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: #162848;
+  font-size: 15px;
+  font-family: var(--primary-font-family);
+  transition: background-color 0.1s ease;
+}
+
+.menuItem:hover,
+.menuItem:focus,
+.menuItem:focus-visible {
+  background-color: #f5f5f5;
+  outline: none;
+}
+
+.itemIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 12px;
+  width: 15px;
+  flex-shrink: 0;
+}
+
+.actionButtonTrigger {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 4px;
+  width: 50%;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.actionButtonTrigger:hover {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
