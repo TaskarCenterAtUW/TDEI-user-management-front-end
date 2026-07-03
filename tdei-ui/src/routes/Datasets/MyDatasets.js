@@ -3,7 +3,7 @@ import DatasetTableHeader from "./DatasetTableHeader";
 import DatasetRow from "./DatasetRow";
 import { useQueryClient } from "react-query";
 import useGetDatasets from "../../hooks/service/useGetDatasets";
-import { GET_DATASETS, PUBLISH_DATASETS } from "../../utils";
+import { GET_DATASETS } from "../../utils";
 import { debounce } from "lodash";
 import style from "./Datasets.module.css";
 import Select from "react-select";
@@ -26,10 +26,18 @@ import ServiceAutocomplete from "../../components/ServiceAutocomplete/ServiceAut
 import DownloadModal from "../../components/DownloadModal/DownloadModal";
 import useCreateQualityReportJob from "../../hooks/jobs/useCreateQualityReportJob";
 import { buildShareDatasetPath } from "../../utils";
+import ProjectGroupRolesPicker from "../../components/ProjectGroupRolesPicker/ProjectGroupRolesPicker";
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from "../../selectors";
+
+const CURRENT_PROJECT_GROUP_SCOPE = "currentProjectGroup";
+const ALL_DATASETS_SCOPE = "all";
+const MY_PROJECT_GROUPS_SCOPE = "myProjectGroups";
 
 const MyDatasets = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
@@ -48,11 +56,28 @@ const MyDatasets = () => {
   const [operationResult, setOperationResult] = useState("");
   const isAdmin = user && user.isAdmin;
   const [selectedProjectGroupId, setSelectedProjectGroupId] = useState(null);
+  const [nonAdminProjectGroupId, setNonAdminProjectGroupId] = useState(null);
+  const [datasetScope, setDatasetScope] = useState(CURRENT_PROJECT_GROUP_SCOPE);
   const [sortField, setSortField] = useState("uploaded_timestamp");
   const [sortOrder, setSortOrder] = useState("DESC");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState(null);
   const [selectedFileVersion, setSelectedFileVersion] = useState(null);
+  const currentProjectGroupId =
+    selectedProjectGroup?.tdei_project_group_id ?? null;
+  const currentProjectGroupName = selectedProjectGroup?.name ?? "";
+  const isCurrentProjectGroupScope =
+    datasetScope === CURRENT_PROJECT_GROUP_SCOPE;
+  const effectiveNonAdminProjectGroupId = isCurrentProjectGroupScope
+    ? currentProjectGroupId
+    : nonAdminProjectGroupId;
+  const includeMyGroups = isAdmin
+    ? undefined
+    : datasetScope === MY_PROJECT_GROUPS_SCOPE
+    ? true
+    : datasetScope === ALL_DATASETS_SCOPE
+    ? false
+    : undefined;
   const {
     data = [],
     isError,
@@ -70,12 +95,14 @@ const MyDatasets = () => {
     validFrom,
     validTo,
     tdeiServiceId,
-    selectedProjectGroupId,
+    isAdmin ? selectedProjectGroupId : effectiveNonAdminProjectGroupId,
+    isAdmin ? undefined : includeMyGroups,
     sortField,
     sortOrder
   );
   const [projectSearchText, setProjectSearchText] = useState("");
   const [serviceSearchText, setServiceSearchText] = useState("");
+  const [projectGroupSearchText, setProjectGroupSearchText] = useState("");
   const navigate = useNavigate();
   const [customErrorMessage, setCustomErrorMessage] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -93,6 +120,35 @@ const MyDatasets = () => {
     setServiceSearchText("");
     refreshData();
   };
+  const handleClearFilterProjectGroup = () => {
+    if (isCurrentProjectGroupScope) {
+      setNonAdminProjectGroupId(currentProjectGroupId);
+      setProjectGroupSearchText(currentProjectGroupName);
+    } else {
+      setNonAdminProjectGroupId(null);
+      setProjectGroupSearchText("");
+    }
+    refreshData();
+  };
+  const handleProjectGroupSelect = useCallback(
+    (projectGroupId) => {
+      setNonAdminProjectGroupId(projectGroupId || null);
+      refreshData();
+    },
+    [refreshData]
+  );
+
+  useEffect(() => {
+    if (!isAdmin && isCurrentProjectGroupScope) {
+      setNonAdminProjectGroupId(currentProjectGroupId);
+      setProjectGroupSearchText(currentProjectGroupName);
+    }
+  }, [
+    isAdmin,
+    isCurrentProjectGroupScope,
+    currentProjectGroupId,
+    currentProjectGroupName,
+  ]);
 
   useEffect(() => {
     if (data && data.pages && data.pages.length > 0) {
@@ -114,6 +170,21 @@ const MyDatasets = () => {
 
   const handleSelectedStatus = (list) => {
     setStatus(list.value);
+  };
+
+  const handleDatasetScopeChange = (option) => {
+    const nextScope = option?.value ?? CURRENT_PROJECT_GROUP_SCOPE;
+    setDatasetScope(nextScope);
+
+    if (nextScope === CURRENT_PROJECT_GROUP_SCOPE) {
+      setNonAdminProjectGroupId(currentProjectGroupId);
+      setProjectGroupSearchText(currentProjectGroupName);
+    } else {
+      setNonAdminProjectGroupId(null);
+      setProjectGroupSearchText("");
+    }
+
+    refreshData();
   };
 
   const handleSearch = (e) => {
@@ -156,6 +227,15 @@ const MyDatasets = () => {
     { value: "Pre-Release", label: "Pre-Release" },
   ];
 
+  const datasetScopeOptions = [
+    { value: ALL_DATASETS_SCOPE, label: "All" },
+    {
+      value: CURRENT_PROJECT_GROUP_SCOPE,
+      label: "Current Project Group",
+    },
+    { value: MY_PROJECT_GROUPS_SCOPE, label: "My Project Groups" },
+  ];
+
   const onSuccess = () => {
     setOperationResult("success");
     setShowSuccessModal(false);
@@ -194,8 +274,10 @@ const MyDatasets = () => {
     useToggleDataviewer({ onSuccess, onError });
   const { mutate: createInclinationJob, isLoading: isCreatingJob } =
     useCreateInclinationJob({ onSuccess, onError });
-  const { mutate: createQualityReportJob, isLoading: isCreatingQualityReportJob } =
-    useCreateQualityReportJob({ onSuccess, onError });
+  const {
+    mutate: createQualityReportJob,
+    isLoading: isCreatingQualityReportJob,
+  } = useCreateQualityReportJob({ onSuccess, onError });
 
   const handlePublishDataset = (dataset) => {
     // Check if valid_from and valid_to dates are present
@@ -231,7 +313,7 @@ const MyDatasets = () => {
       // console.log("Quality report to be added for dataset: ", selectedDataset.tdei_dataset_id);
       createQualityReportJob(selectedDataset.tdei_dataset_id);
     }
-  }
+  };
 
   const handleCreateInclinationJob = () => {
     createInclinationJob(selectedDataset.tdei_dataset_id);
@@ -366,9 +448,11 @@ const MyDatasets = () => {
       modaltype: "error",
     },
     dataviewer: {
-      message: `Are you sure you want to ${selectedDataset?.data_viewer_allowed ? "disable" : "enable"
-        } the dataviewer status for dataset ${selectedDataset?.metadata?.dataset_detail?.name
-        }?`,
+      message: `Are you sure you want to ${
+        selectedDataset?.data_viewer_allowed ? "disable" : "enable"
+      } the dataviewer status for dataset ${
+        selectedDataset?.metadata?.dataset_detail?.name
+      }?`,
       content: "",
       handler: handleDataviewerChange,
       btnlabel: selectedDataset?.data_viewer_allowed ? "Disable" : "Enable",
@@ -381,7 +465,7 @@ const MyDatasets = () => {
       handler: handleCreateQualityReportJob,
       btnlabel: "Generate Quality Report",
       modaltype: "qualityReport",
-    }
+    },
   };
 
   const currentModalConfig = modalConfig[eventKey];
@@ -423,7 +507,8 @@ const MyDatasets = () => {
       case "qualityReport":
         return operationResult === "success"
           ? "Success! Quality report job has been initiated."
-          : customErrorMessage ?? "Error! Failed to initiate quality report job.";
+          : customErrorMessage ??
+              "Error! Failed to initiate quality report job.";
       default:
         return "";
     }
@@ -441,7 +526,7 @@ const MyDatasets = () => {
     <div>
       <Form noValidate>
         <Row className="my-3 gx-0">
-          <Col md={12} lg={8}>
+          <Col md={12} xxl={isAdmin ? 8 : 9}>
             <Form.Group className={style.primaryFilterContainer}>
               <div className={style.primaryFilterBlock}>
                 <div className={style.labelWithClear}>
@@ -471,7 +556,9 @@ const MyDatasets = () => {
               </div>
               <div className={style.primaryFilterBlock}>
                 <div className={style.labelWithClear}>
-                  <Form.Label htmlFor="dataset-id-search-primary">Dataset ID</Form.Label>
+                  <Form.Label htmlFor="dataset-id-search-primary">
+                    Dataset ID
+                  </Form.Label>
                   <button
                     type="button"
                     className={style.clearButton}
@@ -495,9 +582,29 @@ const MyDatasets = () => {
                   }}
                 />
               </div>
+              {!isAdmin && (
+                <div className={style.primaryFilterBlockScope}>
+                  <Form.Label htmlFor="include-my-groups-filter">
+                    Dataset Scope
+                  </Form.Label>
+                  <Select
+                    className={style.datasetScopeSelect}
+                    classNamePrefix="datasetScopeSelect"
+                    inputId="include-my-groups-filter"
+                    isSearchable={false}
+                    value={datasetScopeOptions.find(
+                      (option) => option.value === datasetScope
+                    )}
+                    onChange={handleDatasetScopeChange}
+                    options={datasetScopeOptions}
+                    components={{ IndicatorSeparator: () => null }}
+                    aria-label="Filter by dataset scope"
+                  />
+                </div>
+              )}
             </Form.Group>
           </Col>
-          <Col md={12} lg={4}>
+          <Col md={12} xxl={isAdmin ? 4 : 3}>
             <SortRefreshComponent
               handleRefresh={handleRefresh}
               handleSortChange={handleSortChange}
@@ -542,7 +649,9 @@ const MyDatasets = () => {
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
-                      <Form.Label htmlFor="projectGroup-search">Project Group</Form.Label>
+                      <Form.Label htmlFor="projectGroup-search">
+                        Project Group
+                      </Form.Label>
                       <button
                         type="button"
                         className={style.clearButton}
@@ -567,6 +676,42 @@ const MyDatasets = () => {
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
+                      <Form.Label>Project Group</Form.Label>
+                      <button
+                        type="button"
+                        className={style.clearButton}
+                        onClick={handleClearFilterProjectGroup}
+                        disabled={isCurrentProjectGroupScope}
+                        aria-label="Clear project group filter"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <ProjectGroupRolesPicker
+                      searchText={projectGroupSearchText}
+                      setSearchText={setProjectGroupSearchText}
+                      onSelectProjectGroup={handleProjectGroupSelect}
+                      defaultProjectGroupId={
+                        isCurrentProjectGroupScope
+                          ? currentProjectGroupId
+                          : undefined
+                      }
+                      defaultProjectGroupName={
+                        isCurrentProjectGroupScope
+                          ? currentProjectGroupName
+                          : undefined
+                      }
+                      disabled={isCurrentProjectGroupScope}
+                    />
+                  </Form.Group>
+                </Col>
+              )}
+            </Row>
+            <Row className="">
+              {isAdmin && (
+                <Col md={4} className={style.datasetFilterBlock}>
+                  <Form.Group>
+                    <div className={style.labelWithClear}>
                       <Form.Label htmlFor="service-search">Service</Form.Label>
                       <button
                         type="button"
@@ -586,9 +731,7 @@ const MyDatasets = () => {
                   </Form.Group>
                 </Col>
               )}
-            </Row>
-            <Row className="">
-              {isAdmin && (
+              {!isAdmin && (
                 <Col md={4} className={style.datasetFilterBlock}>
                   <Form.Group>
                     <div className={style.labelWithClear}>
