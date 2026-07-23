@@ -436,6 +436,17 @@ export async function postCreateJob(data) {
         };
         response = await axios.post(url, unionRequestBody, { headers });
         return response.data;
+      case "osw/self-merge":
+        const selfMergeRequestBody = {
+          tdei_dataset_id: data[2],
+          proximity: data[3],
+        };
+        url = baseUrl;
+        headers = {
+          'Content-Type': 'application/json',
+        };
+        response = await axios.post(url, selfMergeRequestBody, { headers });
+        return response.data;
       default:
         formData.append("dataset", data[1]);
         url = baseUrl;

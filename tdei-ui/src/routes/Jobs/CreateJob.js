@@ -35,6 +35,7 @@ const jobTypeOptions = [
     { value: 'quality-metric-tag', label: 'Quality Metric Tag' },
     { value: 'spatial-join', label: 'Spatial Join' },
     { value: 'dataset-union', label: 'Dataset Union' },
+    { value: 'dataset-self-merge', label: 'Dataset Self Merge' },
     { value: 'quality-report', label: 'Quality Report' }
 ];
 
@@ -97,6 +98,10 @@ const formConfig = {
     "dataset-union": [
         { label: "First Dataset Id", type: "text", stateSetter: "setDatasetIdOne" },
         { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" },
+        { label: "Proximity", type: "text", stateSetter: "setProximity" }
+    ],
+    "dataset-self-merge": [
+        { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
         { label: "Proximity", type: "text", stateSetter: "setProximity" }
     ],
     "quality-report": [
@@ -235,6 +240,9 @@ const CreateJobService = () => {
         setTdeiDatasetId("");
         setSourceDatasetId("");
         setTargetDatasetId("");
+        setFirstDatasetId("");
+        setSecondDatasetId("");
+        setProximity("");
         setSpatialRequestBody(JSON.stringify(SPATIAL_JOIN, null, 2));
         setAlgorithmConfig({
             algorithms: [],
@@ -315,6 +323,7 @@ const CreateJobService = () => {
             "quality-metric-tag": "/api/v1/osw/quality-metric/tag/{tdei_dataset_id}",
             "spatial-join": "/api/v1/osw/spatial-join",
             "dataset-union": "/api/v1/osw/union",
+            "dataset-self-merge": "/api/v1/osw/self-merge",
             "quality-report": "/api/v1/osw/quality-report/{tdei_dataset_id}",
         };
 
@@ -389,6 +398,12 @@ const CreateJobService = () => {
         } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.proximity?.description || "";
         }
+    };
+
+    const getSelfMergeDescription = (label) => {
+        const path = getPathFromJobType("dataset-self-merge");
+        const property = label === "Tdei Dataset Id" ? "tdei_dataset_id" : "proximity";
+        return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.[property]?.description || "";
     };
 
     // Retrieves descriptions for quality report generation related fields based on the label.
@@ -473,6 +488,11 @@ const CreateJobService = () => {
             setShowValidateToast(true);
             return;
         }
+        if (jobType.value === "dataset-self-merge" && !tdeiDatasetId) {
+            setValidateErrorMessage("Tdei Dataset Id is required for Dataset Self Merge");
+            setShowValidateToast(true);
+            return;
+        }
 
         // Determine the API path based on the job type
         let urlPath = "";
@@ -512,6 +532,9 @@ const CreateJobService = () => {
                 break;
             case "dataset-union":
                 urlPath = "osw/union";
+                break;
+            case "dataset-self-merge":
+                urlPath = "osw/self-merge";
                 break;
             case "quality-report":
                 urlPath = `osw/quality-report/${tdeiDatasetId}`;
@@ -577,6 +600,17 @@ const CreateJobService = () => {
             } else {
                 uploadData.push(firstDatasetId, secondDatasetId);
             }
+        } else if (jobType.value === "dataset-self-merge") {
+            if (proximity) {
+                const proximityFloat = parseFloat(proximity);
+                if (!isNaN(proximityFloat)) {
+                    uploadData.push(tdeiDatasetId, proximityFloat);
+                } else {
+                    uploadData.push(tdeiDatasetId);
+                }
+            } else {
+                uploadData.push(tdeiDatasetId);
+            }
         }
         setLoading(true);
         mutate(uploadData);
@@ -605,6 +639,8 @@ const CreateJobService = () => {
                     return getQualityMetricTagDescription(label);
                 case "dataset-union":
                     return getUnionDescription(label);
+                case "dataset-self-merge":
+                    return getSelfMergeDescription(label);
                 case "quality-report":
                     return getQualityReportDescription(label);
                 default:
@@ -654,7 +690,7 @@ const CreateJobService = () => {
                 <Form.Group key={index} controlId={field.label} className={style.formItem}>
                     <Form.Label>
                         {field.label}
-                        {!(jobType?.value === "dataset-union" && field.label === "Proximity") && (
+                        {!(["dataset-union", "dataset-self-merge"].includes(jobType?.value) && field.label === "Proximity") && (
                             <span style={{ color: 'red' }}> *</span>
                         )}
                     </Form.Label>
