@@ -669,6 +669,15 @@
                         }
                     },
                     {
+                        "name": "include_my_groups",
+                        "in": "query",
+                        "description": "<strong>Include my Group:</strong> When true, the API returns datasets only from project groups the authenticated user belongs to.",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
                         "name": "page_no",
                         "in": "query",
                         "description": "<strong>page_no:</strong> Integer, defaults to 1. Filters datasets by retrieving results in pages.",
@@ -2361,6 +2370,81 @@
                     },
                     "404": {
                         "description": "Dataset not found for either tdei_dataset_id_one or tdei_dataset_id_two."
+                    },
+                    "500": {
+                        "description": "An Internal server error occured."
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKey": []
+                    },
+                    {
+                        "AuthorizationToken": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/osw/self-merge": {
+            "post": {
+                "tags": [
+                    "OSW"
+                ],
+                "summary": "Performs a self-merge of entities within a single OSW dataset.",
+                "description": "This function merges spatial entities within one dataset by unifying nodes, edges, and polygons into consolidated geometries which are within the specified proximity. Entities that are within the specified proximity are treated as equivalent and merged. The function outputs a single cohesive dataset.The response includes a `job_id` for tracking the request.To check the request status, refer to the location header in the response, which provides the URL for the status API endpoint.",
+                "operationId": "osw-self-merge",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tdei_dataset_id": {
+                                        "type": "string",
+                                        "example": "b688519d-ea00-4daa-a23f-0aff2ca138d2",
+                                        "description": "Dataset id to self-merge"
+                                    },
+                                    "proximity": {
+                                        "type": "number",
+                                        "example": "1.0",
+                                        "description": "Proximity value to identify equivalent entities in meters. Default value is 0.5 meters."
+                                    }
+                                },
+                                "required": [
+                                    "tdei_dataset_id"
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
+                        "content": {
+                            "application/text": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Location": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "description": "Location api to find the status of request processing"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The request body is empty."
+                    },
+                    "401": {
+                        "description": "Unauthenticated request. Check your access token."
+                    },
+                    "404": {
+                        "description": "Dataset not found for tdei_dataset_id."
                     },
                     "500": {
                         "description": "An Internal server error occured."
