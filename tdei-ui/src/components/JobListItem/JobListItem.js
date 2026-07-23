@@ -238,6 +238,7 @@ const JobListItem = ({ jobItem }) => {
           jobItem.job_type === "Dataset-Sanitization" ||
           jobItem.job_type === "Dataset-Spatial-Join" ||
           jobItem.job_type === "Dataset-Union" ||
+          jobItem.job_type === "Dataset-Self-Merge" ||
           jobItem.job_type === "Quality-Metric" ||
           jobItem.job_type === "Confidence-Calculate"
         ) &&
@@ -245,6 +246,7 @@ const JobListItem = ({ jobItem }) => {
           (jobItem.download_url ||
             jobItem.job_type === "Dataset-Sanitization" ||
             jobItem.job_type === "Sanitization" ||
+            jobItem.job_type === "Dataset-Self-Merge" ||
             jobItem.job_type === "Quality-Metric" ||
             (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
             <button
