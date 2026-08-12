@@ -6,7 +6,11 @@ import openDataViewerIcon from "../../assets/img/action-open-console.svg";
 import { workspaceUrl } from "../../services";
 import DatasetsActions from "./DatasetsActions";
 import ClipboardCopy from "../Services/ClipBoardCopy";
-import { formatTypeLabel, updatedTime } from "../../utils";
+import {
+  buildWorkspacesHandoffUrl,
+  formatTypeLabel,
+  updatedTime,
+} from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { show } from "../../store/notificationModal.slice";
 import useIsPoc from "../../hooks/useIsPoc";
@@ -66,12 +70,25 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
 
   const handleDropdownSelect = (eventKey) => {
     if (eventKey === "openInWorkspace") {
-      window
-        .open(
-          `${workspaceUrl}workspace/create/tdei?tdeiRecordId=${tdei_dataset_id}`,
-          "_blank"
-        )
-        ?.focus();
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!refreshToken) {
+        dispatch(
+          show({
+            message: "Your TDEI session has expired. Please sign in again.",
+            type: "danger",
+          })
+        );
+        return;
+      }
+
+      const destination = buildWorkspacesHandoffUrl(
+        workspaceUrl,
+        tdei_dataset_id,
+        refreshToken
+      );
+
+      window.open(destination, "_blank", "noopener,noreferrer");
     } else if (eventKey === "downloadMetadata") {
       downloadMetadata(dataset.metadata, dataset.tdei_dataset_id);
     } else {
