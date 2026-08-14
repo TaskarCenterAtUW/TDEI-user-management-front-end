@@ -48,6 +48,7 @@ const Jobs = () => {
         { value: 'Dataset-Reformat', label: 'Dataset Reformat' },
         { value: 'Dataset-Road-Tag', label: 'Dataset Road Tag' },
         { value: 'Dataset-Sanitization', label: 'Dataset Sanitization' },
+        { value: 'Dataset-Self-Merge', label: 'Dataset Self Merge' },
         { value: 'Dataset-Spatial-Join', label: 'Dataset Spatial Join' },
         { value: 'Dataset-Union', label: 'Dataset Union' },
         { value: 'Dataset-Upload', label: 'Dataset Upload' },
