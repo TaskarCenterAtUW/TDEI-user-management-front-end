@@ -111,32 +111,33 @@ const LoginPage = () => {
   });
 
   const handleSignIn = async (values) => {
-    setLoading(true);
-    if (SHOW_REFERRALS && referralCode) {
-      // PROMO FLOW: only call the referralSignIn API
-      promoSignin.mutate({ referral_code: referralCode, data: values });
-      return;
-    }
-    // Normal login flow
-    auth.signin(
-      values,
-      () => setLoading(false),
-      (err) => {
-        console.error(err);
-        setLoading(false);
-        sessionStorage.removeItem("referralCode");
-        if (err?.status === 403 || err?.response?.status === 403) {
-          navigate("/emailVerify", {
-            state: {
-              actionText: "Your email address has not been verified. Please verify your email before logging in.",
-              email: values.username
-            }
-          });
-        } else {
-          dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
-        }
-      }
-    );
+    window.location.href = "http://localhost:3001/login"
+    // setLoading(true);
+    // if (SHOW_REFERRALS && referralCode) {
+    //   // PROMO FLOW: only call the referralSignIn API
+    //   promoSignin.mutate({ referral_code: referralCode, data: values });
+    //   return;
+    // }
+    // // Normal login flow
+    // auth.signin(
+    //   values,
+    //   () => setLoading(false),
+    //   (err) => {
+    //     console.error(err);
+    //     setLoading(false);
+    //     sessionStorage.removeItem("referralCode");
+    //     if (err?.status === 403 || err?.response?.status === 403) {
+    //       navigate("/emailVerify", {
+    //         state: {
+    //           actionText: "Your email address has not been verified. Please verify your email before logging in.",
+    //           email: values.username
+    //         }
+    //       });
+    //     } else {
+    //       dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
+    //     }
+    //   }
+    // );
   };
 
   if (auth.user) {
