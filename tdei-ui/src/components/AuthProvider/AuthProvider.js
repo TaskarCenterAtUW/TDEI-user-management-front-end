@@ -129,10 +129,10 @@ const AuthProvider = ({ children }) => {
       }
     }
 
-    // Relogin: when token-expired event fires (e.g., 401 during API), open modal.
+    // Let the user choose whether to restore or end an expired SSO session.
     setTokenExpiredCallback(() => {
       if (sessionStorage.getItem('handoffInProgress') === '1') return;
-      startSsoLogin(p);
+      setIsReLoginOpen(true);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, isAnonymousPath, location?.pathname]);
@@ -318,38 +318,6 @@ const AuthProvider = ({ children }) => {
   };
 
 
-  const handleReLogin = async (password) => {
-    const email = user?.emailId;
-    if (!email) return;
-
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL}/authenticate`,
-        { username: email, password },
-        {
-          session_timeout_login_request: true
-        }
-      );
-      const accessToken = response.data.access_token;
-      const refreshToken = response.data.refresh_token;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      // localStorage.removeItem("relogin");
-      let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
-      setIsReLoginOpen(false);
-      /// Reloading the window after successful relogin
-      window.location.reload();
-    } catch (err) {
-      console.error("Re-login failed", err);
-      setToastMessage({
-        showtoast: true,
-        message: "Error while trying to re-login. Please verify your credentials and try again!",
-        type: "warning",
-      });
-    }
-  };
-
   const beginSignout = () => {
     const logoutUrl = new URL(`${SSO_API_URL}/sso-logout`);
     logoutUrl.searchParams.set("redirect_uri", getSsoLogoutCallbackUri());
@@ -358,6 +326,23 @@ const AuthProvider = ({ children }) => {
     }
 
     window.location.assign(logoutUrl.toString());
+  };
+
+  const handleSessionRestore = () => {
+    setIsReLoginOpen(false);
+    startSsoLogin(location);
+  };
+
+  const handleExpiredSessionLogout = () => {
+    setIsReLoginOpen(false);
+
+    // Keep other tabs on the same origin in sync with this logout.
+    localStorage.setItem("forceLogout", Date.now().toString());
+    setTimeout(() => {
+      localStorage.removeItem("forceLogout");
+    }, 0);
+
+    beginSignout();
   };
 
   const signout = () => {
@@ -395,9 +380,8 @@ const AuthProvider = ({ children }) => {
       {children}
       <ReLoginModal
         open={isReLoginOpen}
-        onClose={() => setIsReLoginOpen(false)}
-        onReLogin={handleReLogin}
-        email={user?.emailId}
+        onLogout={handleExpiredSessionLogout}
+        onReLogin={handleSessionRestore}
       />
       <ResponseToast
         showtoast={toastMessage.showtoast}
