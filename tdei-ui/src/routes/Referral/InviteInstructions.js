@@ -7,6 +7,7 @@ import axios from "axios";
 import ErrorIcon from "@mui/icons-material/Error";
 import { SHOW_REFERRALS, isShareDatasetRoute } from "../../utils";
 import { saveAuthTokensFromPromo } from '../../utils/helper';
+import { SSO_API_URL, SSO_CLIENT_ID } from "../../services/ssoConfig";
 
 const isMobileUA = () =>
   /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "") ||
@@ -19,6 +20,15 @@ const isIOS = () =>
 const hardReplace = (url) => window.location.replace(url);
 
 const replacePathOnly = (url) => window.history.replaceState(null, "", url);
+
+const getApiErrorMessage = (error, fallback) => {
+  const responseData = error?.response?.data;
+
+  if (typeof responseData === "string") return responseData;
+  if (responseData?.message) return responseData.message;
+
+  return error?.message || fallback;
+};
 
 function resolveFlow(location) {
   const qs = new URLSearchParams(location?.search || "");
@@ -128,8 +138,12 @@ export default function InviteInstructions() {
 
   const exchangeAndRedirectDesktop = async (token, destUrlIfAny) => {
     // Common desktop path for both flows: exchange token → store → redirect
+    const refreshRequest = { refreshToken: token };
+    if (SSO_CLIENT_ID) refreshRequest.clientId = SSO_CLIENT_ID;
+
     const resp = await axios.post(
-      `${process.env.REACT_APP_OSM_URL}/refresh-token`, token,
+      `${SSO_API_URL}/refresh-token`,
+      refreshRequest,
       {
         headers: {
           "Content-Type": "application/json",
@@ -177,7 +191,7 @@ export default function InviteInstructions() {
           setToast({
             show: true,
             type: "error",
-            msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
+            msg: getApiErrorMessage(err, "Failed to complete setup"),
           });
         }
       } else {
@@ -247,7 +261,7 @@ export default function InviteInstructions() {
         setToast({
           show: true,
           type: "error",
-          msg: err?.response?.data ?? err.message ?? "Failed to complete setup",
+          msg: getApiErrorMessage(err, "Failed to complete setup"),
         });
       }
     } else {

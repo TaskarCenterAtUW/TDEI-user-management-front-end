@@ -10,7 +10,7 @@ import iconNoData from "./../../assets/img/icon-noData.svg";
 import { useSelector } from "react-redux";
 import { getSelectedProjectGroup } from "../../selectors";
 import ClipboardCopy from "../../routes/Services/ClipBoardCopy";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import projectGroupIcon from "../../assets/img/icon-projectgroupIcon.svg";
 import SwitchIcon from "@mui/icons-material/Tune";
@@ -27,6 +27,8 @@ const ProjectGroupSwitch = () => {
   const selectedProjectGroup = useSelector(getSelectedProjectGroup);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.from || "/";
   const [debounceQuery, setDebounceQuery] = React.useState("");
   const [, setQuery] = React.useState("");
 
@@ -41,6 +43,7 @@ const ProjectGroupSwitch = () => {
 
   const updateSelectedProject = (id) => {
     if (selectedProjectGroup?.tdei_project_group_id === id) {
+      navigate(returnTo, { replace: true });
       return;
     }
     const selectedProject = data?.pages
@@ -49,7 +52,7 @@ const ProjectGroupSwitch = () => {
 
     if (selectedProject) {
       dispatch(set(selectedProject));
-      navigate("/");
+      navigate(returnTo, { replace: true });
     }
   };
 

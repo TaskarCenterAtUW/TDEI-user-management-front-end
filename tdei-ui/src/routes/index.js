@@ -31,6 +31,8 @@ import RequireGuest from "../components/RequireGuest/RequireGuest";
 import InviteInstructions from "./Referral/InviteInstructions";
 import AppLinkFallback from "../AppLinkFallback";
 import { SHOW_REFERRALS } from "../utils/helper";
+import AuthCallback from "./AuthCallback/AuthCallback";
+import LogoutCallback from "./AuthCallback/LogoutCallback";
 
 const Router = () => {
   const { user } = useAuth();
@@ -38,6 +40,8 @@ const Router = () => {
   return (
     <Routes>
       <>
+        <Route path="/callback" element={<AuthCallback />} />
+        <Route path="/logout/callback" element={<LogoutCallback />} />
         <Route element={<RequireGuest />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/share-dataset/:data_type/:tdei_dataset_id" element={<LoginPage />} />

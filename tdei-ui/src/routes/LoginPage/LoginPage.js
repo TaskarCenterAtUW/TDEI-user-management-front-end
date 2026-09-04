@@ -18,6 +18,7 @@ import useReferralSignIn from "../../hooks/referrals/useReferralSignIn";
 import { saveAuthTokensFromPromo } from '../../utils/helper';
 import bannerStyles from "../../components/Referral/ReferralBanner.module.css";
 
+const ENABLE_PASSWORD_LOGIN = false;
 
 const LoginPage = () => {
   const [searchParams] = useSearchParams();
@@ -111,33 +112,47 @@ const LoginPage = () => {
   });
 
   const handleSignIn = async (values) => {
-    window.location.href = "http://localhost:3001/login"
-    // setLoading(true);
-    // if (SHOW_REFERRALS && referralCode) {
-    //   // PROMO FLOW: only call the referralSignIn API
-    //   promoSignin.mutate({ referral_code: referralCode, data: values });
-    //   return;
-    // }
-    // // Normal login flow
-    // auth.signin(
-    //   values,
-    //   () => setLoading(false),
-    //   (err) => {
-    //     console.error(err);
-    //     setLoading(false);
-    //     sessionStorage.removeItem("referralCode");
-    //     if (err?.status === 403 || err?.response?.status === 403) {
-    //       navigate("/emailVerify", {
-    //         state: {
-    //           actionText: "Your email address has not been verified. Please verify your email before logging in.",
-    //           email: values.username
-    //         }
-    //       });
-    //     } else {
-    //       dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
-    //     }
-    //   }
-    // );
+    setLoading(true);
+    if (SHOW_REFERRALS && referralCode) {
+      // PROMO FLOW: only call the referralSignIn API
+      promoSignin.mutate({ referral_code: referralCode, data: values });
+      return;
+    }
+    // Normal login flow
+    auth.signin(
+      values,
+      () => setLoading(false),
+      (err) => {
+        console.error(err);
+        setLoading(false);
+        sessionStorage.removeItem("referralCode");
+        if (err?.status === 403 || err?.response?.status === 403) {
+          navigate("/emailVerify", {
+            state: {
+              actionText: "Your email address has not been verified. Please verify your email before logging in.",
+              email: values.username
+            }
+          });
+        } else {
+          dispatch(show({ message: "Invalid credentials or Error in signing in", type: "danger" }));
+        }
+      }
+    );
+  };
+
+  const handleSsoLogin = () => {
+    if (isShareDatasetFlow) {
+      // The default share campaign is part of the dataset-link flow, not an
+      // explicit request to join a referral. Only restore the dataset intent
+      // after SSO so the user sees the download dialog.
+      sessionStorage.removeItem("referralCode");
+    } else if (SHOW_REFERRALS && referralCode) {
+      sessionStorage.setItem("referralCode", referralCode);
+    }
+
+    auth.startSsoLogin(
+      isShareDatasetFlow ? shareDatasetPath : location.state?.from || "/"
+    );
   };
 
   if (auth.user) {
@@ -168,9 +183,30 @@ const LoginPage = () => {
                 )}
                 <h1 className={style.loginTitle}>Welcome!</h1>
                 <div className={style.loginSubTitle}>
-                  Please login to your account.
+                  Sign in with your TDEI account.
                 </div>
-                <Formik
+                <Button
+                  className="tdei-primary-button"
+                  variant="primary col-12 mx-auto"
+                  type="button"
+                  onClick={handleSsoLogin}
+                >
+                  TDEI Login
+                </Button>
+                <div className="mt-5 mb-2">
+                  New to TDEI?{" "}
+                  <Link
+                    className="tdei-primary-link"
+                    to={isShareDatasetFlow ? registerPath : (SHOW_REFERRALS && referralCode ? `/register?code=${encodeURIComponent(referralCode)}` : "/register")}
+                    state={location.state}
+                  >
+                    Register Now
+                  </Link>
+                </div>
+                <Link className="tdei-primary-link" to={"/ForgotPassword"}>
+                  Forgot Password?
+                </Link>
+                {ENABLE_PASSWORD_LOGIN && <Formik
                   initialValues={initialValues}
                   onSubmit={handleSignIn}
                   validationSchema={validationSchema}
@@ -248,23 +284,9 @@ const LoginPage = () => {
                       >
                         {loading ? "Signing In..." : "Sign In"}
                       </Button>
-                      <div className="mt-5 mb-2">
-                        New to TDEI?{" "}
-                        <Link
-                          className="tdei-primary-link"
-                          to={isShareDatasetFlow ? registerPath : (SHOW_REFERRALS && referralCode ? `/register?code=${encodeURIComponent(referralCode)}` : "/register")}
-                          state={location.state}
-                        >
-                          Register Now
-                        </Link>
-
-                      </div>
-                      <Link className="tdei-primary-link" to={"/ForgotPassword"}>
-                        Forgot Password?
-                      </Link>
                     </Form>
                   )}
-                </Formik>
+                </Formik>}
               </>
             </Card.Body>
           </Card>
