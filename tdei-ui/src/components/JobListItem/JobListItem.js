@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import style from "../../routes/Jobs/Jobs.module.css";
 import ShowJobMessageModal from "../ShowJobMessage/ShowJobMessageModal";
 import JobMsgDescModal from "../ShowJobMessage/JobMsgDescModal";
-import { formatTypeLabel, toPascalCase } from "../../utils";
+import { formatJobDuration, formatTypeLabel, toPascalCase } from "../../utils";
 import useDownloadJob from "../../hooks/jobs/useDownloadJob";
 import ResponseToast from "../ToastMessage/ResponseToast";
 import JobInputDescModal from "../ShowJobMessage/JobInputDescModal";
@@ -129,15 +129,7 @@ const JobListItem = ({ jobItem }) => {
       "minutes",
       "seconds",
     ]);
-    if (duration.days >= 1) {
-      return `${Math.floor(duration.days)} day${duration.days >= 2 ? "s" : ""}`;
-    } else if (duration.hours >= 1) {
-      return `${Math.floor(duration.hours)} hr${duration.hours >= 2 ? "s" : ""}`;
-    } else if (duration.minutes >= 1) {
-      return `${Math.floor(duration.minutes)} min${duration.minutes >= 2 ? "s" : ""}`;
-    } else {
-      return `${Math.floor(duration.seconds)} sec${duration.seconds >= 2 ? "s" : ""}`;
-    }
+    return formatJobDuration(duration);
   };
 
   const getBackgroundColor = (status) => {
@@ -238,6 +230,7 @@ const JobListItem = ({ jobItem }) => {
           jobItem.job_type === "Dataset-Sanitization" ||
           jobItem.job_type === "Dataset-Spatial-Join" ||
           jobItem.job_type === "Dataset-Union" ||
+          jobItem.job_type === "Dataset-Self-Merge" ||
           jobItem.job_type === "Quality-Metric" ||
           jobItem.job_type === "Confidence-Calculate"
         ) &&
@@ -245,6 +238,7 @@ const JobListItem = ({ jobItem }) => {
           (jobItem.download_url ||
             jobItem.job_type === "Dataset-Sanitization" ||
             jobItem.job_type === "Sanitization" ||
+            jobItem.job_type === "Dataset-Self-Merge" ||
             jobItem.job_type === "Quality-Metric" ||
             (jobItem.job_type === "Confidence-Calculate" && jobItem.response_props)) && (
             <button
