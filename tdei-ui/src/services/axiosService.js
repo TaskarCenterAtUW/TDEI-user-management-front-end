@@ -1,7 +1,12 @@
 import axios from "axios";
-import { url, osmUrl } from "./apiServices";
 import { onTokenExpired } from "./tokenEventEmitter";
+import { SSO_API_URL, SSO_CLIENT_ID } from "./ssoConfig";
 let isRefreshing = false;
+
+const isSessionRefreshFailure = (error) => {
+  const status = error?.status || error?.response?.status;
+  return status === 400 || status === 401 || status === 403;
+};
 
 /**
  * Function to refresh the access token using the refresh token.
@@ -13,9 +18,14 @@ async function refreshRequest(originalRequest) {
   isRefreshing = true;
   try {
     const token = localStorage.getItem("refreshToken");
+    if (!token) throw new Error("No refresh token is available.");
+
+    const refreshBody = { refreshToken: token };
+    if (SSO_CLIENT_ID) refreshBody.clientId = SSO_CLIENT_ID;
+
     const response = await axios.post(
-      `${osmUrl}/refresh-token`,
-      token,
+      `${SSO_API_URL}/refresh-token`,
+      refreshBody,
       {
         headers: {
           "Content-Type": "application/json",
@@ -85,10 +95,10 @@ axios.interceptors.response.use(
         }
 
       } catch (refreshError) {
-        // If refreshing the token also fails with a 401, trigger the re-login modal
+        // A rejected refresh means the SSO session must be restored or ended.
         console.log(originalRequest)
-        if ((refreshError.status === 401 || refreshError.response?.status === 401) && originalRequest.url.indexOf("/authenticate") === -1 && window.location.pathname.indexOf("/login") === -1) {
-          console.log("Token refresh failed (401), triggering the re-login modal");
+        if (isSessionRefreshFailure(refreshError) && originalRequest.url.indexOf("/authenticate") === -1 && window.location.pathname.indexOf("/login") === -1) {
+          console.log("Token refresh failed, triggering the session-expired modal");
           if (originalRequest.session_timeout_login_request != undefined && originalRequest.session_timeout_login_request) {
             return Promise.reject(error);
           }

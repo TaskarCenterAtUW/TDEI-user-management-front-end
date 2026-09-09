@@ -5,21 +5,16 @@ import { useAuth } from "../../hooks/useAuth";
 import { Dropdown } from "react-bootstrap";
 import userIcon from "./../../assets/img/user.png";
 import ProjectGroupSwitcherDropDown from "../ProjectGroupSwitcher/ProjectGroupSwitcherDropDown";
-import { useDispatch } from "react-redux";
-import { toggle } from "../../store/sideMenuBar.slice";
 import resetPasswordIcon from "../../assets/img/reset_pass.svg";
 import logoutIcon from "../../assets/img/logout.svg";
 import iconMenu from "../../assets/img/icon-mobile-menu.svg";
 import ResetPassword from "../ResetPassword/ResetPassword";
-import useResetPassword from "../../hooks/useResetPassword";
-import { clear } from "../../store";
 import ApplyReferralCode from "../Referral/ApplyReferralCode";
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 import MobileSidebar from "../Navigation/MobileSidebar";
 
 const Header = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
+  const { user, beginSignout } = useAuth();
   const authenticated = !!user?.name;
   const [showModal, setShowModal] = React.useState(false);
   const [showReferralModal, setShowReferralModal] = React.useState(false);
@@ -31,10 +26,7 @@ const Header = () => {
     setTimeout(() => {
       localStorage.removeItem("forceLogout");
     }, 0);
-    dispatch(clear());
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    window.location.reload();
+    beginSignout();
   };
 
   const handleResetPassword = () => {
