@@ -133,8 +133,9 @@ const DatasetAutocomplete = ({
     [loading, hasMore]
   );
 
-  const labelFor = (ds) =>
-    ds?.metadata?.data_provenance?.full_dataset_name || ds?.tdei_dataset_id || "Unnamed Dataset";
+  const labelFor = (ds) => {
+    return `${ds?.metadata?.data_provenance?.full_dataset_name || ds?.tdei_dataset_id || "Unnamed Dataset"} (v${ds?.metadata?.dataset_detail?.version || ""})`;
+  };
 
   const handleSelect = (ds) => {
     setSelectedDataset(ds);
