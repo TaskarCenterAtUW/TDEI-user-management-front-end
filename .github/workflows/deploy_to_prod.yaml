@@ -26,6 +26,7 @@ jobs:
           echo REACT_APP_ANDROID_INSTALL_URL=${{vars.REACT_APP_ANDROID_INSTALL_URL}} >> tdei-ui/.env
           echo REACT_APP_SPATIAL_GUIDE_URL=${{vars.REACT_APP_SPATIAL_GUIDE_URL}} >> tdei-ui/.env
           echo REACT_APP_DEFAULT_SHARE_REFERRAL_CODE=${{vars.REACT_APP_DEFAULT_SHARE_REFERRAL_CODE}} >> tdei-ui/.env
+          echo REACT_APP_KEYCLOAK_CLIENT_ID=${{vars.REACT_APP_KEYCLOAK_CLIENT_ID}} >> tdei-ui/.env
       - name: Build react app
         run: |
           cd tdei-ui && npm install

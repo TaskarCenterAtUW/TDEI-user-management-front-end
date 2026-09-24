@@ -135,6 +135,44 @@ export const SAMPLE_SPATIAL_JOIN = {
   join_filter_source: "highway='street_lamp'",
   aggregate: ["ARRAY_AGG(highway) as lamps"],
 };
+export const UNION_ENTITY_FILTERS_SAMPLE = {
+  edge: {
+    filters: [
+      { highway: "footway", footway: "sidewalk" },
+      { highway: "footway", footway: "crossing" }
+    ],
+    duplicate_buffer_width: 2,
+    duplicate_overlap_percentage: 75
+  },
+  node: {
+    filters: [
+      { barrier: "kerb" }
+    ]
+  },
+  line: {
+    filters: [
+      { barrier: "fence" }
+    ],
+    duplicate_buffer_width: 1.5,
+    duplicate_overlap_percentage: 65
+  },
+  polygon: {
+    filters: [
+      { building: "yes" }
+    ],
+    duplicate_overlap_percentage: 80
+  },
+  zone: {
+    duplicate_overlap_percentage: 75
+  },
+  point: {
+    filters: [
+      { amenity: "bench" },
+      { highway: "street_lamp" }
+    ]
+  }
+};
+
 export const DEFAULT_PROJECT_GROUP_NAME = "TDEI Default";
 const APP_LINK_URL =
   process.env.REACT_APP_APP_LINK_URL ||

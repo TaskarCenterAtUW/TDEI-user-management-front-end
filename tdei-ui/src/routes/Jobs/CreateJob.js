@@ -20,6 +20,7 @@ import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import { useAuth } from "../../hooks/useAuth";
 import SpatialJoinForm from "./SpatialJoinForm";
+import UnionEntityFiltersForm, { makeDefaultEntityState, formStateToFilters } from "./UnionEntityFiltersForm";
 
 // Options for the Job Type dropdown
 const jobTypeOptions = [
@@ -157,6 +158,10 @@ const CreateJobService = () => {
     const [spatialTargetFilters, setSpatialTargetFilters] = useState([{ key: "", value: "" }]);
     const [spatialSourceFilters, setSpatialSourceFilters] = useState([{ key: "", value: "" }]);
     const [spatialAggregate, setSpatialAggregate] = useState([{ value: "" }]);
+    // Union entity filters state
+    const [isUnionJsonMode, setIsUnionJsonMode] = useState(false);
+    const [unionEntityFiltersJson, setUnionEntityFiltersJson] = useState("");
+    const [unionEntityFormState, setUnionEntityFormState] = useState(makeDefaultEntityState());
 
     const spatialAssignmentOptions = [
         { value: 'default', label: 'Default' },
@@ -265,6 +270,10 @@ const CreateJobService = () => {
         setSpatialSourceFilters([{ key: "", value: "" }]);
         setSpatialAggregate([{ value: "" }]);
         setSpatialAssignmentMethod({ value: 'default', label: 'Default' });
+        // Reset union entity filters
+        setIsUnionJsonMode(false);
+        setUnionEntityFiltersJson("");
+        setUnionEntityFormState(makeDefaultEntityState());
     }
 
     /**
@@ -590,15 +599,30 @@ const CreateJobService = () => {
             }
             uploadData.push(finalRequestBody);
         } else if (jobType.value === "dataset-union") {
+            // Build entity_filters from form or JSON mode
+            let entityFilters = null;
+            if (isUnionJsonMode) {
+                if (unionEntityFiltersJson.trim() !== "") {
+                    try {
+                        entityFilters = JSON.parse(unionEntityFiltersJson);
+                    } catch (e) {
+                        setValidateErrorMessage("Invalid JSON format in entity filters. Please check the syntax.");
+                        setShowValidateToast(true);
+                        return;
+                    }
+                }
+            } else {
+                entityFilters = formStateToFilters(unionEntityFormState);
+            }
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
                 if (!isNaN(proximityFloat)) {
-                    uploadData.push(firstDatasetId, secondDatasetId, proximityFloat);
+                    uploadData.push(firstDatasetId, secondDatasetId, proximityFloat, entityFilters);
                 } else {
-                    uploadData.push(firstDatasetId, secondDatasetId);
+                    uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
                 }
             } else {
-                uploadData.push(firstDatasetId, secondDatasetId);
+                uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
             }
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
@@ -950,6 +974,28 @@ const CreateJobService = () => {
                     setSpatialRequestBody={setSpatialRequestBody}
                     handleShow={handleShow}
                 />
+            );
+        }
+
+        if (jobType.value === "dataset-union") {
+            return (
+                <>
+                    {fields.map(renderField)}
+                    <div style={{ marginTop: '25px' }}>
+                        <div className={style.dottedLine} />
+                        <div className={style.formItems}>
+                            <label className={style.formLabelP}>Entity Filters <span className={style.fieldHint} style={{ display: 'inline' }}>(optional)</span></label>
+                            <UnionEntityFiltersForm
+                                isJsonMode={isUnionJsonMode}
+                                setIsJsonMode={setIsUnionJsonMode}
+                                entityFiltersJson={unionEntityFiltersJson}
+                                setEntityFiltersJson={setUnionEntityFiltersJson}
+                                entityFormState={unionEntityFormState}
+                                setEntityFormState={setUnionEntityFormState}
+                            />
+                        </div>
+                    </div>
+                </>
             );
         }
 
