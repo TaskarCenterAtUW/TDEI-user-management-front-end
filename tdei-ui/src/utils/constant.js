@@ -135,6 +135,10 @@ export const SAMPLE_SPATIAL_JOIN = {
   join_filter_source: "highway='street_lamp'",
   aggregate: ["ARRAY_AGG(highway) as lamps"],
 };
+
+// Change to true when union entity filters are ready to be exposed.
+export const ENABLE_UNION_ENTITY_FILTERS = false;
+
 export const UNION_ENTITY_FILTERS_SAMPLE = {
   edge: {
     filters: [

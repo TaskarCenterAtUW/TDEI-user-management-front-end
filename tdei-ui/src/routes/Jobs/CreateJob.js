@@ -16,7 +16,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
-import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
+import { ENABLE_UNION_ENTITY_FILTERS, SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import { useAuth } from "../../hooks/useAuth";
 import SpatialJoinForm from "./SpatialJoinForm";
@@ -599,30 +599,44 @@ const CreateJobService = () => {
             }
             uploadData.push(finalRequestBody);
         } else if (jobType.value === "dataset-union") {
-            // Build entity_filters from form or JSON mode
-            let entityFilters = null;
-            if (isUnionJsonMode) {
-                if (unionEntityFiltersJson.trim() !== "") {
-                    try {
-                        entityFilters = JSON.parse(unionEntityFiltersJson);
-                    } catch (e) {
-                        setValidateErrorMessage("Invalid JSON format in entity filters. Please check the syntax.");
-                        setShowValidateToast(true);
-                        return;
+            if (ENABLE_UNION_ENTITY_FILTERS) {
+                // Build entity_filters from form or JSON mode
+                let entityFilters = null;
+                if (isUnionJsonMode) {
+                    if (unionEntityFiltersJson.trim() !== "") {
+                        try {
+                            entityFilters = JSON.parse(unionEntityFiltersJson);
+                        } catch (e) {
+                            setValidateErrorMessage("Invalid JSON format in entity filters. Please check the syntax.");
+                            setShowValidateToast(true);
+                            return;
+                        }
                     }
+                } else {
+                    entityFilters = formStateToFilters(unionEntityFormState);
                 }
-            } else {
-                entityFilters = formStateToFilters(unionEntityFormState);
-            }
-            if (proximity) {
-                const proximityFloat = parseFloat(proximity);
-                if (!isNaN(proximityFloat)) {
-                    uploadData.push(firstDatasetId, secondDatasetId, proximityFloat, entityFilters);
+                if (proximity) {
+                    const proximityFloat = parseFloat(proximity);
+                    if (!isNaN(proximityFloat)) {
+                        uploadData.push(firstDatasetId, secondDatasetId, proximityFloat, entityFilters);
+                    } else {
+                        uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
+                    }
                 } else {
                     uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
                 }
             } else {
-                uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
+                // Preserve the original union request while entity filters are disabled.
+                if (proximity) {
+                    const proximityFloat = parseFloat(proximity);
+                    if (!isNaN(proximityFloat)) {
+                        uploadData.push(firstDatasetId, secondDatasetId, proximityFloat);
+                    } else {
+                        uploadData.push(firstDatasetId, secondDatasetId);
+                    }
+                } else {
+                    uploadData.push(firstDatasetId, secondDatasetId);
+                }
             }
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
@@ -977,7 +991,7 @@ const CreateJobService = () => {
             );
         }
 
-        if (jobType.value === "dataset-union") {
+        if (jobType.value === "dataset-union" && ENABLE_UNION_ENTITY_FILTERS) {
             return (
                 <>
                     {fields.map(renderField)}
