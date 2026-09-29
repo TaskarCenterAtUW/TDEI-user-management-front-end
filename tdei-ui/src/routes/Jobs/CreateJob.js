@@ -16,7 +16,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
-import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
+import { ENABLE_UNION_ENTITY_FILTERS, SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import { useAuth } from "../../hooks/useAuth";
 import SpatialJoinForm from "./SpatialJoinForm";
@@ -97,9 +97,27 @@ const formConfig = {
         { label: "Spatial join operation request body", type: "textarea", stateSetter: "setSpatialRequestBody" }
     ],
     "dataset-union": [
-        { label: "First Dataset Id", type: "text", stateSetter: "setDatasetIdOne" },
-        { label: "Second Dataset Id", type: "text", stateSetter: "setDatasetIdTwo" },
-        { label: "Proximity", type: "text", stateSetter: "setProximity" }
+        {
+            label: "Base Dataset Id",
+            type: "text",
+            stateSetter: "setDatasetIdOne",
+            placeholder: "Enter or search the base dataset",
+            helperText: "The authoritative dataset. Its positions, IDs and attribute values are kept wherever the two datasets disagree."
+        },
+        {
+            label: "Dataset to Merge In",
+            type: "text",
+            stateSetter: "setDatasetIdTwo",
+            placeholder: "Enter or search the dataset to merge in",
+            helperText: "Its new features are added and its extra attributes copied onto matching base features. Features that duplicate the base are dropped."
+        },
+        {
+            label: "Proximity (m) (optional)",
+            type: "text",
+            stateSetter: "setProximity",
+            placeholder: "0.5 (default)",
+            helperText: "How close, in metres, two nodes or two points must be to count as the same place. Leave blank to use 0.5 m."
+        }
     ],
     "dataset-self-merge": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
@@ -341,6 +359,9 @@ const CreateJobService = () => {
 
     // Retrieves the description for a given job type from the API specification.
     const getDescription = (jobType) => {
+        if (jobType === "dataset-union") {
+            return "Combines two OpenSidewalks datasets into one new dataset. Features that describe the same real-world thing are merged, everything else from both datasets is kept, and the two pedestrian networks are connected wherever they meet.";
+        }
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
     };
@@ -400,9 +421,9 @@ const CreateJobService = () => {
     };
     const getUnionDescription = (label) => {
         const path = getPathFromJobType("dataset-union");
-        if (label === "First Dataset Id") {
+        if (label === "Base Dataset Id") {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_one?.description || "";
-        } else if (label === "Second Dataset Id") {
+        } else if (label === "Dataset to Merge In") {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.tdei_dataset_id_two?.description || "";
         } else {
             return apiSpec.paths[path]?.post?.requestBody?.content["application/json"]?.schema?.properties?.proximity?.description || "";
@@ -493,7 +514,7 @@ const CreateJobService = () => {
             }
         }
         if (jobType.value === "dataset-union" && (!firstDatasetId || !secondDatasetId)) {
-            setValidateErrorMessage("First and Second Dataset Ids are required for Job Union");
+            setValidateErrorMessage("Base Dataset Id and Dataset to Merge In are required for Dataset Union");
             setShowValidateToast(true);
             return;
         }
@@ -599,30 +620,44 @@ const CreateJobService = () => {
             }
             uploadData.push(finalRequestBody);
         } else if (jobType.value === "dataset-union") {
-            // Build entity_filters from form or JSON mode
-            let entityFilters = null;
-            if (isUnionJsonMode) {
-                if (unionEntityFiltersJson.trim() !== "") {
-                    try {
-                        entityFilters = JSON.parse(unionEntityFiltersJson);
-                    } catch (e) {
-                        setValidateErrorMessage("Invalid JSON format in entity filters. Please check the syntax.");
-                        setShowValidateToast(true);
-                        return;
+            if (ENABLE_UNION_ENTITY_FILTERS) {
+                // Build entity_filters from form or JSON mode
+                let entityFilters = null;
+                if (isUnionJsonMode) {
+                    if (unionEntityFiltersJson.trim() !== "") {
+                        try {
+                            entityFilters = JSON.parse(unionEntityFiltersJson);
+                        } catch (e) {
+                            setValidateErrorMessage("Invalid JSON format in entity filters. Please check the syntax.");
+                            setShowValidateToast(true);
+                            return;
+                        }
                     }
+                } else {
+                    entityFilters = formStateToFilters(unionEntityFormState);
                 }
-            } else {
-                entityFilters = formStateToFilters(unionEntityFormState);
-            }
-            if (proximity) {
-                const proximityFloat = parseFloat(proximity);
-                if (!isNaN(proximityFloat)) {
-                    uploadData.push(firstDatasetId, secondDatasetId, proximityFloat, entityFilters);
+                if (proximity) {
+                    const proximityFloat = parseFloat(proximity);
+                    if (!isNaN(proximityFloat)) {
+                        uploadData.push(firstDatasetId, secondDatasetId, proximityFloat, entityFilters);
+                    } else {
+                        uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
+                    }
                 } else {
                     uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
                 }
             } else {
-                uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
+                // Preserve the original union request while entity filters are disabled.
+                if (proximity) {
+                    const proximityFloat = parseFloat(proximity);
+                    if (!isNaN(proximityFloat)) {
+                        uploadData.push(firstDatasetId, secondDatasetId, proximityFloat);
+                    } else {
+                        uploadData.push(firstDatasetId, secondDatasetId);
+                    }
+                } else {
+                    uploadData.push(firstDatasetId, secondDatasetId);
+                }
             }
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
@@ -711,15 +746,19 @@ const CreateJobService = () => {
             };
 
             return (
-                <Form.Group key={index} controlId={field.label} className={style.formItem}>
+                <Form.Group
+                    key={index}
+                    controlId={field.label}
+                    className={`${style.formItem} ${jobType?.value === "dataset-union" && field.stateSetter !== "setProximity" ? style.unionFormItem : ''}`}
+                >
                     <Form.Label>
                         {field.label}
-                        {!(["dataset-union", "dataset-self-merge"].includes(jobType?.value) && field.label === "Proximity") && (
+                        {!(["dataset-union", "dataset-self-merge"].includes(jobType?.value) && field.stateSetter === "setProximity") && (
                             <span style={{ color: 'red' }}> *</span>
                         )}
                     </Form.Label>
                     <Form.Control
-                        placeholder={`Enter ${field.label}`}
+                        placeholder={field.placeholder || `Enter ${field.label}`}
                         type="text"
                         className={isSpecialJobType ? style.createJobSelectType : ''}
                         name={field.label}
@@ -728,7 +767,7 @@ const CreateJobService = () => {
                     />
                     <div className="d-flex align-items-start mt-2">
                         <Form.Text id="passwordHelpBlock" className={style.description}>
-                            {getDescriptionForField(field.label)}
+                            {field.helperText || getDescriptionForField(field.label)}
                         </Form.Text>
                     </div>
                 </Form.Group>
@@ -977,7 +1016,7 @@ const CreateJobService = () => {
             );
         }
 
-        if (jobType.value === "dataset-union") {
+        if (jobType.value === "dataset-union" && ENABLE_UNION_ENTITY_FILTERS) {
             return (
                 <>
                     {fields.map(renderField)}
@@ -992,6 +1031,7 @@ const CreateJobService = () => {
                                 setEntityFiltersJson={setUnionEntityFiltersJson}
                                 entityFormState={unionEntityFormState}
                                 setEntityFormState={setUnionEntityFormState}
+                                proximity={proximity}
                             />
                         </div>
                     </div>
