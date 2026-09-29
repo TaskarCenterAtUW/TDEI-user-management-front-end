@@ -1,4 +1,6 @@
-# Getting Started with Create React App
+# TDEI User Management - Front End
+
+This is the front-end application for the **Transit Data Exchange Infrastructure (TDEI)** User Management portal. It provides a UI for managing users, roles, workspaces, datasets, and permissions across the TDEI platform.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
