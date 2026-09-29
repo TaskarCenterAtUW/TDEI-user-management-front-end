@@ -136,8 +136,7 @@ export const SAMPLE_SPATIAL_JOIN = {
   aggregate: ["ARRAY_AGG(highway) as lamps"],
 };
 
-// Change to true when union entity filters are ready to be exposed.
-export const ENABLE_UNION_ENTITY_FILTERS = false;
+export const ENABLE_UNION_ENTITY_FILTERS = true;
 
 export const UNION_ENTITY_FILTERS_SAMPLE = {
   edge: {
@@ -167,6 +166,9 @@ export const UNION_ENTITY_FILTERS_SAMPLE = {
     duplicate_overlap_percentage: 80
   },
   zone: {
+    filters: [
+      { highway: "pedestrian" }
+    ],
     duplicate_overlap_percentage: 75
   },
   point: {

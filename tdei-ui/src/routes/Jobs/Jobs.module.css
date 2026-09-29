@@ -480,6 +480,10 @@
   margin-right: 0;
 }
 
+.unionFormItem {
+  margin-bottom: 20px;
+}
+
 .dottedLine {
   display: flex;
   align-items: center;
@@ -1035,4 +1039,11 @@
   font-size: inherit;
   margin-bottom: 8px;
   width: auto;
+}
+
+.entityPresetGrid {
+  display: grid;
+  gap: 8px 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-bottom: 8px;
 }
