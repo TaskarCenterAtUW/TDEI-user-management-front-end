@@ -135,6 +135,9 @@ export const SAMPLE_SPATIAL_JOIN = {
   join_filter_source: "highway='street_lamp'",
   aggregate: ["ARRAY_AGG(highway) as lamps"],
 };
+
+export const ENABLE_UNION_ENTITY_FILTERS = true;
+
 export const UNION_ENTITY_FILTERS_SAMPLE = {
   edge: {
     filters: [
@@ -163,6 +166,9 @@ export const UNION_ENTITY_FILTERS_SAMPLE = {
     duplicate_overlap_percentage: 80
   },
   zone: {
+    filters: [
+      { highway: "pedestrian" }
+    ],
     duplicate_overlap_percentage: 75
   },
   point: {
