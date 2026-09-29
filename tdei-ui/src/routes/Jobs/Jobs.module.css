@@ -362,6 +362,19 @@
   margin-bottom: 5px;
 }
 
+.jobDetailJsonValue {
+  background: var(--purple-background-light);
+  border: 1px solid #DDDDDD;
+  border-radius: 4px;
+  color: inherit;
+  font: normal normal normal 14px/20px monospace;
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 8px 10px;
+  white-space: pre-wrap;
+}
+
 .progressBarContainer {
   width: 80%;
   margin: 0 auto;
@@ -595,6 +608,7 @@
 .sortableHeader {
   display: flex;
   align-items: center;
+
   .sortButton {
     background: none;
     border: none;
@@ -821,7 +835,7 @@
 
 .fieldHint {
   font-size: 12px;
-  color: #858796;
+  color: var(--secondary-color);
   margin-top: 4px;
   display: block;
 }
@@ -875,7 +889,8 @@
 
 .addBtn {
   margin-top: 5px;
-  padding: 5px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   border-radius: 5px;
   border: 1px dashed var(--tdei-blue);
   background-color: transparent;
@@ -890,5 +905,134 @@
   color: #d9534f;
   cursor: pointer;
   font-size: 18px;
-  padding: 0 5px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px;
+}
+
+.entitySectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.entitySection {
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 4px 12px;
+}
+
+.entityCheckbox {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  margin-bottom: 0;
+  min-height: 44px;
+  padding-left: 0;
+  position: relative;
+  width: 24px;
+}
+
+.entityCheckbox :global(.form-check-input) {
+  float: none;
+  margin: 0;
+}
+
+.entityCheckbox :global(.form-check-label) {
+  inset: 0;
+  cursor: pointer;
+  padding: 0;
+  position: absolute;
+}
+
+.entitySectionHeading {
+  flex: 1;
+  margin: 0;
+}
+
+.entityCollapseBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  text-align: left;
+  width: 100%;
+}
+
+.entitySectionTitle {
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.entityArrowContainer {
+  display: flex;
+  line-height: 0;
+}
+
+.entitySectionPanel {
+  margin-top: 4px;
+  padding-bottom: 8px;
+  padding-left: 32px;
+}
+
+.entityArrowIcon {
+  border-bottom: 2px solid var(--secondary-color);
+  border-right: 2px solid var(--secondary-color);
+  display: block;
+  height: 8px;
+  width: 8px;
+}
+
+.entityArrowDown {
+  transform: rotate(45deg);
+}
+
+.entityArrowUp {
+  transform: rotate(225deg);
+}
+
+.entityCollapseBtn [data-arrow="upArrow"] {
+  display: none;
+}
+
+.entityCollapseBtn[data-open="true"] [data-arrow="upArrow"] {
+  display: inline-block;
+}
+
+.entityCollapseBtn[data-open="true"] [data-arrow="downArrow"] {
+  display: none;
+}
+
+.inlineLinkButton {
+  appearance: none;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  min-height: 24px;
+  padding: 0 2px;
+  text-decoration: underline;
+}
+
+.entityFilterFieldset {
+  border: 0;
+  margin: 0 0 16px;
+  min-width: 0;
+  padding: 0;
+}
+
+.entityFilterLegend {
+  float: none;
+  font-size: inherit;
+  margin-bottom: 8px;
+  width: auto;
 }

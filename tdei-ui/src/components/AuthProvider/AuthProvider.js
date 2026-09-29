@@ -9,6 +9,16 @@ import { clear } from "../../store";
 import { useDispatch } from "react-redux";
 import { useQueryClient } from "react-query";
 import { isShareDatasetRoute } from "../../utils";
+import {
+  getSsoLoginCallbackUri,
+  getSsoLogoutCallbackUri,
+  SSO_API_URL,
+  SSO_CLIENT_ID,
+  SSO_LOGIN_CALLBACK_PATH,
+  SSO_LOGOUT_CALLBACK_PATH,
+} from "../../services/ssoConfig";
+
+const SSO_RETURN_TO_KEY = "tdeiSsoReturnTo";
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -27,6 +37,8 @@ const AuthProvider = ({ children }) => {
 
     const anonymousPaths = new Set([
       "/login",
+      SSO_LOGIN_CALLBACK_PATH,
+      SSO_LOGOUT_CALLBACK_PATH,
       "/register",
       "/forgotpassword",
       "/passwordreset",
@@ -117,7 +129,7 @@ const AuthProvider = ({ children }) => {
       }
     }
 
-    // Relogin: when token-expired event fires (e.g., 401 during API), open modal.
+    // Let the user choose whether to restore or end an expired SSO session.
     setTokenExpiredCallback(() => {
       if (sessionStorage.getItem('handoffInProgress') === '1') return;
       setIsReLoginOpen(true);
@@ -198,7 +210,7 @@ const AuthProvider = ({ children }) => {
           window.location.reload();
           break;
         case "forceLogout":
-          window.location.replace("/login");
+          window.location.replace("/logout/callback");
           break;
         default:
           // do nothing
@@ -210,6 +222,70 @@ const AuthProvider = ({ children }) => {
       window.removeEventListener("storage", handleStorageEvent);
     };
   }, []);
+
+  const normalizeReturnTo = (returnTo) => {
+    let returnPath = "/";
+
+    if (typeof returnTo === "string") {
+      returnPath = returnTo;
+    } else if (returnTo?.pathname) {
+      returnPath = `${returnTo.pathname}${returnTo.search || ""}${returnTo.hash || ""}`;
+    }
+
+    return returnPath.startsWith("/") && !returnPath.startsWith("//")
+      ? returnPath
+      : "/";
+  };
+
+  const startSsoLogin = (returnTo = "/") => {
+    sessionStorage.setItem(SSO_RETURN_TO_KEY, normalizeReturnTo(returnTo));
+
+    const ssoRedirectUrl = new URL(`${SSO_API_URL}/sso-redirect`);
+    ssoRedirectUrl.searchParams.set("redirect_uri", getSsoLoginCallbackUri());
+
+    window.location.assign(ssoRedirectUrl.toString());
+  };
+
+  const completeSsoLogin = async (callbackParameters) => {
+    const { code, state } = callbackParameters;
+    const clientId = callbackParameters.clientId || SSO_CLIENT_ID;
+
+    if (!code || !state) {
+      throw new Error("TDEI SSO callback is missing code or state.");
+    }
+
+    const loginRequest = { code, state };
+    if (clientId) loginRequest.clientId = clientId;
+
+    const response = await axios.post(
+      `${SSO_API_URL}/sso-login`,
+      loginRequest
+    );
+
+    const accessToken = response.data?.access_token;
+    const refreshToken = response.data?.refresh_token;
+
+    if (!accessToken || !refreshToken) {
+      throw new Error("TDEI SSO response did not include authentication tokens.");
+    }
+
+    const tokenDetails = decodeToken(accessToken);
+    if (!tokenDetails) {
+      throw new Error("TDEI SSO returned an invalid or expired access token.");
+    }
+
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("forceRefresh", Date.now().toString());
+    setUserContext(tokenDetails);
+
+    const returnTo = normalizeReturnTo(
+      sessionStorage.getItem(SSO_RETURN_TO_KEY) || "/"
+    );
+    sessionStorage.removeItem(SSO_RETURN_TO_KEY);
+
+    return returnTo;
+  };
 
 
   const signin = async ({ username, password }, successCallback, errorCallback) => {
@@ -242,36 +318,31 @@ const AuthProvider = ({ children }) => {
   };
 
 
-  const handleReLogin = async (password) => {
-    const email = user?.emailId;
-    if (!email) return;
-
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL}/authenticate`,
-        { username: email, password },
-        {
-          session_timeout_login_request: true
-        }
-      );
-      const accessToken = response.data.access_token;
-      const refreshToken = response.data.refresh_token;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      // localStorage.removeItem("relogin");
-      let tokenDetails = decodeToken(accessToken);
-      setUserContext(tokenDetails);
-      setIsReLoginOpen(false);
-      /// Reloading the window after successful relogin
-      window.location.reload();
-    } catch (err) {
-      console.error("Re-login failed", err);
-      setToastMessage({
-        showtoast: true,
-        message: "Error while trying to re-login. Please verify your credentials and try again!",
-        type: "warning",
-      });
+  const beginSignout = () => {
+    const logoutUrl = new URL(`${SSO_API_URL}/sso-logout`);
+    logoutUrl.searchParams.set("redirect_uri", getSsoLogoutCallbackUri());
+    if (SSO_CLIENT_ID) {
+      logoutUrl.searchParams.set("client_id", SSO_CLIENT_ID);
     }
+
+    window.location.assign(logoutUrl.toString());
+  };
+
+  const handleSessionRestore = () => {
+    setIsReLoginOpen(false);
+    startSsoLogin(location);
+  };
+
+  const handleExpiredSessionLogout = () => {
+    setIsReLoginOpen(false);
+
+    // Keep other tabs on the same origin in sync with this logout.
+    localStorage.setItem("forceLogout", Date.now().toString());
+    setTimeout(() => {
+      localStorage.removeItem("forceLogout");
+    }, 0);
+
+    beginSignout();
   };
 
   const signout = () => {
@@ -286,23 +357,31 @@ const AuthProvider = ({ children }) => {
     setUser(null);
     dispatch(clear());
     localStorage.removeItem("selectedProjectGroup"); 
-    navigate("/login");
+    window.location.replace("/login");
   };
 
   const handleCloseToast = () => {
     setToastMessage({ ...toastMessage, showtoast: false });
   };
 
-  let value = { user, signin, signout, setIsReLoginOpen, isReLoginOpen };
+  let value = {
+    user,
+    signin,
+    signout,
+    beginSignout,
+    startSsoLogin,
+    completeSsoLogin,
+    setIsReLoginOpen,
+    isReLoginOpen,
+  };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
       <ReLoginModal
         open={isReLoginOpen}
-        onClose={() => setIsReLoginOpen(false)}
-        onReLogin={handleReLogin}
-        email={user?.emailId}
+        onLogout={handleExpiredSessionLogout}
+        onReLogin={handleSessionRestore}
       />
       <ResponseToast
         showtoast={toastMessage.showtoast}
