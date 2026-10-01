@@ -299,7 +299,7 @@ const Members = () => {
           title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
-        notice="User removal may take up to 15 seconds to appear."
+        notice="User removal is immediate in TDEI and may take up to 15 seconds to appear in Workspaces."
         handler={handleRemoveUser}
         isLoading={removeUserLoading}
       />

@@ -163,7 +163,8 @@ const AssignRoles = (props) => {
                       <Form.Group className="mb-3" controlId="rolesData">
                         <Form.Label>Select Roles</Form.Label>
                         <div className={style.visibilityDelayNotice}>
-                          Role changes may take up to 15 seconds to appear.
+                          Role changes are immediate in TDEI and may take up to
+                          15 seconds to appear in Workspaces.
                         </div>
                         {isError && (
                           <div className={style.danger}>
@@ -257,7 +258,7 @@ const AssignRoles = (props) => {
           title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
-        notice="User removal may take up to 15 seconds to appear."
+        notice="User removal is immediate in TDEI and may take up to 15 seconds to appear in Workspaces."
         handler={handleRemoveUser}
         isLoading={isLoading}
       />
