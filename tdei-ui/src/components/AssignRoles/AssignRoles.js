@@ -162,6 +162,9 @@ const AssignRoles = (props) => {
                     {({ field, form }) => (
                       <Form.Group className="mb-3" controlId="rolesData">
                         <Form.Label>Select Roles</Form.Label>
+                        <div className={style.visibilityDelayNotice}>
+                          Role changes may take up to 15 seconds to appear.
+                        </div>
                         {isError && (
                           <div className={style.danger}>
                             Error in loading roles
@@ -236,12 +239,7 @@ const AssignRoles = (props) => {
                   <Button
                     type="submit"
                     className="tdei-primary-button"
-                    aria-disabled={isLoading || !dirty}
-                    onClick={(e) => {
-                      if (isLoading || !dirty) {
-                        e.preventDefault();
-                      }
-                    }}
+                    disabled={isLoading || !dirty}
                   >
                     {(isLoading && !showConfirmModal) ? "Assigning..." : "Assign"}
                   </Button>
@@ -259,6 +257,7 @@ const AssignRoles = (props) => {
           title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
+        notice="User removal may take up to 15 seconds to appear."
         handler={handleRemoveUser}
         isLoading={isLoading}
       />

@@ -299,6 +299,7 @@ const Members = () => {
           title: "Remove User",
           details: "Are you sure you want to remove the selected user from the project group?",
         }}
+        notice="User removal may take up to 15 seconds to appear."
         handler={handleRemoveUser}
         isLoading={removeUserLoading}
       />
