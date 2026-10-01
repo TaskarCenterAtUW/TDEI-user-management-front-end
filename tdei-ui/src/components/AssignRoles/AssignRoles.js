@@ -163,7 +163,7 @@ const AssignRoles = (props) => {
                       <Form.Group className="mb-3" controlId="rolesData">
                         <Form.Label>Select Roles</Form.Label>
                         <div className={style.visibilityDelayNotice}>
-                          Role changes are immediate in TDEI and may take up to
+                          Role changes are immediate in the TDEI portal and may take up to
                           15 seconds to appear in Workspaces.
                         </div>
                         {isError && (
