@@ -19,6 +19,11 @@ const DeleteModal = (props) => {
           </div>
           <div className={style.title}>{props.message.title}</div>
           <div className={style.message}>{props.message.details}</div>
+          {props.notice && (
+            <div className={style.notice} role="note">
+              {props.notice}
+            </div>
+          )}
         </div>
       </Modal.Body>
       <Modal.Footer>
