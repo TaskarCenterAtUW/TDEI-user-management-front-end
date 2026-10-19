@@ -2,19 +2,14 @@ import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { UNION_ENTITY_FILTERS_SAMPLE } from '../../utils/constant';
 import style from './Jobs.module.css';
-
-const ENTITY_TYPES = ['edge', 'node', 'point', 'line', 'polygon', 'zone'];
-
-const SUPPORTS_BUFFER = ['edge', 'line'];
-const SUPPORTS_OVERLAP = ['edge', 'line', 'polygon', 'zone'];
+import { UNION_ENTITY_CONFIG, UNION_ENTITY_TYPES } from './UnionEntityFiltersForm.config';
 
 export function makeDefaultEntityState() {
-    return ENTITY_TYPES.reduce((acc, type) => {
+    return UNION_ENTITY_TYPES.reduce((acc, type) => {
         acc[type] = {
             enabled: false,
-            filters: [{ key: '', value: '' }],
+            filters: type === 'polygon' ? [{ '': '' }] : [],
             bufferWidth: '',
             overlapPct: '',
         };
@@ -24,22 +19,27 @@ export function makeDefaultEntityState() {
 
 export function formStateToFilters(entityState) {
     const result = {};
-    ENTITY_TYPES.forEach((type) => {
+    UNION_ENTITY_TYPES.forEach((type) => {
         const s = entityState[type];
+        const config = UNION_ENTITY_CONFIG[type];
         if (!s.enabled) return;
 
         const entry = {};
-        const validFilters = s.filters.filter(
-            (f) => f.key.trim() !== '' && f.value.trim() !== ''
-        );
+        const validFilters = s.filters.filter((filter) => {
+            if (!filter || typeof filter !== 'object' || Array.isArray(filter)) return false;
+            const entries = Object.entries(filter);
+            return entries.length > 0 && entries.every(([key, value]) => (
+                key.trim() !== '' && typeof value === 'string' && value.trim() !== ''
+            ));
+        });
         if (validFilters.length > 0) {
-            entry.filters = validFilters.map((f) => ({ [f.key.trim()]: f.value.trim() }));
+            entry.filters = validFilters.map((filter) => ({ ...filter }));
         }
-        if (SUPPORTS_BUFFER.includes(type) && s.bufferWidth !== '') {
+        if (config.supportsBuffer && s.bufferWidth !== '') {
             const v = parseFloat(s.bufferWidth);
             if (!isNaN(v)) entry.duplicate_buffer_width = v;
         }
-        if (SUPPORTS_OVERLAP.includes(type) && s.overlapPct !== '') {
+        if (config.supportsOverlap && s.overlapPct !== '') {
             const v = parseFloat(s.overlapPct);
             if (!isNaN(v)) entry.duplicate_overlap_percentage = v;
         }
@@ -52,16 +52,15 @@ export function filtersToFormState(filters) {
     const state = makeDefaultEntityState();
     if (!filters || typeof filters !== 'object') return state;
 
-    ENTITY_TYPES.forEach((type) => {
+    UNION_ENTITY_TYPES.forEach((type) => {
         if (filters[type]) {
             const entry = filters[type];
             state[type].enabled = true;
 
             if (Array.isArray(entry.filters) && entry.filters.length > 0) {
-                state[type].filters = entry.filters.map((f) => {
-                    const keys = Object.keys(f);
-                    return { key: keys[0] || '', value: f[keys[0]] || '' };
-                });
+                state[type].filters = entry.filters
+                    .filter((filter) => filter && typeof filter === 'object' && !Array.isArray(filter))
+                    .map((filter) => ({ ...filter }));
             }
             if (entry.duplicate_buffer_width !== undefined) {
                 state[type].bufferWidth = String(entry.duplicate_buffer_width);
@@ -81,6 +80,7 @@ const UnionEntityFiltersForm = ({
     setEntityFiltersJson,
     entityFormState,
     setEntityFormState,
+    proximity,
 }) => {
     const [openSections, setOpenSections] = useState({});
 
@@ -105,29 +105,49 @@ const UnionEntityFiltersForm = ({
         }
     };
 
-    const addFilter = (type) => {
+    const filtersMatch = (left, right) => {
+        const leftKeys = Object.keys(left).sort();
+        const rightKeys = Object.keys(right).sort();
+        return leftKeys.length === rightKeys.length
+            && leftKeys.every((key, index) => key === rightKeys[index] && left[key] === right[key]);
+    };
+
+    const togglePreset = (type, tags, checked) => {
+        setEntityFormState((prev) => {
+            const filters = prev[type].filters.filter((filter) => !filtersMatch(filter, tags));
+            if (checked) filters.push({ ...tags });
+            return { ...prev, [type]: { ...prev[type], filters } };
+        });
+    };
+
+    const addPolygonFilter = () => {
         setEntityFormState((prev) => ({
             ...prev,
-            [type]: {
-                ...prev[type],
-                filters: [...prev[type].filters, { key: '', value: '' }],
+            polygon: {
+                ...prev.polygon,
+                filters: [...prev.polygon.filters, { '': '' }],
             },
         }));
     };
 
-    const removeFilter = (type, idx) => {
-        setEntityFormState((prev) => {
-            const newFilters = [...prev[type].filters];
-            newFilters.splice(idx, 1);
-            return { ...prev, [type]: { ...prev[type], filters: newFilters } };
-        });
+    const removePolygonFilter = (index) => {
+        setEntityFormState((prev) => ({
+            ...prev,
+            polygon: {
+                ...prev.polygon,
+                filters: prev.polygon.filters.filter((_, filterIndex) => filterIndex !== index),
+            },
+        }));
     };
 
-    const updateFilter = (type, idx, field, value) => {
+    const updatePolygonFilter = (index, field, value) => {
         setEntityFormState((prev) => {
-            const newFilters = [...prev[type].filters];
-            newFilters[idx] = { ...newFilters[idx], [field]: value };
-            return { ...prev, [type]: { ...prev[type], filters: newFilters } };
+            const filters = [...prev.polygon.filters];
+            const [currentKey = '', currentValue = ''] = Object.entries(filters[index] || {})[0] || [];
+            filters[index] = field === 'key'
+                ? { [value]: currentValue }
+                : { [currentKey]: value };
+            return { ...prev, polygon: { ...prev.polygon, filters } };
         });
     };
 
@@ -153,8 +173,8 @@ const UnionEntityFiltersForm = ({
     const renderEntitySection = (type) => {
         const s = entityFormState[type];
         const isOpen = Boolean(openSections[type]);
-        const supportsBuffer = SUPPORTS_BUFFER.includes(type);
-        const supportsOverlap = SUPPORTS_OVERLAP.includes(type);
+        const config = UNION_ENTITY_CONFIG[type];
+        const cardCopy = config.copy;
         const sectionButtonId = `${type}-entity-filters-button`;
         const sectionPanelId = `${type}-entity-filters-panel`;
         const sectionTitleId = `${type}-entity-filters-title`;
@@ -208,60 +228,82 @@ const UnionEntityFiltersForm = ({
                     >
                         <fieldset className={style.entityFilterFieldset} aria-describedby={filtersHelpId}>
                             <legend className={style.entityFilterLegend}>
-                                Tag Filters{' '}
+                                {cardCopy.filterLabel}{' '}
                                 <span className={style.fieldHint} style={{ display: 'inline', fontStyle: 'normal' }}>
                                     (optional)
                                 </span>
                             </legend>
-                            {s.filters.map((filter, idx) => (
-                                <div key={idx} className={style.filterRow}>
-                                    <Form.Control
-                                        className={style.filterInput}
-                                        placeholder="Key (e.g. highway)"
-                                        value={filter.key}
-                                        onChange={(e) => updateFilter(type, idx, 'key', e.target.value)}
-                                        aria-label={`${type} tag filter ${idx + 1} key`}
-                                        aria-describedby={filtersHelpId}
-                                        disabled={!s.enabled}
-                                    />
-                                    <Form.Control
-                                        className={style.filterInput}
-                                        placeholder="Value (e.g. footway)"
-                                        value={filter.value}
-                                        onChange={(e) => updateFilter(type, idx, 'value', e.target.value)}
-                                        aria-label={`${type} tag filter ${idx + 1} value`}
-                                        aria-describedby={filtersHelpId}
-                                        disabled={!s.enabled}
-                                    />
+                            {type === 'polygon' ? (
+                                <>
+                                    {s.filters.map((filter, index) => {
+                                        const [key = '', value = ''] = Object.entries(filter)[0] || [];
+                                        return (
+                                            <div key={index} className={style.filterRow}>
+                                                <Form.Control
+                                                    className={style.filterInput}
+                                                    placeholder="Key (e.g. building)"
+                                                    value={key}
+                                                    onChange={(e) => updatePolygonFilter(index, 'key', e.target.value)}
+                                                    aria-label={`polygon tag filter ${index + 1} key`}
+                                                    aria-describedby={filtersHelpId}
+                                                    disabled={!s.enabled}
+                                                />
+                                                <Form.Control
+                                                    className={style.filterInput}
+                                                    placeholder="Value (e.g. yes)"
+                                                    value={value}
+                                                    onChange={(e) => updatePolygonFilter(index, 'value', e.target.value)}
+                                                    aria-label={`polygon tag filter ${index + 1} value`}
+                                                    aria-describedby={filtersHelpId}
+                                                    disabled={!s.enabled}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className={style.removeBtn}
+                                                    onClick={() => removePolygonFilter(index)}
+                                                    disabled={!s.enabled || s.filters.length === 1}
+                                                    aria-label={`Remove polygon filter ${index + 1}`}
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
                                     <button
                                         type="button"
-                                        className={style.removeBtn}
-                                        onClick={() => removeFilter(type, idx)}
-                                        disabled={!s.enabled || s.filters.length === 1}
-                                        aria-label={`Remove ${type} filter ${idx + 1}`}
+                                        className={style.addBtn}
+                                        onClick={addPolygonFilter}
+                                        disabled={!s.enabled}
+                                        aria-label="Add polygon tag filter"
                                     >
-                                        ×
+                                        + Add condition
                                     </button>
+                                </>
+                            ) : (
+                                <div className={style.entityPresetGrid}>
+                                    {config.presets.map((preset) => {
+                                        const presetId = `${type}-${preset.name.toLowerCase().replace(/\s+/g, '-')}`;
+                                        return (
+                                            <Form.Check
+                                                key={preset.name}
+                                                id={presetId}
+                                                type="checkbox"
+                                                label={preset.name}
+                                                checked={s.filters.some((filter) => filtersMatch(filter, preset.tags))}
+                                                onChange={(e) => togglePreset(type, preset.tags, e.target.checked)}
+                                                disabled={!s.enabled}
+                                            />
+                                        );
+                                    })}
                                 </div>
-                            ))}
-                            <div>
-                                <button
-                                    type="button"
-                                    className={style.addBtn}
-                                    onClick={() => addFilter(type)}
-                                    disabled={!s.enabled}
-                                    aria-label={`Add ${type} tag filter`}
-                                >
-                                    + Add Filter
-                                </button>
-                            </div>
+                            )}
                             <span id={filtersHelpId} className={style.fieldHint}>
-                                Optional OSW tag key/value pairs to limit which features are eligible to merge. Blank rows are not sent.
+                                {cardCopy.filterHelp}
                             </span>
                         </fieldset>
 
                         <div className={style.formRow}>
-                            {supportsBuffer && (
+                            {config.supportsBuffer && (
                                 <Form.Group className={style.formItem} controlId={`${type}-bufferWidth`}>
                                     <Form.Label id={bufferLabelId}>
                                         Duplicate Buffer Width (m){' '}
@@ -272,7 +314,7 @@ const UnionEntityFiltersForm = ({
                                     <Form.Control
                                         type="number"
                                         step="any"
-                                        placeholder="e.g. 2"
+                                        placeholder={proximity || '0.5 (default)'}
                                         value={s.bufferWidth}
                                         onChange={(e) => updateEntityField(type, 'bufferWidth', e.target.value)}
                                         disabled={!s.enabled}
@@ -280,11 +322,11 @@ const UnionEntityFiltersForm = ({
                                         aria-describedby={bufferHelpId}
                                     />
                                     <span id={bufferHelpId} className={style.fieldHint}>
-                                        Buffer distance (in meters) used to detect duplicate geometries. Leave blank to omit it.
+                                        {cardCopy.bufferHelp}
                                     </span>
                                 </Form.Group>
                             )}
-                            {supportsOverlap && (
+                            {config.supportsOverlap && (
                                 <Form.Group className={style.formItem} controlId={`${type}-overlapPct`}>
                                     <Form.Label id={overlapLabelId}>
                                         Duplicate Overlap %{' '}
@@ -297,7 +339,7 @@ const UnionEntityFiltersForm = ({
                                         step="any"
                                         min="0"
                                         max="100"
-                                        placeholder="e.g. 75"
+                                        placeholder={cardCopy.overlapPlaceholder}
                                         value={s.overlapPct}
                                         onChange={(e) => updateEntityField(type, 'overlapPct', e.target.value)}
                                         disabled={!s.enabled}
@@ -305,7 +347,7 @@ const UnionEntityFiltersForm = ({
                                         aria-describedby={overlapHelpId}
                                     />
                                     <span id={overlapHelpId} className={style.fieldHint}>
-                                        Minimum overlap % (0–100) used to treat two features as duplicates. Leave blank to omit it.
+                                        {cardCopy.overlapHelp}
                                     </span>
                                 </Form.Group>
                             )}
@@ -324,30 +366,19 @@ const UnionEntityFiltersForm = ({
                 className="mb-1"
             >
                 <Tab eventKey="form" title={<span style={{ fontWeight: 600 }}>Form</span>} />
-                <Tab eventKey="json" title={<span style={{ fontWeight: 600 }}>Json</span>} />
+                <Tab eventKey="json" title={<span style={{ fontWeight: 600 }}>JSON</span>} />
             </Tabs>
 
             <div className={`mb-3 ${style.fieldHint}`} style={{ marginTop: '0', textAlign: 'left' }}>
-                This entire section and every property within it are optional. Blank properties are not sent. Use the form to configure entity filters per OSW type, or type the JSON directly. Inputs will automatically sync between the two views.
-                {' '}You can also{' '}
-                <button
-                    type="button"
-                    onClick={() => {
-                        setEntityFiltersJson(JSON.stringify(UNION_ENTITY_FILTERS_SAMPLE, null, 2));
-                        setIsJsonMode(true);
-                    }}
-                    className={style.inlineLinkButton}
-                >
-                    load the sample JSON
-                </button>.
+                Leave this section empty and every feature is eligible to merge with default settings. Tick a file type to restrict which of its features may merge, or to change how its duplicates are detected. File types you leave unticked keep the defaults.
             </div>
 
             {!isJsonMode ? (
                 <div>
                     <p className={style.fieldHint} style={{ marginBottom: '16px' }}>
-                        Enable only the entity types you want to configure, then expand them to set any optional tag filters or duplicate-detection thresholds. Leave all unchecked to omit entity filters and merge all features.
+                        Filters control which features are merged. Features that do not match a filter are retained in the output and remain connected to the network.
                     </p>
-                    {ENTITY_TYPES.map(renderEntitySection)}
+                    {UNION_ENTITY_TYPES.map(renderEntitySection)}
                 </div>
             ) : (
                 <div style={{ marginTop: '10px' }}>
