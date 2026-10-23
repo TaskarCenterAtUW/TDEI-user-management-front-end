@@ -5,6 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import style from "../LoginPage/style.module.css";
 import tempLogo from "../../assets/img/tdei-logo.png";
 import { isShareDatasetRoute } from "../../utils";
+import { getReferralCodeDetails, postAssignReferralCode } from "../../services";
 
 const AuthCallback = () => {
   const auth = useAuth();
@@ -37,14 +38,50 @@ const AuthCallback = () => {
 
         if (isShareDatasetReturn) {
           sessionStorage.removeItem("referralCode");
+          navigate(returnTo, { replace: true });
+          return;
         }
 
-        navigate(returnTo, {
-          replace: true,
-          state: !isShareDatasetReturn && referralCode
-            ? { loggedInReferralCode: referralCode }
-            : null,
-        });
+        if (referralCode) {
+          // Match the referral code to the logged-in user and prepare for mobile app handoff
+          await postAssignReferralCode(referralCode);
+          const referralDetails = await getReferralCodeDetails(referralCode);
+          const refreshToken = localStorage.getItem("refreshToken") || "";
+          const instructionsUrl =
+            referralDetails?.instructions_url ||
+            referralDetails?.instructionsUrl ||
+            "";
+          const redirectUrl =
+            referralDetails?.redirect_url ||
+            referralDetails?.redirectUrl ||
+            "";
+
+          if (!refreshToken) {
+            throw new Error("Unable to prepare the mobile app handoff.");
+          }
+
+          const handoffPayload = {
+            instructions_url: instructionsUrl,
+            token: refreshToken,
+            redirect_url: redirectUrl,
+            referral_code: referralCode,
+          };
+
+          sessionStorage.removeItem("referralCode");
+          sessionStorage.setItem("promoSigninPayload", JSON.stringify(handoffPayload));
+          sessionStorage.setItem("handoffFlow", "promo");
+
+          navigate("/invite-instructions?flow=promo", {
+            replace: true,
+            state: {
+              isPromo: true,
+              ...handoffPayload,
+            },
+          });
+          return;
+        }
+
+        navigate(returnTo, { replace: true });
       } catch (callbackError) {
         console.error("TDEI SSO callback failed", callbackError);
         setError(
