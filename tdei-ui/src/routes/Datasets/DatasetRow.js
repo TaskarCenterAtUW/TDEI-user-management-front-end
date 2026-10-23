@@ -227,6 +227,7 @@ const DatasetRow = ({ dataset, onAction, isReleasedList }) => {
             data_type={data_type}
             dataViewerProps={dataViewerProps()}
             datasetId={tdei_dataset_id}
+            projectGroupId={project_group?.tdei_project_group_id}
           />
         </div>
         {/* )} */}
