@@ -42,6 +42,12 @@ const Router = () => {
       <>
         <Route path="/callback" element={<AuthCallback />} />
         <Route path="/logout/callback" element={<LogoutCallback />} />
+        {SHOW_REFERRALS && (
+          <>
+            <Route path="/invite-instructions" element={<InviteInstructions />} />
+            <Route path="/app-link/*" element={<AppLinkFallback />} />
+          </>
+        )}
         <Route element={<RequireGuest />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/share-dataset/:data_type/:tdei_dataset_id" element={<LoginPage />} />
@@ -50,12 +56,6 @@ const Router = () => {
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/passwordReset" element={<PasswordResetConfirm />} />
           <Route path="/emailVerify" element={<EmailVerification />} />
-          {SHOW_REFERRALS && (
-            <>
-              <Route path="/invite-instructions" element={<InviteInstructions />} />
-              <Route path="/app-link/*" element={<AppLinkFallback />} />
-            </>
-          )}
         </Route>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Root />}>
