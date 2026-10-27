@@ -81,9 +81,9 @@ export default function LoggedInReferralJoinModal() {
         "promoSigninPayload",
         JSON.stringify(handoffPayload)
       );
-      sessionStorage.setItem("handoffFlow", "promo");
+      sessionStorage.setItem("handoffFlow", "join");
       setActiveReferralCode("");
-      navigate("/invite-instructions?flow=promo", {
+      navigate("/invite-instructions?flow=join", {
         replace: true,
         state: {
           isPromo: true,
