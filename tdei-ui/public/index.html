@@ -4,6 +4,20 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      // Safari reads Smart App Banner metadata from the document head. Add it
+      // only for the app handoff route and preserve its code/env query string.
+      (function () {
+        var path = window.location.pathname.replace(/\/+$/, "");
+        if (path !== "/app-link") return;
+
+        var meta = document.createElement("meta");
+        meta.name = "apple-itunes-app";
+        meta.content =
+          "app-id=6749523895, app-argument=" + window.location.href;
+        document.head.appendChild(meta);
+      })();
+    </script>
     <meta name="theme-color" content="#000000" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--

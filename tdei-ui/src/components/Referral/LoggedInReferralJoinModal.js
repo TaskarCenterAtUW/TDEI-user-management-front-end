@@ -67,13 +67,29 @@ export default function LoggedInReferralJoinModal() {
 
   const { mutate: applyReferralCode, isLoading: isApplying } = useApplyReferralCode({
     onSuccess: () => {
+      const refreshToken = localStorage.getItem("refreshToken") || "";
+      const handoffPayload = {
+        instructions_url:
+          details?.instructions_url || details?.instructionsUrl || "",
+        token: refreshToken,
+        redirect_url: details?.redirect_url || details?.redirectUrl || "",
+        referral_code: referralCode,
+      };
+
       sessionStorage.removeItem("referralCode");
+      sessionStorage.setItem(
+        "promoSigninPayload",
+        JSON.stringify(handoffPayload)
+      );
+      sessionStorage.setItem("handoffFlow", "join");
       setActiveReferralCode("");
-      dispatch(show({
-        type: "success",
-        message: "Referral code applied successfully. You can now switch to the joined project group.",
-      }));
-      navigate("/projectGroupSwitch", { replace: true, state: { from: fallbackTo } });
+      navigate("/invite-instructions?flow=join", {
+        replace: true,
+        state: {
+          isPromo: true,
+          ...handoffPayload,
+        },
+      });
     },
     onError: (err) => {
       sessionStorage.removeItem("referralCode");
@@ -84,8 +100,15 @@ export default function LoggedInReferralJoinModal() {
   });
 
   const handleConfirmJoin = React.useCallback(() => {
+    if (!localStorage.getItem("refreshToken")) {
+      dispatch(show({
+        type: "danger",
+        message: "Unable to prepare the next step. Please sign in again.",
+      }));
+      return;
+    }
     applyReferralCode(referralCode);
-  }, [applyReferralCode, referralCode]);
+  }, [applyReferralCode, dispatch, referralCode]);
 
   if (!referralCode) return null;
 

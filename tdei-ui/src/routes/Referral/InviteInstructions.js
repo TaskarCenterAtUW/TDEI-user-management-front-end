@@ -85,7 +85,11 @@ export default function InviteInstructions() {
 
   // Determine flow
   const flow = resolveFlow(location);
-  const isPromo = flow === "promo";
+  const isReferralJoin = flow === "join";
+  const isPromo = flow === "promo" || isReferralJoin;
+  const completionTitle = isReferralJoin
+    ? "Referral Applied"
+    : (isPromo ? "Sign-In Complete" : "Registration Complete");
   const shareDatasetDestination = isShareDatasetRoute(location.state?.from || "")
     ? location.state.from
     : "";
@@ -349,7 +353,7 @@ export default function InviteInstructions() {
           <Col lg={10} xl={9}>
             <Card>
               <Card.Header>
-                <h5 className="mb-0">{isPromo ? "Sign-In Complete" : "Registration Complete"}</h5>
+                <h5 className="mb-0">{completionTitle}</h5>
               </Card.Header>
               <Card.Body>
                 <p className="text-muted mb-3">
