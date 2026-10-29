@@ -232,7 +232,8 @@ const JobListItem = ({ jobItem }) => {
           jobItem.job_type === "Dataset-Union" ||
           jobItem.job_type === "Dataset-Self-Merge" ||
           jobItem.job_type === "Quality-Metric" ||
-          jobItem.job_type === "Confidence-Calculate"
+          jobItem.job_type === "Confidence-Calculate" ||
+          jobItem.job_type === "Pathways-Convert"
         ) &&
           jobItem.status.toLowerCase() === "completed" &&
           (jobItem.download_url ||
