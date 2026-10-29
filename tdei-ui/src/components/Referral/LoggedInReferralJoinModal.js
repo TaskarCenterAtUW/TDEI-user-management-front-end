@@ -74,9 +74,14 @@ export default function LoggedInReferralJoinModal() {
         token: refreshToken,
         redirect_url: details?.redirect_url || details?.redirectUrl || "",
         referral_code: referralCode,
+        // Track that this token came from the active web session
+        token_source: "session",
       };
 
       sessionStorage.removeItem("referralCode");
+      // Reset previous handoff state so the continue button stays visible
+      sessionStorage.removeItem("inviteHandoffDone");
+      sessionStorage.removeItem("handoffInProgress");
       sessionStorage.setItem(
         "promoSigninPayload",
         JSON.stringify(handoffPayload)
