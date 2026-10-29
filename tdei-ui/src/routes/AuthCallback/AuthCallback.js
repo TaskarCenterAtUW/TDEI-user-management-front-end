@@ -1,36 +1,73 @@
 import React from "react";
 import { Button, Card, Spinner } from "react-bootstrap";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import style from "../LoginPage/style.module.css";
 import tempLogo from "../../assets/img/tdei-logo.png";
 import { isShareDatasetRoute } from "../../utils";
 import { getReferralCodeDetails, postAssignReferralCode } from "../../services";
 
+const SSO_CALLBACK_PARAMETERS_KEY = "tdeiSsoCallbackParameters";
+
+const getCallbackParameters = () => {
+  const callbackUrl = new URL(window.location.href);
+  const queryParameters = Object.fromEntries(callbackUrl.searchParams.entries());
+  const fragment = callbackUrl.hash.replace(/^#/, "");
+  const fragmentQuery = fragment.includes("?")
+    ? fragment.slice(fragment.indexOf("?") + 1)
+    : fragment.replace(/^\?/, "");
+  const fragmentParameters = Object.fromEntries(
+    new URLSearchParams(fragmentQuery).entries()
+  );
+  const callbackParameters = {
+    ...fragmentParameters,
+    ...queryParameters,
+  };
+
+  if (callbackParameters.code || callbackParameters.state) {
+    sessionStorage.setItem(
+      SSO_CALLBACK_PARAMETERS_KEY,
+      JSON.stringify(callbackParameters)
+    );
+    return callbackParameters;
+  }
+
+  // Restore the callback after a Safari reload.
+  try {
+    return JSON.parse(
+      sessionStorage.getItem(SSO_CALLBACK_PARAMETERS_KEY) || "{}"
+    );
+  } catch {
+    return {};
+  }
+};
+
+const clearCallbackParameters = () => {
+  sessionStorage.removeItem(SSO_CALLBACK_PARAMETERS_KEY);
+  if (window.location.search || window.location.hash) {
+    window.history.replaceState(
+      window.history.state,
+      "",
+      window.location.pathname
+    );
+  }
+};
+
 const AuthCallback = () => {
   const auth = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [error, setError] = React.useState("");
   const submitted = React.useRef(false);
+  const callbackParameters = React.useRef(getCallbackParameters()).current;
 
   React.useEffect(() => {
     if (submitted.current) return;
     submitted.current = true;
 
-    const callbackParameters = Object.fromEntries(searchParams.entries());
-
-    if (searchParams.toString()) {
-      window.history.replaceState(
-        window.history.state,
-        "",
-        window.location.pathname
-      );
-    }
-
     const finishLogin = async () => {
       try {
         const returnTo = await auth.completeSsoLogin(callbackParameters);
+        clearCallbackParameters();
         const referralCode = (
           sessionStorage.getItem("referralCode") || ""
         ).trim();
@@ -65,9 +102,14 @@ const AuthCallback = () => {
             token: refreshToken,
             redirect_url: redirectUrl,
             referral_code: referralCode,
+            // Track that this token came from the active web session
+            token_source: "session",
           };
 
           sessionStorage.removeItem("referralCode");
+          // Reset previous handoff state so the continue button stays visible
+          sessionStorage.removeItem("inviteHandoffDone");
+          sessionStorage.removeItem("handoffInProgress");
           sessionStorage.setItem("promoSigninPayload", JSON.stringify(handoffPayload));
           sessionStorage.setItem("handoffFlow", "promo");
 
@@ -83,6 +125,7 @@ const AuthCallback = () => {
 
         navigate(returnTo, { replace: true });
       } catch (callbackError) {
+        clearCallbackParameters();
         console.error("TDEI SSO callback failed", callbackError);
         setError(
           callbackError?.response?.data?.message ||
@@ -93,7 +136,7 @@ const AuthCallback = () => {
     };
 
     finishLogin();
-  }, [auth, navigate, searchParams]);
+  }, [auth, callbackParameters, navigate]);
 
   return (
     <div className={style.loginContainer}>

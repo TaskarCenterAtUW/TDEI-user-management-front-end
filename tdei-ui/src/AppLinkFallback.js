@@ -59,7 +59,7 @@ export default function AppLinkFallback() {
   }, []);
 
   const instructionText = ios
-    ? <>If you have the app installed, tap <strong>“Open”</strong> in the banner at the top.</>
+    ? <>If you have the app installed, <strong>pull down slightly</strong> on this page to reveal the banner at the top, then tap <strong>“Open”</strong>.</>
     : <>If you have the app installed, tap <strong>Open Android App</strong> below.</>;
 
   const installUrl = ios ? iosInstall : androidInstall;

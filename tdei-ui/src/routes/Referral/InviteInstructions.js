@@ -8,6 +8,15 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { SHOW_REFERRALS, isShareDatasetRoute } from "../../utils";
 import { saveAuthTokensFromPromo } from '../../utils/helper';
 import { SSO_API_URL, SSO_CLIENT_ID } from "../../services/ssoConfig";
+import { useAuth } from "../../hooks/useAuth";
+
+// Direct HTTP client so token errors here do not trigger the global re-login popup
+const handoffHttp = axios.create();
+
+const isSessionExpiredError = (error) => {
+  const status = error?.response?.status || error?.status;
+  return status === 400 || status === 401 || status === 403;
+};
 
 const isMobileUA = () =>
   /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent || "") ||
@@ -71,6 +80,7 @@ const pick = (obj, keys, fallback = "") =>
 export default function InviteInstructions() {
   const location = useLocation();
   const navigate = useNavigate();
+  const auth = useAuth();
   const env = (process.env.REACT_APP_ENV || "dev").trim();
 
   const [busy, setBusy] = useState(false);
@@ -85,7 +95,11 @@ export default function InviteInstructions() {
 
   // Determine flow
   const flow = resolveFlow(location);
-  const isPromo = flow === "promo";
+  const isReferralJoin = flow === "join";
+  const isPromo = flow === "promo" || isReferralJoin;
+  const completionTitle = isReferralJoin
+    ? "Referral Applied"
+    : (isPromo ? "Sign-In Complete" : "Registration Complete");
   const shareDatasetDestination = isShareDatasetRoute(location.state?.from || "")
     ? location.state.from
     : "";
@@ -119,6 +133,30 @@ export default function InviteInstructions() {
   const promoToken = isPromo
     ? (state.token || promoFallback.token || null)
     : null;
+
+  // Flag indicating if this token comes from the web SSO session
+  const tokenSource = pick(state, ["token_source"], pick(promoFallback, ["token_source"], ""));
+  const referralCodeForRetry = pick(state, ["referral_code"], pick(promoFallback, ["referral_code"], ""));
+
+  // Fetch a fresh token right before moving to the app so it is immediately valid
+  const refreshSessionForHandoff = async (fallbackToken) => {
+    const current = localStorage.getItem("refreshToken") || fallbackToken;
+    if (!current) throw new Error("No refresh token is available.");
+
+    const body = { refreshToken: current };
+    if (SSO_CLIENT_ID) body.clientId = SSO_CLIENT_ID;
+
+    const resp = await handoffHttp.post(`${SSO_API_URL}/refresh-token`, body, {
+      headers: { "Content-Type": "application/json" },
+    });
+    const access = resp?.data?.access_token;
+    const refresh = resp?.data?.refresh_token;
+    if (!access || !refresh) throw new Error("Invalid refresh response");
+
+    localStorage.setItem("accessToken", access);
+    localStorage.setItem("refreshToken", refresh);
+    return refresh;
+  };
 
   // Guards & redirects for missing context
   useEffect(() => {
@@ -222,9 +260,36 @@ export default function InviteInstructions() {
 
     // No (or intentionally ignored) redirect_url → choose mobile/desktop paths
     if (onMobile) {
+      let handoffToken = oneTimeToken;
+
+      if (isPromo && tokenSource === "session") {
+        setBusy(true);
+        try {
+          handoffToken = await refreshSessionForHandoff(oneTimeToken);
+        } catch (err) {
+          if (isSessionExpiredError(err)) {
+            // Session expired so prompt the user and restart login with the referral code
+            sessionStorage.removeItem("handoffInProgress");
+            sessionStorage.removeItem("inviteHandoffDone");
+            setToast({
+              show: true,
+              type: "error",
+              msg: "Your session has expired. Please sign in again to continue to the app.",
+            });
+            setTimeout(() => {
+              if (referralCodeForRetry) sessionStorage.setItem("referralCode", referralCodeForRetry);
+              auth.startSsoLogin("/");
+            }, 1500);
+            return;
+          }
+          // If network failed use the existing token as fallback
+          handoffToken = localStorage.getItem("refreshToken") || oneTimeToken;
+        }
+      }
+
       // MOBILE (promo or reg) → app-link or modal
-      const appLinkUrl = oneTimeToken
-        ? `${window.location.origin}/app-link/?code=${encodeURIComponent(oneTimeToken)}&env=${encodeURIComponent(env)}`
+      const appLinkUrl = handoffToken
+        ? `${window.location.origin}/app-link/?code=${encodeURIComponent(handoffToken)}&env=${encodeURIComponent(env)}`
         : `${window.location.origin}/app-link/?env=${encodeURIComponent(env)}`;
 
       if (iOS) {
@@ -349,7 +414,7 @@ export default function InviteInstructions() {
           <Col lg={10} xl={9}>
             <Card>
               <Card.Header>
-                <h5 className="mb-0">{isPromo ? "Sign-In Complete" : "Registration Complete"}</h5>
+                <h5 className="mb-0">{completionTitle}</h5>
               </Card.Header>
               <Card.Body>
                 <p className="text-muted mb-3">
@@ -367,7 +432,7 @@ export default function InviteInstructions() {
                 )}
 
                 <div className="d-flex gap-2 mt-3">
-                  {!handoffDone && !handoffComplete ? (
+                  {(!handoffDone || isPromo) && !handoffComplete ? (
                     <>
                       <Button
                         className="tdei-primary-button"
