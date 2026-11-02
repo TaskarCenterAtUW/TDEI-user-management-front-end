@@ -87,6 +87,7 @@ const DatasetProvenance = ({ formData, updateFormData }) => {
                   placeholder="Enter Update Frequency"
                   name="dataset_update_frequency_months"
                   value={formData.dataset_update_frequency_months}
+                  onWheel={(e) => e.currentTarget.blur()}
                   onChange={(e) => {
                     handleFieldChange(e);
                     handleChange(e);

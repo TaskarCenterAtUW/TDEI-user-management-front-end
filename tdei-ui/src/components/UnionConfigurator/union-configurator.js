@@ -1058,6 +1058,7 @@ export function mount(element, options = {}) {
   function render(){ $('app').innerHTML=viewHTML(); if(STANDALONE) $('barsum').innerHTML=barSum(); lock(); }
   const refreshLead=()=>{ const l=$('lead'); if(l) l.textContent=leadText(allOff(buildConfig())); };
 
+  on('wheel',e=>{ if(e.target&&e.target.type==='number') e.target.blur(); });
   on('input',e=>{
     const d=e.target.dataset||{};
     if(d.num){ const st=STEPS.find(x=>x.id===d.num); let v=parseFloat(e.target.value); if(!mark(e.target, st.kind==='pct'? v>0&&v<=100 : v>=0&&v<=5)) return;
