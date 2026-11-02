@@ -374,6 +374,14 @@ export async function postCreateJob(data) {
         formData.append("file", data[1]);
         url = baseUrl;
         break;
+      case "gtfs-pathways/convert":
+        // Either a DXF zip or an arcgis_url, plus the converter's options as form fields
+        if (data[1]) {
+          formData.append("dataset", data[1]);
+        }
+        Object.entries(data[2]).forEach(([key, value]) => formData.append(key, value));
+        url = baseUrl;
+        break;
       case "osw/confidence":
         formData.append("file", data[1]);
         url = `${baseUrl}/${data[2]}`;

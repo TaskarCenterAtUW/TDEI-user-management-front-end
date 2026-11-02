@@ -21,6 +21,7 @@ import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import { useAuth } from "../../hooks/useAuth";
 import SpatialJoinForm from "./SpatialJoinForm";
 import UnionEntityFiltersForm, { makeDefaultEntityState, formStateToFilters } from "./UnionEntityFiltersForm";
+import PathwaysConvertForm, { PATHWAYS_CONVERT_DESCRIPTION, makeDefaultConvertOptions, buildConvertRequest } from "./PathwaysConvertForm";
 
 // Options for the Job Type dropdown
 const jobTypeOptions = [
@@ -28,6 +29,7 @@ const jobTypeOptions = [
     { value: 'osw-sanitize', label: 'OSW - Sanitize' },
     { value: 'flex-validate', label: 'Flex - Validate' },
     { value: 'pathways-validate', label: 'Pathways - Validate' },
+    { value: 'pathways-convert', label: 'Pathways - Convert' },
     { value: 'osw-convert', label: 'OSW - Convert' },
     { value: 'confidence', label: 'Confidence Calculation' },
     { value: 'quality-metric', label: 'Quality Metric IXN Calculation' },
@@ -62,6 +64,8 @@ const formConfig = {
     "pathways-validate": [
         { label: "Attach data file", type: "dropzone" }
     ],
+    // Rendered by PathwaysConvertForm
+    "pathways-convert": [],
     "osw-validate": [
         { label: "Attach data file", type: "dropzone" }
     ],
@@ -180,6 +184,7 @@ const CreateJobService = () => {
     const [isUnionJsonMode, setIsUnionJsonMode] = useState(false);
     const [unionEntityFiltersJson, setUnionEntityFiltersJson] = useState("");
     const [unionEntityFormState, setUnionEntityFormState] = useState(makeDefaultEntityState());
+    const [convertOptions, setConvertOptions] = useState(makeDefaultConvertOptions());
 
     const spatialAssignmentOptions = [
         { value: 'default', label: 'Default' },
@@ -292,6 +297,7 @@ const CreateJobService = () => {
         setIsUnionJsonMode(false);
         setUnionEntityFiltersJson("");
         setUnionEntityFormState(makeDefaultEntityState());
+        setConvertOptions(makeDefaultConvertOptions());
     }
 
     /**
@@ -342,6 +348,7 @@ const CreateJobService = () => {
             "osw-sanitize": "/api/v1/osw/sanitize",
             "flex-validate": "/api/v1/gtfs-flex/validate",
             "pathways-validate": "/api/v1/gtfs-pathways/validate",
+            "pathways-convert": "/api/v1/gtfs-pathways/convert",
             "osw-convert": "/api/v1/osw/convert",
             "confidence": "/api/v1/osw/confidence/{tdei_dataset_id}",
             "quality-metric": "/api/v1/osw/quality-metric/ixn/{tdei_dataset_id}",
@@ -361,6 +368,9 @@ const CreateJobService = () => {
     const getDescription = (jobType) => {
         if (jobType === "dataset-union") {
             return "Combines two OpenSidewalks datasets into one new dataset. Features that describe the same real-world thing are merged, everything else from both datasets is kept, and the two pedestrian networks are connected wherever they meet.";
+        }
+        if (jobType === "pathways-convert") {
+            return PATHWAYS_CONVERT_DESCRIPTION;
         }
         const path = getPathFromJobType(jobType);
         return apiSpec.paths[path]?.post?.description || "";
@@ -523,6 +533,15 @@ const CreateJobService = () => {
             setShowValidateToast(true);
             return;
         }
+        let convertRequest = null;
+        if (jobType.value === "pathways-convert") {
+            convertRequest = buildConvertRequest(convertOptions, selectedFile);
+            if (convertRequest.error) {
+                setValidateErrorMessage(convertRequest.error);
+                setShowValidateToast(true);
+                return;
+            }
+        }
 
         // Determine the API path based on the job type
         let urlPath = "";
@@ -538,6 +557,9 @@ const CreateJobService = () => {
                 break;
             case "pathways-validate":
                 urlPath = "gtfs-pathways/validate";
+                break;
+            case "pathways-convert":
+                urlPath = "gtfs-pathways/convert";
                 break;
             case "osw-convert":
                 urlPath = "osw/convert";
@@ -575,7 +597,10 @@ const CreateJobService = () => {
 
         // Construct the payload for the API call based on job type
         const uploadData = [urlPath, selectedFile];
-        if (jobType.value === "osw-convert") {
+        if (jobType.value === "pathways-convert") {
+            uploadData[1] = convertRequest.file;
+            uploadData.push(convertRequest.fields);
+        } else if (jobType.value === "osw-convert") {
             uploadData.push(sourceFormat.value, targetFormat.value);
         } else if (["confidence", "quality-metric-tag"].includes(jobType.value)) {
             uploadData.push(tdeiDatasetId);
@@ -1012,6 +1037,17 @@ const CreateJobService = () => {
                     spatialRequestBody={spatialRequestBody}
                     setSpatialRequestBody={setSpatialRequestBody}
                     handleShow={handleShow}
+                />
+            );
+        }
+
+        if (jobType.value === "pathways-convert") {
+            return (
+                <PathwaysConvertForm
+                    convertOptions={convertOptions}
+                    setConvertOptions={setConvertOptions}
+                    selectedFile={selectedFile}
+                    onDrop={onDrop}
                 />
             );
         }
