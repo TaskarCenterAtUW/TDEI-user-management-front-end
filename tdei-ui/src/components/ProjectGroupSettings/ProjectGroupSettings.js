@@ -192,6 +192,7 @@ const ProjectGroupSettings = (props) => {
                               style={{ maxWidth: "120px" }}
                               onChange={handleChange}
                               onBlur={handleBlur}
+                              onWheel={(e) => e.currentTarget.blur()}
                               isInvalid={
                                 touched.turnaroundTime &&
                                 !!errors.turnaroundTime
