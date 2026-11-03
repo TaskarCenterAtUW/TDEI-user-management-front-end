@@ -437,8 +437,12 @@ export async function postCreateJob(data) {
           tdei_dataset_id_one: data[2],
           tdei_dataset_id_two: data[3],
         };
-        if (data[4] !== undefined && data[4] !== null && !isNaN(data[4])) {
-          unionRequestBody.proximity = data[4];
+        if (data[4] !== undefined && data[4] !== null) {
+          if (typeof data[4] === "object") {
+            unionRequestBody.config = data[4];
+          } else if (!isNaN(data[4])) {
+            unionRequestBody.proximity = data[4];
+          }
         }
         if (data[5] !== undefined && data[5] !== null) {
           unionRequestBody.entity_filters = data[5];

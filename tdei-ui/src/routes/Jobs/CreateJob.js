@@ -16,11 +16,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
-import { ENABLE_UNION_ENTITY_FILTERS, SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
+import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
 import { useAuth } from "../../hooks/useAuth";
 import SpatialJoinForm from "./SpatialJoinForm";
-import UnionEntityFiltersForm, { makeDefaultEntityState, formStateToFilters } from "./UnionEntityFiltersForm";
+import UnionConfigurator from "../../components/UnionConfigurator";
 import PathwaysConvertForm, { PATHWAYS_CONVERT_DESCRIPTION, makeDefaultConvertOptions, buildConvertRequest } from "./PathwaysConvertForm";
 
 // Options for the Job Type dropdown
@@ -105,22 +105,15 @@ const formConfig = {
             label: "Base Dataset Id",
             type: "text",
             stateSetter: "setDatasetIdOne",
-            placeholder: "Enter or search the base dataset",
+            placeholder: "Enter the base dataset",
             helperText: "The authoritative dataset. Its positions, IDs and attribute values are kept wherever the two datasets disagree."
         },
         {
             label: "Dataset to Merge In",
             type: "text",
             stateSetter: "setDatasetIdTwo",
-            placeholder: "Enter or search the dataset to merge in",
+            placeholder: "Enter the dataset to merge in",
             helperText: "Its new features are added and its extra attributes copied onto matching base features. Features that duplicate the base are dropped."
-        },
-        {
-            label: "Proximity (m) (optional)",
-            type: "text",
-            stateSetter: "setProximity",
-            placeholder: "0.5 (default)",
-            helperText: "How close, in metres, two nodes or two points must be to count as the same place. Leave blank to use 0.5 m."
         }
     ],
     "dataset-self-merge": [
@@ -180,10 +173,9 @@ const CreateJobService = () => {
     const [spatialTargetFilters, setSpatialTargetFilters] = useState([{ key: "", value: "" }]);
     const [spatialSourceFilters, setSpatialSourceFilters] = useState([{ key: "", value: "" }]);
     const [spatialAggregate, setSpatialAggregate] = useState([{ value: "" }]);
-    // Union entity filters state
-    const [isUnionJsonMode, setIsUnionJsonMode] = useState(false);
-    const [unionEntityFiltersJson, setUnionEntityFiltersJson] = useState("");
-    const [unionEntityFormState, setUnionEntityFormState] = useState(makeDefaultEntityState());
+    // Union configurator state
+    const [unionConfig, setUnionConfig] = useState(null);
+    const [isUnionConfigValid, setIsUnionConfigValid] = useState(true);
     const [convertOptions, setConvertOptions] = useState(makeDefaultConvertOptions());
 
     const spatialAssignmentOptions = [
@@ -293,10 +285,9 @@ const CreateJobService = () => {
         setSpatialSourceFilters([{ key: "", value: "" }]);
         setSpatialAggregate([{ value: "" }]);
         setSpatialAssignmentMethod({ value: 'default', label: 'Default' });
-        // Reset union entity filters
-        setIsUnionJsonMode(false);
-        setUnionEntityFiltersJson("");
-        setUnionEntityFormState(makeDefaultEntityState());
+        // Reset union configurator
+        setUnionConfig(null);
+        setIsUnionConfigValid(true);
         setConvertOptions(makeDefaultConvertOptions());
     }
 
@@ -523,10 +514,22 @@ const CreateJobService = () => {
                 }
             }
         }
-        if (jobType.value === "dataset-union" && (!firstDatasetId || !secondDatasetId)) {
-            setValidateErrorMessage("Base Dataset Id and Dataset to Merge In are required for Dataset Union");
-            setShowValidateToast(true);
-            return;
+        if (jobType.value === "dataset-union") {
+            if (!firstDatasetId || !secondDatasetId) {
+                setValidateErrorMessage("Base Dataset Id and Dataset to Merge In are required for Dataset Union");
+                setShowValidateToast(true);
+                return;
+            }
+            if (firstDatasetId === secondDatasetId) {
+                setValidateErrorMessage("Base Dataset Id and Dataset to Merge In must be different datasets");
+                setShowValidateToast(true);
+                return;
+            }
+            if (!isUnionConfigValid) {
+                setValidateErrorMessage("Please resolve invalid settings in the Union Configurator");
+                setShowValidateToast(true);
+                return;
+            }
         }
         if (jobType.value === "dataset-self-merge" && !tdeiDatasetId) {
             setValidateErrorMessage("Tdei Dataset Id is required for Dataset Self Merge");
@@ -645,45 +648,7 @@ const CreateJobService = () => {
             }
             uploadData.push(finalRequestBody);
         } else if (jobType.value === "dataset-union") {
-            if (ENABLE_UNION_ENTITY_FILTERS) {
-                // Build entity_filters from form or JSON mode
-                let entityFilters = null;
-                if (isUnionJsonMode) {
-                    if (unionEntityFiltersJson.trim() !== "") {
-                        try {
-                            entityFilters = JSON.parse(unionEntityFiltersJson);
-                        } catch (e) {
-                            setValidateErrorMessage("Invalid JSON format in entity filters. Please check the syntax.");
-                            setShowValidateToast(true);
-                            return;
-                        }
-                    }
-                } else {
-                    entityFilters = formStateToFilters(unionEntityFormState);
-                }
-                if (proximity) {
-                    const proximityFloat = parseFloat(proximity);
-                    if (!isNaN(proximityFloat)) {
-                        uploadData.push(firstDatasetId, secondDatasetId, proximityFloat, entityFilters);
-                    } else {
-                        uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
-                    }
-                } else {
-                    uploadData.push(firstDatasetId, secondDatasetId, undefined, entityFilters);
-                }
-            } else {
-                // Preserve the original union request while entity filters are disabled.
-                if (proximity) {
-                    const proximityFloat = parseFloat(proximity);
-                    if (!isNaN(proximityFloat)) {
-                        uploadData.push(firstDatasetId, secondDatasetId, proximityFloat);
-                    } else {
-                        uploadData.push(firstDatasetId, secondDatasetId);
-                    }
-                } else {
-                    uploadData.push(firstDatasetId, secondDatasetId);
-                }
-            }
+            uploadData.push(firstDatasetId, secondDatasetId, unionConfig);
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
@@ -774,11 +739,11 @@ const CreateJobService = () => {
                 <Form.Group
                     key={index}
                     controlId={field.label}
-                    className={`${style.formItem} ${jobType?.value === "dataset-union" && field.stateSetter !== "setProximity" ? style.unionFormItem : ''}`}
+                    className={`${style.formItem} ${jobType?.value === "dataset-union" ? style.unionFormItem : ''}`}
                 >
                     <Form.Label>
                         {field.label}
-                        {!(["dataset-union", "dataset-self-merge"].includes(jobType?.value) && field.stateSetter === "setProximity") && (
+                        {!(jobType?.value === "dataset-self-merge" && field.stateSetter === "setProximity") && (
                             <span style={{ color: 'red' }}> *</span>
                         )}
                     </Form.Label>
@@ -1052,22 +1017,22 @@ const CreateJobService = () => {
             );
         }
 
-        if (jobType.value === "dataset-union" && ENABLE_UNION_ENTITY_FILTERS) {
+        if (jobType.value === "dataset-union") {
             return (
                 <>
                     {fields.map(renderField)}
                     <div style={{ marginTop: '25px' }}>
                         <div className={style.dottedLine} />
-                        <div className={style.formItems}>
-                            <label className={style.formLabelP}>Entity Filters <span className={style.fieldHint} style={{ display: 'inline' }}>(optional)</span></label>
-                            <UnionEntityFiltersForm
-                                isJsonMode={isUnionJsonMode}
-                                setIsJsonMode={setIsUnionJsonMode}
-                                entityFiltersJson={unionEntityFiltersJson}
-                                setEntityFiltersJson={setUnionEntityFiltersJson}
-                                entityFormState={unionEntityFormState}
-                                setEntityFormState={setUnionEntityFormState}
-                                proximity={proximity}
+                        <div style={{ marginTop: '20px' }}>
+                            <UnionConfigurator
+                                onChange={(cfg, valid) => {
+                                    setUnionConfig(cfg);
+                                    setIsUnionConfigValid(valid);
+                                }}
+                                onDatasetIdsChange={({ datasetIdOne, datasetIdTwo }) => {
+                                    if (datasetIdOne) setFirstDatasetId(datasetIdOne);
+                                    if (datasetIdTwo) setSecondDatasetId(datasetIdTwo);
+                                }}
                             />
                         </div>
                     </div>
@@ -1086,7 +1051,7 @@ const CreateJobService = () => {
                     <h1 className={style.createJobTitle}>Create New Job</h1>
                     <div className={style.divider}></div>
                     <div className={`${jobType ? style.rectangleBox : style.fixedRectangleBox}`}>
-                        <form className={style.form}>
+                        <form className={style.form} onSubmit={(e) => e.preventDefault()}>
                             <div className={style.formItems}>
                                 <label htmlFor="selectJobType" className={style.formLabelP}>Job Type<span style={{ color: 'red' }}> *</span></label>
                                 <Select
