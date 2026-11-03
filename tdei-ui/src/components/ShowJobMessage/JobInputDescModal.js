@@ -12,8 +12,40 @@ const JobInputDescModal = (props) => {
         props.onHide();
     };
 
+    const UNION_CONFIG_KEYS = ['snap', 'dedup', 'connect', 'extensions'];
+
     const getCopyableJson = () => {
         if (!request_input || typeof request_input !== 'object') return null;
+        let rawConfig = request_input.config;
+        if (typeof rawConfig === 'string') {
+            try {
+                rawConfig = JSON.parse(rawConfig);
+            } catch (e) {
+                rawConfig = null;
+            }
+        }
+        if (rawConfig && typeof rawConfig === 'object' && !Array.isArray(rawConfig)) {
+            const unionConfig = UNION_CONFIG_KEYS.reduce((acc, key) => {
+                if (rawConfig[key] !== undefined) {
+                    acc[key] = rawConfig[key];
+                }
+                return acc;
+            }, {});
+            return JSON.stringify(
+                Object.keys(unionConfig).length > 0 ? unionConfig : rawConfig,
+                null,
+                2
+            );
+        }
+        if (UNION_CONFIG_KEYS.some((key) => request_input[key] !== undefined)) {
+            const unionConfig = UNION_CONFIG_KEYS.reduce((acc, key) => {
+                if (request_input[key] !== undefined) {
+                    acc[key] = request_input[key];
+                }
+                return acc;
+            }, {});
+            return JSON.stringify(unionConfig, null, 2);
+        }
         const filtered = Object.entries(request_input).reduce((acc, [key, value]) => {
             if (!key.toLowerCase().includes('user_id') && !key.toLowerCase().includes('userid')) {
                 acc[key] = value;
@@ -94,7 +126,7 @@ const JobInputDescModal = (props) => {
                                 className="tdei-secondary-button align-self-center"
                                 onClick={handleCopyJson}
                             >
-                                {copied ? "Copied!" : "Copy JSON"}
+                                {copied ? "Copied!" : "Copy Input"}
                             </Button>
                         )}
                     </div>
