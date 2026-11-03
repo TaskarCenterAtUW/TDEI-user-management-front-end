@@ -2,16 +2,21 @@ import React, { useRef, useEffect, useImperativeHandle, forwardRef } from 'react
 import { mount } from './union-configurator.js';
 
 const UnionConfigurator = forwardRef(function UnionConfigurator(
-    { initialConfig, readOnly = false, onChange },
+    { initialConfig, readOnly = false, onChange, onDatasetIdsChange },
     ref
 ) {
     const containerRef = useRef(null);
     const instanceRef = useRef(null);
     const onChangeRef = useRef(onChange);
+    const onDatasetIdsChangeRef = useRef(onDatasetIdsChange);
 
     useEffect(() => {
         onChangeRef.current = onChange;
     }, [onChange]);
+
+    useEffect(() => {
+        onDatasetIdsChangeRef.current = onDatasetIdsChange;
+    }, [onDatasetIdsChange]);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -21,6 +26,11 @@ const UnionConfigurator = forwardRef(function UnionConfigurator(
             onChange: (config, valid) => {
                 if (onChangeRef.current) {
                     onChangeRef.current(config, valid);
+                }
+            },
+            onDatasetIdsChange: (ids) => {
+                if (onDatasetIdsChangeRef.current) {
+                    onDatasetIdsChangeRef.current(ids);
                 }
             }
         });

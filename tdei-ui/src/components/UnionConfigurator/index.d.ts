@@ -13,6 +13,8 @@ export interface MountOptions {
   readOnly?: boolean;
   /** Called after every change with the full config, and whether every value is complete and in range. */
   onChange?: (config: UnionConfig, valid: boolean) => void;
+  /** Called when a full union request containing dataset IDs is loaded via "Load configuration". */
+  onDatasetIdsChange?: (ids: { datasetIdOne?: string | null; datasetIdTwo?: string | null }) => void;
 }
 
 export interface UnionConfigurator {
