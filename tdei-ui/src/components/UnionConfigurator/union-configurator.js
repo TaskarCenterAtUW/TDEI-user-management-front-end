@@ -238,6 +238,7 @@ export function mount(element, options = {}) {
   const STANDALONE = !!options.standalone;
   let READONLY = !!options.readOnly;
   let onChangeCb = typeof options.onChange === 'function' ? options.onChange : null;
+  let onDatasetIdsChangeCb = typeof options.onDatasetIdsChange === 'function' ? options.onDatasetIdsChange : null;
   const root = doc.createElement('div');
   root.className = 'u5c' + (STANDALONE ? ' u5c-standalone' : '');
   root.innerHTML = `<div class="u5-body"><main class="u5-card" id="${P}app"></main></div>` + (STANDALONE ? `<div class="runbar" role="region" aria-label="Configuration"><div class="runbar-in">
@@ -924,17 +925,17 @@ export function mount(element, options = {}) {
     return `<header class="head">
         <div class="top"><div class="l"><span class="eyebrow">Union 5.0</span><h2>Union configuration</h2>
           <p class="u5-lead" id="${P}lead">${leadText(empty)}</p></div>
-          ${STANDALONE?`<button class="u5-btn ghost sm" id="${P}loadopen">Load configuration</button>`:''}</div>
+          ${!READONLY?`<button type="button" class="u5-btn ghost sm" id="${P}loadopen" aria-expanded="false" aria-controls="${P}loadp">Load configuration</button>`:''}</div>
         ${notesHTML()}
         <div class="status"><div class="stats" id="${P}totals">${totalsHTML()}</div>
           <div class="qa"><button id="${P}reset">Reset to recommended</button><span aria-hidden="true">·</span><button id="${P}alloff">Turn everything off</button></div></div>
       </header>
-      ${STANDALONE?loadPanelHTML():''}
+      ${!READONLY?loadPanelHTML():''}
       <div class="toolbar"><div class="legend" id="${P}legend">${legendHTML()}</div>
         <div class="tright"><div class="qa"><button id="${P}expall">Expand all</button><span aria-hidden="true">·</span><button id="${P}colall">Collapse all</button></div>
         <div class="mini" role="group" aria-label="View"><button data-view="compact" aria-pressed="${view==='compact'}">Compact</button><button data-view="detail" aria-pressed="${view==='detail'}">Detailed</button></div></div></div>
       ${groups}
-      <div class="cfg"><h3>Union configuration</h3><pre id="${P}full">${esc(JSON.stringify(c,null,2))}</pre>
+      <div class="cfg"><div class="ex-head"><h3>Union configuration</h3><div class="ctl-row"><span class="u5-toast" id="${P}cfgtoast" role="status" aria-live="polite"></span><button type="button" class="u5-btn ghost sm" id="${P}copycfg">Copy configuration</button></div></div><pre id="${P}full">${esc(JSON.stringify(c,null,2))}</pre>
       <p class="note">${STANDALONE?'Paste this into the union job’s configuration. ':''}Any node, edge or feature type not listed is left exactly as mapped.</p></div>`;
   }
   function leadText(empty){ return empty?`Everything is off, so the union returns ${dsFull(1)} and ${dsFull(2)} together, unchanged.`
@@ -944,7 +945,12 @@ export function mount(element, options = {}) {
   // cases on this page. Anything the page has no case for is listed so nothing is dropped silently.
   function readConfig(text){
     let j; try{ j=JSON.parse(text); }catch(e){ return {error:'This is not valid JSON. Paste the configuration exactly as it was copied.'}; }
-    if(j && typeof j==='object' && !Array.isArray(j) && j.config && typeof j.config==='object') j=j.config;
+    let ds1=null, ds2=null;
+    if(j && typeof j==='object' && !Array.isArray(j) && j.config && typeof j.config==='object'){
+      if(typeof j.tdei_dataset_id_one==='string') ds1=j.tdei_dataset_id_one.trim();
+      if(typeof j.tdei_dataset_id_two==='string') ds2=j.tdei_dataset_id_two.trim();
+      j=j.config;
+    }
     if(!j || typeof j!=='object' || Array.isArray(j)) return {error:'Expected a configuration object such as {"snap": {...}, "connect": {...}}.'};
     const known=['snap','dedup','connect','extensions'], extra=Object.keys(j).filter(k=>!known.includes(k));
     if(extra.length) return {error:`Unknown section${extra.length>1?'s':''} ${extra.map(k=>`“${k}”`).join(', ')}. A union 5.0 configuration only has snap, dedup, connect and extensions.`};
@@ -962,11 +968,12 @@ export function mount(element, options = {}) {
 
     // snap
     const sn=j.snap;
-    if(sn && sn.mode && sn.mode!=='off'){
+    if(sn && typeof sn==='object' && sn.mode!=='off'){
       setAnchor(sn,'snap');
       const stAttr= sn.attributes==='anchor_only'?'anchor_only':'merge', attrOf=r=> r&&r.attributes!=null? (r.attributes==='anchor_only'?'anchor_only':'merge') : stAttr;
       STEPS.filter(x=>x.g==='join').forEach(x=>a[x.id+'_attr']=stAttr);
-      if(sn.mode==='default'){ const p=dist(stagePx(sn),'snap'); Object.assign(a,{s_crossing:p,s_living:p,s_road:p,s_other:p}); FAM.forEach(t=>a['s_'+t]=p); a.s_same= sn.coincident!==false; }
+      const isCustom = sn.mode==='custom' || (!sn.mode && Array.isArray(sn.rules));
+      if(!isCustom){ const p=dist(stagePx(sn),'snap'); Object.assign(a,{s_crossing:p,s_living:p,s_road:p,s_other:p}); FAM.forEach(t=>a['s_'+t]=p); a.s_same= sn.coincident!==false; }
       else {
         a.s_same= sn.coincident===true;
         if(sn.others!=null) notes.push(`snap.others (${sn.others} m) has no case here and will be dropped.`);
@@ -984,13 +991,14 @@ export function mount(element, options = {}) {
     }
     // dedup
     const dd=j.dedup;
-    if(dd && dd.mode && dd.mode!=='off'){
+    if(dd && typeof dd==='object' && dd.mode!=='off'){
       setAnchor(dd,'dedup');
       const ovOf=(x,w)=>{ if(x==null) return null; const n=+x; if(!(n>0)) return null; return Math.min(1,Math.round(n*10000)/10000); };
       const angOf=x=>{ const n=+x; return x!=null && n>0 ? Math.min(90,n) : null; }, stageAng= angOf(dd.max_angle) ?? 30;
       const stageOv= ovOf(dd.min_overlap,'dedup') ?? 0.8, setOv=(k,r,w)=>{ a[k+'_ov']= ovOf(r&&r.min_overlap,w) ?? stageOv; a[k+'_ang']= angOf(r&&r.max_angle) ?? stageAng; };
       STEPS.filter(x=>'ov' in x).forEach(x=>{ a[x.id+'_ov']=stageOv; a[x.id+'_ang']=stageAng; });
-      if(dd.mode==='default'){ const p=dist(stagePx(dd),'dedup'); Object.assign(a,{d_crossing:p,d_road:p,d_living:p,d_other:p}); FAM.forEach(t=>a['d_'+t]=p); }
+      const isCustom = dd.mode==='custom' || (!dd.mode && Array.isArray(dd.rules));
+      if(!isCustom){ const p=dist(stagePx(dd),'dedup'); Object.assign(a,{d_crossing:p,d_road:p,d_living:p,d_other:p}); FAM.forEach(t=>a['d_'+t]=p); }
       else { const claimed=new Set(); (dd.rules||[]).forEach((r,i)=>{ const w=`dedup rule ${i+1}${r.name?` “${r.name}”`:''}`;
         const f=famOf(r.from);
         if(f && isNever(r.to)){ famSet(claimed,f).forEach(t=>{ a['d_'+t]=0; claimed.add(t); }); return; }
@@ -1003,8 +1011,9 @@ export function mount(element, options = {}) {
     }
     // connect
     const cn=j.connect;
-    if(cn && cn.mode && cn.mode!=='off'){
-      if(cn.mode==='default'){ const p=dist(stagePx(cn),'connect'); Object.assign(a,{c_road:p,c_sidewalk:p,c_living:p,c_t_living:p,c_crossing:p}); FAM.forEach(t=>a['c_t_'+t]=p); }
+    if(cn && typeof cn==='object' && cn.mode!=='off'){
+      const isCustom = cn.mode==='custom' || (!cn.mode && Array.isArray(cn.rules));
+      if(!isCustom){ const p=dist(stagePx(cn),'connect'); Object.assign(a,{c_road:p,c_sidewalk:p,c_living:p,c_t_living:p,c_crossing:p}); FAM.forEach(t=>a['c_t_'+t]=p); }
       else { const claimed=new Set(); (cn.rules||[]).forEach((r,i)=>{ const w=`connect rule ${i+1}${r.name?` “${r.name}”`:''}`;
         const p= dist(r.proximity!=null?r.proximity:stagePx(cn), w), key=`${typeTxt(r.from)}→${typeTxt(r.to)}:${r.operation}`;
         const rowsOf=t=>t&&typeof t==='object'&&!Array.isArray(t)? Object.entries(t).map(([k,v])=>[k,String(v)]) : [];
@@ -1023,7 +1032,7 @@ export function mount(element, options = {}) {
     }
     // extensions
     const ex=j.extensions;
-    if(ex && ex.mode==='default'){
+    if(ex && typeof ex==='object' && ex.mode!=='off'){
       // one block per type; an earlier flat config (proximity, line_overlap, points: false, …) is read and noted
       const flat=['proximity','line_proximity','line_overlap','polygon_overlap','zone_overlap'].filter(k=>ex[k]!=null);
       const blk=k=>{ const v=ex[k]; if(typeof v==='boolean'){ flat.push(k); return {enabled:v}; } return v&&typeof v==='object'? v : {}; };
@@ -1036,15 +1045,15 @@ export function mount(element, options = {}) {
       a.x_lines=pc(ln.min_overlap??ex.line_overlap); a.x_build=pc(pg.min_overlap??ex.polygon_overlap); a.x_zone=pc(zn.min_overlap??ex.zone_overlap);
     }
     a.trust= anchor||'ds1';
-    return {answers:a,notes};
+    return {answers:a,notes,ds1,ds2};
   }
   function offState(){ const a=recAnswers(); STEPS.forEach(s=>{ if(s.kind==='dist') a[s.id]=0; if(s.kind==='yesno') a[s.id]=false; if(s.id+'_on' in a) a[s.id+'_on']=false; }); return a; }
   function loadPanelHTML(){
-    return `<div class="loadp" id="${P}loadp" hidden><h3>Load an existing configuration</h3>
-      <p class="note">Paste a union configuration, or a whole union request that contains one. Every case below is set from it.</p>
-      <textarea id="${P}loadtxt" rows="7" spellcheck="false" placeholder='{"snap": {"mode": "default", "proximity": 1}}' aria-label="Configuration to load"></textarea>
-      <div id="${P}loadmsg"></div>
-      <div class="ctl-row"><button class="u5-btn" id="${P}loadgo">Load</button><button class="u5-btn ghost" id="${P}loadcancel">Cancel</button></div></div>`;
+    return `<div class="loadp" id="${P}loadp" hidden><label for="${P}loadtxt" style="font-family:var(--u5-f-head);color:var(--u5-ink);font-size:15px;font-weight:700">Load an existing configuration</label>
+      <p class="note" id="${P}loadhint">Paste a union configuration, or a whole union request that contains one. Every case below is set from it.</p>
+      <textarea id="${P}loadtxt" name="union_configuration_json" rows="7" spellcheck="false" placeholder='{"snap": {"mode": "default", "proximity": 1}}' aria-describedby="${P}loadhint ${P}loadmsg"></textarea>
+      <div id="${P}loadmsg" aria-live="polite"></div>
+      <div class="ctl-row"><button type="button" class="u5-btn" id="${P}loadgo">Load</button><button type="button" class="u5-btn ghost" id="${P}loadcancel">Cancel</button></div></div>`;
   }
   let pendingLoad=null;
   function tryLoad(){
@@ -1053,7 +1062,9 @@ export function mount(element, options = {}) {
     if(r.notes.length && !pendingLoad){ pendingLoad=r;
       m.innerHTML=`<div class="lwarn"><b>Some settings have no case on this page.</b> If you load it, they are left out of the configuration this page produces:<ul>${r.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul></div>`;
       $('loadgo').textContent='Load anyway'; return; }
-    A=Object.assign(r.answers,{_last:{}}); pendingLoad=null; render(); save(); flash('Configuration loaded');
+    A=Object.assign(r.answers,{_last:{}}); bad.clear(); startNotes=[]; pendingLoad=null;
+    if(onDatasetIdsChangeCb && (r.ds1 || r.ds2)) onDatasetIdsChangeCb({datasetIdOne:r.ds1,datasetIdTwo:r.ds2});
+    render(); save(); flash('Configuration loaded');
   }
   function render(){ $('app').innerHTML=viewHTML(); if(STANDALONE) $('barsum').innerHTML=barSum(); lock(); }
   const refreshLead=()=>{ const l=$('lead'); if(l) l.textContent=leadText(allOff(buildConfig())); };
@@ -1075,10 +1086,11 @@ export function mount(element, options = {}) {
   on('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
     e.preventDefault();
+    if(READONLY && b.matches(MUTATORS)) return;
     if(is(b,'reset')){ A=Object.assign(recAnswers(),{_last:{}}); bad.clear(); startNotes=[]; render(); save(); return flash('Recommended values restored'); }
     if(is(b,'alloff')){ A._last={}; STEPS.forEach(s=>{ if(s.kind==='dist'){ if(A[s.id]>0) A._last[s.id]=A[s.id]; A[s.id]=0; } if(s.kind==='yesno') A[s.id]=false; }); render(); save(); return flash('Everything turned off'); }
-    if(is(b,'loadopen')){ const lp=$('loadp'); lp.hidden=!lp.hidden; if(!lp.hidden) $('loadtxt').focus(); return; }
-    if(is(b,'loadcancel')){ $('loadp').hidden=true; $('loadtxt').value=''; $('loadmsg').innerHTML=''; pendingLoad=null; $('loadgo').textContent='Load'; return; }
+    if(is(b,'loadopen')){ const lp=$('loadp'), open=lp.hidden; lp.hidden=!open; b.setAttribute('aria-expanded',String(open)); if(open) $('loadtxt').focus(); return; }
+    if(is(b,'loadcancel')){ $('loadp').hidden=true; const lo=$('loadopen'); if(lo) lo.setAttribute('aria-expanded','false'); $('loadtxt').value=''; $('loadmsg').innerHTML=''; pendingLoad=null; $('loadgo').textContent='Load'; return; }
     if(is(b,'loadgo')) return tryLoad();
     if(b.dataset.grp){ const k=b.dataset.grp, open=b.getAttribute('aria-expanded')!=='true'; collapsed[k]=!open; b.setAttribute('aria-expanded',String(open)); $('gb-'+k).hidden=!open; save(); return; }
     if(is(b,'expall')||is(b,'colall')){ const c=is(b,'colall'); GROUPS.forEach(([k])=>collapsed[k]=c); render(); save(); return; }
@@ -1086,7 +1098,6 @@ export function mount(element, options = {}) {
     if(b.dataset.info){ const box=$('ib-'+b.dataset.info), open=box.hidden; box.hidden=!open; b.setAttribute('aria-expanded',String(open)); return; }
     if(b.dataset.copyitem){ const id=b.dataset.copyitem; return copy($('cf-'+id),'t-'+id); }
     const retag=L=>{ const id=lcase(L); $('tg-'+id).innerHTML=tagsInner(STEPS.find(x=>x.id===id)); refreshReview(id); };
-    if(READONLY && b.matches(MUTATORS)) return;
     if(b.dataset.tadd){ const L=b.dataset.tadd; tagRows(L).push(['','']); retag(L); const k=$('tk-'+L+'-'+(tagRows(L).length-1)); if(k) k.focus(); return; }
     if(b.dataset.tpre){ const L=b.dataset.tpre, rows=tagRows(L); PRESETS[b.dataset.pk][1].forEach(([k,v])=>{ const r=rows.find(x=>(x[0]||'').trim()===k); r? r[1]=v : rows.push([k,v]); });
       for(let i=rows.length-1;i>=0;i--) if(!(rows[i][0]||'').trim()&&!(rows[i][1]||'').trim()) rows.splice(i,1);
@@ -1101,13 +1112,14 @@ export function mount(element, options = {}) {
       else A[st.id]=A._last[st.id]||st.rec;
       refreshReview(); refreshLead();
       const el=root.querySelector(`[data-sw="${st.id}"]`); if(el) el.focus({preventScroll:true}); return; }
+    if(is(b,'copycfg')) return copy($('full'),'cfgtoast');
     if(is(b,'copy')) return copy($('full'));
   });
   function copy(el,tid){
     const done=()=>flash('Copied',tid), fallback=()=>{const r=doc.createRange();r.selectNodeContents(el);const sl=doc.defaultView.getSelection();sl.removeAllRanges();sl.addRange(r);flash('Selected — press Ctrl+C or Cmd+C',tid);};
     try{ navigator.clipboard.writeText(el.textContent).then(done,fallback); }catch(err){ fallback(); }
   }
-  function flash(t,tid){ const el=$(tid||'toast'); if(!el) return; el.textContent=t; clearTimeout(flash.t); flash.t=setTimeout(()=>el.textContent='',2400); }
+  function flash(t,tid){ const el=$(tid||'toast')||$('cfgtoast'); if(!el) return; el.textContent=t; clearTimeout(flash.t); flash.t=setTimeout(()=>el.textContent='',2400); }
 
   const apply = cfg => {
     if (cfg == null) { A = recAnswers(); startNotes = []; return; }
@@ -1124,7 +1136,7 @@ export function mount(element, options = {}) {
     setReadOnly(v) { READONLY = !!v; render(); },
     destroy() {
       listeners.forEach(([t, fn]) => root.removeEventListener(t, fn)); listeners.length = 0;
-      clearTimeout(flash.t); onChangeCb = null; root.remove();
+      clearTimeout(flash.t); onChangeCb = null; onDatasetIdsChangeCb = null; root.remove();
       if (--live === 0) { const st = doc.getElementById(STYLE_ID); if (st) st.remove(); }
     }
   };

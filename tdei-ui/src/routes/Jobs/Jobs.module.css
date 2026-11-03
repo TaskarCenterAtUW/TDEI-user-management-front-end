@@ -147,9 +147,16 @@
 .buttonContainer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-top: 1px solid #ccc;
-  padding-top: 20px;
-  margin-top: 20px;
+  padding: 16px 20px;
+  margin: 20px -20px -20px -20px;
+  position: sticky;
+  bottom: 0;
+  background-color: #ffffff;
+  z-index: 10;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .select {

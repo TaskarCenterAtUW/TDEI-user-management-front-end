@@ -105,14 +105,14 @@ const formConfig = {
             label: "Base Dataset Id",
             type: "text",
             stateSetter: "setDatasetIdOne",
-            placeholder: "Enter or search the base dataset",
+            placeholder: "Enter the base dataset",
             helperText: "The authoritative dataset. Its positions, IDs and attribute values are kept wherever the two datasets disagree."
         },
         {
             label: "Dataset to Merge In",
             type: "text",
             stateSetter: "setDatasetIdTwo",
-            placeholder: "Enter or search the dataset to merge in",
+            placeholder: "Enter the dataset to merge in",
             helperText: "Its new features are added and its extra attributes copied onto matching base features. Features that duplicate the base are dropped."
         }
     ],
@@ -1028,6 +1028,10 @@ const CreateJobService = () => {
                                 onChange={(cfg, valid) => {
                                     setUnionConfig(cfg);
                                     setIsUnionConfigValid(valid);
+                                }}
+                                onDatasetIdsChange={({ datasetIdOne, datasetIdTwo }) => {
+                                    if (datasetIdOne) setFirstDatasetId(datasetIdOne);
+                                    if (datasetIdTwo) setSecondDatasetId(datasetIdTwo);
                                 }}
                             />
                         </div>
