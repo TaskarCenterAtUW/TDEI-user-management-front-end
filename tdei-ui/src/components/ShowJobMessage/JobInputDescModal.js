@@ -1,12 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import style from "../../routes/Jobs/Jobs.module.css";
 import { toPascalCase } from "../../utils";
 
 const JobInputDescModal = (props) => {
     const { job_id, request_input } = props.message;
+    const [copied, setCopied] = useState(false);
+
     const handleClose = () => {
+        setCopied(false);
         props.onHide();
+    };
+
+    const getCopyableJson = () => {
+        if (!request_input || typeof request_input !== 'object') return null;
+        const filtered = Object.entries(request_input).reduce((acc, [key, value]) => {
+            if (!key.toLowerCase().includes('user_id') && !key.toLowerCase().includes('userid')) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+        return Object.keys(filtered).length > 0 ? JSON.stringify(filtered, null, 2) : null;
+    };
+
+    const handleCopyJson = () => {
+        const jsonText = getCopyableJson();
+        if (!jsonText) return;
+        navigator.clipboard.writeText(jsonText).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
     };
 
     // Function to handle nested objects and arrays
@@ -63,6 +86,17 @@ const JobInputDescModal = (props) => {
                             <div className={style.jobStatusHeaderLabel}>Input Parameter</div>
                             <div className={style.jobStatusHeaderValue}>JOB ID:{job_id}</div>
                         </div>
+                        {getCopyableJson() && (
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline-secondary"
+                                className="tdei-secondary-button align-self-center"
+                                onClick={handleCopyJson}
+                            >
+                                {copied ? "Copied!" : "Copy JSON"}
+                            </Button>
+                        )}
                     </div>
                     <div className={style.jobStatusContainerContent}>
                         {getFilteredRequestInput().length > 0 ? (

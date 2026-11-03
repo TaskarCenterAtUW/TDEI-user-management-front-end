@@ -935,7 +935,7 @@ export function mount(element, options = {}) {
         <div class="tright"><div class="qa"><button id="${P}expall">Expand all</button><span aria-hidden="true">·</span><button id="${P}colall">Collapse all</button></div>
         <div class="mini" role="group" aria-label="View"><button data-view="compact" aria-pressed="${view==='compact'}">Compact</button><button data-view="detail" aria-pressed="${view==='detail'}">Detailed</button></div></div></div>
       ${groups}
-      <div class="cfg"><h3>Union configuration</h3><pre id="${P}full">${esc(JSON.stringify(c,null,2))}</pre>
+      <div class="cfg"><div class="ex-head"><h3>Union configuration</h3><div class="ctl-row"><span class="u5-toast" id="${P}cfgtoast" role="status" aria-live="polite"></span><button type="button" class="u5-btn ghost sm" id="${P}copycfg">Copy configuration</button></div></div><pre id="${P}full">${esc(JSON.stringify(c,null,2))}</pre>
       <p class="note">${STANDALONE?'Paste this into the union job’s configuration. ':''}Any node, edge or feature type not listed is left exactly as mapped.</p></div>`;
   }
   function leadText(empty){ return empty?`Everything is off, so the union returns ${dsFull(1)} and ${dsFull(2)} together, unchanged.`
@@ -1112,13 +1112,14 @@ export function mount(element, options = {}) {
       else A[st.id]=A._last[st.id]||st.rec;
       refreshReview(); refreshLead();
       const el=root.querySelector(`[data-sw="${st.id}"]`); if(el) el.focus({preventScroll:true}); return; }
+    if(is(b,'copycfg')) return copy($('full'),'cfgtoast');
     if(is(b,'copy')) return copy($('full'));
   });
   function copy(el,tid){
     const done=()=>flash('Copied',tid), fallback=()=>{const r=doc.createRange();r.selectNodeContents(el);const sl=doc.defaultView.getSelection();sl.removeAllRanges();sl.addRange(r);flash('Selected — press Ctrl+C or Cmd+C',tid);};
     try{ navigator.clipboard.writeText(el.textContent).then(done,fallback); }catch(err){ fallback(); }
   }
-  function flash(t,tid){ const el=$(tid||'toast'); if(!el) return; el.textContent=t; clearTimeout(flash.t); flash.t=setTimeout(()=>el.textContent='',2400); }
+  function flash(t,tid){ const el=$(tid||'toast')||$('cfgtoast'); if(!el) return; el.textContent=t; clearTimeout(flash.t); flash.t=setTimeout(()=>el.textContent='',2400); }
 
   const apply = cfg => {
     if (cfg == null) { A = recAnswers(); startNotes = []; return; }
