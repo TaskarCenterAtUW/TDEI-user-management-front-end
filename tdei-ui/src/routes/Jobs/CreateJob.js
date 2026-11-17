@@ -15,6 +15,7 @@ import notSelectedIcon from "../../assets/img/notSelectedIcon.png";
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
+import QualityReportPoiOptions, { ALL_POI_TYPES, DEFAULT_POI_STATE, qualityReportRequestBody } from "./QualityReportPoiOptions";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
@@ -122,6 +123,7 @@ const formConfig = {
     ],
     "quality-report": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
+        { label: "Points of Interest", type: "poiOptions" },
     ]
 };
 
@@ -163,6 +165,8 @@ const CreateJobService = () => {
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
+    const [poiTypes, setPoiTypes] = useState(ALL_POI_TYPES);
+    const [poiState, setPoiState] = useState(DEFAULT_POI_STATE);
     const [spatialAssignmentMethod, setSpatialAssignmentMethod] = useState({ value: 'default', label: 'Default' });
     const [isSpatialJsonMode, setIsSpatialJsonMode] = useState(false);
     const [spatialTargetDatasetId, setSpatialTargetDatasetId] = useState("");
@@ -263,6 +267,8 @@ const CreateJobService = () => {
         setFirstDatasetId("");
         setSecondDatasetId("");
         setProximity("");
+        setPoiTypes(ALL_POI_TYPES);
+        setPoiState(DEFAULT_POI_STATE);
         setSpatialRequestBody(JSON.stringify(SPATIAL_JOIN, null, 2));
         setAlgorithmConfig({
             algorithms: [],
@@ -531,6 +537,18 @@ const CreateJobService = () => {
                 return;
             }
         }
+        if (jobType.value === "quality-report") {
+            if (!tdeiDatasetId) {
+                setValidateErrorMessage("Tdei Dataset Id is required for Quality Report job");
+                setShowValidateToast(true);
+                return;
+            }
+            if (poiTypes.length === 0) {
+                setValidateErrorMessage("Choose at least one type of point of interest for the Quality Report job");
+                setShowValidateToast(true);
+                return;
+            }
+        }
         if (jobType.value === "dataset-self-merge" && !tdeiDatasetId) {
             setValidateErrorMessage("Tdei Dataset Id is required for Dataset Self Merge");
             setShowValidateToast(true);
@@ -649,6 +667,8 @@ const CreateJobService = () => {
             uploadData.push(finalRequestBody);
         } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId, unionConfig);
+        } else if (jobType.value === "quality-report") {
+            uploadData.push(qualityReportRequestBody(poiTypes, poiState));
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
@@ -963,6 +983,16 @@ const CreateJobService = () => {
                 );
             case "bbox":
                 return renderBBoxField(index, field);
+            case "poiOptions":
+                return (
+                    <QualityReportPoiOptions
+                        key={index}
+                        poiTypes={poiTypes}
+                        setPoiTypes={setPoiTypes}
+                        poiState={poiState}
+                        setPoiState={setPoiState}
+                    />
+                );
             default:
                 return null;
         }
