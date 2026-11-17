@@ -374,6 +374,14 @@ export async function postCreateJob(data) {
         formData.append("file", data[1]);
         url = baseUrl;
         break;
+      case "gtfs-pathways/convert":
+        // Either a DXF zip or an arcgis_url, plus the converter's options as form fields
+        if (data[1]) {
+          formData.append("dataset", data[1]);
+        }
+        Object.entries(data[2]).forEach(([key, value]) => formData.append(key, value));
+        url = baseUrl;
+        break;
       case "osw/confidence":
         formData.append("file", data[1]);
         url = `${baseUrl}/${data[2]}`;
@@ -429,8 +437,12 @@ export async function postCreateJob(data) {
           tdei_dataset_id_one: data[2],
           tdei_dataset_id_two: data[3],
         };
-        if (data[4] !== undefined && data[4] !== null && !isNaN(data[4])) {
-          unionRequestBody.proximity = data[4];
+        if (data[4] !== undefined && data[4] !== null) {
+          if (typeof data[4] === "object") {
+            unionRequestBody.config = data[4];
+          } else if (!isNaN(data[4])) {
+            unionRequestBody.proximity = data[4];
+          }
         }
         if (data[5] !== undefined && data[5] !== null) {
           unionRequestBody.entity_filters = data[5];

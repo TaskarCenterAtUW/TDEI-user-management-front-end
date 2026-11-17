@@ -54,6 +54,7 @@ const Jobs = () => {
         { value: 'Dataset-Upload', label: 'Dataset Upload' },
         { value: 'Dataset-Validate', label: 'Dataset Validate' },
         { value: 'Edit-Metadata', label: 'Edit Metadata' },
+        { value: 'Pathways-Convert', label: 'Pathways - Convert' },
         { value: 'Quality-Metric', label: 'Quality Metric' },
         { value: 'Quality-Report', label: 'Quality Report' }
     ];

@@ -317,6 +317,7 @@ const UnionEntityFiltersForm = ({
                                         placeholder={proximity || '0.5 (default)'}
                                         value={s.bufferWidth}
                                         onChange={(e) => updateEntityField(type, 'bufferWidth', e.target.value)}
+                                        onWheel={(e) => e.currentTarget.blur()}
                                         disabled={!s.enabled}
                                         aria-labelledby={`${sectionTitleId} ${bufferLabelId}`}
                                         aria-describedby={bufferHelpId}
@@ -342,6 +343,7 @@ const UnionEntityFiltersForm = ({
                                         placeholder={cardCopy.overlapPlaceholder}
                                         value={s.overlapPct}
                                         onChange={(e) => updateEntityField(type, 'overlapPct', e.target.value)}
+                                        onWheel={(e) => e.currentTarget.blur()}
                                         disabled={!s.enabled}
                                         aria-labelledby={`${sectionTitleId} ${overlapLabelId}`}
                                         aria-describedby={overlapHelpId}

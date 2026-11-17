@@ -1,12 +1,67 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import style from "../../routes/Jobs/Jobs.module.css";
 import { toPascalCase } from "../../utils";
 
 const JobInputDescModal = (props) => {
     const { job_id, request_input } = props.message;
+    const [copied, setCopied] = useState(false);
+
     const handleClose = () => {
+        setCopied(false);
         props.onHide();
+    };
+
+    const UNION_CONFIG_KEYS = ['snap', 'dedup', 'connect', 'extensions'];
+
+    const getCopyableJson = () => {
+        if (!request_input || typeof request_input !== 'object') return null;
+        let rawConfig = request_input.config;
+        if (typeof rawConfig === 'string') {
+            try {
+                rawConfig = JSON.parse(rawConfig);
+            } catch (e) {
+                rawConfig = null;
+            }
+        }
+        if (rawConfig && typeof rawConfig === 'object' && !Array.isArray(rawConfig)) {
+            const unionConfig = UNION_CONFIG_KEYS.reduce((acc, key) => {
+                if (rawConfig[key] !== undefined) {
+                    acc[key] = rawConfig[key];
+                }
+                return acc;
+            }, {});
+            return JSON.stringify(
+                Object.keys(unionConfig).length > 0 ? unionConfig : rawConfig,
+                null,
+                2
+            );
+        }
+        if (UNION_CONFIG_KEYS.some((key) => request_input[key] !== undefined)) {
+            const unionConfig = UNION_CONFIG_KEYS.reduce((acc, key) => {
+                if (request_input[key] !== undefined) {
+                    acc[key] = request_input[key];
+                }
+                return acc;
+            }, {});
+            return JSON.stringify(unionConfig, null, 2);
+        }
+        const filtered = Object.entries(request_input).reduce((acc, [key, value]) => {
+            if (!key.toLowerCase().includes('user_id') && !key.toLowerCase().includes('userid')) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+        return Object.keys(filtered).length > 0 ? JSON.stringify(filtered, null, 2) : null;
+    };
+
+    const handleCopyJson = () => {
+        const jsonText = getCopyableJson();
+        if (!jsonText) return;
+        navigator.clipboard.writeText(jsonText).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
     };
 
     // Function to handle nested objects and arrays
@@ -63,6 +118,17 @@ const JobInputDescModal = (props) => {
                             <div className={style.jobStatusHeaderLabel}>Input Parameter</div>
                             <div className={style.jobStatusHeaderValue}>JOB ID:{job_id}</div>
                         </div>
+                        {getCopyableJson() && (
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline-secondary"
+                                className="tdei-secondary-button align-self-center"
+                                onClick={handleCopyJson}
+                            >
+                                {copied ? "Copied!" : "Copy Input"}
+                            </Button>
+                        )}
                     </div>
                     <div className={style.jobStatusContainerContent}>
                         {getFilteredRequestInput().length > 0 ? (
