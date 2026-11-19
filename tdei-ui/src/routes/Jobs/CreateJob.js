@@ -15,7 +15,12 @@ import notSelectedIcon from "../../assets/img/notSelectedIcon.png";
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
-import QualityReportPoiOptions, { ALL_POI_TYPES, qualityReportRequestBody } from "./QualityReportPoiOptions";
+import QualityReportPoiOptions, {
+    ALL_POI_TYPES,
+    POI_SOURCE_FETCH,
+    POI_SOURCE_FILE,
+    qualityReportRequestBody,
+} from "./QualityReportPoiOptions";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
@@ -123,13 +128,8 @@ const formConfig = {
     ],
     "quality-report": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
-        { label: "Points of Interest", type: "poiOptions" },
-        {
-            label: "Points of Interest File",
-            type: "dropzone",
-            optional: true,
-            helperText: "Your own points of interest, used as-is instead of fetching them, for this report only. A CSV in the form of the pois.csv the report writes: lat, lon, category, source and snapped columns, with snapped set to true on every row."
-        }
+        // Fetched by type or uploaded as a file; the file's dropzone is part of this field
+        { label: "Points of Interest", type: "poiOptions" }
     ]
 };
 
@@ -171,6 +171,7 @@ const CreateJobService = () => {
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
+    const [poiSource, setPoiSource] = useState(POI_SOURCE_FETCH);
     const [poiTypes, setPoiTypes] = useState(ALL_POI_TYPES);
     const [spatialAssignmentMethod, setSpatialAssignmentMethod] = useState({ value: 'default', label: 'Default' });
     const [isSpatialJsonMode, setIsSpatialJsonMode] = useState(false);
@@ -272,6 +273,7 @@ const CreateJobService = () => {
         setFirstDatasetId("");
         setSecondDatasetId("");
         setProximity("");
+        setPoiSource(POI_SOURCE_FETCH);
         setPoiTypes(ALL_POI_TYPES);
         setSpatialRequestBody(JSON.stringify(SPATIAL_JOIN, null, 2));
         setAlgorithmConfig({
@@ -547,9 +549,14 @@ const CreateJobService = () => {
                 setShowValidateToast(true);
                 return;
             }
-            // A POI file takes the place of the types, so they only matter when fetching.
-            if (!selectedFile && poiTypes.length === 0) {
+            // Only the chosen source's values matter: the types when fetching, the file when uploading.
+            if (poiSource === POI_SOURCE_FETCH && poiTypes.length === 0) {
                 setValidateErrorMessage("Choose at least one type of point of interest for the Quality Report job");
+                setShowValidateToast(true);
+                return;
+            }
+            if (poiSource === POI_SOURCE_FILE && !selectedFile) {
+                setValidateErrorMessage("Upload a pois.csv for the Quality Report job, or choose to fetch points of interest instead");
                 setShowValidateToast(true);
                 return;
             }
@@ -673,7 +680,7 @@ const CreateJobService = () => {
         } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId, unionConfig);
         } else if (jobType.value === "quality-report") {
-            uploadData.push(qualityReportRequestBody(poiTypes, selectedFile));
+            uploadData.push(qualityReportRequestBody(poiTypes, poiSource === POI_SOURCE_FILE ? selectedFile : null));
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
@@ -836,9 +843,7 @@ const CreateJobService = () => {
             <div key={index} className={style.formItems}>
                 <p className={style.formLabelP}>
                     {field.label}
-                    {field.optional
-                        ? " (optional)"
-                        : <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>}
+                    <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>
                 </p>
                 <Dropzone
                     onDrop={onDrop}
@@ -849,7 +854,7 @@ const CreateJobService = () => {
                 />
                 <div className="d-flex align-items-start mt-2">
                     <Form.Text id="passwordHelpBlock" className={style.description}>
-                        {extractLinks(field.helperText || getDescriptionForField(field.label))}
+                        {extractLinks(getDescriptionForField(field.label))}
                     </Form.Text>
                 </div>
             </div>
@@ -998,9 +1003,19 @@ const CreateJobService = () => {
                 return (
                     <QualityReportPoiOptions
                         key={index}
+                        poiSource={poiSource}
+                        setPoiSource={setPoiSource}
                         poiTypes={poiTypes}
                         setPoiTypes={setPoiTypes}
-                        poisFileChosen={Boolean(selectedFile)}
+                        fileInput={
+                            <Dropzone
+                                onDrop={onDrop}
+                                accept={getAcceptedFileTypes()}
+                                format={getFileFormat()}
+                                selectedFile={selectedFile}
+                                dataType={getDataTypeFromJobType()}
+                            />
+                        }
                     />
                 );
             default:

@@ -3,7 +3,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axios from "axios";
 import { osmUrl, postCreateJob } from "../../services/apiServices";
-import QualityReportPoiOptions, { ALL_POI_TYPES, qualityReportRequestBody } from "./QualityReportPoiOptions";
+import QualityReportPoiOptions, {
+    ALL_POI_TYPES,
+    POI_SOURCE_FETCH,
+    POI_SOURCE_FILE,
+    qualityReportRequestBody,
+} from "./QualityReportPoiOptions";
 
 const poisFile = () => new File(["lat,lon,category,source,snapped\n"], "pois.csv", { type: "text/csv" });
 
@@ -70,25 +75,26 @@ describe("postCreateJob for a quality report", () => {
 describe("QualityReportPoiOptions", () => {
     let latest;
     const Harness = () => {
+        const [poiSource, setPoiSource] = useState(POI_SOURCE_FETCH);
         const [poiTypes, setPoiTypes] = useState(ALL_POI_TYPES);
-        const [poisFileChosen, setPoisFileChosen] = useState(false);
-        latest = { poiTypes };
+        latest = { poiSource, poiTypes };
         return (
-            <>
-                <button onClick={() => setPoisFileChosen(!poisFileChosen)}>Toggle file</button>
-                <QualityReportPoiOptions
-                    poiTypes={poiTypes}
-                    setPoiTypes={setPoiTypes}
-                    poisFileChosen={poisFileChosen}
-                />
-            </>
+            <QualityReportPoiOptions
+                poiSource={poiSource}
+                setPoiSource={setPoiSource}
+                poiTypes={poiTypes}
+                setPoiTypes={setPoiTypes}
+                fileInput={<input aria-label="the file input" />}
+            />
         );
     };
 
-    it("starts with every type chosen", () => {
+    it("starts by fetching every type, with the file input hidden", () => {
         render(<Harness />);
+        expect(screen.getByLabelText(/^Fetch them/)).toBeChecked();
         expect(screen.getByLabelText("All types")).toBeChecked();
         expect(screen.getByLabelText(/^Leisure/)).toBeChecked();
+        expect(screen.queryByLabelText("the file input")).not.toBeInTheDocument();
     });
 
     it("unchecks a type, and All types follows", () => {
@@ -109,16 +115,18 @@ describe("QualityReportPoiOptions", () => {
         expect(latest.poiTypes).toEqual(ALL_POI_TYPES);
     });
 
-    it("gives way to a note while a POI file is chosen, and comes back as it was", () => {
+    it("shows only the chosen option's controls, and keeps the types as they were", () => {
         render(<Harness />);
         fireEvent.click(screen.getByLabelText(/^Leisure/));
 
-        fireEvent.click(screen.getByText("Toggle file"));
+        fireEvent.click(screen.getByLabelText("Upload my own pois.csv"));
+        expect(latest.poiSource).toBe(POI_SOURCE_FILE);
+        expect(screen.getByLabelText("the file input")).toBeInTheDocument();
         expect(screen.queryByLabelText("All types")).not.toBeInTheDocument();
-        expect(screen.getByText(/they don't apply to a file of your own/)).toBeInTheDocument();
 
-        fireEvent.click(screen.getByText("Toggle file"));
-        expect(screen.queryByText(/they don't apply to a file of your own/)).not.toBeInTheDocument();
+        fireEvent.click(screen.getByLabelText(/^Fetch them/));
+        expect(latest.poiSource).toBe(POI_SOURCE_FETCH);
+        expect(screen.queryByLabelText("the file input")).not.toBeInTheDocument();
         expect(screen.getByLabelText(/^Leisure/)).not.toBeChecked();
         expect(screen.getByLabelText(/^Civic/)).toBeChecked();
     });

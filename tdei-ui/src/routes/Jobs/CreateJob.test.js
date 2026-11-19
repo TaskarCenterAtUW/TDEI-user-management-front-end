@@ -16,7 +16,7 @@ jest.mock("../../hooks/jobs/useCreateJob");
 // The dropzone looks up upload limits from the API; a POI file has none to look up.
 jest.mock("../../hooks/useSystemCapabilities", () => () => ({ data: undefined }));
 
-describe("the Quality Report form's POI file", () => {
+describe("the Quality Report form's points of interest", () => {
     let mutate;
 
     beforeEach(() => {
@@ -36,35 +36,42 @@ describe("the Quality Report form's POI file", () => {
         fireEvent.change(screen.getByLabelText(/^Tdei Dataset Id/), { target: { value: "dataset-1" } });
     });
 
+    const fetchChoice = () => screen.getByLabelText(/^Fetch them/);
+    const uploadChoice = () => screen.getByLabelText("Upload my own pois.csv");
     const chooseFile = async () => {
         const file = new File(["lat,lon,category,source,snapped\n"], "pois.csv", { type: "text/csv" });
         fireEvent.change(screen.getByLabelText("data-file"), { target: { files: [file] } });
         await screen.findByRole("button", { name: "Remove file" });
         return file;
     };
-    const removeFile = () => fireEvent.click(screen.getByRole("button", { name: "Remove file" }));
     const create = () => fireEvent.click(screen.getByRole("button", { name: "Create" }));
     const atLeastOneType = /Choose at least one type of point of interest/;
+    const needsAFile = /Upload a pois.csv for the Quality Report job/;
 
-    it("is labelled optional, takes a CSV, and says what the file must hold", () => {
-        expect(screen.getByText("Points of Interest File (optional)")).toBeInTheDocument();
+    it("offers fetching by type or uploading a file, one or the other, fetching first", () => {
+        expect(fetchChoice()).toBeChecked();
+        expect(uploadChoice()).not.toBeChecked();
+        expect(screen.getByRole("group", { name: "Types to fetch" })).toBeInTheDocument();
+        expect(screen.queryByLabelText("data-file")).not.toBeInTheDocument();
+
+        fireEvent.click(uploadChoice());
+        expect(fetchChoice()).not.toBeChecked();
+        expect(screen.queryByRole("group", { name: "Types to fetch" })).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("All types")).not.toBeInTheDocument();
+    });
+
+    it("takes a CSV when uploading, and says what the file must hold", () => {
+        fireEvent.click(uploadChoice());
         expect(screen.getByText("Allowed format .csv")).toBeInTheDocument();
         expect(screen.getByLabelText("data-file")).toHaveAttribute("accept", "text/csv,.csv");
         expect(screen.getByText(/lat, lon, category, source and snapped columns/)).toBeInTheDocument();
     });
 
-    it("hides the POI types while a file is chosen, and says why", async () => {
-        expect(screen.getByLabelText("All types")).toBeInTheDocument();
-        await chooseFile();
-        expect(screen.queryByLabelText("All types")).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/^Leisure/)).not.toBeInTheDocument();
-        expect(screen.getByText(/Taken from the Points of Interest File below/)).toBeInTheDocument();
-    });
-
-    it("lifts the at-least-one-type rule while a file is chosen, and sends only the file", async () => {
+    it("needs a file when uploading, but no types, and sends only the file", async () => {
         fireEvent.click(screen.getByLabelText("All types"));
+        fireEvent.click(uploadChoice());
         create();
-        expect(screen.getByText(atLeastOneType)).toBeInTheDocument();
+        expect(screen.getByText(needsAFile)).toBeInTheDocument();
         expect(mutate).not.toHaveBeenCalled();
 
         const file = await chooseFile();
@@ -77,13 +84,13 @@ describe("the Quality Report form's POI file", () => {
         expect(body.get("pois_file").name).toBe(file.name);
     });
 
-    it("brings the POI options back as they were when the file is removed", async () => {
+    it("sends the types, not a file chosen earlier, after switching back to fetching", async () => {
         fireEvent.click(screen.getByLabelText(/^Leisure/));
-
+        fireEvent.click(uploadChoice());
         await chooseFile();
-        removeFile();
+        fireEvent.click(fetchChoice());
 
-        expect(screen.queryByText(/Taken from the Points of Interest File below/)).not.toBeInTheDocument();
+        // The types are as they were
         expect(screen.getByLabelText(/^Leisure/)).not.toBeChecked();
         expect(screen.getByLabelText(/^Civic/)).toBeChecked();
 
@@ -93,10 +100,19 @@ describe("the Quality Report form's POI file", () => {
         });
     });
 
-    it("applies the at-least-one-type rule again once the file is removed", async () => {
-        fireEvent.click(screen.getByLabelText("All types"));
+    it("keeps the file when switching to fetching and back", async () => {
+        fireEvent.click(uploadChoice());
         await chooseFile();
-        removeFile();
+        fireEvent.click(fetchChoice());
+        fireEvent.click(uploadChoice());
+        expect(screen.getByRole("button", { name: "Remove file" })).toBeInTheDocument();
+    });
+
+    it("needs at least one type when fetching, even with a file chosen earlier", async () => {
+        fireEvent.click(uploadChoice());
+        await chooseFile();
+        fireEvent.click(fetchChoice());
+        fireEvent.click(screen.getByLabelText("All types"));
         create();
         expect(screen.getByText(atLeastOneType)).toBeInTheDocument();
         expect(mutate).not.toHaveBeenCalled();

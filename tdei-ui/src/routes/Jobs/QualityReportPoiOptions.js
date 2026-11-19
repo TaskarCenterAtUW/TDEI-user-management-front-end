@@ -43,28 +43,19 @@ export function qualityReportRequestBody(poiTypes, poisFile = null) {
     return body;
 }
 
-/**
- * The quality report's point-of-interest options on the Create Job screen: which kinds of POIs to
- * look for (all by default).
- *
- * While a POI file is chosen there is nothing to fetch, so the options give way to a note saying
- * why. Their values live with the caller, so removing the file brings them back as they were.
- */
-const QualityReportPoiOptions = ({ poiTypes, setPoiTypes, poisFileChosen = false }) => {
-    if (poisFileChosen) {
-        return (
-            <div className={`${style.formItem} ${style.poiSection}`}>
-                <p className={style.formLabelP}>Points of Interest</p>
-                <div className="d-flex align-items-start mt-2">
-                    <Form.Text className={style.description}>
-                        Taken from the Points of Interest File below. Types choose which points of interest to
-                        fetch, so they don't apply to a file of your own. Remove the file to choose them again.
-                    </Form.Text>
-                </div>
-            </div>
-        );
-    }
+// Where a quality report's points of interest come from: fetched by type, or the user's own file.
+export const POI_SOURCE_FETCH = "fetch";
+export const POI_SOURCE_FILE = "file";
 
+/**
+ * The quality report's points of interest on the Create Job screen: one choice between fetching
+ * them by type (every type by default) and uploading the user's own pois.csv. Only the chosen
+ * option's controls are shown, and only its values are sent.
+ *
+ * The caller holds the values, so switching back and forth keeps the types and the file as they
+ * were, and passes the file input (its shared Dropzone) in as fileInput.
+ */
+const QualityReportPoiOptions = ({ poiSource, setPoiSource, poiTypes, setPoiTypes, fileInput }) => {
     const allChosen = poiTypes.length === ALL_POI_TYPES.length;
     const toggle = (value) =>
         setPoiTypes(poiTypes.includes(value) ? poiTypes.filter((type) => type !== value) : [...poiTypes, value]);
@@ -74,34 +65,73 @@ const QualityReportPoiOptions = ({ poiTypes, setPoiTypes, poisFileChosen = false
             <legend className={`${style.formLabelP} ${style.poiLegend}`}>
                 Points of Interest<span style={{ color: "red" }}> *</span>
             </legend>
-            <Form.Check
-                type="checkbox"
-                id="poi-type-all"
-                label="All types"
-                checked={allChosen}
-                onChange={() => setPoiTypes(allChosen ? [] : ALL_POI_TYPES)}
-            />
-            {POI_TYPE_OPTIONS.map((option) => (
-                <Form.Check
-                    key={option.value}
-                    type="checkbox"
-                    id={`poi-type-${option.value}`}
-                    className="ms-3"
-                    label={
-                        <>
-                            {option.label} <span className="text-muted">({option.description})</span>
-                        </>
-                    }
-                    checked={poiTypes.includes(option.value)}
-                    onChange={() => toggle(option.value)}
-                />
-            ))}
-            <div className="d-flex align-items-start mt-2">
+            <div className="d-flex align-items-start">
                 <Form.Text className={style.description}>
                     The destinations the report measures access to, such as walksheds and routes between them.
-                    Choose at least one.
+                    Fetch them, or upload your own.
                 </Form.Text>
             </div>
+
+            <Form.Check
+                type="radio"
+                name="poi-source"
+                id="poi-source-fetch"
+                className={style.poiSource}
+                label="Fetch them from OpenStreetMap and Overture Maps, by type"
+                checked={poiSource === POI_SOURCE_FETCH}
+                onChange={() => setPoiSource(POI_SOURCE_FETCH)}
+            />
+            {poiSource === POI_SOURCE_FETCH && (
+                <div role="group" aria-label="Types to fetch" className={style.poiChoice}>
+                    <Form.Check
+                        type="checkbox"
+                        id="poi-type-all"
+                        label="All types"
+                        checked={allChosen}
+                        onChange={() => setPoiTypes(allChosen ? [] : ALL_POI_TYPES)}
+                    />
+                    {POI_TYPE_OPTIONS.map((option) => (
+                        <Form.Check
+                            key={option.value}
+                            type="checkbox"
+                            id={`poi-type-${option.value}`}
+                            className="ms-3"
+                            label={
+                                <>
+                                    {option.label} <span className="text-muted">({option.description})</span>
+                                </>
+                            }
+                            checked={poiTypes.includes(option.value)}
+                            onChange={() => toggle(option.value)}
+                        />
+                    ))}
+                    <div className="d-flex align-items-start mt-2">
+                        <Form.Text className={style.description}>Choose at least one.</Form.Text>
+                    </div>
+                </div>
+            )}
+
+            <Form.Check
+                type="radio"
+                name="poi-source"
+                id="poi-source-file"
+                className={style.poiSource}
+                label="Upload my own pois.csv"
+                checked={poiSource === POI_SOURCE_FILE}
+                onChange={() => setPoiSource(POI_SOURCE_FILE)}
+            />
+            {poiSource === POI_SOURCE_FILE && (
+                <div className={style.poiChoice}>
+                    {fileInput}
+                    <div className="d-flex align-items-start mt-2">
+                        <Form.Text className={style.description}>
+                            Used as-is instead of fetching, for this report only. A CSV in the form of the pois.csv
+                            the report writes: lat, lon, category, source and snapped columns, with snapped set to
+                            true on every row.
+                        </Form.Text>
+                    </div>
+                </div>
+            )}
         </fieldset>
     );
 };

@@ -517,6 +517,15 @@
   font-size: inherit;
 }
 
+.poiSource {
+  margin-top: 12px;
+}
+
+/* The chosen option's controls, under its radio button */
+.poiChoice {
+  margin: 6px 0 4px 1.5rem;
+}
+
 .bBoxContainer {
   width: 100%;
   padding: 20px;
