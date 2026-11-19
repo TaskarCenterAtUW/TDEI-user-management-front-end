@@ -64,8 +64,8 @@ const QualityReportPoiOptions = ({ poiTypes, setPoiTypes, poiState, setPoiState 
 
     return (
         <>
-            <fieldset className={style.formItem}>
-                <legend className={style.formLabelP}>
+            <fieldset className={`${style.formItem} ${style.poiSection}`}>
+                <legend className={`${style.formLabelP} ${style.poiLegend}`}>
                     Points of Interest<span style={{ color: "red" }}> *</span>
                 </legend>
                 <Form.Check
@@ -97,7 +97,7 @@ const QualityReportPoiOptions = ({ poiTypes, setPoiTypes, poiState, setPoiState 
                     </Form.Text>
                 </div>
             </fieldset>
-            <div className={style.formItem}>
+            <div className={`${style.formItem} ${style.poiSection}`}>
                 <label htmlFor="poi-state-selectInput" className={style.formLabelP}>
                     Points of Interest State<span style={{ color: "red" }}> *</span>
                 </label>
