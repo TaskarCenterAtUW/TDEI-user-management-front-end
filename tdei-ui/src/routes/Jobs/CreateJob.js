@@ -124,6 +124,12 @@ const formConfig = {
     "quality-report": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
         { label: "Points of Interest", type: "poiOptions" },
+        {
+            label: "Points of Interest File",
+            type: "dropzone",
+            optional: true,
+            helperText: "Your own points of interest, used as-is instead of fetching them, for this report only. A CSV in the form of the pois.csv the report writes: lat, lon, category, source and snapped columns, with snapped set to true on every row."
+        }
     ]
 };
 
@@ -543,7 +549,8 @@ const CreateJobService = () => {
                 setShowValidateToast(true);
                 return;
             }
-            if (poiTypes.length === 0) {
+            // A POI file takes the place of the types, so they only matter when fetching.
+            if (!selectedFile && poiTypes.length === 0) {
                 setValidateErrorMessage("Choose at least one type of point of interest for the Quality Report job");
                 setShowValidateToast(true);
                 return;
@@ -668,7 +675,7 @@ const CreateJobService = () => {
         } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId, unionConfig);
         } else if (jobType.value === "quality-report") {
-            uploadData.push(qualityReportRequestBody(poiTypes, poiState));
+            uploadData.push(qualityReportRequestBody(poiTypes, poiState, selectedFile));
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
@@ -831,7 +838,9 @@ const CreateJobService = () => {
             <div key={index} className={style.formItems}>
                 <p className={style.formLabelP}>
                     {field.label}
-                    <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>
+                    {field.optional
+                        ? " (optional)"
+                        : <span style={{ color: jobType.value === "confidence" || jobType.value === "quality-metric" ? 'white' : 'red' }}> *</span>}
                 </p>
                 <Dropzone
                     onDrop={onDrop}
@@ -842,7 +851,7 @@ const CreateJobService = () => {
                 />
                 <div className="d-flex align-items-start mt-2">
                     <Form.Text id="passwordHelpBlock" className={style.description}>
-                        {extractLinks(getDescriptionForField(field.label))}
+                        {extractLinks(field.helperText || getDescriptionForField(field.label))}
                     </Form.Text>
                 </div>
             </div>
@@ -867,6 +876,8 @@ const CreateJobService = () => {
                 case "confidence":
                 case "quality-metric":
                     return { 'application/geo+json': ['.geojson'] };
+                case "quality-report":
+                    return { 'text/csv': ['.csv'] };
                 default:
                     return { 'application/zip': ['.zip'] };
             }
@@ -888,6 +899,8 @@ const CreateJobService = () => {
                 case "confidence":
                 case "quality-metric":
                     return ".geojson";
+                case "quality-report":
+                    return ".csv";
                 default:
                     return ".zip";
             }
@@ -991,6 +1004,7 @@ const CreateJobService = () => {
                         setPoiTypes={setPoiTypes}
                         poiState={poiState}
                         setPoiState={setPoiState}
+                        poisFileChosen={Boolean(selectedFile)}
                     />
                 );
             default:

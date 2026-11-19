@@ -44,8 +44,17 @@ export const DEFAULT_POI_STATE = "WA";
  * The body of a quality report request for the chosen options. poi_types is sent only when some
  * types are left out: with every type chosen the report uses all of its types, including any it
  * gains later.
+ *
+ * With a POI file, the body is a form carrying only that file. The report uses the file in place of
+ * the points of interest it would fetch, and the API rejects poi_types or poi_state sent alongside
+ * it, since those choose what to fetch.
  */
-export function qualityReportRequestBody(poiTypes, poiState) {
+export function qualityReportRequestBody(poiTypes, poiState, poisFile = null) {
+    if (poisFile) {
+        const form = new FormData();
+        form.append("pois_file", poisFile);
+        return form;
+    }
     const body = { poi_state: poiState };
     if (poiTypes.length < ALL_POI_TYPES.length) {
         body.poi_types = ALL_POI_TYPES.filter((type) => poiTypes.includes(type));
@@ -56,8 +65,26 @@ export function qualityReportRequestBody(poiTypes, poiState) {
 /**
  * The quality report's point-of-interest options on the Create Job screen: which kinds of POIs to
  * look for (all by default) and the state that Overture places must be in (WA by default).
+ *
+ * While a POI file is chosen there is nothing to fetch, so the options give way to a note saying
+ * why. Their values live with the caller, so removing the file brings them back as they were.
  */
-const QualityReportPoiOptions = ({ poiTypes, setPoiTypes, poiState, setPoiState }) => {
+const QualityReportPoiOptions = ({ poiTypes, setPoiTypes, poiState, setPoiState, poisFileChosen = false }) => {
+    if (poisFileChosen) {
+        return (
+            <div className={`${style.formItem} ${style.poiSection}`}>
+                <p className={style.formLabelP}>Points of Interest</p>
+                <div className="d-flex align-items-start mt-2">
+                    <Form.Text className={style.description}>
+                        Taken from the Points of Interest File below. Types and state choose which points of
+                        interest to fetch, so they don't apply to a file of your own. Remove the file to choose
+                        them again.
+                    </Form.Text>
+                </div>
+            </div>
+        );
+    }
+
     const allChosen = poiTypes.length === ALL_POI_TYPES.length;
     const toggle = (value) =>
         setPoiTypes(poiTypes.includes(value) ? poiTypes.filter((type) => type !== value) : [...poiTypes, value]);

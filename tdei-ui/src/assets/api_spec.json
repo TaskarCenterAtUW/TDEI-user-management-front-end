@@ -1850,7 +1850,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Optional. Which points of interest (POIs) the report looks for. Leave out the body, or either field, to keep the defaults: every POI type, and Overture places in WA.",
+                    "description": "Optional. Which points of interest (POIs) the report uses. As JSON, choose which POI types and state to fetch; leave out the body, or either field, to keep the defaults: every POI type, and Overture places in WA. As multipart/form-data, upload your own `pois_file` instead.",
                     "required": false,
                     "content": {
                         "application/json": {
@@ -1943,6 +1943,18 @@
                                     }
                                 }
                             }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "pois_file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Your own points of interest, used instead of fetching them from OpenStreetMap and Overture Maps, for this job only. A CSV in the form the report writes its own `pois.csv`: it needs `lat`, `lon`, `category`, `source` and `snapped` columns, with `snapped` set to `true` on every row, because the file is used as-is and its points are not snapped to the network. Send it on its own: `poi_types` and `poi_state` choose which points of interest to fetch, so a request with both is rejected."
+                                    }
+                                }
+                            }
                         }
                     }
                 },
@@ -1966,7 +1978,7 @@
                         }
                     },
                     "400": {
-                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file, or `poi_types` / `poi_state` is not valid."
+                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file, or `poi_types` / `poi_state` is not valid, or `pois_file` is not a CSV with the required columns or is sent with `poi_types` / `poi_state`."
                     },
                     "401": {
                         "description": "Unauthenticated request. Check your access token."
