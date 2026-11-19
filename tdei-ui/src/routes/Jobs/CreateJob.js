@@ -15,7 +15,7 @@ import notSelectedIcon from "../../assets/img/notSelectedIcon.png";
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
-import QualityReportPoiOptions, { ALL_POI_TYPES, DEFAULT_POI_STATE, qualityReportRequestBody } from "./QualityReportPoiOptions";
+import QualityReportPoiOptions, { ALL_POI_TYPES, qualityReportRequestBody } from "./QualityReportPoiOptions";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
@@ -172,7 +172,6 @@ const CreateJobService = () => {
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
     const [poiTypes, setPoiTypes] = useState(ALL_POI_TYPES);
-    const [poiState, setPoiState] = useState(DEFAULT_POI_STATE);
     const [spatialAssignmentMethod, setSpatialAssignmentMethod] = useState({ value: 'default', label: 'Default' });
     const [isSpatialJsonMode, setIsSpatialJsonMode] = useState(false);
     const [spatialTargetDatasetId, setSpatialTargetDatasetId] = useState("");
@@ -274,7 +273,6 @@ const CreateJobService = () => {
         setSecondDatasetId("");
         setProximity("");
         setPoiTypes(ALL_POI_TYPES);
-        setPoiState(DEFAULT_POI_STATE);
         setSpatialRequestBody(JSON.stringify(SPATIAL_JOIN, null, 2));
         setAlgorithmConfig({
             algorithms: [],
@@ -675,7 +673,7 @@ const CreateJobService = () => {
         } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId, unionConfig);
         } else if (jobType.value === "quality-report") {
-            uploadData.push(qualityReportRequestBody(poiTypes, poiState, selectedFile));
+            uploadData.push(qualityReportRequestBody(poiTypes, selectedFile));
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
@@ -1002,8 +1000,6 @@ const CreateJobService = () => {
                         key={index}
                         poiTypes={poiTypes}
                         setPoiTypes={setPoiTypes}
-                        poiState={poiState}
-                        setPoiState={setPoiState}
                         poisFileChosen={Boolean(selectedFile)}
                     />
                 );

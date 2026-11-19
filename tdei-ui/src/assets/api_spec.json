@@ -1850,7 +1850,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Optional. Which points of interest (POIs) the report uses. As JSON, choose which POI types and state to fetch; leave out the body, or either field, to keep the defaults: every POI type, and Overture places in WA. As multipart/form-data, upload your own `pois_file` instead.",
+                    "description": "Optional. Which points of interest (POIs) the report uses. As JSON, choose which POI types to fetch; leave out the body, or `poi_types`, to include every POI type. Overture places are fetched only in the US state(s) the dataset's area overlaps; for an area outside every state, they are fetched without a state filter. As multipart/form-data, upload your own `pois_file` instead.",
                     "required": false,
                     "content": {
                         "application/json": {
@@ -1881,65 +1881,6 @@
                                             "civic",
                                             "leisure"
                                         ]
-                                    },
-                                    "poi_state": {
-                                        "type": "string",
-                                        "enum": [
-                                            "AL",
-                                            "AK",
-                                            "AZ",
-                                            "AR",
-                                            "CA",
-                                            "CO",
-                                            "CT",
-                                            "DE",
-                                            "DC",
-                                            "FL",
-                                            "GA",
-                                            "HI",
-                                            "ID",
-                                            "IL",
-                                            "IN",
-                                            "IA",
-                                            "KS",
-                                            "KY",
-                                            "LA",
-                                            "ME",
-                                            "MD",
-                                            "MA",
-                                            "MI",
-                                            "MN",
-                                            "MS",
-                                            "MO",
-                                            "MT",
-                                            "NE",
-                                            "NV",
-                                            "NH",
-                                            "NJ",
-                                            "NM",
-                                            "NY",
-                                            "NC",
-                                            "ND",
-                                            "OH",
-                                            "OK",
-                                            "OR",
-                                            "PA",
-                                            "RI",
-                                            "SC",
-                                            "SD",
-                                            "TN",
-                                            "TX",
-                                            "UT",
-                                            "VT",
-                                            "VA",
-                                            "WA",
-                                            "WV",
-                                            "WI",
-                                            "WY"
-                                        ],
-                                        "default": "WA",
-                                        "description": "The US state (two-letter code) that points of interest from Overture Maps must be in. Defaults to WA. Points of interest from OpenStreetMap are limited to the dataset's area instead.",
-                                        "example": "WA"
                                     }
                                 }
                             }
@@ -1951,7 +1892,7 @@
                                     "pois_file": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "Your own points of interest, used instead of fetching them from OpenStreetMap and Overture Maps, for this job only. A CSV in the form the report writes its own `pois.csv`: it needs `lat`, `lon`, `category`, `source` and `snapped` columns, with `snapped` set to `true` on every row, because the file is used as-is and its points are not snapped to the network. Send it on its own: `poi_types` and `poi_state` choose which points of interest to fetch, so a request with both is rejected."
+                                        "description": "Your own points of interest, used instead of fetching them from OpenStreetMap and Overture Maps, for this job only. A CSV in the form the report writes its own `pois.csv`: it needs `lat`, `lon`, `category`, `source` and `snapped` columns, with `snapped` set to `true` on every row, because the file is used as-is and its points are not snapped to the network. Send it on its own: `poi_types` chooses which points of interest to fetch, so a request with both is rejected."
                                     }
                                 }
                             }
@@ -1978,7 +1919,7 @@
                         }
                     },
                     "400": {
-                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file, or `poi_types` / `poi_state` is not valid, or `pois_file` is not a CSV with the required columns or is sent with `poi_types` / `poi_state`."
+                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file, or `poi_types` is not valid, or `pois_file` is not a CSV with the required columns or is sent with `poi_types`."
                     },
                     "401": {
                         "description": "Unauthenticated request. Check your access token."

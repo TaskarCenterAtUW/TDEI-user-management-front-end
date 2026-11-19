@@ -53,12 +53,11 @@ describe("the Quality Report form's POI file", () => {
         expect(screen.getByText(/lat, lon, category, source and snapped columns/)).toBeInTheDocument();
     });
 
-    it("hides the POI types and state while a file is chosen, and says why", async () => {
+    it("hides the POI types while a file is chosen, and says why", async () => {
         expect(screen.getByLabelText("All types")).toBeInTheDocument();
         await chooseFile();
         expect(screen.queryByLabelText("All types")).not.toBeInTheDocument();
         expect(screen.queryByLabelText(/^Leisure/)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/^Points of Interest State/)).not.toBeInTheDocument();
         expect(screen.getByText(/Taken from the Points of Interest File below/)).toBeInTheDocument();
     });
 
@@ -80,8 +79,6 @@ describe("the Quality Report form's POI file", () => {
 
     it("brings the POI options back as they were when the file is removed", async () => {
         fireEvent.click(screen.getByLabelText(/^Leisure/));
-        fireEvent.keyDown(screen.getByLabelText(/^Points of Interest State/), { key: "ArrowDown" });
-        fireEvent.click(screen.getByText("Oregon (OR)"));
 
         await chooseFile();
         removeFile();
@@ -89,12 +86,10 @@ describe("the Quality Report form's POI file", () => {
         expect(screen.queryByText(/Taken from the Points of Interest File below/)).not.toBeInTheDocument();
         expect(screen.getByLabelText(/^Leisure/)).not.toBeChecked();
         expect(screen.getByLabelText(/^Civic/)).toBeChecked();
-        expect(screen.getByText("Oregon (OR)")).toBeInTheDocument();
 
         create();
         expect(mutate.mock.calls[0][0][2]).toEqual({
             poi_types: ALL_POI_TYPES.filter((type) => type !== "leisure"),
-            poi_state: "OR",
         });
     });
 

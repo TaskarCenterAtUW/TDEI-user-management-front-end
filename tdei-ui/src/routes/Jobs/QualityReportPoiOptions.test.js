@@ -3,40 +3,29 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axios from "axios";
 import { osmUrl, postCreateJob } from "../../services/apiServices";
-import QualityReportPoiOptions, {
-    ALL_POI_TYPES,
-    DEFAULT_POI_STATE,
-    POI_STATE_OPTIONS,
-    qualityReportRequestBody,
-} from "./QualityReportPoiOptions";
+import QualityReportPoiOptions, { ALL_POI_TYPES, qualityReportRequestBody } from "./QualityReportPoiOptions";
 
 const poisFile = () => new File(["lat,lon,category,source,snapped\n"], "pois.csv", { type: "text/csv" });
 
 describe("qualityReportRequestBody", () => {
     it("leaves poi_types out when every type is chosen, so the report uses all of its types", () => {
-        expect(qualityReportRequestBody(ALL_POI_TYPES, "WA")).toEqual({ poi_state: "WA" });
+        expect(qualityReportRequestBody(ALL_POI_TYPES)).toEqual({});
     });
 
-    it("sends the chosen types, in the list's order, and the state", () => {
-        expect(qualityReportRequestBody(["leisure", "civic"], "OR")).toEqual({
-            poi_types: ["civic", "leisure"],
-            poi_state: "OR",
-        });
+    it("sends the chosen types, in the list's order", () => {
+        expect(qualityReportRequestBody(["leisure", "civic"])).toEqual({ poi_types: ["civic", "leisure"] });
     });
 
-    it("sends a POI file on its own, as a form, whatever types and state are chosen", () => {
+    it("sends a POI file on its own, as a form, whatever types are chosen", () => {
         const file = poisFile();
-        const body = qualityReportRequestBody(["leisure", "civic"], "OR", file);
+        const body = qualityReportRequestBody(["leisure", "civic"], file);
         expect(body).toBeInstanceOf(FormData);
         expect([...body.keys()]).toEqual(["pois_file"]);
         expect(body.get("pois_file").name).toBe("pois.csv");
     });
 
     it("sends the JSON options once the file is removed, which leaves it undefined rather than null", () => {
-        expect(qualityReportRequestBody(["civic"], "OR", undefined)).toEqual({
-            poi_types: ["civic"],
-            poi_state: "OR",
-        });
+        expect(qualityReportRequestBody(["civic"], undefined)).toEqual({ poi_types: ["civic"] });
     });
 });
 
@@ -58,16 +47,16 @@ describe("postCreateJob for a quality report", () => {
     });
 
     it("sends the options as JSON", async () => {
-        const body = qualityReportRequestBody(["civic"], "OR");
+        const body = qualityReportRequestBody(["civic"]);
         await expect(postCreateJob(["osw/quality-report/dataset-1", null, body])).resolves.toBe("job-1");
         expect(sent[0].url).toBe(`${osmUrl}/osw/quality-report/dataset-1`);
         expect(sent[0].headers.getContentType()).toBe("application/json");
-        expect(JSON.parse(sent[0].data)).toEqual({ poi_types: ["civic"], poi_state: "OR" });
+        expect(JSON.parse(sent[0].data)).toEqual({ poi_types: ["civic"] });
     });
 
     it("sends a POI file as the form itself, not as JSON", async () => {
         const file = poisFile();
-        const body = qualityReportRequestBody(ALL_POI_TYPES, "WA", file);
+        const body = qualityReportRequestBody(ALL_POI_TYPES, file);
         await expect(postCreateJob(["osw/quality-report/dataset-1", file, body])).resolves.toBe("job-1");
         expect(sent[0].url).toBe(`${osmUrl}/osw/quality-report/dataset-1`);
         // Marked as JSON, the form would arrive here already turned into a JSON object. Left unmarked,
@@ -78,40 +67,28 @@ describe("postCreateJob for a quality report", () => {
     });
 });
 
-describe("the state list", () => {
-    it("has the 50 states and DC, and defaults to WA", () => {
-        expect(POI_STATE_OPTIONS).toHaveLength(51);
-        expect(POI_STATE_OPTIONS.map((o) => o.value)).toContain(DEFAULT_POI_STATE);
-        expect(DEFAULT_POI_STATE).toBe("WA");
-    });
-});
-
 describe("QualityReportPoiOptions", () => {
     let latest;
     const Harness = () => {
         const [poiTypes, setPoiTypes] = useState(ALL_POI_TYPES);
-        const [poiState, setPoiState] = useState(DEFAULT_POI_STATE);
         const [poisFileChosen, setPoisFileChosen] = useState(false);
-        latest = { poiTypes, poiState };
+        latest = { poiTypes };
         return (
             <>
                 <button onClick={() => setPoisFileChosen(!poisFileChosen)}>Toggle file</button>
                 <QualityReportPoiOptions
                     poiTypes={poiTypes}
                     setPoiTypes={setPoiTypes}
-                    poiState={poiState}
-                    setPoiState={setPoiState}
                     poisFileChosen={poisFileChosen}
                 />
             </>
         );
     };
 
-    it("starts with every type chosen and Washington selected", () => {
+    it("starts with every type chosen", () => {
         render(<Harness />);
         expect(screen.getByLabelText("All types")).toBeChecked();
         expect(screen.getByLabelText(/^Leisure/)).toBeChecked();
-        expect(screen.getByText("Washington (WA)")).toBeInTheDocument();
     });
 
     it("unchecks a type, and All types follows", () => {
@@ -138,13 +115,11 @@ describe("QualityReportPoiOptions", () => {
 
         fireEvent.click(screen.getByText("Toggle file"));
         expect(screen.queryByLabelText("All types")).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/^Points of Interest State/)).not.toBeInTheDocument();
         expect(screen.getByText(/they don't apply to a file of your own/)).toBeInTheDocument();
 
         fireEvent.click(screen.getByText("Toggle file"));
         expect(screen.queryByText(/they don't apply to a file of your own/)).not.toBeInTheDocument();
         expect(screen.getByLabelText(/^Leisure/)).not.toBeChecked();
         expect(screen.getByLabelText(/^Civic/)).toBeChecked();
-        expect(screen.getByText("Washington (WA)")).toBeInTheDocument();
     });
 });
