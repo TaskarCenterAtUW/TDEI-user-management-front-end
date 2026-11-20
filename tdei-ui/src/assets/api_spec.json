@@ -1849,6 +1849,56 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "description": "Optional. Which points of interest (POIs) the report uses. As JSON, choose which POI types to fetch; leave out the body, or `poi_types`, to include every POI type. Overture places are fetched only in the US state(s) the dataset's area overlaps; for an area outside every state, they are fetched without a state filter. As multipart/form-data, upload your own `pois_file` instead.",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "poi_types": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "transit",
+                                                "healthcare",
+                                                "senior_care",
+                                                "education",
+                                                "childcare",
+                                                "food",
+                                                "shopping",
+                                                "social_services",
+                                                "community",
+                                                "civic",
+                                                "leisure"
+                                            ]
+                                        },
+                                        "description": "The kinds of points of interest to include. Leave out to include all of them. `transit`: bus stops, train and metro stations; `healthcare`: hospitals, clinics, doctors and other healthcare; `senior_care`: senior centers, nursing homes, assisted living; `education`: schools and colleges; `childcare`: child care and preschools; `food`: supermarkets, grocery stores, food banks, farmers markets; `shopping`: shopping malls; `social_services`: social services, shelters, disability services; `community`: community centers, places of worship, libraries; `civic`: polling stations and other government services; `leisure`: parks, nature reserves, recreation grounds, gyms.",
+                                        "example": [
+                                            "civic",
+                                            "leisure"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "pois_file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Your own points of interest, used instead of fetching them from OpenStreetMap and Overture Maps, for this job only. A CSV in the form the report writes its own `pois.csv`: it needs `lat`, `lon`, `category`, `source` and `snapped` columns, with `snapped` set to `true` on every row, because the file is used as-is and its points are not snapped to the network. Send it on its own: `poi_types` chooses which points of interest to fetch, so a request with both is rejected."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "202": {
                         "description": "The request has been accepted for processing. It returns a `job_id`, a unique identifier for the request, which can be used to track the status of the request. The endpoint to check the status is provided in the location header of the response.",
@@ -1869,7 +1919,7 @@
                         }
                     },
                     "400": {
-                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file."
+                        "description": "Missing tdei_dataset_id or dataset type is not OSW or Invalid intersection file, or `poi_types` is not valid, or `pois_file` is not a CSV with the required columns or is sent with `poi_types`."
                     },
                     "401": {
                         "description": "Unauthenticated request. Check your access token."

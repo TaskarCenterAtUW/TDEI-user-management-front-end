@@ -367,6 +367,18 @@ export async function postCreateJob(data) {
     "Content-Type": "multipart/form-data",
   };
   try {
+    // A quality report's path carries its dataset id; its options (poi_types) go as JSON.
+    // A form carrying a POI file goes without a Content-Type, so the browser sets the multipart
+    // boundary: axios would send a form marked as JSON as JSON.
+    if (data[0].startsWith("osw/quality-report/")) {
+      const body = data[2] || {};
+      response = await axios.post(
+        baseUrl,
+        body,
+        body instanceof FormData ? {} : { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    }
     switch (data[0]) {
       case "osw/convert":
         formData.append("source_format", data[2]);
