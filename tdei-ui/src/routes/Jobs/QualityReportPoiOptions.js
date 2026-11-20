@@ -125,9 +125,9 @@ const QualityReportPoiOptions = ({ poiSource, setPoiSource, poiTypes, setPoiType
                     {fileInput}
                     <div className="d-flex align-items-start mt-2">
                         <Form.Text className={style.description}>
-                            Used as-is instead of fetching, for this report only. A CSV in the form of the pois.csv
-                            the report writes: lat, lon, category, source and snapped columns, with snapped set to
-                            true on every row.
+                            Used as-is instead of fetching, for this report only: a CSV with lat and lon columns,
+                            one row per point of interest. A name column, if there is one, labels the points on the
+                            report's map. Points stay where they are; they aren't moved onto the sidewalk network.
                         </Form.Text>
                     </div>
                 </div>

@@ -1892,7 +1892,7 @@
                                     "pois_file": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "Your own points of interest, used instead of fetching them from OpenStreetMap and Overture Maps, for this job only. A CSV in the form the report writes its own `pois.csv`: it needs `lat`, `lon`, `category`, `source` and `snapped` columns, with `snapped` set to `true` on every row, because the file is used as-is and its points are not snapped to the network. Send it on its own: `poi_types` chooses which points of interest to fetch, so a request with both is rejected."
+                                        "description": "Your own points of interest, used instead of fetching them from OpenStreetMap and Overture Maps, for this job only. A CSV with `lat` and `lon` columns, one row per point of interest. Other columns are optional: `name` labels each point on the report's map, and `source` is listed in the report as where the points came from. The file is used as-is, so its points are not moved onto the sidewalk network. If it has a `snapped` column, as the `pois.csv` the report writes does, each value must be `true` or empty. Send it on its own: `poi_types` chooses which points of interest to fetch, so a request with both is rejected."
                                     }
                                 }
                             }
