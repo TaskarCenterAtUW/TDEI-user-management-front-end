@@ -506,6 +506,26 @@
   margin-bottom: .5rem;
 }
 
+/* The quality report's point-of-interest options. The checkbox group is set apart from the fields
+   around it, as the Bounding Box group is, and its legend is sized like the other field labels
+   instead of Bootstrap's large legend default. */
+.poiSection {
+  padding-top: 25px;
+}
+
+.poiLegend {
+  font-size: inherit;
+}
+
+.poiSource {
+  margin-top: 12px;
+}
+
+/* The chosen option's controls, under its radio button */
+.poiChoice {
+  margin: 6px 0 4px 1.5rem;
+}
+
 .bBoxContainer {
   width: 100%;
   padding: 20px;

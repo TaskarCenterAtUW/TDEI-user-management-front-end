@@ -15,6 +15,12 @@ import notSelectedIcon from "../../assets/img/notSelectedIcon.png";
 import InfoIcon from '@mui/icons-material/Info';
 import { extractLinks } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
+import QualityReportPoiOptions, {
+    ALL_POI_TYPES,
+    POI_SOURCE_FETCH,
+    POI_SOURCE_FILE,
+    qualityReportRequestBody,
+} from "./QualityReportPoiOptions";
 import JobJsonResponseModal from "../../components/JobJsonResponseModal/JobJsonResponseModal";
 import { SPATIAL_JOIN, SAMPLE_SPATIAL_JOIN } from "../../utils";
 import useIsDatasetsAccessible from "../../hooks/useIsDatasetsAccessible";
@@ -122,6 +128,8 @@ const formConfig = {
     ],
     "quality-report": [
         { label: "Tdei Dataset Id", type: "text", stateSetter: "setTdeiDatasetId" },
+        // Fetched by type or uploaded as a file; the file's dropzone is part of this field
+        { label: "Points of Interest", type: "poiOptions" }
     ]
 };
 
@@ -163,6 +171,8 @@ const CreateJobService = () => {
     const [firstDatasetId, setFirstDatasetId] = useState("");
     const [secondDatasetId, setSecondDatasetId] = useState("");
     const [proximity, setProximity] = useState("");
+    const [poiSource, setPoiSource] = useState(POI_SOURCE_FETCH);
+    const [poiTypes, setPoiTypes] = useState(ALL_POI_TYPES);
     const [spatialAssignmentMethod, setSpatialAssignmentMethod] = useState({ value: 'default', label: 'Default' });
     const [isSpatialJsonMode, setIsSpatialJsonMode] = useState(false);
     const [spatialTargetDatasetId, setSpatialTargetDatasetId] = useState("");
@@ -263,6 +273,8 @@ const CreateJobService = () => {
         setFirstDatasetId("");
         setSecondDatasetId("");
         setProximity("");
+        setPoiSource(POI_SOURCE_FETCH);
+        setPoiTypes(ALL_POI_TYPES);
         setSpatialRequestBody(JSON.stringify(SPATIAL_JOIN, null, 2));
         setAlgorithmConfig({
             algorithms: [],
@@ -531,6 +543,24 @@ const CreateJobService = () => {
                 return;
             }
         }
+        if (jobType.value === "quality-report") {
+            if (!tdeiDatasetId) {
+                setValidateErrorMessage("Tdei Dataset Id is required for Quality Report job");
+                setShowValidateToast(true);
+                return;
+            }
+            // Only the chosen source's values matter: the types when fetching, the file when uploading.
+            if (poiSource === POI_SOURCE_FETCH && poiTypes.length === 0) {
+                setValidateErrorMessage("Choose at least one type of point of interest for the Quality Report job");
+                setShowValidateToast(true);
+                return;
+            }
+            if (poiSource === POI_SOURCE_FILE && !selectedFile) {
+                setValidateErrorMessage("Upload a pois.csv for the Quality Report job, or choose to fetch points of interest instead");
+                setShowValidateToast(true);
+                return;
+            }
+        }
         if (jobType.value === "dataset-self-merge" && !tdeiDatasetId) {
             setValidateErrorMessage("Tdei Dataset Id is required for Dataset Self Merge");
             setShowValidateToast(true);
@@ -649,6 +679,8 @@ const CreateJobService = () => {
             uploadData.push(finalRequestBody);
         } else if (jobType.value === "dataset-union") {
             uploadData.push(firstDatasetId, secondDatasetId, unionConfig);
+        } else if (jobType.value === "quality-report") {
+            uploadData.push(qualityReportRequestBody(poiTypes, poiSource === POI_SOURCE_FILE ? selectedFile : null));
         } else if (jobType.value === "dataset-self-merge") {
             if (proximity) {
                 const proximityFloat = parseFloat(proximity);
@@ -847,6 +879,8 @@ const CreateJobService = () => {
                 case "confidence":
                 case "quality-metric":
                     return { 'application/geo+json': ['.geojson'] };
+                case "quality-report":
+                    return { 'text/csv': ['.csv'] };
                 default:
                     return { 'application/zip': ['.zip'] };
             }
@@ -868,6 +902,8 @@ const CreateJobService = () => {
                 case "confidence":
                 case "quality-metric":
                     return ".geojson";
+                case "quality-report":
+                    return ".csv";
                 default:
                     return ".zip";
             }
@@ -963,6 +999,25 @@ const CreateJobService = () => {
                 );
             case "bbox":
                 return renderBBoxField(index, field);
+            case "poiOptions":
+                return (
+                    <QualityReportPoiOptions
+                        key={index}
+                        poiSource={poiSource}
+                        setPoiSource={setPoiSource}
+                        poiTypes={poiTypes}
+                        setPoiTypes={setPoiTypes}
+                        fileInput={
+                            <Dropzone
+                                onDrop={onDrop}
+                                accept={getAcceptedFileTypes()}
+                                format={getFileFormat()}
+                                selectedFile={selectedFile}
+                                dataType={getDataTypeFromJobType()}
+                            />
+                        }
+                    />
+                );
             default:
                 return null;
         }
