@@ -64,7 +64,7 @@ describe("the Quality Report form's points of interest", () => {
         fireEvent.click(uploadChoice());
         expect(screen.getByText("Allowed format .csv")).toBeInTheDocument();
         expect(screen.getByLabelText("data-file")).toHaveAttribute("accept", "text/csv,.csv");
-        expect(screen.getByText(/lat, lon, category, source and snapped columns/)).toBeInTheDocument();
+        expect(screen.getByText(/a CSV with lat and lon columns/)).toBeInTheDocument();
     });
 
     it("needs a file when uploading, but no types, and sends only the file", async () => {
