@@ -102,12 +102,12 @@ const CloneDataset = () => {
                     <CustomModal
                         show={showSuccessModal}
                         message="Dataset clone has been accepted!"
-                        content="Find cloned dataset in datasets page."
+                        content="Find the status of the job in jobs page."
                         handler={() => {
                             setShowSuccessModal(false);
-                            navigate('../datasets', { replace: true });
+                            navigate('../jobs', { replace: true });
                         }}
-                        btnlabel="Go to datasets page"
+                        btnlabel="Go to Jobs page"
                         modaltype="success"
                         title="Success"
                     />
