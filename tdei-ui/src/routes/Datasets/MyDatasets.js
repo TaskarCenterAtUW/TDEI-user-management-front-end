@@ -415,7 +415,7 @@ const MyDatasets = () => {
     release: {
       message: `Are you sure you want to release dataset ${selectedDataset?.metadata?.dataset_detail?.name}?`,
       content:
-        "Release job will take around 4 to 6 hours. You can find the status in the jobs page.",
+        "You can find the status in the jobs page. Once the release job is completed, the dataset will be available for public access.",
       handler: () =>
         publishDataset({
           service_type: selectedDataset.data_type,

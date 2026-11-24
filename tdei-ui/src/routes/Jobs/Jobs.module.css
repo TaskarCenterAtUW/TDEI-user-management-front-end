@@ -237,6 +237,7 @@
 .showMoreButton {
   padding: 5px 0px;
   font-size: 14px;
+  text-align: left;
   color: #0969DA;
   font-weight: 700;
   cursor: pointer;

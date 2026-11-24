@@ -10,6 +10,7 @@ import ShowReportModal from "../ShowJobMessage/ShowReportModal";
 import { DateTime, Interval } from "luxon";
 import UserIcon from './../../assets/img/user.svg';
 import { updatedTime } from "../../utils";
+import { Spinner } from "react-bootstrap";
 
 const JobListItem = ({ jobItem }) => {
   const [showMore, setShowMore] = useState(false);
@@ -29,7 +30,7 @@ const JobListItem = ({ jobItem }) => {
 
   const JOB_TYPE_LABELS = {
     "Dataset-BBox": "Filter Dataset By BBox",
-    "Dataset-Sanitization": "Dataset Sanitization",
+    "Dataset-Sanitization": "Dataset-Sanitization",
   };
 
   const handleToast = () => {
@@ -66,8 +67,7 @@ const JobListItem = ({ jobItem }) => {
   };
 
 
-  const handleClick = (e) => {
-    const { id } = e.target;
+  const handleClick = (id) => {
     setJobId(id);
     if (jobItem.job_type === "Confidence-Calculate") {
       const confidenceScores = jobItem.response_props.confidence_scores;
@@ -246,10 +246,19 @@ const JobListItem = ({ jobItem }) => {
               type="button"
               id={jobItem.job_id}
               className={style.showMoreButton}
-              onClick={(e) => handleClick(e)}
+              onClick={() => handleClick(jobItem.job_id)}
+              disabled={isDownloadingJob}
+              aria-busy={isDownloadingJob}
               variant="link"
             >
-              Download Result
+              {isDownloadingJob && jobItem.job_type !== "Confidence-Calculate" ? (
+                <>
+                  <Spinner animation="border" size="sm" aria-hidden="true" />{" "}
+                  Preparing download...
+                </>
+              ) : (
+                "Download Result"
+              )}
             </button>
           )}
         {jobItem.data_type === "pathways" &&
@@ -262,10 +271,20 @@ const JobListItem = ({ jobItem }) => {
               type="button"
               id={jobItem.job_id}
               className={style.showMoreButton}
-              onClick={(e) => handleClick(e)}
+              onClick={() => handleClick(jobItem.job_id)}
+              disabled={isDownloadingJob}
+              aria-busy={isDownloadingJob}
+              aria-label={isDownloadingJob ? "Preparing validation report download" : "Download Validation Report"}
               variant="link"
             >
-              Download Validation Report
+              {isDownloadingJob ? (
+                <>
+                  <Spinner animation="border" size="sm" aria-hidden="true" />{" "}
+                  Preparing download...
+                </>
+              ) : (
+                "Download Report"
+              )}
             </button>
           )}
         {jobItem.job_type === "Quality-Report" && jobItem.status.toLowerCase() === 'completed' && (
@@ -273,7 +292,7 @@ const JobListItem = ({ jobItem }) => {
             type="button"
             id={jobItem.job_id}
             className={style.showMoreButton}
-            onClick={(e) => handleClick(e)}
+            onClick={() => handleClick(jobItem.job_id)}
             variant="link"
           >
             Show Result
