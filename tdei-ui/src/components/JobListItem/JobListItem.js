@@ -252,6 +252,22 @@ const JobListItem = ({ jobItem }) => {
               Download Result
             </button>
           )}
+        {jobItem.data_type === "pathways" &&
+          (jobItem.job_type === "Dataset-Validate" ||
+            jobItem.job_type === "Dataset-Upload" ||
+            jobItem.job_type === "Dataset-Publish") &&
+          (jobItem.status.toLowerCase() === "completed" || jobItem.status.toLowerCase() === "failed") &&
+          jobItem.download_url && (
+            <button
+              type="button"
+              id={jobItem.job_id}
+              className={style.showMoreButton}
+              onClick={(e) => handleClick(e)}
+              variant="link"
+            >
+              Download Validation Report
+            </button>
+          )}
         {jobItem.job_type === "Quality-Report" && jobItem.status.toLowerCase() === 'completed' && (
           <button
             type="button"
