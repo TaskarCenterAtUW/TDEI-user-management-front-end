@@ -147,9 +147,16 @@
 .buttonContainer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-top: 1px solid #ccc;
-  padding-top: 20px;
-  margin-top: 20px;
+  padding: 16px 20px;
+  margin: 20px -20px -20px -20px;
+  position: sticky;
+  bottom: 0;
+  background-color: #ffffff;
+  z-index: 10;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .select {
@@ -497,6 +504,26 @@
 
 .formLabelP {
   margin-bottom: .5rem;
+}
+
+/* The quality report's point-of-interest options. The checkbox group is set apart from the fields
+   around it, as the Bounding Box group is, and its legend is sized like the other field labels
+   instead of Bootstrap's large legend default. */
+.poiSection {
+  padding-top: 25px;
+}
+
+.poiLegend {
+  font-size: inherit;
+}
+
+.poiSource {
+  margin-top: 12px;
+}
+
+/* The chosen option's controls, under its radio button */
+.poiChoice {
+  margin: 6px 0 4px 1.5rem;
 }
 
 .bBoxContainer {

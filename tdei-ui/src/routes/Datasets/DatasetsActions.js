@@ -18,6 +18,9 @@ import useIsMember from "../../hooks/roles/useIsMember";
 import { useAuth } from "../../hooks/useAuth";
 import useIsDataTypeGenerator from "../../hooks/useIsDataTypeGenerator";
 import { useMediaQuery } from 'react-responsive';
+import { useSelector } from "react-redux";
+import { getSelectedProjectGroup } from "../../selectors";
+import useGetProjectGroupRoles from "../../hooks/roles/useProjectGroupRoles";
 import AccessibleActionMenu from "../../components/AccessibleActionMenu/AccessibleActionMenu";
 import menuStyle from "../../components/AccessibleActionMenu/AccessibleActionMenu.module.css";
 
@@ -28,6 +31,7 @@ const DatasetsActions = ({
   data_type,
   dataViewerProps,
   datasetId,
+  projectGroupId,
 }) => {
   const { user } = useAuth();
   const isPocUser = useIsPoc();
@@ -43,11 +47,50 @@ const DatasetsActions = ({
   const canPublish = isPocUser || user?.isAdmin || isDataTypeGenerator;
 
   const isMobile = useMediaQuery({ maxWidth: 992 });
+  const selectedProjectGroup = useSelector(getSelectedProjectGroup);
+  const { data: projectGroupsData } = useGetProjectGroupRoles();
+
+  const allProjectGroups = React.useMemo(() => {
+    const groups = projectGroupsData?.pages?.flatMap((page) => page.data) || [];
+    if (
+      selectedProjectGroup?.tdei_project_group_id &&
+      !groups.some((g) => g.tdei_project_group_id === selectedProjectGroup.tdei_project_group_id)
+    ) {
+      return [...groups, selectedProjectGroup];
+    }
+    return groups;
+  }, [projectGroupsData, selectedProjectGroup]);
+
+  const hasPocOrDg = (roles = []) => {
+    const normalized = (roles || []).map((r) => String(r).trim().toLowerCase());
+    return (
+      normalized.includes("poc") ||
+      (data_type
+        ? normalized.includes(`${data_type.trim().toLowerCase()}_data_generator`)
+        : normalized.some((r) => r.endsWith("_data_generator")))
+    );
+  };
+
+  const isReleased = isReleasedDataset || status === "Publish";
+  const canCreateInAnyGroup =
+    Boolean(user?.isAdmin) || allProjectGroups.some((pg) => hasPocOrDg(pg.roles));
+
+  const targetPg =
+    allProjectGroups.find((pg) => pg.tdei_project_group_id === projectGroupId) ||
+    (selectedProjectGroup?.tdei_project_group_id === projectGroupId ? selectedProjectGroup : null);
+
+  const isDgOrPocOfTargetPg =
+    Boolean(user?.isAdmin) || (targetPg ? hasPocOrDg(targetPg.roles) : false);
+
+  const canOpenInWorkspace =
+    data_type !== "flex" &&
+    canCreateInAnyGroup &&
+    (isReleased || isDgOrPocOfTargetPg);
 
   //Role based available actions
   const actions = [
-    // "Open in Workspaces" is available for all datasets except 'flex'
-    data_type !== "flex" && {
+    // "Open in Workspaces" is available if user is DG/POC of PG or dataset is released (and user can create in >= 1 PG)
+    canOpenInWorkspace && {
       key: "openInWorkspace",
       label: "Open in Workspaces",
       icon: openConsoleIcon,

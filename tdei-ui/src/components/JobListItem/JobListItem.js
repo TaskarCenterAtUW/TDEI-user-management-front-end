@@ -232,7 +232,8 @@ const JobListItem = ({ jobItem }) => {
           jobItem.job_type === "Dataset-Union" ||
           jobItem.job_type === "Dataset-Self-Merge" ||
           jobItem.job_type === "Quality-Metric" ||
-          jobItem.job_type === "Confidence-Calculate"
+          jobItem.job_type === "Confidence-Calculate" ||
+          jobItem.job_type === "Pathways-Convert"
         ) &&
           jobItem.status.toLowerCase() === "completed" &&
           (jobItem.download_url ||
@@ -249,6 +250,22 @@ const JobListItem = ({ jobItem }) => {
               variant="link"
             >
               Download Result
+            </button>
+          )}
+        {jobItem.data_type === "pathways" &&
+          (jobItem.job_type === "Dataset-Validate" ||
+            jobItem.job_type === "Dataset-Upload" ||
+            jobItem.job_type === "Dataset-Publish") &&
+          (jobItem.status.toLowerCase() === "completed" || jobItem.status.toLowerCase() === "failed") &&
+          jobItem.download_url && (
+            <button
+              type="button"
+              id={jobItem.job_id}
+              className={style.showMoreButton}
+              onClick={(e) => handleClick(e)}
+              variant="link"
+            >
+              Download Validation Report
             </button>
           )}
         {jobItem.job_type === "Quality-Report" && jobItem.status.toLowerCase() === 'completed' && (

@@ -367,11 +367,31 @@ export async function postCreateJob(data) {
     "Content-Type": "multipart/form-data",
   };
   try {
+    // A quality report's path carries its dataset id; its options (poi_types) go as JSON.
+    // A form carrying a POI file goes without a Content-Type, so the browser sets the multipart
+    // boundary: axios would send a form marked as JSON as JSON.
+    if (data[0].startsWith("osw/quality-report/")) {
+      const body = data[2] || {};
+      response = await axios.post(
+        baseUrl,
+        body,
+        body instanceof FormData ? {} : { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    }
     switch (data[0]) {
       case "osw/convert":
         formData.append("source_format", data[2]);
         formData.append("target_format", data[3]);
         formData.append("file", data[1]);
+        url = baseUrl;
+        break;
+      case "gtfs-pathways/convert":
+        // Either a DXF zip or an arcgis_url, plus the converter's options as form fields
+        if (data[1]) {
+          formData.append("dataset", data[1]);
+        }
+        Object.entries(data[2]).forEach(([key, value]) => formData.append(key, value));
         url = baseUrl;
         break;
       case "osw/confidence":
@@ -429,8 +449,12 @@ export async function postCreateJob(data) {
           tdei_dataset_id_one: data[2],
           tdei_dataset_id_two: data[3],
         };
-        if (data[4] !== undefined && data[4] !== null && !isNaN(data[4])) {
-          unionRequestBody.proximity = data[4];
+        if (data[4] !== undefined && data[4] !== null) {
+          if (typeof data[4] === "object") {
+            unionRequestBody.config = data[4];
+          } else if (!isNaN(data[4])) {
+            unionRequestBody.proximity = data[4];
+          }
         }
         if (data[5] !== undefined && data[5] !== null) {
           unionRequestBody.entity_filters = data[5];
