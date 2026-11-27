@@ -237,8 +237,15 @@ const CreateJobService = () => {
     const onError = (err) => {
         setLoading(false);
         console.error("error message", err);
-        // Extract a meaningful error message
-        const error = err.data ?? err.message ?? err ?? "An unexpected error occurred";
+        // Prefer the API's error text. FastAPI commonly returns it in `detail`,
+        // while other endpoints use `message` or a plain string response.
+        const response = err?.data ?? err;
+        const apiError = response?.detail ?? response?.message ?? response;
+        const error = typeof apiError === "string"
+            ? apiError
+            : apiError
+                ? JSON.stringify(apiError)
+                : "An unexpected error occurred";
         setErrorMessage(error);
         setToast(true); // Show error toast
     };

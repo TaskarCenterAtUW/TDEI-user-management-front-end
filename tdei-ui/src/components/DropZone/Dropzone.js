@@ -5,18 +5,13 @@ import uploadIcon from "./../../assets/img/upload-icon.svg";
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from "@mui/material/IconButton";
-import { show } from "../../store/notification.slice";
-import { useDispatch } from "react-redux";
-import JSZip from "jszip";
 import { useMediaQuery } from 'react-responsive';
 import useSystemCapabilities from "../../hooks/useSystemCapabilities";
 
 // Functional component Dropzone
 function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
-  const dispatch = useDispatch();
   const [myFiles, setMyFiles] = useState([]);
   const { data: capabilities } = useSystemCapabilities();
-  const MAX_SIZE_BYTES = capabilities?.dataset_upload_limits?.[dataType]?.limit_bytes ?? null;
   const limitDisplay = capabilities?.dataset_upload_limits?.[dataType]?.limit_display ?? null;
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -30,17 +25,9 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept,
-    onDrop: async (acceptedFiles) => {
-      const totalSizeInBytes = await calculateTotalUncompressedSize(acceptedFiles);
-      if (MAX_SIZE_BYTES && totalSizeInBytes > MAX_SIZE_BYTES) {
-        dispatch(
-          show({
-            message: `The total size of dataset files in zip exceeds ${limitDisplay} upload limit.`,
-            type: "danger",
-          })
-        );
-        return;
-      }
+    onDrop: (acceptedFiles) => {
+      // Archive size and contents are validated by the API. Reading a multi-gigabyte
+      // ZIP with JSZip here prevented the request from ever reaching the API.
       setMyFiles([...acceptedFiles]);
       onDrop(acceptedFiles);
     },
@@ -61,52 +48,6 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
       return bytes;
     }
     return (bytes / (1024 * 1024)).toFixed(2);
-  };
-
-  // Recursively calculate the uncompressed size of a ZIP file
-  const getZipUncompressedSize = async (fileOrBlob) => {
-    const jszip = new JSZip();
-    let zip;
-    try {
-      zip = await jszip.loadAsync(fileOrBlob);
-    } catch (e) {
-      throw new Error("Error loading zip file");
-    }
-    let totalSize = 0;
-    const entries = Object.values(zip.files);
-    for (const entry of entries) {
-      if (!entry.dir) {
-        // If the entry is itself a ZIP file, process it recursively
-        if (entry.name.toLowerCase().endsWith(".zip")) {
-          const nestedBlob = await entry.async("blob");
-          totalSize += await getZipUncompressedSize(nestedBlob);
-        } else {
-          if (typeof entry.uncompressedSize !== "undefined") {
-            totalSize += entry.uncompressedSize;
-          } else if (entry._data && entry._data.uncompressedSize) {
-            totalSize += entry._data.uncompressedSize;
-          } else {
-            // Fallback
-            const blob = await entry.async("blob");
-            totalSize += blob.size;
-          }
-        }
-      }
-    }
-    return totalSize;
-  };
-
-  // Calculate total uncompressed size for the dropped files (in bytes).
-  const calculateTotalUncompressedSize = async (files) => {
-    let totalSize = 0;
-    for (const file of files) {
-      if (file.name.toLowerCase().endsWith(".zip")) {
-        totalSize += await getZipUncompressedSize(file);
-      } else {
-        totalSize += file.size;
-      }
-    }
-    return totalSize;
   };
 
   const files = myFiles.map((file) => (

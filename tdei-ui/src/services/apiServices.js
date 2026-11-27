@@ -506,7 +506,7 @@ export async function postCreateJob(data) {
 
     return response.data;
   } catch (error) {
-    throw error.response.data ?? error;
+    throw error.response?.data ?? error.data ?? error;
   }
 }
 export async function postUploadDataset(data) {
