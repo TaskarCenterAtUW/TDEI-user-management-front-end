@@ -13,7 +13,7 @@ import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import apiSpec from "../../assets/api_spec.json";
 import notSelectedIcon from "../../assets/img/notSelectedIcon.png";
 import InfoIcon from '@mui/icons-material/Info';
-import { extractLinks } from "../../utils";
+import { extractLinks, getApiErrorMessage } from "../../utils";
 import QualityMetricAlgo from "./QualityMetricAlgo";
 import QualityReportPoiOptions, {
     ALL_POI_TYPES,
@@ -237,16 +237,7 @@ const CreateJobService = () => {
     const onError = (err) => {
         setLoading(false);
         console.error("error message", err);
-        // Prefer the API's error text. FastAPI commonly returns it in `detail`,
-        // while other endpoints use `message` or a plain string response.
-        const response = err?.data ?? err;
-        const apiError = response?.detail ?? response?.message ?? response;
-        const error = typeof apiError === "string"
-            ? apiError
-            : apiError
-                ? JSON.stringify(apiError)
-                : "An unexpected error occurred";
-        setErrorMessage(error);
+        setErrorMessage(getApiErrorMessage(err, "Job creation failed"));
         setToast(true); // Show error toast
     };
 

@@ -15,6 +15,7 @@ import { Spinner } from "react-bootstrap";
 import style from "./UploadDataset.module.css"
 import { useAuth } from '../../hooks/useAuth';
 import useIsDatasetsAccessible from '../../hooks/useIsDatasetsAccessible';
+import { getApiErrorMessage } from '../../utils';
 
 // Array of steps data for the vertical stepper
 const stepsData = [
@@ -68,7 +69,7 @@ const UploadDataset = () => {
     // resetting current step
     setCurrentStep(0);
     setToast(true);
-    setErrorMessage(err.message.message ?? err.message ?? err.data ?? err.data.message)
+    setErrorMessage(getApiErrorMessage(err, "Dataset upload failed"));
   };
   // Using useUploadDataset hook to get mutate function
   const { isLoading, mutate } = useUploadDataset({ onSuccess, onError });
