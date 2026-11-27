@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
+import { toApiError } from "../utils/apiError";
 export const url = process.env.REACT_APP_URL;
 export const osmUrl = process.env.REACT_APP_OSM_URL;
 export const workspaceUrl = process.env.REACT_APP_TDEI_WORKSPACE_URL;
@@ -506,7 +507,7 @@ export async function postCreateJob(data) {
 
     return response.data;
   } catch (error) {
-    throw error.response.data ?? error;
+    throw toApiError(error, "Job creation failed");
   }
 }
 export async function postUploadDataset(data) {
@@ -579,13 +580,7 @@ export async function postUploadDataset(data) {
     return response.data;
   } catch (error) {
     console.error("Error object:", error);
-    if (error.response && error.response.data) {
-      throw new Error(error.response.data);
-    } else if (error.data) {
-      throw new Error(error.data);
-    } else {
-      throw new Error(error);
-    }
+    throw toApiError(error, "Dataset upload failed");
   }
 }
 export async function getDatasets(
