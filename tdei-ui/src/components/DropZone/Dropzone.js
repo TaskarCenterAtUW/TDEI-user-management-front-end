@@ -26,8 +26,6 @@ function Dropzone({ onDrop, accept, format, selectedFile, dataType }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept,
     onDrop: (acceptedFiles) => {
-      // Archive size and contents are validated by the API. Reading a multi-gigabyte
-      // ZIP with JSZip here prevented the request from ever reaching the API.
       setMyFiles([...acceptedFiles]);
       onDrop(acceptedFiles);
     },
